@@ -4,4 +4,5 @@ import 'erc20/erc20.sol';
 import 'ds-note/note.sol';
 
 contract Balancer {
+
 }
