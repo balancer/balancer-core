@@ -12,4 +12,5 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o out \
-	src/{Balancer,BalanceMath}.sol; \
+	src/BalanceMath.sol \
+	src/Balancer.sol \
