@@ -24,9 +24,9 @@ beforeEach((done) => {
             new web3.eth.Contract(JSON.parse(type.abi))
                 .deploy({data: type.bin})
                 .send({from: account, gas: 6000000}, (err,tx) => {
-       //             console.log(err, tx);
+                    //console.log(err, tx);
                     setTimeout(() => {web3.eth.getTransactionReceipt(tx, (err, receipt) => {
-                        console.log(err, receipt);
+                        //console.log(err, receipt);
                         cb(receipt.contractAddress);
                     })}, 25);
                 })
@@ -40,12 +40,11 @@ beforeEach((done) => {
 });
 
 describe("Test BalanceMath", () => {
-    it("add", (done) => {
-        var M = objects.math;
-        M.methods.add(1, 2).call().then((res) => {
-            console.log(web3.utils.toBN(res));
-            assert(web3.utils.toBN(res).eq(web3.utils.toBN(3)));
-            done();
-        });
+    let M = objects.math;
+    it("add", async () => {
+        var three = web3.utils.toBN(3);
+        var res = await M.methods.getAmountOunt(1, 2, 0, 0).call();
+        res = web3.utils.toBN(res);
+        assert(three.eq(res));
     });
 });
