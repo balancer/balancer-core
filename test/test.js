@@ -21,29 +21,31 @@ beforeEach((done) => {
         //console.log(type);
         web3.eth.getAccounts().then((accounts) => {
             let account = accounts[0];
-            web3.eth.Contract(JSON.parse(type.abi))
+            new web3.eth.Contract(JSON.parse(type.abi))
                 .deploy({data: type.bin})
                 .send({from: account, gas: 6000000}, (err,tx) => {
        //             console.log(err, tx);
                     setTimeout(() => {web3.eth.getTransactionReceipt(tx, (err, receipt) => {
-                        //console.log(err, receipt);
+                        console.log(err, receipt);
                         cb(receipt.contractAddress);
                     })}, 25);
                 })
         })
     }
 
-    deploy(BalanceMath, async (address) => {
-        objects.math = await web3.eth.Contract(JSON.parse(BalanceMath.abi), address);
+    deploy(BalanceMath, (address) => {
+        objects.math = new web3.eth.Contract(JSON.parse(BalanceMath.abi), address);
         done();
     });
 });
 
 describe("Test BalanceMath", () => {
-    it("add", async () => {
+    it("add", (done) => {
         var M = objects.math;
-        var res = await M.methods.add(1, 2).call()
-        console.log(web3.utils.toBN(res));
-        assert(web3.utils.toBN(res).eq(web3.utils.toBN(3)));
+        M.methods.add(1, 2).call().then((res) => {
+            console.log(web3.utils.toBN(res));
+            assert(web3.utils.toBN(res).eq(web3.utils.toBN(3)));
+            done();
+        });
     });
 });
