@@ -13,4 +13,5 @@ all:; \
 	/=/ \
 	-o out \
 	src/BalanceMath.sol \
+	src/BalanceTest.sol \
 	src/Balancer.sol \
