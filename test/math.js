@@ -26,15 +26,16 @@ QOut = 1000 * 10**18;
 QIn = 1000 * 10**18;
 qOut = 100 * 10**18;
 qIn =  100 * 10**18;
+qOut =  100 * 10**18;
 wIn = 1000;
 wOut = 1000;
 fee = 0.001; // 1%
 
 describe("plain js math", () => {
     it("amountOut for sell should be", () => {
-        assert.equal(1, getAmountOutForSell(QOut, QIn, qIn, wIn, wOut, fee));
+        assert.equal(90826438767160672256, Math.floor(getAmountOutForSell(QOut, QIn, qIn, wIn, wOut, fee)));
     });
     it("amountIn for buy should be", () => {
-        assert.equal(1, getAmountInForBuy(QOut, QIn, qOut, wIn, wOut, fee));
+        assert.equal(111222333444555718656, Math.floor(getAmountInForBuy(QOut, QIn, qOut, wIn, wOut, fee)));
     });
 });
