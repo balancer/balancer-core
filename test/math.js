@@ -30,7 +30,6 @@ qOut =  100 * 10**18;
 wIn = 1000;
 wOut = 1000;
 fee = 0.001; // 1%
-
 describe("plain js math", () => {
     it("amountOut for sell should be", () => {
         assert.equal(90826438767160672256, Math.floor(getAmountOutForSell(QOut, QIn, qIn, wIn, wOut, fee)));
@@ -38,4 +37,23 @@ describe("plain js math", () => {
     it("amountIn for buy should be", () => {
         assert.equal(111222333444555718656, Math.floor(getAmountInForBuy(QOut, QIn, qOut, wIn, wOut, fee)));
     });
+    it("amountOut for sell should be exactly (no rounding)", () => {
+        assert.equal(1000 * 10**18,
+            getAmountOutForSell(2000 * 10**18,
+                                2000 * 10**18,
+                                2000 * 10**18,
+                                1000,
+                                1000,
+                                0));
+    });
+    it("amountIn for buy should be exactly (no rounding)", () => {
+        assert.equal(2000 * 10**18,
+            getAmountInForBuy(2000 * 10**18,
+                                2000 * 10**18,
+                                1000 * 10**18,
+                                1000,
+                                1000,
+                                0));
+    });
 });
+
