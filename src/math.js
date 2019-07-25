@@ -19,7 +19,7 @@ function power(precision, numerator,denominator, exponent){
 // qIn = amount of tokenIn being sold
 // wIn = tokenIn weight in pool
 // wOut = tokenOut Balance of pool
-function approximateAmountOutForSell(QOut, QIn, qIn, wIn, wOut){
+module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     // Requirements
     if( QOut<=0 ||
         QIn<=0  ||
@@ -110,5 +110,3 @@ module.exports.swapSpecifyInMath = (QOut, QIn, qIn, wIn, wOut, fee) => {
         throw new Error("Invalid arguments");
     return (1-(QIn/(QIn+qIn*(1-fee)))**(wIn/wOut))*QOut;
 }
-
-

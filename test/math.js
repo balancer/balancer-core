@@ -6,6 +6,10 @@ describe("Checking exact math in plain js", () => {
         assert.equal(1, bMath.swapSpecifyInMath(2, 2, 2, 1, 1, 0));
         assert.equal(10, bMath.swapSpecifyInMath(20, 20, 20, 10, 10, 0));
     });
+    it("Exact values for some approximation points", () => {
+        assert.equal(1, bMath.swapSpecifyInMath_Approx(2, 2, 2, 1, 1, 0));
+        assert.equal(10, bMath.swapSpecifyInMath(20, 20, 20, 10, 10, 0));
+    });
     it("should throw for bad arguments", () => {
         assert.throws(() => {
             bMath.swapSpecifyInMath(10, 10, 11, 1, 0);
