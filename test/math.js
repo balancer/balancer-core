@@ -9,6 +9,9 @@ describe("Checking exact math in plain js", () => {
     it("should throw for bad arguments", () => {
         assert.throws(() => {
             bMath.getAmountOutForSell(10, 10, 11, 1, 0);
-        }, new Error("Invalid arguments"));
+        });
+        assert.throws(() => {
+            bMath.getAmountOutForSell(0, 0, 1, 1, 1);
+        });
     });
 });
