@@ -81,7 +81,7 @@ function approximateAmountInForBuy(QOut, QIn, qOut, wIn, wOut){
         qOut>= QOut || // You can never buy all the balance of a token or more than it
         wIn<=0  ||
         wOut<=0)
-        return -1;
+        throw new Error("Invalid arguments");
     if (wOut>wIn)
     // Expand power into two, first with integer exponent >=1 and second with exponent <1
     {
@@ -136,7 +136,7 @@ function getAmountOutForSell(QOut, QIn, qIn, wIn, wOut, fee){
         wIn<=0  ||
         wOut<=0 ||
         fee>=1)
-        return -1;
+        throw new Error("Invalid arguments");
     return (1-(QIn/(QIn+qIn*(1-fee)))**(wIn/wOut))*QOut;
 }
 
@@ -155,7 +155,7 @@ function getAmountInForBuy(QOut, QIn, qOut, wIn, wOut, fee){
         wIn<=0  ||
         wOut<=0 ||
         fee>=1)
-        return -1;
+        throw new Error("Invalid arguments");
     return (((QOut/(QOut-qOut))**(wOut/wIn)-1)*QIn)/(1-fee);
 }
 
