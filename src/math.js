@@ -100,7 +100,7 @@ function binExpqInTermN(QOut, QIn, qOut, wIn, wOut, n){
 // wIn = tokenIn weight in pool
 // wOut = tokenOut Balance of pool
 // fee = pool fee
-module.exports.getAmountOutForSell = (QOut, QIn, qIn, wIn, wOut, fee) => {
+module.exports.swapSpecifyInMath = (QOut, QIn, qIn, wIn, wOut, fee) => {
     if( QOut<=0 ||
         QIn<=0  ||
         qIn<=0 ||

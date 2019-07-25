@@ -14,20 +14,18 @@ tinWeight: weight of token in pool
 // similar for tout
 
 Pool:
-    swapInExact(tinAmount, tin, tout) returns (toutAmount)
-    swapOutExact(tin, tout, toutAmount) returns (tinAmount)
-    approxIn(tin, tout, toutAmount) returns (approxTinAmt)
-    approxOut(tinAmount, tin, tout) returns (approxToutAmt)
+    swapSpecifyIn(tinAmount, tin, tout) returns (toutAmount)
+    swapSpecifyOut(tin, tout, toutAmount) returns (tinAmount)
     swapInExactOutLimit(tinAmount, tin, tout, toutLimit) returns (toutAmount)
     swapInLimitOutExact(tinLimit, tin, tout, toutAmount) returns (tinAmount)
 Math:
-    approxInFor(tinBalance, toutBalance, fee, tin, tout, toutAmount);
-    approxOutFor(tinBalance, toutBalance, fee, tinAmount, tin, tout);
+    estimateInFor(tinBalance, toutBalance, fee, tin, tout, toutAmount);
+    estimateOutFor(tinBalance, toutBalance, fee, tinAmount, tin, tout);
 
-    swapInExactMath( tinBalance, tinWeight,
-                   , toutBalance, toutWeight,
-                   , fee
-                   , tinAmount )
+    swapSpecifyInMath( tinBalance, tinWeight,
+                     , toutBalance, toutWeight,
+                     , fee
+                     , tinAmount )
         public pure
         returns ( newTinBalance, newTinWeight,
                 , newToutBalance, newToutWeight
@@ -40,15 +38,16 @@ Plain-english test cases
 ```
 pseudo-solidity, with exact decimal math type "Num"
 
-function swapInExactMath(
+function swapSpecifyInMath(
     Num tinBalance, Num tinWeight
   , Num toutBalance, Num toutWeight
+  , Num tinAmount
   , Num fee
 )
 public pure
-returns ( Num toutMoved, Num feeCollected);
+returns ( Num toutAmount, Num feeCollected);
 
 
-(1, 0) ?= swapInExactMath(1, 1, 1, 1, 0);
+(1, 0) ?= swapSpecifyInMath(1, 1, 1, 1, 0);
 
 ```
