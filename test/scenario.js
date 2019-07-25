@@ -22,6 +22,9 @@ beforeEach((done) => {
     // Can be extracted manually
     function deploy(type, cb) {
         //console.log(type);
+        if(type.bin == '') {
+            throw new Error("Trying to deploy contract with empty `bin`");
+        }
         web3.eth.getAccounts().then((accounts) => {
             acct0 = accounts[0];
             new web3.eth.Contract(JSON.parse(type.abi))

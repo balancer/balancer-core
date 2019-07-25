@@ -8,11 +8,21 @@ import "erc20/erc20.sol";
 // Keep all functions public for now.
 contract BalanceMath is DSMath {
     function swapInExactMath(
-        ERC20 tin, uint256 tinBalance, uint256 tinWeight
-      , ERC20 tout, uint256 toutBalance, uint256 toutWeight
-      , uint256 fee
+        uint256 tinBalance, uint256 tinWeight
+      , uint256 toutBalance, uint256 toutWeight
+      , uint256 tinAmount
+      , uint256 feeRatio
     )
     public pure
-    returns ( uint256 tinMoved, uint256 toutMoved, uint256 feeCollected
-            , uint256 newTinWeight, uint256 newToutWeight );
+    returns ( uint256 toutAmount, uint256 feeAmount ) {
+        return (0, 0);
+    }
+
+    function ratio( uint256 tinWeight, uint256 tinBalance
+                  , uint256 toutWeight, uint256 toutBalance )
+        public pure
+        returns ( uint256 r ) 
+    {
+        return 0;
+    }
 }
