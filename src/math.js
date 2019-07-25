@@ -21,8 +21,8 @@ module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     if (wIn>wOut)
     // Expand power into two, first with integer exponent >=1 and second with exponent <1
     {
-        integerPower = (QIn/(QIn+qin)) ** (wIn/WOut);
-        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut)/precision);
+        integerPower = (QIn/(QIn+qIn)) ** (wIn/wOut);
+        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut));
     }
     // Use binomial expansion directly since exponent <1
     else{
