@@ -20,13 +20,18 @@ describe("Checking exact math in plain js", () => {
         assert.equal(1, bMath.swapSpecifyInMath_Approx(2, 2, 2, 1, 1, 0));
         assert.equal(10, bMath.swapSpecifyInMath_Approx(20, 20, 20, 10, 10, 0));
 
-        assert.equal(10, bMath.swapSpecifyInMath_Approx(2000, 1000, 50, 100, 1, 0)); // MAX Weight ratio 100
 
         assert.equal(15, bMath.swapSpecifyInMath_Approx(20, 20, 20, 2, 1, 0)); // Weight ratio 2
 
-        assert.equal(270, bMath.swapSpecifyInMath_Approx(1000, 500, 16, 10, 1, 0)); // Weight ratio 10
-
     });
+    it("Exact values for some approximation points", () => {
+        assert.equal(270, bMath.swapSpecifyInMath_Approx(1000, 500, 16, 10, 1, 0)); // Weight ratio 10
+    });
+    it("Exact values for some approximation points", () => {
+        assert.equal(10, bMath.swapSpecifyInMath_Approx(2000, 1000, 50, 100, 1, 0)); // MAX Weight ratio 100
+    });
+
+
     it("should throw for bad arguments", () => {
         assert.throws(() => {
             bMath.swapSpecifyInMath(10, 10, 11, 1, 0);
