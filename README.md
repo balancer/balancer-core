@@ -21,4 +21,6 @@ Pool:
     swapInExactOutLimit(tinAmount, tin, tout, toutLimit) returns (toutAmount)
     swapInLimitOutExact(tinLimit, tin, tout, toutAmount) returns (tinAmount)
 Math:
+    approxInFor(tinBalance, toutBalance, fee, tin, tout, toutAmount);
+    approxOutFor(tinBalance, toutBalance, fee, tinAmount, tin, tout);
 ```
