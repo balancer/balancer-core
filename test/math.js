@@ -12,9 +12,9 @@ describe("Checking exact math in plain js", () => {
         assert.equal(1267650600228229401496703205376-1,
             bMath.swapSpecifyInMath(1267650600228229401496703205376, 10, 10, 100, 1, 0)); // MAX Weight ratio 100
 
-        //assert.equal(10, bMath.swapSpecifyInMath(2000, 1000, 50, 1, 2, 0)); // Weight ratio 1/2
-        //assert.equal(10, bMath.swapSpecifyInMath(800, 100, 50, 1, 3, 0)); // Weight ratio 1/3
-        //assert.equal(10, bMath.swapSpecifyInMath(800, 100, 50, 1, 3, 0)); // Weight ratio 1/10
+        assert.equal(10, bMath.swapSpecifyInMath(30, 4, 5, 1, 2, 0)); // Weight ratio 1/2
+        assert.equal(30, bMath.swapSpecifyInMath(90, 8, 19, 1, 3, 0)); // Weight ratio 1/3
+        assert.equal(1, bMath.swapSpecifyInMath(2, 1, 1031, 1, 10, 0)); // Weight ratio 1/10
     });
     it("Exact values for some approximation points", () => {
         assert.equal(1, bMath.swapSpecifyInMath_Approx(2, 2, 2, 1, 1, 0));

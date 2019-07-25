@@ -1,7 +1,35 @@
 // Javascript implementation of BalanceMath functions
 // Only test numbers that have exact decimal representations
 // and stay within the Number type range
+//
+function power(precision, numerator,denominator, exponent){
+    result = precision;
+    i = exponent;
+    while(i!=0)
+    {
+        result = (result * numerator)/denominator;
+        i = i - 1;
+    }
+    return result;
+}
 
+// Description: get the spotExchangeRate, i.e. how many tokenOuts a trader gets for one tokenIn,
+//      there is no slippage in this calculation
+// QOut = tokenOut Balance in pool
+// QIn = tokenIn Balance in pool
+// wIn = tokenIn weight in pool
+// wOut = tokenOut Balance of pool
+module.exports.swapExchangeRateMath = (QOut, QIn, wIn, wOut) => {
+    // Requirements
+    if( QOut<=0 ||
+        QIn<=0  ||
+        wIn<=0  ||
+        wOut<=0)
+        throw "Bad argument";
+
+    return (QOut/wOut)/(QIn/wIn);
+    
+}
 
 // Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
 // QOut = tokenOut Balance in pool
@@ -21,8 +49,9 @@ module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     if (wIn>wOut)
     // Expand power into two, first with integer exponent >=1 and second with exponent <1
     {
-        integerPower = (QIn/(QIn+qIn)) ** (wIn/wOut);
-        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut));
+        precision = uint256(10) ** 18; // TODO Use norm_factor from Balancer instead of precision
+        integerPower = power(precision,QIn,QIn+qIn,wIn/wOut);
+        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut)/precision);
     }
     // Use binomial expansion directly since exponent <1
     else{
