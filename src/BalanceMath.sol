@@ -13,8 +13,9 @@ contract BalanceMath is DSMath {
       , uint256 tinAmount
       , uint256 feeRatio
     )
-    public pure
-    returns ( uint256 toutAmount, uint256 feeAmount ) {
+        public pure
+        returns ( uint256 toutAmount, uint256 feeAmount )
+    {
         return (0, 0);
     }
 

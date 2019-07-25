@@ -48,7 +48,7 @@ beforeEach((done) => {
     });
 });
 
-describe("Test Scenario", () => {
+describe("test scenario", () => {
     var RAY = web3.utils.toBN('1000000000000000000000000000');
     var WAD = web3.utils.toBN('1000000000000000000');
     let bn = (num) => { return web3.utils.toBN(num); }
@@ -58,6 +58,11 @@ describe("Test Scenario", () => {
         var t = objects.bTest;
         await t.methods.run().send({from: acct0});
         var fails = await t.getPastEvents('Fail');
-        //console.log(fails);
+        if( fails.length != 0 ) {
+            for (fail of fails) {
+                // TODO: show 3 failures
+                throw new Error(`Balancer.want: ${fail.returnValues.reason}`);
+            }
+        }
     });
 });
