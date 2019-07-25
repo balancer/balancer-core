@@ -16,5 +16,6 @@ contract BalanceTest is DSMath {
         DSToken B = bal.B();
         DSToken C = bal.C();
         bal.leak(A, address(this), 1*WAD);
+        want(A.balanceOf(this) == 1*WAD, "wrong amount");
     }
 }

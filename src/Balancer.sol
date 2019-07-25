@@ -21,7 +21,9 @@ contract Balancer is DSMath {
         t.mint(to, amount);
     }
 
-    function trade(address i, address o, uint256 amountIn) public {
+    function swapInExact(uint256 amountIn, address i, address o)
+        public returns (uint256 amountOut)
+    {
         DSToken(i).pull(msg.sender, amountIn);
         DSToken(o).push(msg.sender, 1*WAD);
     }
