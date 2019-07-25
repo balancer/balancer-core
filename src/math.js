@@ -1,17 +1,7 @@
 // Javascript implementation of BalanceMath functions
 // Only test numbers that have exact decimal representations
 // and stay within the Number type range
-//
-function power(precision, numerator,denominator, exponent){
-    result = precision;
-    i = exponent;
-    while(i!=0)
-    {
-        result = (result * numerator)/denominator;
-        i = i - 1;
-    }
-    return result;
-}
+
 
 // Description: get the spotExchangeRate, i.e. how many tokenOuts a trader gets for one tokenIn,
 //      there is no slippage in this calculation
@@ -21,14 +11,10 @@ function power(precision, numerator,denominator, exponent){
 // wOut = tokenOut Balance of pool
 module.exports.swapExchangeRateMath = (QOut, QIn, wIn, wOut) => {
     // Requirements
-    if( QOut<=0 ||
-        QIn<=0  ||
-        wIn<=0  ||
-        wOut<=0)
+    if( QOut<=0 || QIn<=0 || wIn<=0 || wOut<=0) {
         throw "Bad argument";
-
+    }
     return (QOut/wOut)/(QIn/wIn);
-    
 }
 
 // Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
@@ -39,22 +25,18 @@ module.exports.swapExchangeRateMath = (QOut, QIn, wIn, wOut) => {
 // wOut = tokenOut Balance of pool
 module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     // Requirements
-    if( QOut<=0 ||
-        QIn<=0  ||
-        qIn<=0 ||
-        wIn<=0  ||
-        wOut<=0)
+    if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0) {
         throw "Bad argument";
-
-    if (wIn>wOut)
-    // Expand power into two, first with integer exponent >=1 and second with exponent <1
-    {
-        precision = 10 ** 18; // TODO Use norm_factor from Balancer instead of precision
-        integerPower = power(precision,QIn,QIn+qIn,wIn/wOut);
-        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut)/precision);
     }
-    // Use binomial expansion directly since exponent <1
-    else{
+
+    if (wIn>wOut) {
+        // Expand power into two
+        // first with integer exponent >=1
+        // then with exponent <1
+        integerPower = (QIn/(QIn+qIn)) ** (wIn/wOut);
+        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut));
+    } else {
+        // Use binomial expansion directly since exponent <1
         return QOut-binExpqOut(QOut, QIn, qIn, wIn, wOut);
     }
 
@@ -119,12 +101,10 @@ function binExpqInTermN(QOut, QIn, qOut, wIn, wOut, n){
 // wOut = tokenOut Balance of pool
 // fee = pool fee
 module.exports.swapSpecifyInMath = (QOut, QIn, qIn, wIn, wOut, fee) => {
-    if( QOut<=0 ||
-        QIn<=0  ||
-        qIn<=0 ||
-        wIn<=0  ||
-        wOut<=0 ||
-        fee>=1)
+    if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0 || fee>=1 ) {
         throw new Error("Invalid arguments");
-    return (1-(QIn/(QIn+qIn*(1-fee)))**(wIn/wOut))*QOut;
+    }
+    var exponent = (wIn / wOut);
+    var adjustedIn = qIn * (1-fee);
+    return QOut * (1-(QIn/(QIn+adjustedIn))**exponent)
 }
