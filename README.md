@@ -15,22 +15,23 @@ tinWeight: weight of token in pool
 
 Pool:
     swapSpecifyIn(tinAmount, tin, tout) returns (toutAmount)
+    SSINL // no limit
     swapSpecifyOut(tin, tout, toutAmount) returns (tinAmount)
-    swapInExactOutLimit(tinAmount, tin, tout, toutLimit) returns (toutAmount)
-    swapInLimitOutExact(tinLimit, tin, tout, toutAmount) returns (tinAmount)
+    SSONL // no limit
+    swapSpecifyInLimitOut(tinAmount, tin, toutAmount, tout) returns (toutAmount)
+    SSILO
+    swapSpecifyOutLimitIn(tin, tinLimit, tout, toutAmount) returns (tinAmount)
+    SSOLI
 Math:
-    estimateInFor(tinBalance, toutBalance, fee, tin, tout, toutAmount);
-    estimateOutFor(tinBalance, toutBalance, fee, tinAmount, tin, tout);
-
     swapSpecifyInMath( tinBalance, tinWeight,
                      , toutBalance, toutWeight,
-                     , fee
+                     , feeRatio
                      , tinAmount )
         public pure
-        returns ( newTinBalance, newTinWeight,
-                , newToutBalance, newToutWeight
-                , feeCollected
-                , toutAmount )
+        returns ( toutAmount, feeCollected );
+    SSIM
+    swapSpecifyOutMath(...)
+    SSOM
 ```
 
 
