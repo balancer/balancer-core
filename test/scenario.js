@@ -49,6 +49,8 @@ describe("Test Scenario", () => {
     var RAY = web3.utils.toBN('1000000000000000000000000000');
     var WAD = web3.utils.toBN('1000000000000000000');
     let bn = (num) => { return web3.utils.toBN(num); }
+    it("math functions", async() => {
+    });
     it("`run`", async () => {
         var t = objects.bTest;
         await t.methods.run().send({from: acct0});
