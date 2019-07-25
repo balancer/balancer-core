@@ -49,7 +49,7 @@ module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     if (wIn>wOut)
     // Expand power into two, first with integer exponent >=1 and second with exponent <1
     {
-        precision = uint256(10) ** 18; // TODO Use norm_factor from Balancer instead of precision
+        precision = 10 ** 18; // TODO Use norm_factor from Balancer instead of precision
         integerPower = power(precision,QIn,QIn+qIn,wIn/wOut);
         return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut)/precision);
     }
