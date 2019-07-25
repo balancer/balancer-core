@@ -3,7 +3,7 @@ pragma solidity ^0.5.10;
 import "ds-math/math.sol";
 import "./Balancer.sol";
 
-contract BalanceTest is DSMath {
+contract BalanceTest is BalanceMath {
     event Fail(string reason);
     function want(bool cond, string memory r) public {
         if (!cond) {

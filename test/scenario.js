@@ -52,7 +52,11 @@ describe("test scenario", () => {
     var RAY = web3.utils.toBN('1000000000000000000000000000');
     var WAD = web3.utils.toBN('1000000000000000000');
     let bn = (num) => { return web3.utils.toBN(num); }
-    it("math functions", async() => {
+    it("swapSpecifyInMath basic values", async() => {
+        var M = objects.math;
+        var res = await M.methods.swapSpecifyInMath(1, 1, 1, 1, 1, 1).call();
+        assert.equal(res.toutAmount, 1);
+        assert.equal(res.feeAmount, 1);
     });
     it("`run`", async () => {
         var t = objects.bTest;

@@ -22,7 +22,7 @@ contract Balancer is BalanceMath {
         manager = msg.sender;
     }
 
-    function swapInExact(uint256 amountIn, ERC20 i, ERC20 o)
+    function swapSpecifyIn(uint256 amountIn, ERC20 i, ERC20 o)
         public returns (uint256 amountOut, uint256 feeAmount)
     {
         ERC20 tin; ERC20 tout;
@@ -39,9 +39,9 @@ contract Balancer is BalanceMath {
             revert();
         }
 
-        (amountOut, feeAmount) = swapInExactMath( tinBalance, tinWeight
-                                                , toutBalance, toutWeight
-                                                , amountIn, feeRatio );
+        (amountOut, feeAmount) = swapSpecifyInMath( tinBalance, tinWeight
+                                                  , toutBalance, toutWeight
+                                                  , amountIn, feeRatio );
         i.transferFrom(msg.sender, address(this), amountIn);
         o.transfer(msg.sender, amountOut);
         return (amountOut, feeAmount);
