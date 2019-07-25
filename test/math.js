@@ -67,35 +67,6 @@ function BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, n){
     }
 }
 
-// Description: get qIn which is the amount of tokenIn a user gets when buying qOut tokenOut
-// QOut = tokenOut Balance in pool
-// QIn = tokenIn Balance in pool
-// qOut = amount of tokenOut being bought
-// wIn = tokenIn weight in pool
-// wOut = tokenOut Balance of pool
-function approximateAmountInForBuy(QOut, QIn, qOut, wIn, wOut){
-    // Requirements
-    if( QOut<=0 ||
-        QIn<=0  ||
-        qOut<=0 ||
-        qOut>= QOut || // You can never buy all the balance of a token or more than it
-        wIn<=0  ||
-        wOut<=0)
-        throw new Error("Invalid arguments");
-    if (wOut>wIn)
-    // Expand power into two, first with integer exponent >=1 and second with exponent <1
-    {
-        precision = uint256(10) ** 18; // TODO Use norm_factor from Balancer instead of precision
-        integerPower = power(precision,QOut,QOut-qOut,wOut/wIn);
-        return (integerPower * binExpqIn(QOut, QIn, qOut, wIn, wOut%wIn))/precision - QIn;
-    }
-    // Use binomial expansion directly since exponent <1
-    else{
-        return binExpqIn(QOut, QIn, qOut, wIn, wOut)-QIn;
-    }
-
-}
-
 /**
  * @notice This function
  */
@@ -138,25 +109,6 @@ function getAmountOutForSell(QOut, QIn, qIn, wIn, wOut, fee){
         fee>=1)
         throw new Error("Invalid arguments");
     return (1-(QIn/(QIn+qIn*(1-fee)))**(wIn/wOut))*QOut;
-}
-
-// Description: get qIn which is the amount of tokenIn a user gets when buying qOut tokenOut
-// QOut = tokenOut Balance in pool
-// QIn = tokenIn Balance in pool
-// qOut = amount of tokenOut being bought
-// wIn = tokenIn weight in pool
-// wOut = tokenOut Balance of pool
-// fee = pool fee
-function getAmountInForBuy(QOut, QIn, qOut, wIn, wOut, fee){
-    if( QOut<=0 ||
-        QIn<=0  ||
-        qOut<=0 ||
-        qOut>= QOut || // You can never buy all the balance of a token or more than it
-        wIn<=0  ||
-        wOut<=0 ||
-        fee>=1)
-        throw new Error("Invalid arguments");
-    return (((QOut/(QOut-qOut))**(wOut/wIn)-1)*QIn)/(1-fee);
 }
 
 describe("Checking exact math in plain js", () => {
