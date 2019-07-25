@@ -34,3 +34,21 @@ Math:
                 , feeCollected
                 , toutAmount )
 ```
+
+
+Plain-english test cases
+```
+pseudo-solidity, with exact decimal math type "Num"
+
+function swapInExactMath(
+    Num tinBalance, Num tinWeight
+  , Num toutBalance, Num toutWeight
+  , Num fee
+)
+public pure
+returns ( Num toutMoved, Num feeCollected);
+
+
+(1, 0) ?= swapInExactMath(1, 1, 1, 1, 0);
+
+```
