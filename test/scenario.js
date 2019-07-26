@@ -6,6 +6,7 @@ let buildout = require("../out/combined.json");
 let types = buildout.contracts;
 let Balancer = types["src/Balancer.sol:Balancer"];
 let BalanceMath = types["src/BalanceMath.sol:BalanceMath"];
+let BalanceMathConstant = types["src/BalanceMath.sol:BalanceMathConstant"];
 let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
 
 
@@ -20,23 +21,24 @@ var objects = { // Base scenario universe
 beforeEach((done) => {
     // web3.js / ganache-core bug, hangs on .send().then()
     // Can be extracted manually
-    function deploy(type, cb) {
+    async function deploy(type, cb) {
         //console.log(type);
         if(type.bin == '') {
             throw new Error("Trying to deploy contract with empty `bin`");
         }
-        web3.eth.getAccounts().then((accounts) => {
-            acct0 = accounts[0];
-            new web3.eth.Contract(JSON.parse(type.abi))
-                .deploy({data: type.bin})
-                .send({from: acct0, gas: 6000000}, (err,tx) => {
-                    //console.log(err, tx);
-                    setTimeout(() => {web3.eth.getTransactionReceipt(tx, (err, receipt) => {
+        let accounts = await web3.eth.getAccounts();
+        acct0 = accounts[0];
+        new web3.eth.Contract(JSON.parse(type.abi))
+            .deploy({data: type.bin})
+            .send({from: acct0, gas: 6000000}, (err,tx) => {
+                //console.log(err, tx);
+                setTimeout(() => {
+                    web3.eth.getTransactionReceipt(tx, (err, receipt) => {
                         //console.log(err, receipt);
                         cb(receipt.contractAddress);
-                    })}, 25);
-                })
-        })
+                    })
+                }, 25);
+            })
     }
 
     deploy(BalanceMath, (address) => {

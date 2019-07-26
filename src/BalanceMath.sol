@@ -5,23 +5,7 @@ pragma solidity ^0.5.10;
 import "ds-math/math.sol";
 import "erc20/erc20.sol";
 
-contract IBalanceMath {
-    function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
-                              , uint256 toutBalance, uint256 toutWeight
-                              , uint256 tinAmount
-                              , uint256 feeRatio
-                              )
-        public pure
-        returns ( uint256 toutAmount, uint256 feeAmount );
-
-    function ratio( uint256 tinWeight, uint256 tinBalance
-                  , uint256 toutWeight, uint256 toutBalance )
-        public pure
-        returns ( uint256 r );
-}
-
-contract BalanceMathConstant is IBalanceMath
-                              , DSMath
+contract BalanceMath is DSMath
 {
     function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
                               , uint256 toutBalance, uint256 toutWeight
@@ -51,13 +35,12 @@ contract BalanceMathConstant is IBalanceMath
             tinBalance = tinBalance;
             toutWeight = toutWeight;
             toutBalance = toutBalance;
+
         return wdiv(tinWeight, toutWeight);
     }
 }
 
-
-contract BalanceMath is IBalanceMath
-                      , DSMath
+contract BalanceMathConstant is BalanceMath
 {
     function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
                               , uint256 toutBalance, uint256 toutWeight
@@ -72,23 +55,12 @@ contract BalanceMath is IBalanceMath
             toutBalance = toutBalance;
         //
         toutAmount = wmul( tinAmount
-                         , wdiv(tinWeight, toutWeight));
+                         , ratio( tinWeight, tinBalance
+                                , toutWeight, toutBalance));
         feeAmount = wmul(feeRatio, tinAmount);
         return (toutAmount, feeAmount);
     }
-
-    function ratio( uint256 tinWeight, uint256 tinBalance
-                  , uint256 toutWeight, uint256 toutBalance )
-        public pure
-        returns ( uint256 r ) 
-    {
-        // suppress warnings
-            tinWeight = tinWeight;
-            tinBalance = tinBalance;
-            toutWeight = toutWeight;
-            toutBalance = toutBalance;
-
-        return 0;
-    }
 }
+
+
 
