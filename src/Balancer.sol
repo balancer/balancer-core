@@ -7,43 +7,49 @@ import 'ds-token/token.sol';
 import "./BalanceMath.sol";
 
 contract Balancer is BalanceMath {
-    address manager;
-    uint256 feeRatio;
+    uint256 constant public MAX_TOKENS = 8;
 
-    ERC20 tokA;
-    uint256 weightA;
-    uint256 balanceA;
-
-    ERC20 tokB;
-    uint256 weightB;
-    uint256 balanceB;
+    struct Record {
+        bool    live;
+        address token;
+        uint256 weight;  // RAY
+        uint256 balance; // WAD
+    }
+    address                   public manager;
+    uint256                   public feeRatio; // RAY
+    Record[]                  public tokens;
+    mapping(address=>uint256) public index;
 
     constructor() public {
         manager = msg.sender;
     }
 
-    function swapSpecifyIn(uint256 amountIn, ERC20 i, ERC20 o)
+    function swapSpecifyIn(uint256 amountIn, address tin, address tout)
         public returns (uint256 amountOut, uint256 feeAmount)
     {
-        ERC20 tin; ERC20 tout;
+        require(isBound(tin));
+        require(isBound(tout));
         uint256 tinWeight; uint256 tinBalance;
         uint256 toutWeight; uint256 toutBalance;
-
-        if (i == tokA && o == tokB) {
-            tin = tokA; tout = tokB;
-            tinWeight = weightA; toutWeight = weightB;
-            tinBalance = balanceA; toutBalance = balanceB;
-        } else if (i == tokB && o == tokA) {
-            revert();
-        } else {
-            revert();
-        }
 
         (amountOut, feeAmount) = swapSpecifyInMath( tinBalance, tinWeight
                                                   , toutBalance, toutWeight
                                                   , amountIn, feeRatio );
-        i.transferFrom(msg.sender, address(this), amountIn);
-        o.transfer(msg.sender, amountOut);
+
+        ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
+        ERC20(tout).transfer(msg.sender, amountOut);
         return (amountOut, feeAmount);
+    }
+
+    function isBound(address token) public view returns (bool) {
+        return tokens[index[token]].token == token;
+    }
+
+    function bind(address token) public {
+        require( ! isBound(token));
+        uint256 len = tokens.push(Record({
+            live: false, token: token, weight: 0, balance: 0
+        }));
+        index[token] == len;
     }
 }
