@@ -5,18 +5,40 @@ pragma solidity ^0.5.10;
 import "ds-math/math.sol";
 import "erc20/erc20.sol";
 
-// Keep all functions public for now.
-contract BalanceMath is DSMath {
-    function swapSpecifyInMath(
-        uint256 tinBalance, uint256 tinWeight
-      , uint256 toutBalance, uint256 toutWeight
-      , uint256 tinAmount
-      , uint256 feeRatio
-    )
+contract IBalanceMath {
+    function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
+                              , uint256 toutBalance, uint256 toutWeight
+                              , uint256 tinAmount
+                              , uint256 feeRatio
+                              )
+        public pure
+        returns ( uint256 toutAmount, uint256 feeAmount );
+
+    function ratio( uint256 tinWeight, uint256 tinBalance
+                  , uint256 toutWeight, uint256 toutBalance )
+        public pure
+        returns ( uint256 r );
+}
+
+contract BalanceMathConstant is IBalanceMath
+                              , DSMath
+{
+    function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
+                              , uint256 toutBalance, uint256 toutWeight
+                              , uint256 tinAmount
+                              , uint256 feeRatio
+                              )
         public pure
         returns ( uint256 toutAmount, uint256 feeAmount )
     {
-        return (0, 0);
+        // suppress warnings
+            tinBalance = tinBalance;
+            toutBalance = toutBalance;
+        //
+        toutAmount = wmul( tinAmount
+                         , wdiv(tinWeight, toutWeight));
+        feeAmount = wmul(feeRatio, tinAmount);
+        return (toutAmount, feeAmount);
     }
 
     function ratio( uint256 tinWeight, uint256 tinBalance
@@ -24,6 +46,49 @@ contract BalanceMath is DSMath {
         public pure
         returns ( uint256 r ) 
     {
+        // suppress warnings
+            tinWeight = tinWeight;
+            tinBalance = tinBalance;
+            toutWeight = toutWeight;
+            toutBalance = toutBalance;
+        return wdiv(tinWeight, toutWeight);
+    }
+}
+
+
+contract BalanceMath is IBalanceMath
+                      , DSMath
+{
+    function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
+                              , uint256 toutBalance, uint256 toutWeight
+                              , uint256 tinAmount
+                              , uint256 feeRatio
+                              )
+        public pure
+        returns ( uint256 toutAmount, uint256 feeAmount )
+    {
+        // suppress warnings
+            tinBalance = tinBalance;
+            toutBalance = toutBalance;
+        //
+        toutAmount = wmul( tinAmount
+                         , wdiv(tinWeight, toutWeight));
+        feeAmount = wmul(feeRatio, tinAmount);
+        return (toutAmount, feeAmount);
+    }
+
+    function ratio( uint256 tinWeight, uint256 tinBalance
+                  , uint256 toutWeight, uint256 toutBalance )
+        public pure
+        returns ( uint256 r ) 
+    {
+        // suppress warnings
+            tinWeight = tinWeight;
+            tinBalance = tinBalance;
+            toutWeight = toutWeight;
+            toutBalance = toutBalance;
+
         return 0;
     }
 }
+

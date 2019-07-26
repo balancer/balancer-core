@@ -7,7 +7,13 @@ import 'ds-token/token.sol';
 import "./BalanceMath.sol";
 
 contract Balancer is BalanceMath {
+    address                   public manager;
+    uint256                   public feeRatio; // RAY
+    uint256                   public unclaimedFees;
+
     uint256 constant public MAX_TOKENS = 8;
+    Record[]                  public tokens;
+    mapping(address=>uint256) public index;
 
     struct Record {
         bool    live;
@@ -15,10 +21,6 @@ contract Balancer is BalanceMath {
         uint256 weight;  // RAY
         uint256 balance; // WAD
     }
-    address                   public manager;
-    uint256                   public feeRatio; // RAY
-    Record[]                  public tokens;
-    mapping(address=>uint256) public index;
 
     constructor() public {
         manager = msg.sender;
@@ -29,11 +31,12 @@ contract Balancer is BalanceMath {
     {
         require(isBound(tin));
         require(isBound(tout));
-        uint256 tinWeight; uint256 tinBalance;
-        uint256 toutWeight; uint256 toutBalance;
 
-        (amountOut, feeAmount) = swapSpecifyInMath( tinBalance, tinWeight
-                                                  , toutBalance, toutWeight
+        Record storage I = tokens[index[tin]];
+        Record storage O = tokens[index[tout]];
+
+        (amountOut, feeAmount) = swapSpecifyInMath( I.balance, I.weight
+                                                  , O.balance, O.weight
                                                   , amountIn, feeRatio );
 
         ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
