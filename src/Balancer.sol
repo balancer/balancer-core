@@ -12,13 +12,13 @@ contract Balancer is BalanceMath {
     uint256                   public feeRatio; // RAY
     uint256                   public unclaimedFees;
 
-    uint256 constant public MAX_TOKENS = 8;
-    Record[]                  public tokens;
-    mapping(address=>uint256) public index;
+    uint256 constant public   MAX_TOKENS = 8;
+    uint256                   numTokens;
+    mapping(address=>Record)  public records;
 
     struct Record {
-        bool    live;
-        ERC20   token;
+        bool    bound;
+        ERC20   addr;
         uint256 weight;  // RAY
         uint256 balance; // WAD
     }
@@ -33,12 +33,12 @@ contract Balancer is BalanceMath {
         require(isBound(tin));
         require(isBound(tout));
 
-        Record storage I = tokens[index[tin]];
-        Record storage O = tokens[index[tout]];
+        Record storage I = records[address(tin)];
+        Record storage O = records[address(tout)];
 
-        (amountOut, feeAmount) = swapSpecifyInMath( I.balance, I.weight
-                                                  , O.balance, O.weight
-                                                  , amountIn, feeRatio );
+        (amountOut, feeAmount) = swapImath( I.balance, I.weight
+                                          , O.balance, O.weight
+                                          , amountIn, feeRatio );
 
         ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
         ERC20(tout).transfer(msg.sender, amountOut);
@@ -47,22 +47,25 @@ contract Balancer is BalanceMath {
     }
 
     function isBound(ERC20 token) public view returns (bool) {
-        return tokens[index[address(token)]].token == token;
+        return records[address(token)].bound;
     }
 
     function bind(ERC20 token) public {
+        require(msg.sender == manager);
         require( ! isBound(token));
-        uint256 len = tokens.push(Record({
-            live: false, token: token, weight: 0, balance: 0
-        }));
-        index[address(token)] == len;
+        require( numTokens < MAX_TOKENS );
+        records[address(token)] = Record({
+            addr: token
+          , bound: true
+          , weight: 0
+          , balance: 0
+        });
+        numTokens++;
     }
     function unbind(ERC20 token) public {
+        require(msg.sender == manager);
         require(isBound(token));
-        uint i = index[address(token)];
-        Record memory last = tokens[tokens.length-1];
-        tokens.pop();
-        index[address(token)] == 0;
-        index[address(last.token)] == i;
+        delete records[address(token)];
+        numTokens--;
     }
 }

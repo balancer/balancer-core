@@ -17,6 +17,7 @@ contract BalanceTest is BalanceMath {
     DSToken public C;
 
     constructor() public {
+        b = new Balancer();
         A = new DSToken("A");
         B = new DSToken("B");
         C = new DSToken("C");
