@@ -1,6 +1,7 @@
 ```
 git submodule update --init --recursive
 make # builds the contracts
+npm install
 npm test
 ```
 
