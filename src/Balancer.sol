@@ -30,9 +30,8 @@ contract Balancer is BalanceMath {
     function swapI(uint256 amountIn, ERC20 tin, ERC20 tout)
         public returns (uint256 amountOut, uint256 feeAmount)
     {
-        require(isBound(tin));
-        require(isBound(tout));
-
+        require(isBound(tin), "tin not bound");
+        require(isBound(tout), "tout not bound");
         Record storage I = records[address(tin)];
         Record storage O = records[address(tout)];
 
@@ -44,6 +43,21 @@ contract Balancer is BalanceMath {
         ERC20(tout).transfer(msg.sender, amountOut);
         unclaimedFees += feeAmount;
         return (amountOut, feeAmount);
+    }
+
+    function setParams(ERC20 token, uint256 weight, uint256 balance)
+        public
+    {
+        require(msg.sender == manager);
+        require(isBound(token));
+        records[address(token)].weight = weight;
+        uint256 oldBalance = records[address(token)].balance;
+        records[address(token)].balance = balance;
+        if (balance > oldBalance) {
+            token.transferFrom(msg.sender, address(this), balance - oldBalance);
+        } else {
+            token.transfer(msg.sender, oldBalance - balance);
+        }
     }
 
     function isBound(ERC20 token) public view returns (bool) {

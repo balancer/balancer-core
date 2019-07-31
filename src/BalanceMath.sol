@@ -7,6 +7,10 @@ import "erc20/erc20.sol";
 
 contract BalanceMath is DSMath
 {
+    function bAdd(uint256 a, uint256 b) public pure returns (uint256) {
+        return add(a, b);
+    }
+    
     function swapImath( uint256 tinBalance, uint256 tinWeight
                       , uint256 toutBalance, uint256 toutWeight
                       , uint256 tinAmount
@@ -15,12 +19,9 @@ contract BalanceMath is DSMath
         public pure
         returns ( uint256 toutAmount, uint256 feeAmount )
     {
-        // suppress warnings
-            tinBalance = tinBalance;
-            toutBalance = toutBalance;
-        //
         toutAmount = wmul( tinAmount
-                         , wdiv(tinWeight, toutWeight));
+                         , ratio( tinWeight, tinBalance
+                                , toutWeight, toutBalance));
         feeAmount = wmul(feeRatio, tinAmount);
         return (toutAmount, feeAmount);
     }
@@ -35,32 +36,6 @@ contract BalanceMath is DSMath
             tinBalance = tinBalance;
             toutWeight = toutWeight;
             toutBalance = toutBalance;
-
-        return wdiv(tinWeight, toutWeight);
+        return WAD; //return wdiv(tinWeight, toutWeight);
     }
 }
-
-contract BalanceMathConstant is BalanceMath
-{
-    function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight
-                              , uint256 toutBalance, uint256 toutWeight
-                              , uint256 tinAmount
-                              , uint256 feeRatio
-                              )
-        public pure
-        returns ( uint256 toutAmount, uint256 feeAmount )
-    {
-        // suppress warnings
-            tinBalance = tinBalance;
-            toutBalance = toutBalance;
-        //
-        toutAmount = wmul( tinAmount
-                         , ratio( tinWeight, tinBalance
-                                , toutWeight, toutBalance));
-        feeAmount = wmul(feeRatio, tinAmount);
-        return (toutAmount, feeAmount);
-    }
-}
-
-
-

@@ -24,14 +24,22 @@ contract BalanceTest is BalanceMath {
         b.bind(A);
         b.bind(B);
         b.bind(C);
-        A.mint(100 ether); B.mint(100 ether); C.mint(100 ether);
-        A.push(msg.sender, 100 ether);
-        B.push(msg.sender, 100 ether);
-        C.push(msg.sender, 100 ether);
+        A.approve(address(b), uint256(-1));
+        B.approve(address(b), uint256(-1));
+        C.approve(address(b), uint256(-1));
+        A.mint(200 ether); B.mint(200 ether); C.mint(200 ether);
     }
 
     function run() public returns (address) {
         want(true, "want(true)");
-        return address(b);
+        want(A.balanceOf(address(this)) == 200 ether, "wrong A balance");
+
+        b.setParams(A, 1 ether, 100 ether);
+        b.setParams(B, 1 ether, 100 ether);
+        b.setParams(C, 1 ether, 100 ether);
+
+        uint256 outAmt;
+        uint256 feeAmt;
+        (outAmt, feeAmt) = b.swapI(1 ether, A, B);
     }
 }

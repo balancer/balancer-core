@@ -10,7 +10,10 @@ let BalanceMathConstant = types["src/BalanceMath.sol:BalanceMathConstant"];
 let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
 
 
-var web3 = new Web3(ganache.provider());
+var web3 = new Web3(ganache.provider({
+    gasLimit: 0xffffffff,
+    allowUnlimitedContractSize: true
+}));
 var objects = { // Base scenario universe
     acct0: undefined,
     math: undefined,
@@ -56,13 +59,14 @@ describe("test scenario", () => {
     let bn = (num) => { return web3.utils.toBN(num); }
     it("swapImath basic values", async() => {
         var M = objects.math;
-        var res = await M.methods.swapImath(1, 1, 1, 1, 1, 1).call();
+        var res = await M.methods.swapImath( 1, 1
+                                           , 1, 1
+                                           , 1, 0).call();
         assert.equal(res.toutAmount, 1, "wrong amount");
-        assert.equal(res.feeAmount, 1, "wrong fee");
     });
     it("`run`", async () => {
         var t = objects.bTest;
-        await t.methods.run().send({from: acct0});
+        await t.methods.run().send({from: acct0, gasLimit: 0xffffffff});
         var fails = await t.getPastEvents('Fail');
         if( fails.length != 0 ) {
             for (fail of fails) {
