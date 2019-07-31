@@ -2,78 +2,83 @@ module.exports.floatMath = {
 
     // Description: get the spotExchangeRate, i.e. how many tokenOuts a trader gets for one tokenIn,
     //      there is no slippage in this calculation
-    // QOut = tokenOut Balance in pool
-    // QIn = tokenIn Balance in pool
-    // wIn = tokenIn weight in pool
-    // wOut = tokenOut Balance of pool
-    spotPrice: function(QOut, QIn, wIn, wOut) {
+    // OBalance = tokenOut Balance in pool
+    // IBalance = tokenIn Balance in pool
+    // IWeight = tokenIn weight in pool
+    // OWeight = tokenOut Balance of pool
+    spotPrice: function(OBalance, IBalance, IWeight, OWeight) {
         // Requirements
-        if( QOut<=0 || QIn<=0 || wIn<=0 || wOut<=0) {
+        if( OBalance<=0 || IBalance<=0 || IWeight<=0 || OWeight<=0) {
             throw "Bad argument";
         }
-        return (QOut/wOut)/(QIn/wIn);
+        var numer = OBalance/OWeight;
+        var denom = IBalance/IWeight;
+        return numer/denom;
     },
 
-    // Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
-    // QOut = tokenOut Balance in pool
-    // QIn = tokenIn Balance in pool
-    // qIn = amount of tokenIn being sold
-    // wIn = tokenIn weight in pool
-    // wOut = tokenOut Balance of pool
+    // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
+    // OBalance = tokenOut Balance in pool
+    // IBalance = tokenIn Balance in pool
+    // IAmount = amount of tokenIn being sold
+    // IWeight = tokenIn weight in pool
+    // OWeight = tokenOut Balance of pool
     // fee = pool fee
-    swapImath: function (QOut, QIn, qIn, wIn, wOut, fee) {
-        if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0 || fee>=1 ) {
+    swapImath: function (OBalance, IBalance, IAmount, IWeight, OWeight, fee) {
+        if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
-        var exponent = (wIn / wOut);
-        var adjustedIn = qIn * (1-fee);
-        return QOut * (1-(QIn/(QIn+adjustedIn))**exponent)
+        var exponent = (IWeight / OWeight);
+        var adjustedIn = IAmount * (1-fee);
+        var foo = IBalance / (IBalance + adjustedIn);
+        var bar = foo**exponent;
+        
+        return OBalance * (1 - bar);
     },
 
-    // Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
-    // QOut = tokenOut Balance in pool
-    // QIn = tokenIn Balance in pool
-    // qIn = amount of tokenIn being sold
-    // wIn = tokenIn weight in pool
-    // wOut = tokenOut Balance of pool
-    swapImath_Approx: function(QOut, QIn, qIn, wIn, wOut) {
+    // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
+    // OBalance = tokenOut Balance in pool
+    // IBalance = tokenIn Balance in pool
+    // IAmount = amount of tokenIn being sold
+    // IWeight = tokenIn weight in pool
+    // OWeight = tokenOut Balance of pool
+    swapImath_Approx: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
         // Requirements
-        if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0) {
+        if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0) {
             throw "Bad argument";
         }
 
-        if (wIn>wOut) {
+        if (IWeight>OWeight) {
             // Expand power into two
             // first with integer exponent >=1
             // then with exponent <1
-            var floored = Math.floor(wIn/wOut);
-            var fractional = (wIn/wOut) - floored
-            integerPower = (QIn/(QIn+qIn)) ** floored
-            return QOut - (integerPower * this.binExpqOut(QOut, QIn, qIn, fractional, wOut));
+            var floored = Math.floor(IWeight/OWeight);
+            var fractional = (IWeight/OWeight) - floored
+            integerPower = (IBalance/(IBalance+IAmount)) ** floored
+            return OBalance - (integerPower * this.binExpqOut(OBalance, IBalance, IAmount, fractional, OWeight));
         } else {
             // Use binomial expansion directly since exponent <1
-            return QOut-this.binExpqOut(QOut, QIn, qIn, wIn, wOut);
+            return OBalance-this.binExpqOut(OBalance, IBalance, IAmount, IWeight, OWeight);
         }
 
     },
 
-    binExpqOut: function(QOut, QIn, qIn, wIn, wOut) {
-        return QOut
-            -this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 1)
-            -this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 2)
-            -this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 3)
-            -this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 4)
-            -this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 5);
+    binExpqOut: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
+        return OBalance
+            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 1)
+            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 2)
+            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 3)
+            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 4)
+            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 5);
     },
 
-    BinExpqOutTermN: function(QOut, QIn, qIn, wIn, wOut, n) {
+    BinExpqOutTermN: function(OBalance, IBalance, IAmount, IWeight, OWeight, n) {
         if(n == 0){
-            return QOut;
+            return OBalance;
         } else if(n == 1) {
-            return (((QOut*wIn)/wOut)*qIn)/(QIn+qIn);
+            return (((OBalance*IWeight)/OWeight)*IAmount)/(IBalance+IAmount);
         } else {
-            var binExp = this.BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, n-1);
-            return ((((binExp*(n-1)*(wOut-wIn))/wOut)*qIn)/n)/(QIn+qIn);
+            var binExp = this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, n-1);
+            return ((((binExp*(n-1)*(OWeight-IWeight))/OWeight)*IAmount)/n)/(IBalance+IAmount);
         }
     }
 }

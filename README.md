@@ -1,6 +1,6 @@
 ```
 git submodule update --init --recursive
-make
+make # builds the contracts
 npm test
 ```
 
@@ -33,23 +33,4 @@ Math:
              , tinAmount )
         public pure
         returns ( toutAmount, feeCollected );
-```
-
-
-Plain-english test cases
-```
-pseudo-solidity, with exact decimal math type "Num"
-
-function swapSpecifyInMath(
-    Num tinBalance, Num tinWeight
-  , Num toutBalance, Num toutWeight
-  , Num tinAmount
-  , Num fee
-)
-public pure
-returns ( Num toutAmount, Num feeCollected);
-
-
-(1, 0) ?= swapSpecifyInMath(1, 1, 1, 1, 0);
-
 ```
