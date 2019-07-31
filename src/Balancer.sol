@@ -41,6 +41,7 @@ contract Balancer is BalanceMath {
 
         ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
         ERC20(tout).transfer(msg.sender, amountOut);
+        collectedFees += feeAmount;
         return (amountOut, feeAmount);
     }
 
@@ -54,5 +55,13 @@ contract Balancer is BalanceMath {
             live: false, token: token, weight: 0, balance: 0
         }));
         index[token] == len;
+    }
+    function unbind(address token) public {
+        require(isBound(token));
+        uint i = index[token];
+        Record memory last = tokens[tokens.length-1];
+        tokens.pop();
+        index[token] == 0;
+        index[last.token] == i;
     }
 }

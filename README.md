@@ -15,13 +15,13 @@ tinWeight: weight of token in pool
 
 Pool:
     swapSpecifyIn(tinAmount, tin, tout) returns (toutAmount)
-    SSINO // swap specify-in nolimit-out
+    sSINO // swap specify-in nolimit-out
     swapSpecifyOut(tin, tout, toutAmount) returns (tinAmount)
-    SSONI // swap specify-out nolimit-in
+    sNISO // swap nolimit-in specify-out
     swapSpecifyInLimitOut(tinAmount, tin, toutAmount, tout) returns (toutAmount)
-    SSILO // swap specify-in limit-out
-    swapSpecifyOutLimitIn(tin, tinLimit, tout, toutAmount) returns (tinAmount)
-    SSOLI // swap specify-out limit-in
+    sSILO // swap specify-in limit-out
+    swapLimitInSpecifyOut(tin, tinLimit, tout, toutAmount) returns (tinAmount)
+    sLISO // swap limit-in specify-out
 Math:
     swapSpecifyInMath( tinBalance, tinWeight,
                      , toutBalance, toutWeight,

@@ -11,7 +11,7 @@ contract BalanceTest is BalanceMath {
         }
     }
 
-    Balancer public bal;
+    Balancer public b;
     DSToken public A;
     DSToken public B;
     DSToken public C;
@@ -20,13 +20,17 @@ contract BalanceTest is BalanceMath {
         A = new DSToken("A");
         B = new DSToken("B");
         C = new DSToken("C");
-        A.mint(100 ether);
-        B.mint(100 ether);
-        C.mint(100 ether);
+        b.bind(address(A));
+        b.bind(address(B));
+        b.bind(address(C));
+        A.mint(100 ether); B.mint(100 ether); C.mint(100 ether);
+        A.push(msg.sender, 100 ether);
+        B.push(msg.sender, 100 ether);
+        C.push(msg.sender, 100 ether);
     }
 
     function run() public returns (address) {
-        want(true, "Test false return value");
-        return address(bal);
+        want(true, "want(true)");
+        return address(b);
     }
 }

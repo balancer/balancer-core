@@ -1,7 +1,4 @@
 // Javascript implementation of BalanceMath functions
-// Only test numbers that have exact decimal representations
-// and stay within the Number type range
-
 
 // Description: get the spotExchangeRate, i.e. how many tokenOuts a trader gets for one tokenIn,
 //      there is no slippage in this calculation
@@ -23,6 +20,22 @@ module.exports.swapExchangeRateMath = (QOut, QIn, wIn, wOut) => {
 // qIn = amount of tokenIn being sold
 // wIn = tokenIn weight in pool
 // wOut = tokenOut Balance of pool
+// fee = pool fee
+module.exports.swapSpecifyInMath = (QOut, QIn, qIn, wIn, wOut, fee) => {
+    if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0 || fee>=1 ) {
+        throw new Error("Invalid arguments");
+    }
+    var exponent = (wIn / wOut);
+    var adjustedIn = qIn * (1-fee);
+    return QOut * (1-(QIn/(QIn+adjustedIn))**exponent)
+}
+
+// Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
+// QOut = tokenOut Balance in pool
+// QIn = tokenIn Balance in pool
+// qIn = amount of tokenIn being sold
+// wIn = tokenIn weight in pool
+// wOut = tokenOut Balance of pool
 module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
     // Requirements
     if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0) {
@@ -33,8 +46,10 @@ module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
         // Expand power into two
         // first with integer exponent >=1
         // then with exponent <1
-        integerPower = (QIn/(QIn+qIn)) ** (wIn/wOut);
-        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, wIn%wOut, wOut));
+        var floored = Math.floor(wIn/wOut);
+        var fractional = (wIn/wOut) - floored
+        integerPower = (QIn/(QIn+qIn)) ** floored
+        return QOut - (integerPower * binExpqOut(QOut, QIn, qIn, fractional, wOut));
     } else {
         // Use binomial expansion directly since exponent <1
         return QOut-binExpqOut(QOut, QIn, qIn, wIn, wOut);
@@ -42,9 +57,6 @@ module.exports.swapSpecifyInMath_Approx = (QOut, QIn, qIn, wIn, wOut) => {
 
 }
 
- /**
- * @notice This function
- */
 function binExpqOut(QOut, QIn, qIn, wIn, wOut){
     return QOut
         -BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, 1)
@@ -62,49 +74,8 @@ function BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, n){
         return (((QOut*wIn)/wOut)*qIn)/(QIn+qIn);
     }
     else{
-        return ((((BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, n-1)*
-            ((n-1)*wOut-wIn))/wOut)*qIn)/n)/(QIn+qIn);
+        var binExp = BinExpqOutTermN(QOut, QIn, qIn, wIn, wOut, n-1);
+        return ((((binExp*(n-1)*(wOut-wIn))/wOut)*qIn)/n)/(QIn+qIn);
     }
 }
 
-/**
- * @notice This function
- */
-function binExpqIn(QOut, QIn, qOut, wIn, wOut){
-    return QIn
-        +binExpqInTermN(QOut, QIn, qOut, wIn, wOut, 1)
-        -binExpqInTermN(QOut, QIn, qOut, wIn, wOut, 2)
-        +binExpqInTermN(QOut, QIn, qOut, wIn, wOut, 3)
-        -binExpqInTermN(QOut, QIn, qOut, wIn, wOut, 4)
-        +binExpqInTermN(QOut, QIn, qOut, wIn, wOut, 5);
-}
-
-function binExpqInTermN(QOut, QIn, qOut, wIn, wOut, n){
-    if(n == 0){
-        return QIn;
-    }else if(n == 1)
-    {
-        return (((QIn*wOut)/wIn)*qOut)/(QOut-qOut);
-    }
-    else{
-        return ((((binExpqInTermN(QOut, QIn, qOut, wIn, wOut, n-1)*
-            ((n-1)*wIn-wOut))/wIn)*qOut)/n)/(QOut-qOut);
-    }
-}
-
-
-// Description: get qOut which is the amount of tokenOut a user gets when selling qIn tokenIn
-// QOut = tokenOut Balance in pool
-// QIn = tokenIn Balance in pool
-// qIn = amount of tokenIn being sold
-// wIn = tokenIn weight in pool
-// wOut = tokenOut Balance of pool
-// fee = pool fee
-module.exports.swapSpecifyInMath = (QOut, QIn, qIn, wIn, wOut, fee) => {
-    if( QOut<=0 || QIn<=0 || qIn<=0 || wIn<=0 || wOut<=0 || fee>=1 ) {
-        throw new Error("Invalid arguments");
-    }
-    var exponent = (wIn / wOut);
-    var adjustedIn = qIn * (1-fee);
-    return QOut * (1-(QIn/(QIn+adjustedIn))**exponent)
-}

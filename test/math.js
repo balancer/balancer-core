@@ -3,6 +3,7 @@ var bMath = require("../src/math.js")
 
 let tolerance = 0.001;
 function approxEq(a, b) {
+    console.log(a, b);
     assert(Math.abs(a-b) < a*tolerance);
 }
 

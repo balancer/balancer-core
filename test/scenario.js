@@ -57,8 +57,8 @@ describe("test scenario", () => {
     it("swapSpecifyInMath basic values", async() => {
         var M = objects.math;
         var res = await M.methods.swapSpecifyInMath(1, 1, 1, 1, 1, 1).call();
-        assert.equal(res.toutAmount, 1);
-        assert.equal(res.feeAmount, 1);
+        assert.equal(res.toutAmount, 1, "wrong amount");
+        assert.equal(res.feeAmount, 1, "wrong fee");
     });
     it("`run`", async () => {
         var t = objects.bTest;
