@@ -37,6 +37,7 @@ contract BalanceTest is BalanceMath {
         b.setParams(A, 1 ether, 100 ether);
         b.setParams(B, 1 ether, 100 ether);
         b.setParams(C, 1 ether, 100 ether);
+        b.start();
 
         uint256 outAmt;
         uint256 feeAmt;

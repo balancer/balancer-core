@@ -8,8 +8,9 @@ import 'erc20/erc20.sol';
 import "./BalanceMath.sol";
 
 contract Balancer is BalanceMath {
+    bool                      public paused;
     address                   public manager;
-    uint256                   public feeRatio; // RAY
+    uint256                   public feeRatio;
     uint256                   public unclaimedFees;
 
     uint256 constant public   MAX_TOKENS = 8;
@@ -25,11 +26,13 @@ contract Balancer is BalanceMath {
 
     constructor() public {
         manager = msg.sender;
+        paused = true;
     }
 
     function swapI(uint256 amountIn, ERC20 tin, ERC20 tout)
         public returns (uint256 amountOut, uint256 feeAmount)
     {
+        require( ! paused);
         require(isBound(tin), "tin not bound");
         require(isBound(tout), "tout not bound");
         Record storage I = records[address(tin)];
@@ -81,5 +84,13 @@ contract Balancer is BalanceMath {
         require(isBound(token));
         delete records[address(token)];
         numTokens--;
+    }
+    function pause() public {
+        assert(msg.sender == manager);
+        paused = true;
+    }
+    function start() public {
+        assert(msg.sender == manager);
+        paused = false;
     }
 }
