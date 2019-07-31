@@ -13,6 +13,7 @@ contract BalanceMath is DSMath
         public pure
         returns (uint256) 
     {
+        return 0;
     }
 
     function swapSpecifyInMath( uint256 tinBalance, uint256 tinWeight

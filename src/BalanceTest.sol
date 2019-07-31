@@ -20,9 +20,9 @@ contract BalanceTest is BalanceMath {
         A = new DSToken("A");
         B = new DSToken("B");
         C = new DSToken("C");
-        b.bind(address(A));
-        b.bind(address(B));
-        b.bind(address(C));
+        b.bind(A);
+        b.bind(B);
+        b.bind(C);
         A.mint(100 ether); B.mint(100 ether); C.mint(100 ether);
         A.push(msg.sender, 100 ether);
         B.push(msg.sender, 100 ether);
