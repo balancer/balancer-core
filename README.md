@@ -36,3 +36,23 @@ Math:
         public pure
         returns ( toutAmount, feeCollected );
 ```
+
+Math
+```
+OAmount = OBalance * (1 - ((IBalance / (IBalance + IAmount))**(IWeight/OWeight)))
+
+=>
+
+IBalanceAfter = IBalance + IAmount;
+IBalanceRatio = IBalance / (IBalance + IAmount)
+Exponent = IWeight / OWeight;
+IBalanceScale = IBalanceRatio**Exponent
+OBalanceScale = 1 - IBalanceScale
+OAmount = OBalance * OBalanceScale
+
+
+```
+
+
+
+

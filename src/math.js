@@ -1,11 +1,8 @@
 module.exports.floatMath = {
 
-    // Description: get the spotExchangeRate, i.e. how many tokenOuts a trader gets for one tokenIn,
-    //      there is no slippage in this calculation
-    // OBalance = tokenOut Balance in pool
-    // IBalance = tokenIn Balance in pool
-    // IWeight = tokenIn weight in pool
-    // OWeight = tokenOut Balance of pool
+    // Description: get the spotExchangeRate,
+    // i.e. how many tokenOuts a trader gets for one tokenIn.
+    // There is no slippage in this calculation.
     spotPrice: function(OBalance, IBalance, IWeight, OWeight) {
         // Requirements
         if( OBalance<=0 || IBalance<=0 || IWeight<=0 || OWeight<=0) {
@@ -17,12 +14,6 @@ module.exports.floatMath = {
     },
 
     // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
-    // OBalance = tokenOut Balance in pool
-    // IBalance = tokenIn Balance in pool
-    // IAmount = amount of tokenIn being sold
-    // IWeight = tokenIn weight in pool
-    // OWeight = tokenOut Balance of pool
-    // fee = pool fee
     swapImath: function (OBalance, IBalance, IAmount, IWeight, OWeight, fee) {
         if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
@@ -35,12 +26,7 @@ module.exports.floatMath = {
         return OBalance * (1 - bar);
     },
 
-    // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
-    // OBalance = tokenOut Balance in pool
-    // IBalance = tokenIn Balance in pool
-    // IAmount = amount of tokenIn being sold
-    // IWeight = tokenIn weight in pool
-    // OWeight = tokenOut Balance of pool
+    // Description: get OAmount which is the amount of tokenOut a user gets when selling IAmount tokenIn
     swapImath_Approx: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
         // Requirements
         if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0) {
