@@ -1,3 +1,4 @@
+
 module.exports.floatMath = {
 
     // Description: get the spotExchangeRate,
@@ -24,6 +25,23 @@ module.exports.floatMath = {
         var bar = foo**exponent;
         
         return OBalance * (1 - bar);
+    },
+
+    // Unrolled form of approximation paper
+    swapImath_Approx2: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
+        let a = IWeight / OWeight;
+        let x = (IBalance / (IBalance + IAmount)) - 1;
+
+        // term 0:
+        var numer = 1;
+        var denom = 1;
+        var sum = 1;
+        for( var k = 1; k < 8; k++ ) {
+            numer = numer * (a - (k-1)) * (x**k);
+            denom = denom * k;
+            sum += numer / denom;
+        }
+        return OBalance * sum;
     },
 
     // Description: get OAmount which is the amount of tokenOut a user gets when selling IAmount tokenIn
