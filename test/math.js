@@ -5,7 +5,7 @@ var fMath = math.floatMath;
 let tolerance = 0.00001;
 function approxEq(a, b) {
     console.log(a, b);
-    assert(Math.abs(a-b) < a*tolerance);
+    assert(Math.abs(a-b) < a*tolerance, `${a} <> ${b}`);
 }
 
 describe("floatMath", () => {
@@ -37,9 +37,22 @@ describe("math.js", () => {
         approxEq(10, fMath.swapImath_Approx(20, 20, 20, 10, 10, 0));
          // Weight ratio 2
         approxEq(15, fMath.swapImath_Approx(20, 20, 20, 2, 1, 0));
+         // Weight ratio 3
         approxEq(14, fMath.swapImath_Approx(16, 16, 16, 3, 1, 0));
-
     });
+     it("working _Approx2", () => {
+        approxEq(1, fMath.swapImath_Approx2(2, 2, 2, 1, 1, 0));
+        approxEq(10, fMath.swapImath_Approx2(20, 20, 20, 10, 10, 0));
+    });
+    it("broken _Approx2 - ratio > 1", () => {
+         // These don't work because the approx formula is still
+         // only the <1 case
+         // Weight ratio 2
+        approxEq(15, fMath.swapImath_Approx2(20, 20, 20, 2, 1, 0));
+         // Weight ratio 3
+        approxEq(14, fMath.swapImath_Approx2(16, 16, 16, 3, 1, 0));
+    });
+    
 
 
     it("should throw for bad arguments", () => {
