@@ -37,7 +37,7 @@ describe("math.js", () => {
         approxEq(10, fMath.swapImath_Approx(20, 20, 20, 10, 10, 0));
          // Weight ratio 2
         approxEq(15, fMath.swapImath_Approx(20, 20, 20, 2, 1, 0));
-        assert.equal(14, fMath.swapImath(16, 16, 16, 3, 1, 0));
+        approxEq(14, fMath.swapImath_Approx(16, 16, 16, 3, 1, 0));
 
     });
 
