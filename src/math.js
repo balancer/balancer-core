@@ -38,7 +38,6 @@ module.exports.floatMath = {
         var numer = 1;
         var denom = 1;
         var sum = 1;
-        console.log(sum);
         for( var k = 1; k < 8; k++ ) {
             numer = numer * (a - (k-1)) * (x**k);
             denom = denom * k;
