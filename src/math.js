@@ -1,38 +1,37 @@
+// Bi := Balance of token In
+// Bo := Balance of token Out
+// Wi := Weight of token In
+// Wo := Weight of token Out
+// Ai := Amount of token In
 
 module.exports.floatMath = {
 
-    // Description: get the spotExchangeRate,
-    // i.e. how many tokenOuts a trader gets for one tokenIn.
-    // There is no slippage in this calculation.
-    spotPrice: function(OBalance, IBalance, IWeight, OWeight) {
-        // Requirements
-        if( OBalance<=0 || IBalance<=0 || IWeight<=0 || OWeight<=0) {
+    spotPrice: function(Bo, Bi, Wi, Wo) {
+        if( Bo<=0 || Bi<=0 || Wi<=0 || Wo<=0) {
             throw "Bad argument";
         }
-        var numer = OBalance/OWeight;
-        var denom = IBalance/IWeight;
+        var numer = Bo/Wo;
+        var denom = Bi/Wi;
         return numer/denom;
     },
 
-    // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
-    swapImathExact: function (OBalance, IBalance, IAmount, IWeight, OWeight, fee) {
-        if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0 || fee>=1 ) {
+    swapImathExact: function (Bo, Bi, Ai, Wi, Wo, fee) {
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
-        var exponent = (IWeight / OWeight);
-        var adjustedIn = IAmount * (1-fee);
-        var foo = IBalance / (IBalance + adjustedIn);
+        var exponent = (Wi / Wo);
+        var adjustedIn = Ai * (1-fee);
+        var foo = Bi / (Bi + adjustedIn);
         var bar = foo**exponent;
         
-        return OBalance * (1 - bar);
+        return Bo * (1 - bar);
     },
 
-    // Unrolled form of approximation paper
-    swapImathApprox: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
-        // let partial = IWeight % OWeight;
-        // let integer = (IWeight / OWeight) - partial;
-        let a = IWeight / OWeight;
-        let x = (IBalance / (IBalance + IAmount)) - 1;
+    swapImathApprox: function(Bo, Bi, Ai, Wi, Wo) {
+        // let partial = Wi % Wo;
+        // let integer = (Wi / Wo) - partial;
+        let a = Wi / Wo;
+        let x = (Bi / (Bi + Ai)) - 1;
 
         // term 0:
         var numer = 1;
@@ -43,8 +42,7 @@ module.exports.floatMath = {
             denom = denom * k;
             sum += numer / denom;
         }
-        return OBalance * sum;
+        return Bo * sum;
     }
-
 }
 
