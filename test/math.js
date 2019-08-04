@@ -54,7 +54,6 @@ describe("math.js", () => {
     });
     
 
-
     it("should throw for bad arguments", () => {
         assert.throws(() => {
             fMath.swapImath(10, 10, 11, 1, 0);
