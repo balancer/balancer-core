@@ -44,26 +44,7 @@ module.exports.floatMath = {
             sum += numer / denom;
         }
         return OBalance * sum;
-    },
-
-    binExpqOut: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
-        return OBalance
-            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 1)
-            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 2)
-            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 3)
-            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 4)
-            -this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, 5);
-    },
-
-    BinExpqOutTermN: function(OBalance, IBalance, IAmount, IWeight, OWeight, n) {
-        if(n == 0){
-            return OBalance;
-        } else if(n == 1) {
-            return (((OBalance*IWeight)/OWeight)*IAmount)/(IBalance+IAmount);
-        } else {
-            var binExp = this.BinExpqOutTermN(OBalance, IBalance, IAmount, IWeight, OWeight, n-1);
-            return ((((binExp*(n-1)*(OWeight-IWeight))/OWeight)*IAmount)/n)/(IBalance+IAmount);
-        }
     }
+
 }
 
