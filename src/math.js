@@ -15,7 +15,7 @@ module.exports.floatMath = {
     },
 
     // Description: get qOut which is the amount of tokenOut a user gets when selling IAmount tokenIn
-    swapImath: function (OBalance, IBalance, IAmount, IWeight, OWeight, fee) {
+    swapImathExact: function (OBalance, IBalance, IAmount, IWeight, OWeight, fee) {
         if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
@@ -28,7 +28,7 @@ module.exports.floatMath = {
     },
 
     // Unrolled form of approximation paper
-    swapImath_Approx2: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
+    swapImathApprox: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
         // let partial = IWeight % OWeight;
         // let integer = (IWeight / OWeight) - partial;
         let a = IWeight / OWeight;
@@ -44,28 +44,6 @@ module.exports.floatMath = {
             sum += numer / denom;
         }
         return OBalance * sum;
-    },
-
-    // Description: get OAmount which is the amount of tokenOut a user gets when selling IAmount tokenIn
-    swapImath_Approx: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
-        // Requirements
-        if( OBalance<=0 || IBalance<=0 || IAmount<=0 || IWeight<=0 || OWeight<=0) {
-            throw "Bad argument";
-        }
-
-        if (IWeight>OWeight) {
-            // Expand power into two
-            // first with integer exponent >=1
-            // then with exponent <1
-            var floored = Math.floor(IWeight/OWeight);
-            var fractional = (IWeight/OWeight) - floored
-            integerPower = (IBalance/(IBalance+IAmount)) ** floored
-            return OBalance - (integerPower * this.binExpqOut(OBalance, IBalance, IAmount, fractional, OWeight));
-        } else {
-            // Use binomial expansion directly since exponent <1
-            return OBalance-this.binExpqOut(OBalance, IBalance, IAmount, IWeight, OWeight);
-        }
-
     },
 
     binExpqOut: function(OBalance, IBalance, IAmount, IWeight, OWeight) {
