@@ -1,13 +1,8 @@
 assert = require("chai").assert;
-var math = require("../src/math.js")
+var math = require("../src/floatMath.js")
 var fMath = math.floatMath;
 
 let tolerance = 0.00001;
-
-describe("floatMath", () => {
-    it("fAdd, fSub, fMul, fDiv", () => {
-    });
-});
 
 describe("math.js", () => {
     it("working exact", () => {
