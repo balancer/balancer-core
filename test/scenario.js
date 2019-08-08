@@ -57,11 +57,18 @@ beforeEach((done) => {
     });
 });
 
-describe("balanceMath", () => {
+describe("balanceMath", function() {
     it("bAdd", async () => {
+        let M = objects.math;
+        var one = await M.methods.bOne().call();
+        var two = await M.methods.bAdd(one, one).call();
+        var fourAdd = await M.methods.bAdd(two, two).call();
+        var fourMul = await M.methods.bMul(two, two).call();
+        assert.equal(fourAdd, fourMul);
+        
     }); 
-    it("swapIMath", async () => {
-        var M = objects.math;
+    it("swapIMath", async function() {
+        let M = objects.math;
         var res = await M.methods.swapImath( 1, 1
                                            , 1, 1
                                            , 1, 0).call();
