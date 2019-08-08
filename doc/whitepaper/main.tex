@@ -12,168 +12,173 @@
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
 \title{Balancer: A protocol for multi-token automated market-making}
-\author{Fernando Martinelli, Michael Zargham}
-%\date{}                                           % Activate to display a given date or no date
+\author{Fernando Martinelli}
+%\date{08/05/2019} % Activate to display a given date or no date
 
 \begin{document}
 \maketitle
-\section{Motivation}
+
+\begin{abstract}
+   Balancer is a new Ethereum-based protocol that allows any ERC20 portfolio to be continuously rebalanced while at the same time generating passive income through trading fees. Previously idle ERC20 tokens become Balancer pools, allowing anyone to trustlessly and non-custodially trade any two assets contained therein. Differently from Uniswap\footnote{https://uniswap.io/}, pools can contain any number of ERC20 tokens with arbitrary value weights. They are also owned and controlled individually, as opposed to combined into single pairwise markets like on Uniswap.
+\end{abstract}
+
+\section{Introduction}
 %\subsection{}
 
-As smart contracts gain traction and teams aim at leveraging real world usage, oracles become an ever more important component in the stack. Oracles make information from the outside world available for smart contracts. Arguably, one of the most important subset of that information, are price feeds. 
+Investment portfolios such as Index Funds are a very common financial instrument. The first index fund became effective in 1972, its investment objective being to approximate the performance of the Dow Jones Industrial Stock Average. Ever since, investors heavily rely on different portfolio strategies to hedge risk and achieve diversification. With blockchain, digital assets have become a new class of investment, which naturally ported the index fund concept from the conventional financial world to the new blockchain context. Index funds guarantee investors a constant and controlled exposure to a basket of assets. If one of its assets out- or under-performs, it is respectively sold or bought to keep its value share of the total portfolio constant.
 
-A wide range of projects in the blockchain space, such as MakerDao, depend on price feeds in order to function correctly. Current solutions to providing price feeds depend on external sources and usually require the payment of fees\footnote{https://docs.oraclize.it}. 
+Both in the conventional financial system as well as in the blockchain context, Index Funds and other types of investment portfolios charge investors fees for managing and holding their funds. These fees are necessary to pay for the costs of actively rebalancing the index funds, be it by manual traders or automatic bots. 
 
-At BlockScience, we used our token engineering expertise and applied innovative invariant based modeling to achieve an on-chain price sensor for virtually any token pair. As for all our token engineering projects, the development was undertaken in 3 mains phases: 
-\begin{enumerate}
-    \item Requirements phase: what are the core requirements the system has to fulfill? In this first stage, we avoid being biased towards a specific solution. 
-    \item Design phase: how can we achieve such requirements? A thorough functional analysis is performed, as well as the specification of the system core components
-    \item Validation phase: is the system going to work as desired? After defining the requirements and the design, by means of extensive testing and simulation, we circle all the way back and prove that the initial requirements are met
-\end{enumerate}
+Balancer protocol, on the other hand, allows any portfolio owner to maintain their portfolio continuously and effortlessly rebalanced. This is done not only with the owner keeping full control and custody of their portfolio, but at the same time also being rewarded through trading fees, as we will see in detail in the following. 
 
-\section{Requirements}
+To summarize, instead of paying fees to keep a balanced portfolio, ERC20 token holders can now earn fees by using Balancer protocol to do so. 
 
-\subsection{Introduction of Descriptive Model}
 
-The Balancer is a token engineering project that applies BlockScience's innovative invariant based methods and modeling to achieve a much sought-after component in the blockchain space: a reliable on-chain price sensor. 
+\section{Present Work}
 
-Even though our project is intended and designed to be blockchain-agnostic, we consider the Ethereum blockchain for practical reasons for this first instance. The balancer consists of a single smart contract that owns balances from a set of n different tokens. These tokens can be freely exchanged/traded by any external user interacting with the Ethereum blockchain.
+There are many centralized solutions for portfolio management and for investing in index funds. We will however limit this analysis to the decentralized/non-custodial solutions in existence, since that is a fundamental characteristic Balancer protocol was designed to have.
 
-All the $\frac{(n^2 - n)}{2}$ exchange rates between all the different n tokens are publicly available on-chain, at any time. These exchange rates are only dependent on the internal state of the Balancer smart contract, and they are automatically updated with each conducted trade. 
+Melonport\footnote{https://melonport.com/} is a protocol that allows fund managers to streamline and set up funds more easily than conventionally. Although an interesting concept, Melonport did not seem to get traction, as we believe it is still complicated to use and retail investors have to pay fees to participate in its investment funds. The existence of the MLN token also adds unnecessary friction to the process.
 
-The main system requirement we set out with is that these contract-internal exchange rates closely follow the average external-market ones. Only then is an on-chain price-sensor useful and trustworthy for the blockchain community. 
+Set Protocol\footnote{https://www.tokensets.com/} is, in our view, a more interesting approach that has recently been launched and is gaining traction. It allows anyone to buy sets of tokens, i.e. tokens that represent ownership of a basket of other tokens. These sets may have embedded logic as for when the underlying tokens are swapped/exchanged for one another. For example, the 50\%/50\% BTC ETH set is a buy and hold strategy that rebalances monthly. Other more complex strategies include trend and range bound trading. 
 
-A secondary, but equally important requirement, is that there should exist a measure of value of the tokens held by the contract that is strictly non-decreasing over time. That is, the contract owner that deposits the balances of n tokens into the Balancer smart contract can be certain that their value will never decrease. What's more, if a fee is charged for the usage of the contract by external users, this measure of value should be strictly increasing over time.
+It is important to stress that none of the protocols mentioned above provide liquidity providers with native rewards or earnings. On the contrary, rebalancing sets within Set Protocol incurs in both trading fees as well as network gas costs. The latter is currently being paid for by Set Labs Inc., the company that develops Set Protocol.
 
-To achieve this, we seek to build a smart contract model that:
+Uniswap, Kyber\footnote{https://kyber.network}  and Compound\footnote{https://compound.finance/} are examples of protocols that enable liquidity providers to earn fees through providing liquidity.
 
-\begin{itemize}
-    \item holds different balances of each of the $n$ tokens;
-    \item has a simple-to-use, open and freely accessible external interface;
-    \item possesses a rigorous mathematical dynamics that is proven to respect the requirement of being a reliable on-chain price sensor.
-\end{itemize}
+Balancer Protocol achieves the objective of rebalancing portfolios as does Set Protocol at the same time rewarding liquidity providers as does Uniswap. Balancer is a generalization of Uniswap. All Uniswap exchanges can be emulated with Balancer Protocol, however the opposite is not true: arbitrary portfolios cannot be invested and continuously rebalanced in Uniswap as they can with Balancer Protocol. 
 
-\subsection{Top-Level System Requirements}
-The Balancer is not meant to be an instance of a contract but rather a class of contracts. Anyone is welcome to create their own instance of the Balancer, with their own choice of supported tokens. This leads us to the fact that the Balancer will always interact with two types of actors: 
-
-\begin{itemize}
-    \item any external blockchain users;
-    \item the contract owner(s) - a strict subset of the above.
-\end{itemize}
-
-For simplicity, we always refer to external users as the users who are interacting with the Balancer contract but are not the contract owner(s).
-
-Notice that in specific implementations, the owners of the contract may want to restrict which external users will be able to interact with the contract by enforcing a whitelist.
-
-From a System Requirements standpoint, we can define two subsets of requirements: 
-
-\begin{itemize}
-    \item Internal Dynamics Requirements;
-    \item Interface Requirements.
-\end{itemize}
-
-Figure 1 shows an overview of the Balancer System.
+\section{Balancer Protocol Architecture}
+\subsection{Balancer Pools}
+Balancer pools are the building blocks of Balancer protocol. Any Ethereum address that owns two or more ERC20 tokens can create a Balancer Pool, as illustrated in Figure \ref{fig:example_balancer_pool}.
 
 \begin{figure}
-  \includegraphics[]{overview}
-  \caption{Top-level overview of the Balancer.}
-  \label{fig:overview}
+  \includegraphics[]{example_balancer_pool}
+  \caption{Example of Balancer Pool containing a value distribution of 50\% in WETH, 30\% in ZRX and 20\% in MKR tokens.}
+  \label{fig:example_balancer_pool}
 \end{figure}
 
-\subsubsection{Internal Dynamics Requirements}
+The pool will have a certain total value and each of the tokens will make up a percentage of that value. These percentages are the token weights. These weights are defined upon the pool creation and can be changed at any later time by the pool owner. If not changed, Balancer Protocol will ensure that the percentage of value each token in the pool represents will remain stable, even if exchange rates between tokens may change. This is achieved through protocol incentives created for arbitrageurs to arbitrage between Balancer pools and external markets---other centralized or decentralized exchanges. 
 
-\begin{enumerate}
-    \item \textit{Exchange rates are available for any pair of tokens held by the Balancer.} The internal dynamics should be such that, at all times, all $\frac{(n^2 - n)}{2}$ exchange rates are well defined and available upon external requests relayed by the contract interface. This may seem trivial but leads to special constraints that, for example, prevent the contract from running out of any given token, which would cause a division-by-zero error. 
-    
-    \item \textit{Exchange rates are updated as a function of trade volumes and internal balances.} The internal dynamics of the Balancer should be such that, if an external user intends to trade a lot of tokens A in return for tokens B, the Exchange Rate between those tokens is adequately updated such that the Balancer does not run out of tokens B. This Exchange Rate will depend on some variables like the current state of the contract (i.e. it's token balances) and the exact amount of tokens to be traded.
-    
-    \item \textit{The system shall provide resistance against the dumping of a token held in the contract whose value is approaching zero on external markets.} This is the other end of the curve discussed in the previous point. Instead of the contract running out of tokens, this requirement addresses protection against a contract being flooded with tokens that have no value on external markets. This may happen for example if a bug is found in the token contract, rendering it worthless.
+\subsection{Trading with Individual Pool}
+Balancer Pools are automated market-makers because they allow any Ethereum user to trade on any pair contained in the pool. In the example pool above one could trade on any of the following pairs: WETH/MKR, MKR/ZRX and ZRX/WETH. Both directions, buying or selling, are always possible.
 
-\end{enumerate}
+\subsubsection{Spot Exchange Rate}
+Similarly to Uniswap, we propose the exchange rates of any of the $\frac{(n^2 - n)}{2}$ pairs of tokens within a pool of $n$ tokens to be defined exclusively by their balances\footnote{This means that the system state and its evolution is self-contained, i.e. no external feeds or oracles are necessary. This makes Balancer Protocol an excellent and trustworthy oracle, so long as there is enough liquidity available.}. We propose nevertheless an addition that enables Balancer pools to assume any basket value distribution as opposed to Uniswap\footnote{In Uniswap each exchange pair always holds the same value in ETH as in the ERC20 token. This is a consequence of the simple invariant function $x.y=k$ used, where $x$ represents the ETH balance, $y$ represents the ERC20 balance and $k$ is a value that would remain constant after any number of trades, were it not for the 0.3\% fees charged.}. The spot exchange rate between any two tokens, $SpotExchangeRate^{out}_{in}$, or in short $SER^{out}_{in}$, is the the ratio of the token balances \textit{normalized} by their weights:
 
-\subsubsection{Interface Requirements}
+\begin{equation} 
+\label{equation:SER}
+SER^{out}_{in} = \frac{\frac{Q_{out}}{w_{out}}}{\frac{Q_{in}}{w_{in}}} 
+\end{equation}
 
-\begin{enumerate}    
-    \item \textit{The Contract Owner is the only user that has the ability to withdraw funds.} The most crucial Interface Requirement is that no funds/tokens can be withdrawn by any External User except the Contract Owner.
-    
-    \item \textit{The External User action space shall be restricted to a bounded set of actions that preserve the 'Internal Dynamics' system requirements.} In order to achieve the main goal of being a reliable on-chain price sensor, the Balancer should have a well defined, rather restricted set of actions the External User is allowed to take. This is referred to as the External User action space. External users are restricted to trading any pair of tokens held by the contract, always one pair at a time.
-    
-    \item \textit{The Contract Owner shall maintain control over deposited funds, subject to a defined action space that preserves the 'Internal Dynamics' system requirements.} The Contract Owner is the responsible for deploying an instance of the Balancer and depositing tokens into it. They should, like the External User, have a well defined set of allowed actions. Since they are the owners of the tokens held by the Balancer, they should have full control over the funds they deposited to the Balancer up to the point that the internal dynamics of the contract is not invalidated.  
- 
-\end{enumerate}
-
-
-\section{Design and Functional Specifications}
-
-According to our system requirements, in order for our smart contract to be a reliable on-chain price sensor, it has to be at the same time a source of liquidity. The change in the amount of the individual balances of each of the $n$ tokens it holds is what will define the variation of the exchange rates sensed. This is modelled in a precise mathematical way, which provides the system with the required properties. 
-
-Additionally, the more value the contract holds --i.e. the larger the balances of the $n$ different tokens supported--  the better and more dependable a price sensor it will be. The reason for this is that gaming it becomes more costly. 
-
-At the same time, by holding large balances of the different supported tokens, the contract becomes a very useful source of liquidity for the Ethereum community. 
-
-To ensure that there will be interest in making this liquidity available by deploying instances of our proposed smart contract, our design also fulfills the requirement that there should exist a measure of value of the tokens held by the contract that is strictly non-decreasing over time. From that perspective, the smart contract proposed can be seen as an auto balanced token index fund. However, instead of usual index funds that charge a fee, our proposed contract generates a fee, as we will see in the next sections.
-
-Notice that our proposal is different from the Bonding Curve approach Simon de la Rouviere and others explore in Curation Markets\footnote{https://medium.com/@simondlr/tokens-2-0-curved-token-bonding-in-curation-markets-1764a2e0bee5} and Bancor uses in its protocol\footnote{https://storage.googleapis.com/website-bancor/2018/04/01ba8253-bancor\_protocol\_whitepaper\_en.pdf}. We do not need to create/mint a new token in order for our smart contract to work as intended.   
-
-We now describe in detail our proposed specifications for the contract so as to achieve the requirements laid out above. 
-
-\subsection{Mathematical framework}
-
-Consider contract $C$ which contains $n$ different types of ERC20 tokens. Let's define the $n$-dimensional vector $Q^s \in \mathbb{R}_+^n$, representing the balances of each of the tokens supported for any given contract state $s$. As we'll prove in the following, the more tokens we have, the less slippage there is for a given trade. Since we'll probably have some key tokens that will be traded more often than others (think of ETH and DAI), it would be meaningful to have more value held by the contract in these tokens.  To do that, let's define the $n$-dimensional vector $w \in \mathbb{R}_+^n$, representing the value weights we'll assign to each of the tokens. We will initially assume $w$ constant, though the contract owner can change $w$ at any time for example if they want to add a new token to the contract or if they want to shift value between tokens.
-
-Let's assume, for mathematical simplicity purposes, that the sum of all $n$ weights $w_{out}$ is equal to 1. If a token has twice as much weight than another one, this means that the contract will hold twice as much $value$ in that token --which does not mean twice as many tokens, of course.
-
-Apart from the requirements discussed in the previous section, some further functional characteristics we are aiming to achieve with this contract are:
-
-\begin{enumerate}
-    \item No inherent preference or special treatment for one token over the other. They should be 100\% interchangeable;
-    \item The ratio of token $out$'s balance $Q_{out}$ divided by it's weight $w_{out}$ and token $in$'s balance $Q_{in}$ divided by its weight $w_{in}$ at any time will be the spot exchange rate \footnote{Notice that to avoid any confusion we prefer to deal always with exchange rates as opposed to prices. Prices are the inverse of exchange rates: the higher the exchange rate of token $out$ in token $in$, the more tokens $out$ one gets with one token $in$} -- $SER^{out}_{in}$ -- between these two tokens held by the contract;
-\begin{align*}
-SER^{out}_{in} = \frac{\frac{Q_{out}}{w_{out}}}{\frac{Q_{in}}{w_{in}}} \end{align*}
-    
-    \item The share of value of each token in the contract is always proportional to its weight. That is, if one token gets more expensive relative to another, its amount decreases proportionally. 
-\end{enumerate}
-
-\subsection{Value function and contract methods}
-Let's define value function $V^s$ which represents the value of the contract for any state $s$. This contract has essentially 3 methods, each having a different effect on $V$.
-
+Where:
 \begin{itemize}
-    \item $trade$ (can be called by any external user): this function is meant for external users who want to trade any token j for tokens i. If, for simplicity's sake, we forego a trading fee charged to external users for trading, this method does not change $V$. $V$ is always invariant for trades within this contract. However, if we do consider a trading fee, then this function always slightly increases the value function $V$;
-    \item $deposit$ (can only be called by the contract owner): this function allows the contract owner to deposit any tokens to the contract. This function can only increase the value function $V$;
-    \item $withdraw$ (can only be called by the contract owner): this function allows the contract owner to withdraw any tokens from the contract. This function can only decrease the value function $V$.
-    
+    \item $Q_{out}$ is the balance of token \textit{out}, the token being bought by the trader which is going \textit{out} of the pool.
+    \item $Q_{in}$ is the balance of token \textit{in}, the token being sold by the trader which is going \textit{in} the pool.
+    \item $w_{out}$ is the weight of token \textit{out}
+    \item $w_{in}$ is the weight of token \textit{in}
 
 \end{itemize}
 
-We propose $V$ to be defined as
+For example, if in the pool described above we had 10 WETH, 6000 ZRX and 1 MKR, then the spot exchange rates offered by this pool would be:
+
+\begin{align*}
+SER^{W}_{M} = \frac{\frac{Q_{W}}{w_{W}}}{\frac{Q_{M}}{w_{M}}} = \frac{\frac{10}{0.5}}{\frac{1}{0.2}} = 4  \end{align*}
+
+\begin{align*}
+SER^{M}_{Z} = \frac{\frac{Q_{M}}{w_{M}}}{\frac{Q_{Z}}{w_{Z}}} = \frac{\frac{1}{0.2}}{\frac{6000}{0.3}} = 0.00025
+\end{align*}
+
+\begin{align*}
+SER^{Z}_{W} = \frac{\frac{Q_{Z}}{w_{Z}}}{\frac{Q_{W}}{w_{W}}} = \frac{\frac{6000}{0.3}}{\frac{10}{0.5}} = 1000 \end{align*}
+
+The spot exchange rate in the opposite direction of the trade is just the inverse of the original:
+
 \begin{equation}
+SER^{in}_{out} = \frac{1}{SER^{out}_{in}} 
+\end{equation}
+
+\subsubsection{Effective Exchange Rate}
+
+It is important to bear in mind that $SER^{out}_{in}$ is the theoretical exchange rate for infinitesimal trades, which would incur in no slippage. In practice, the effective exchange rate for any trade depends on the amount being traded, which always leads to some slippage. If we define $q_{out}$ as the amount of token $out$ being bought by the trader and $q_{in}$ as the amount of token $in$ being sold by the trader, then we can define $EffectiveExchangeRate^{out}_{in}$, or in short $EER^{out}_{in}$ as:
+
+\begin{equation}
+EER^{out}_{in} = \frac{q_{out}}{q_{in}} \end{equation}
+
+And as mentioned above, $EER$ tends to $SER$ when traded amounts tend to 0:
+
+\begin{equation}
+\label{equation:EER_tends_to_SER}
+SER^{out}_{in} = \lim_{q_{out},q_{in}\to 0} EER^{out}_{in}
+\end{equation}
+
+The derivation of $q_{out}$ in terms of $q_{in}$ and vice-versa depend on the multidimensional invariant surface described in detail in section \ref{section:maths}.
+
+\subsubsection{Arbitrage and External Market Exchange Rate Matching}
+From Eq.\ref{equation:SER}, considering weights constant during trades\footnote{Weights can be changed at any time by the pool owner. However since trade events are atomic, weights cannot be changed by the pool owner during a trade.}, the spot exchange rates offered by Balancer Pools only change with changing token balances. If the pool owner does not add or remove tokens to/from the pool, token balances can only change through trades. We have then a feedback loop that causes exchange rates of tokens being bought (token $out$) to decrease---i.e their prices increase---and vice-versa. One can prove that whenever external market exchange rates are different from those offered by a Balancer Pool, an arbitrageur will make the most profit by trading with that pool until its exchange rates equal those on the external market. When this happens there is no more arbitrage opportunity. These arbitrage opportunities are the reason why we see Uniswap exchange rates move in lockstep with the rest of the market. 
+
+\subsection{Off-Chain Smart Order Routing (SOR)}
+Since Balancer Protocol allows any number of pools to be created, there may be several different pools that contain any given trading pair. If a trader wants to trade 100 Token A for Token B and the whole trade is carried out only in a single Balancer Pool, there may be a lot of slippage. That slippage would create a difference between exchange rates amongst different Balancer Pools, allowing for arbitrageurs to profit. In other words, trading with only one pool is equivalent to leaving money on the table only for arbitrageurs. 
+
+A better approach to minimize slippage and maximize the amount of tokens B received is spreading the 100 Tokens A across multiple Balancer pools such that all trades shift the exchange rates of the pools to the same value. Finding which amounts should be traded and in what pools is a non-linear, multi-variable optimization problem. Balancerpro.com has a free off-chain Smart Order Routing algorithm that solves this problem and finds the exact amounts to be traded with the most advantageous pools available. For that optimization we take into account the gas price selected as well as the states of all available Balancer pools in the desired pair. A simplified illustration of the Smart Order Routing is depicted in Fig.\ref{fig:smart_order_routing}.
+
+\begin{figure}
+  \includegraphics[]{smart_order_routing}
+  \caption{Example of trade using Balancer's smart order routing to maximize returns.}
+  \label{fig:smart_order_routing}
+\end{figure}
+
+\section{Mathematical Background and Proofs}
+\label{section:maths}
+
+\subsection{Value function}
+The bedrock of Balancer Protocol's mathematical framework is a value function that, when kept invariant, ensures that the spot exchange rates of any two tokens are as defined in Eq.\ref{equation:SER}. As we will see in section \ref{section:proof_constant_value_distribution}, this property has as corollary that the value distribution across all tokens is kept constant. This is what makes Balancer Protocol suitable for rebalancing portfolios.
+
+We propose $V$ to be defined as:
+\begin{equation}
+\label{equation:value_function}
 V = \prod_{k}(Q_k)^{w_k} 
 \end{equation}
 
-Let's also define the effective exchange rate an external user gets in any given trade as: 
+with:
 
 \begin{equation}
-EER^{out}_{in} = \frac{q_{out}}{q_{in}}
+\label{equation:sum_weights}
+\sum_{k} w_k = 1
 \end{equation}
 
-where $q_{out}$ is the amount of tokens $out$ the user gets in return for sending an amount of $q_{in}$ tokens $in$. Notice that $EER^{out}_{in}$ depends on the amount $q_{in}$ of tokens $in$ the user sends, since there is slippage for any $q_{in}>0$. 
+The value function goes strictly up with the fees charged by Balancer Pools for each trade. However, for simplicity's sake, let's assume no fees are charged and we enforce that the value function remain constant. In other words, we make $V$ an invariant.
 
-We'll now prove that the invariance of value function $V$ entails functional specification (2) as a corollary. By definition, the spot exchange rate is equal to the effective exchange rate when the amounts traded tend to 0. This limit can be calculated by taking the partial derivative of $Q_{out}$ in function of $Q_{in}$. Notice that we need to add a minus sign to the partial derivative since the amount of tokens $out$ the user gets in a trade is $subtracted$ from the contract:
+\subsection{Spot Exchange Rate proof}
+Let's now prove that this choice of $V$ entails Eq.\ref{equation:SER}.
+
+First of all, we know that what the trader buys, $q_{out}$, is subtracted from the contract's balance. Therefore $q_{out}=-\Delta Q_{out}$. Likewise, what the trader sells, $q_{in}$, is added to the contract's balance. Therefore $q_{in} = \Delta Q_{in}$.
+
+Substituting in Eq.\ref{equation:EER_tends_to_SER} we get:
 
 \begin{equation}
+\label{equation:proof_partial_derivative_1}
+SER^{out}_{in} = \lim_{q_{out},q_{in}\to 0} EER^{out}_{in} = \lim_{\Delta Q_{out},\Delta Q_{in}\to 0} \frac{-\Delta Q_{out}}{\Delta Q_{in}}
+\end{equation}
+
+This limit is, by definition, minus the partial derivative of $Q_{out}$ in function of $Q_{in}$. 
+
+\begin{equation}
+\label{equation:proof_partial_derivative_2}
 SER^{out}_{in} = -\frac{\partial Q_{out}}{\partial Q_{in}}
 \end{equation}
 
-From eq. (1):
+From the value function definition in Eq.\ref{equation:value_function} we can isolate $Q_{out}$:
 
 \begin{equation}
+\label{equation:proof_partial_derivative_3}
 \begin{gathered}
-(Q_{out})^{w_{out}} =  \frac{V}{\left(\prod_{k\neq out, k\neq outn}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\\
-Q_{out} =  \left(\frac{V}{\left(\prod_{k\neq out, k\neq outn}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\right)^\frac{1}{w_{out}}
+(Q_{out})^{w_{out}} =  \frac{V}{\left(\prod_{k\neq out, k\neq in}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\\
+Q_{out} =  \left(\frac{V}{\left(\prod_{k\neq out, k\neq in}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\right)^\frac{1}{w_{out}}
 \end{gathered}
 \end{equation}
 
-Now we use eq. (4) to expand the derivative in eq. (3):
+Now we use Eq.\ref{equation:proof_partial_derivative_3} to expand the partial derivative in Eq.\ref{equation:proof_partial_derivative_2}:
 
 \begin{equation}
 \begin{gathered}
@@ -192,15 +197,52 @@ SER^{out}_{in} =
 \end{gathered}
 \end{equation}
 
-which proves that our proposed invariant function $V$ fulfills functional specification (2).
+which concludes our proof.
 
-\subsection{Trade function}
+\subsection{Constant Value Distribution Proof}
+We will now prove that: 
+\begin{enumerate}
+    \item Balancer Pools maintain a constant share of value across all tokens in the pool and;
+    \item These shares of value are equal to the weights associated to each token.
+\end{enumerate}
 
-Once we have defined our invariant function $V$, calculating the trade function is easy, as it is a simple consequence of maintaining $V$ constant.
+Let's calculate $V^1$, the total pool value in terms of token $1$---it can really be any token in the pool since they are not necessarily ordered. Since we already know that the pool has $Q_1$ tokens $1$, let's calculate how many tokens $1$ all the other remaining tokens are worth. It does not make sense to use their Effective Exchange Rate relative to token $1$ since we are not going to do any actual trade. Instead, to calculate the theoretical value we use their Spot Exchange Rates relative to token $1$.
 
+From Eq.\ref{equation:SER} we can calculate $V^1_n$, i.e how many tokens $1$ the balance of each token $n$ is worth:
+\begin{equation} 
+\label{equation:value_in_tokens1}
+V^1_n = Q_{n} . SER^{1}_{n} = Q_{n} . \frac{\frac{Q_{1}}{w_{1}}}{\frac{Q_{n}}{w_{n}}} = 
+Q_{1}.\frac{w_{n}}{w_{1}}
+\end{equation}
+
+We know that the total pool value in terms of tokens $1$ is the sum of the values of each token in terms of tokens $1$:
+
+\begin{equation} 
+\label{equation:total_value_in_tokens1}
+V^1 = \sum_{k}V^1_k = Q_{1} +\sum_{k\neq 1}V^1_k = 
+Q_{1} + \frac{Q_{1}}{w_{1}}.\sum_{k\neq 1}w_n =
+\frac{Q_{1}}{w_{1}}.(w_1+\sum_{k\neq 1}w_n) = \frac{Q_{1}}{w_{1}}
+\end{equation}
+
+Now to calculate $S_n$, the share of value each token represents in the pool, all we have to do is divide the value of each token $V^1_n$ by the total pool value $V^1$:
+
+\begin{equation} 
+\label{equation:total_value_in_tokens1}
+S_n = \frac{V^1_n}{V^1} = w_n
+\end{equation}
+
+which proves both that the share each token represents of the total pool value is constant and also that it is equal to the weight of that token.
+
+
+\section{Trading Formulae}
+
+Calculating the trade outcomes for any given Balancer Pool is easy if we bear in mind that the Value Function $V$ must remain invariant\footnote{Again, this is a simplification for a Balancer Pool that does not charge any fees for trades, in practice trades are charged a fee that causes the value function to strictly increase}, i.e. $V$ must have the same value before and after any trade.
+
+\subsection{Amount of Token $out$ for Given Amount of Token $in$}
 When a user sends tokens $in$ to get tokens $out$, all other token balances remain the same. Therefore, if we define $q_{in}$ and $q_{out}$ as the amount of tokens $in$ and $out$ exchanged, we can calculate the amount $q_{out}$ a users gets when sending $q_{in}$:
 
 \begin{equation}
+\label{equation:q_out}
 \begin{gathered}
 (Q_{out}-q_{out})^{w_{out}}.(Q_{in}+q_{in})^{w_{in}} = Q_{out}^{w_{out}}.Q_{in}^{w_{in}} \\
 Q_{out}-q_{out} = \frac{Q_{in}^{\frac{w_{in}}{w_{out}}}.Q_{out}}{(Q_{in}+q_{in})^{\frac{w_{in}}{w_{out}}}}\\
@@ -208,6 +250,7 @@ q_{out} = \left(1 - \left(\frac{Q_{in}}{Q_{in}+q_{in}}\right)^{\frac{w_{in}}{w_{
 \end{gathered}
 \end{equation}
 
+\subsection{Amount of Token $in$ for Given Amount of Token $out$}
 It is also very useful for traders to know how much they need to send of the input token $q_{in}$ to get a desired amount of output token $q_{out}$. We can calculate the amount $q_{in}$ as a function of $q_{out}$ similarly as follows:
 
 \begin{equation}
@@ -218,11 +261,12 @@ q_{in} = \left(\left(\frac{Q_{out}}{Q_{out}-q_{out}}\right)^{\frac{w_{out}}{w_{i
 \end{gathered}
 \end{equation}
 
-Notice that $q_{out}$ as defined by eq. (6) tends to $SER^{out}_{in}.q_{in}$ when $q_{in} << Q_{in}$, as expected. This can be proved by using L'Hopital's rule\footnote{https://en.wikipedia.org/wiki/L'Hopital's\_rule} but this proof is out of the scope of this paper.
+Notice that $q_{out}$ as defined by Eq.\ref{equation:q_out} tends to $SER^{out}_{in}.q_{in}$ when $q_{in} << Q_{in}$, as expected. This can be proved by using L'Hopital's rule\footnote{https://en.wikipedia.org/wiki/L'Hopital's\_rule} but this proof is out of the scope of this paper.
 
-For practical purposes, traders intending to use our contract for arbitrage will prefer to know what amount of tokens $in$ -- $q_{in}$ -- they will have to send to the contract to change the current spot exchange rate $SER^{out}_{in}$ to another desired one $SER^{out}_{in}'$. The desired spot exchange rate will usually be the external market exchange rate and, so long as the contract spot exchange rate differs from the external market's, any arbitrageur can profit by trading with the contract and bringing the contract exchange rate closer to the external market's. 
+\subsection{Amount of Token $in$ to New Desired Spot Exchange Rate}
+For practical purposes, traders intending to use our contract for arbitrage will like to know what amount of tokens $in$ -- $q_{in}$ -- they will have to send to the contract to change the current spot exchange rate $SER^{out}_{in}$ to another desired one $SER^{out}_{in}'$. The desired spot exchange rate will usually be the external market exchange rate and, so long as the contract spot exchange rate differs from the external market's, any arbitrageur can profit by trading with the contract and bringing the contract exchange rate closer to the external market's. 
 
-It's easy to prove that the highest profit possible by an arbitrargeur is when they bring the contract spot exchange rate exactly to the market's. This is the main reason why our design is successful in keeping track of the market prices, thus being a reliable on-chain price sensor.
+The highest profit possible by an arbitrageur is when they bring the contract spot exchange rate exactly to the external market's exchange rate. As already mentioned, this is the main reason why our design is successful in keeping track of the market prices, thus being a reliable on-chain price sensor.
 
 It can be proved with a little math effort, which we consider out of this paper's scope, that the amount of tokens $in$ -- $q_{in}$ -- a user needs to trade against tokens $out$ so that the contract spot exchange rate changes from $SER^{out}_{in}$ to $SER^{out}_{in}'$ is:
 
@@ -232,82 +276,23 @@ q_{in} = \left(\left(\frac{SER^{out}_{in}}{SER^{out}_{in}'}\right)^\frac{w_{out}
 \end{gathered}
 \end{equation}
 
-\subsection{Reference Token}
+\section{Specifications and Smart Contract Design}
 
-To prove that our mathematical framework also fulfills the requirement that "there should exist a measure of value of the tokens held by the contract that is strictly non-decreasing over time" let's define an imaginary token called Reference Token, or $RT$. The spot exchange rate of any token $out$ in the contract in terms of $RT$ tokens is defined as:
+\subsection{Overview}
+Here we show the main smart contracts in the system and how each actor can interact with them: pool owners can set pool balances, weights and fees; traders can swap any pair of tokens directly with one or many pools (for example using SOR).
 
-\begin{equation}
-SER^{out}_{RT} = \frac{Q_{out}}{w_{out}}.\frac{1}{V}
-\end{equation}
+\subsection{Functions (maybe for appendix?)}
+Details of input and returned params
 
-Notice that this definition of spot exchange rates for all tokens against the Reference Token is valid because it is fully consistent with all the $\frac{(n^2 - n)}{2}$ exchange rates of the tokens with respect to each other, as per the derivative calculated above:
+\subsection{ERC20 Standard Considerations}
+See this section in Set Protocol's paper: https://www.setprotocol.com/pdf/set\_protocol\_whitepaper.pdf
+Interesting for us as well: 
+- Variant ERC20 Decimals
+- Variant Transfer Receive Quantities
+- Variant Transfer Return Values
 
-\begin{equation}
-SER^{out}_{in} = SER^{out}_{RT}.SER^{RT}_{j} = \frac{\frac{Q_{out}}{w_{out}}}{\frac{Q_{in}}{w_{in}}}
-\end{equation}
 
-By defining the exchange rates of all tokens against the $RT$ token as such, we can prove that the value in terms of $RT$ tokens of the total balance of any token $out$ -- $V_{out}$ -- is constant. This comes from the fact that the balance of each token decreases indirectly proportionally to its spot exchange rate in terms of $RT$:
-
-\begin{equation}
-V_{out} = \frac{Q_{out}}{SER^{out}_{RT}} = w_{out}.V 
-\end{equation}
-
-Notice also that the total value $V$ of the contract in  $RT$ tokens happens to be exactly $V$. This is no coincidence:
-
-\begin{equation}
-\sum_{k}V_k = \sum_{k}w_k.V = V.\sum_{k}w_k = V
-\end{equation}
-
-Reference Tokens can be seen as a weighted geometrical average amongst all tokens held by the contract. Their unit is $\prod_{k}(token\,k)^{w_k}$
-
-\subsection{Auto-balanced index fund}
-
-Eq. (10) summarizes the idea that this contract is an automatically balanced index fund in addition to being an on-chain price sensor -- which allows any blockchain user to trade the pairs of tokens it supports. By keeping function $V$ always invariant, it constantly exchanges tokens that become more valuable in return for those that become less valuable. Thus the amount of $value$ held by the contract in each token remains exactly the same at all times the contract is active. This value is equal to the total contract value times the weight of that corresponding token.
-
-\subsubsection{Index fund value in USD}
-We proved that the index fund has a constant value in terms of reference tokens $RT$. Therefore, one can calculate the variation of the total index fund value in terms of any other currency of interest -- for example USD -- by calculating the variation of value of one Reference Token relative to that other currency. 
-
-Let's define $\Delta SER^{USD}_{RT}$ as the variation between two different contract states $s$ and $s'$ of the spot exchange rate of one reference token against USD:
-
-\begin{equation}
-\Delta SER^{USD}_{RT} = \frac{SER^{USD}_{RT}'}{SER^{USD}_{RT}}
-\end{equation}
-
-If $SER^{USD}_{RT}$ does not change between two different states, then the value of one Reference Token in USD is preserved, and $\Delta SER^{USD}_{RT} = 1$
-
-It can be proved that the variation of value of one Reference Token in terms of any other currency, for example USD, can be calculated in terms of the variation of value of each token in the contract, weighted by their weights, as follows:
-
-\begin{equation}
-\Delta SER^{USD}_{RT} =\prod_{k}(\Delta SER^{USD}_{k})^{w_k}
-\end{equation}
-
-To help visualize the practical meaning of this equation, imagine a contract with only 2 different tokens, each with weight $0.5$. Suppose that:
-
-\begin{itemize}
-    \item token 1 doubled its exchange rate in USD -- i.e, a token 1 is now worth twice as much USD as before;
-    \item token 2 trippled its exchange rate in USD -- i.e, a token 2 is now worth three times as much USD as before.
-\end{itemize}
-
-Then the total value of the contract in USD would increase by a factor of:
-
-\begin{equation*}
-\Delta SER^{USD}_{RT} =\prod_{k}(\Delta SER^{USD}_{k})^{w_k} = 2^{0.5} . 3^{0.5} = 2,449...
-\end{equation*}
-
-\subsection{Fees}
-
-In order to incentivize the creation of instances of this auto-balanced index fund smart contract, we propose that the contract charge traders a fee $f$ which is a percentage of the tokens they send in for trading. This is industry standard for any exchange, centralized or not. Traders are used to paying a trading fee, especially considering that external users trading with our contract are comparable to liquidity "takers" on conventional exchanges -- as they execute a trade on the spot exchange rate as opposed to creating an order that may be fulfilled in the future (AKA liquidity "makers".
-
-To account for this fee in our mathematical framework, instead of using the amount of tokens $q_{in}$ sent by a user trading tokens $in$ for tokens $out$, we simply calculate the amount of tokens $out$ to be received by using $q_{in}'$ instead of the actual amount sent $q_{in}$, where $q_{in}' = q_{in}.(1-f)$. The fee $q_{in}. f$ can be considered revenue for the contract owner, as it will increase the value function $V$ of the contract.
-
-\section{Validation}
-
-** Here goes all the testing results proving that under different conditions and external users with different behaviors, the contract sensed price converges to the external market price. **
-
-\subsection{Example}
-
-Let's say we have a contract that has three tokens: DAI, ZRX and WETH.
-
-We expect WETH to be a primary exchange token -- that is, pairs containing it will be more often traded -- so we want to have more value stored in it for traders to suffer the least slippage possible. We define then $w_{DAI} = 0.25$, $w_{ZRX} = 0.25$ and $w_{WETH} = 0.5$. Considering DAI, ZRX and WETH prices in USD as respectively 1, 2 and 650, a possible initial balance of the contract could be $Q = [650, 325, 2]$. In this case, the reference token RT would have unit $DAI^{0.25}.ZRX^{0.25}.WETH^{0.5}$. The exchange rates of DAI, ZRX and WETH in RT would be respectively 0.666,	1.332 and 433.0.
+\section{References}
+Whitepapers, Vitalik's post about x*y = k etc.
 
 \end{document}  
