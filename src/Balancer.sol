@@ -13,7 +13,6 @@ contract Balancer is BalanceMath {
     uint256                   public feeRatio;
     uint256                   public unclaimedFees;
 
-    uint256 constant public   MAX_TOKENS = 8;
     uint256                   numTokens;
     mapping(address=>Record)  public records;
 
@@ -70,7 +69,6 @@ contract Balancer is BalanceMath {
     function bind(ERC20 token) public {
         require(msg.sender == manager);
         require( ! isBound(token));
-        require( numTokens < MAX_TOKENS );
         records[address(token)] = Record({
             addr: token
           , bound: true
@@ -82,8 +80,17 @@ contract Balancer is BalanceMath {
     function unbind(ERC20 token) public {
         require(msg.sender == manager);
         require(isBound(token));
+        require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
         delete records[address(token)];
         numTokens--;
+    }
+    // Collect fees and any excess token that may have been xferred in
+    function sweep(ERC20 token) public {
+        require(msg.sender == manager);
+        require(isBound(token));
+        uint256 selfBalance = records[address(token)].balance;
+        uint256 trueBalance = token.balanceOf(address(this));
+        token.transfer(msg.sender, trueBalance - selfBalance);
     }
     function pause() public {
         assert(msg.sender == manager);

@@ -18,17 +18,14 @@ let RAY = web3.utils.toBN('1000000000000000000000000000');
 let WAD = web3.utils.toBN('1000000000000000000');
 let bn = (num) => { return web3.utils.toBN(num); }
 
-
 var environment = { // Base scenario universe
     acct0: undefined,
     math: undefined,
     bTest: undefined,
 };
 
-// TODO untangle spaghetti
+// TODO promises etc
 beforeEach((done) => {
-    // web3.js / ganache-core bug, hangs on .send().then()
-    // Can be extracted manually
     deployer.deployType(web3, BalanceMath, (address) => {
         environment.math = new web3.eth.Contract(JSON.parse(BalanceMath.abi), address);
         deployer.deployType(web3, BalanceTest, (address) => {

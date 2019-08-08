@@ -28,6 +28,11 @@ Pool:
     // swap limit-in, specify-OUT
     swapLISO(tin, tinLimit, tout, toutAmount) returns (tinAmount)
 
+    setParams
+    bind/unbind
+    pause/start
+    sweep
+
 Math:
     swapImath( tinBalance, tinWeight,
              , toutBalance, toutWeight,
@@ -52,7 +57,3 @@ OAmount = OBalance * OBalanceScale
 
 
 ```
-
-
-
-
