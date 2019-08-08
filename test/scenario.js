@@ -1,19 +1,23 @@
-var assert = require("assert");
-var Web3 = require("web3");
-var ganache = require("ganache-core");
+let assert = require("assert");
+let Web3 = require("web3");
+let ganache = require("ganache-core");
 
 let buildout = require("../out/combined.json");
 let types = buildout.contracts;
 let Balancer = types["src/Balancer.sol:Balancer"];
 let BalanceMath = types["src/BalanceMath.sol:BalanceMath"];
-let BalanceMathConstant = types["src/BalanceMath.sol:BalanceMathConstant"];
 let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
 
-
-var web3 = new Web3(ganache.provider({
+let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true
 }));
+
+let RAY = web3.utils.toBN('1000000000000000000000000000');
+let WAD = web3.utils.toBN('1000000000000000000');
+let bn = (num) => { return web3.utils.toBN(num); }
+
+
 var objects = { // Base scenario universe
     acct0: undefined,
     math: undefined,
@@ -53,17 +57,19 @@ beforeEach((done) => {
     });
 });
 
-describe("test scenario", () => {
-    var RAY = web3.utils.toBN('1000000000000000000000000000');
-    var WAD = web3.utils.toBN('1000000000000000000');
-    let bn = (num) => { return web3.utils.toBN(num); }
-    it("swapImath basic values", async() => {
+describe("balanceMath", () => {
+    it("bAdd", async () => {
+    }); 
+    it("swapIMath", async () => {
         var M = objects.math;
         var res = await M.methods.swapImath( 1, 1
                                            , 1, 1
                                            , 1, 0).call();
         assert.equal(res.toutAmount, 1, "wrong amount");
     });
+});
+
+describe("test scenario", () => {
     it("`run`", async () => {
         var t = objects.bTest;
         await t.methods.run().send({from: acct0, gasLimit: 0xffffffff});

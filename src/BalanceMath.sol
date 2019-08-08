@@ -1,16 +1,11 @@
 pragma solidity ^0.5.10;
 
-// Study this
-// https://github.com/dapphub/ds-math/blob/master/src/math.sol
 import "ds-math/math.sol";
 import "erc20/erc20.sol";
 
 contract BalanceMath is DSMath
 {
-    function bAdd(uint256 a, uint256 b) public pure returns (uint256) {
-        return add(a, b);
-    }
-    
+   
     function swapImath( uint256 tinBalance, uint256 tinWeight
                       , uint256 toutBalance, uint256 toutWeight
                       , uint256 tinAmount
@@ -38,4 +33,23 @@ contract BalanceMath is DSMath
             toutBalance = toutBalance;
         return WAD; //return wdiv(tinWeight, toutWeight);
     }
+
+
+    // Expose DSMath as public / use wad terms
+    function bOne() public pure returns (uint256) {
+        return WAD;
+    }
+    function bAdd(uint256 a, uint256 b) public pure returns (uint256) {
+        return add(a, b);
+    }
+    function bSub(uint256 a, uint256 b) public pure returns (uint256) {
+        return sub(a, b);
+    }
+    function bMul(uint256 a, uint256 b) public pure returns (uint256) {
+        return wmul(a, b);
+    }
+    function bDiv(uint256 a, uint256 b) public pure returns (uint256) {
+        return wdiv(a, b);
+    }
+
 }
