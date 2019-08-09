@@ -27,21 +27,34 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
     },
 
-    swapImathApprox: function(Bo, Bi, Ai, Wi, Wo) {
+    swapImathApprox: function(Bo, Bi, Ai, Wi, Wo, fee) {
         // let partial = Wi % Wo;
         // let integer = (Wi / Wo) - partial;
-        let a = Wi / Wo;
-        let x = (Bi / (Bi + Ai)) - 1;
+        let ratio = Wi / Wo;
+
+        let y = (Bi / (Bi + Ai));
+        let x = y - 1;
 
         // term 0:
+        var a     = ratio;
         var numer = 1;
         var denom = 1;
-        var sum = 1;
+        var sum   = 1;
+        if (ratio >= 1) {
+            a = (Wi % Wo) / Wo;
+        } 
+
         for( var k = 1; k < 8; k++ ) {
-            numer = numer * (a - (k-1)) * (x**k);
-            denom = denom * k;
-            sum += numer / denom;
+            numer    = numer * (a - (k-1)) * (x**k);
+            denom    = denom * k;
+            sum     += numer / denom;
         }
+
+        if (ratio >= 1) {
+            a    = ratio | 0; 
+            sum *= 1 - y ** a;
+        }
+
         return Bo * sum;
     }
 }
