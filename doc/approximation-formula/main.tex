@@ -200,5 +200,12 @@ T_k = \frac{\left(\alpha-(k-1)\right)x}{k} T_{k-1}
 \end{gathered}
 \end{equation}
 
+The binomial approximation described above is especially accurate for small values of $\alpha$. When $\alpha>1$ we split the calculation into two parts for increased accuracy:
+
+\begin{equation}
+\begin{gathered}
+A_i = \left(1 - \left(\frac{B_o}{B_o-A_o}\right)^{int\left(\frac{W_o}{W_i}\right)}\left(\frac{B_o}{B_o-A_o}\right)^{\frac{W_o}{W_i}\%1}\right).B_i
+\end{gathered}
+\end{equation}
 
 \end{document}  
