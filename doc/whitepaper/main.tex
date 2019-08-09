@@ -64,63 +64,63 @@ The pool will have a certain total value and each of the tokens will make up a p
 Balancer Pools are automated market-makers because they allow any Ethereum user to trade on any pair contained in the pool. In the example pool above one could trade on any of the following pairs: WETH/MKR, MKR/ZRX and ZRX/WETH. Both directions, buying or selling, are always possible.
 
 \subsubsection{Spot Exchange Rate}
-Similarly to Uniswap, we propose the exchange rates of any of the $\frac{(n^2 - n)}{2}$ pairs of tokens within a pool of $n$ tokens to be defined exclusively by their balances\footnote{This means that the system state and its evolution is self-contained, i.e. no external feeds or oracles are necessary. This makes Balancer Protocol an excellent and trustworthy oracle, so long as there is enough liquidity available.}. We propose nevertheless an addition that enables Balancer pools to assume any basket value distribution as opposed to Uniswap\footnote{In Uniswap each exchange pair always holds the same value in ETH as in the ERC20 token. This is a consequence of the simple invariant function $x.y=k$ used, where $x$ represents the ETH balance, $y$ represents the ERC20 balance and $k$ is a value that would remain constant after any number of trades, were it not for the 0.3\% fees charged.}. The spot exchange rate between any two tokens, $SpotExchangeRate^{out}_{in}$, or in short $SER^{out}_{in}$, is the the ratio of the token balances \textit{normalized} by their weights:
+Similarly to Uniswap, we propose the exchange rates of any of the $\frac{(n^2 - n)}{2}$ pairs of tokens within a pool of $n$ tokens to be defined exclusively by their balances\footnote{This means that the system state and its evolution is self-contained, i.e. no external feeds or oracles are necessary. This makes Balancer Protocol an excellent and trustworthy oracle, so long as there is enough liquidity available.}. We propose nevertheless an addition that enables Balancer pools to assume any basket value distribution as opposed to Uniswap\footnote{In Uniswap each exchange pair always holds the same value in ETH as in the ERC20 token. This is a consequence of the simple invariant function $x.y=k$ used, where $x$ represents the ETH balance, $y$ represents the ERC20 balance and $k$ is a value that would remain constant after any number of trades, were it not for the 0.3\% fees charged.}. The spot exchange rate between any two tokens, $SpotExchangeRate^{o}_{i}$, or in short $SER^{o}_{i}$, is the the ratio of the token balances \textit{normalized} by their weights:
 
-\begin{equation} 
+\begin{equation}
 \label{equation:SER}
-SER^{out}_{in} = \frac{\frac{Q_{out}}{w_{out}}}{\frac{Q_{in}}{w_{in}}} 
+SER^{o}_{i} = \frac{\frac{B_{o}}{W_{o}}}{\frac{B_{i}}{W_{i}}}
 \end{equation}
 
 Where:
 \begin{itemize}
-    \item $Q_{out}$ is the balance of token \textit{out}, the token being bought by the trader which is going \textit{out} of the pool.
-    \item $Q_{in}$ is the balance of token \textit{in}, the token being sold by the trader which is going \textit{in} the pool.
-    \item $w_{out}$ is the weight of token \textit{out}
-    \item $w_{in}$ is the weight of token \textit{in}
+    \item $B_{o}$ is the balance of token \textit{o}, the token being bought by the trader which is going \textit{out} of the pool.
+    \item $B_{i}$ is the balance of token \textit{i}, the token being sold by the trader which is going \textit{into} the pool.
+    \item $W_{o}$ is the weight of token \textit{o}
+    \item $W_{i}$ is the weight of token \textit{i}
 
 \end{itemize}
 
 For example, if in the pool described above we had 10 WETH, 6000 ZRX and 1 MKR, then the spot exchange rates offered by this pool would be:
 
 \begin{align*}
-SER^{W}_{M} = \frac{\frac{Q_{W}}{w_{W}}}{\frac{Q_{M}}{w_{M}}} = \frac{\frac{10}{0.5}}{\frac{1}{0.2}} = 4  \end{align*}
+SER^{W}_{M} = \frac{\frac{B_{W}}{W_{W}}}{\frac{B_{M}}{W_{M}}} = \frac{\frac{10}{0.5}}{\frac{1}{0.2}} = 4  \end{align*}
 
 \begin{align*}
-SER^{M}_{Z} = \frac{\frac{Q_{M}}{w_{M}}}{\frac{Q_{Z}}{w_{Z}}} = \frac{\frac{1}{0.2}}{\frac{6000}{0.3}} = 0.00025
+SER^{M}_{Z} = \frac{\frac{B_{M}}{W_{M}}}{\frac{B_{Z}}{W_{Z}}} = \frac{\frac{1}{0.2}}{\frac{6000}{0.3}} = 0.00025
 \end{align*}
 
 \begin{align*}
-SER^{Z}_{W} = \frac{\frac{Q_{Z}}{w_{Z}}}{\frac{Q_{W}}{w_{W}}} = \frac{\frac{6000}{0.3}}{\frac{10}{0.5}} = 1000 \end{align*}
+SER^{Z}_{W} = \frac{\frac{B_{Z}}{W_{Z}}}{\frac{B_{W}}{W_{W}}} = \frac{\frac{6000}{0.3}}{\frac{10}{0.5}} = 1000 \end{align*}
 
 The spot exchange rate in the opposite direction of the trade is just the inverse of the original:
 
 \begin{equation}
-SER^{in}_{out} = \frac{1}{SER^{out}_{in}} 
+SER^{i}_{o} = \frac{1}{SER^{o}_{i}}
 \end{equation}
 
 \subsubsection{Effective Exchange Rate}
 
-It is important to bear in mind that $SER^{out}_{in}$ is the theoretical exchange rate for infinitesimal trades, which would incur in no slippage. In practice, the effective exchange rate for any trade depends on the amount being traded, which always leads to some slippage. If we define $q_{out}$ as the amount of token $out$ being bought by the trader and $q_{in}$ as the amount of token $in$ being sold by the trader, then we can define $EffectiveExchangeRate^{out}_{in}$, or in short $EER^{out}_{in}$ as:
+It is important to bear in mind that $SER^{o}_{i}$ is the theoretical exchange rate for infinitesimal trades, which would incur in no slippage. In practice, the effective exchange rate for any trade depends on the amount being traded, which always leads to some slippage. If we define $A_{o}$ as the amount of token $o$ being bought by the trader and $A_{i}$ as the amount of token $i$ being sold by the trader, then we can define $EffectiveExchangeRate^{o}_{i}$, or in short $EER^{o}_{i}$ as:
 
 \begin{equation}
-EER^{out}_{in} = \frac{q_{out}}{q_{in}} \end{equation}
+EER^{o}_{i} = \frac{A_{o}}{A_{i}} \end{equation}
 
 And as mentioned above, $EER$ tends to $SER$ when traded amounts tend to 0:
 
 \begin{equation}
 \label{equation:EER_tends_to_SER}
-SER^{out}_{in} = \lim_{q_{out},q_{in}\to 0} EER^{out}_{in}
+SER^{o}_{i} = \lim_{A_{o},A_{i}\to 0} EER^{o}_{i}
 \end{equation}
 
-The derivation of $q_{out}$ in terms of $q_{in}$ and vice-versa depend on the multidimensional invariant surface described in detail in section \ref{section:maths}.
+The derivation of $A_{o}$ in terms of $A_{i}$ and vice-versa depend on the multidimensional invariant surface described in detail in section \ref{section:maths}.
 
 \subsubsection{Arbitrage and External Market Exchange Rate Matching}
-From Eq.\ref{equation:SER}, considering weights constant during trades\footnote{Weights can be changed at any time by the pool owner. However since trade events are atomic, weights cannot be changed by the pool owner during a trade.}, the spot exchange rates offered by Balancer Pools only change with changing token balances. If the pool owner does not add or remove tokens to/from the pool, token balances can only change through trades. We have then a feedback loop that causes exchange rates of tokens being bought (token $out$) to decrease---i.e their prices increase---and vice-versa. One can prove that whenever external market exchange rates are different from those offered by a Balancer Pool, an arbitrageur will make the most profit by trading with that pool until its exchange rates equal those on the external market. When this happens there is no more arbitrage opportunity. These arbitrage opportunities are the reason why we see Uniswap exchange rates move in lockstep with the rest of the market. 
+From Eq.\ref{equation:SER}, considering weights constant during trades\footnote{Weights can be changed at any time by the pool owner. However since trade events are atomic, weights cannot be changed by the pool owner during a trade.}, the spot exchange rates offered by Balancer Pools only change with changing token balances. If the pool owner does not add or remove tokens to/from the pool, token balances can only change through trades. We have then a feedback loop that causes exchange rates of tokens being bought (token $o$) to decrease---i.e their prices increase---and vice-versa. One can prove that whenever external market exchange rates are different from those offered by a Balancer Pool, an arbitrageur will make the most profit by trading with that pool until its exchange rates equal those on the external market. When this happens there is no more arbitrage opportunity. These arbitrage opportunities are the reason why we see Uniswap exchange rates move in lockstep with the rest of the market.
 
 \subsection{Off-Chain Smart Order Routing (SOR)}
-Since Balancer Protocol allows any number of pools to be created, there may be several different pools that contain any given trading pair. If a trader wants to trade 100 Token A for Token B and the whole trade is carried out only in a single Balancer Pool, there may be a lot of slippage. That slippage would create a difference between exchange rates amongst different Balancer Pools, allowing for arbitrageurs to profit. In other words, trading with only one pool is equivalent to leaving money on the table only for arbitrageurs. 
+Since Balancer Protocol allows any number of pools to be created, there may be several different pools that contain any given trading pair. If a trader wants to trade 100 Token A for Token B and the whole trade is carried out only in a single Balancer Pool, there may be a lot of slippage. That slippage would create a difference between exchange rates amongst different Balancer Pools, allowing for arbitrageurs to profit. In other words, trading with only one pool is equivalent to leaving money on the table only for arbitrageurs.
 
-A better approach to minimize slippage and maximize the amount of tokens B received is spreading the 100 Tokens A across multiple Balancer pools such that all trades shift the exchange rates of the pools to the same value. Finding which amounts should be traded and in what pools is a non-linear, multi-variable optimization problem. Balancerpro.com has a free off-chain Smart Order Routing algorithm that solves this problem and finds the exact amounts to be traded with the most advantageous pools available. For that optimization we take into account the gas price selected as well as the states of all available Balancer pools in the desired pair. A simplified illustration of the Smart Order Routing is depicted in Fig.\ref{fig:smart_order_routing}.
+A better approach to minimize slippage and maximize the amount of tokens B received is spreading the 100 Tokens A across multiple Balancer pools such that all trades shift the exchange rates of the pools to the same value. Finding which amounts should be traded and in what pools is a non-linear, multi-variable optimization problem. Balancerpro.com has a free off-chain Smart Order Routing algorithm that solves this problem and finds the exact amounts to be traded with the most advantageous pools available. For that optimization we take into account the gas price selected as well as the states of all available Balancer pools in the desired pair. Fig.\ref{fig:smart_order_routing} illustrates an example of the Smart Order Routing process.
 
 \begin{figure}
   \includegraphics[]{smart_order_routing}
@@ -137,14 +137,14 @@ The bedrock of Balancer Protocol's mathematical framework is a value function th
 We propose $V$ to be defined as:
 \begin{equation}
 \label{equation:value_function}
-V = \prod_{k}(Q_k)^{w_k} 
+V = \prod_{k}(B_k)^{W_k}
 \end{equation}
 
 with:
 
 \begin{equation}
 \label{equation:sum_weights}
-\sum_{k} w_k = 1
+\sum_{k} W_k = 1
 \end{equation}
 
 The value function goes strictly up with the fees charged by Balancer Pools for each trade. However, for simplicity's sake, let's assume no fees are charged and we enforce that the value function remain constant. In other words, we make $V$ an invariant.
@@ -152,29 +152,29 @@ The value function goes strictly up with the fees charged by Balancer Pools for 
 \subsection{Spot Exchange Rate proof}
 Let's now prove that this choice of $V$ entails Eq.\ref{equation:SER}.
 
-First of all, we know that what the trader buys, $q_{out}$, is subtracted from the contract's balance. Therefore $q_{out}=-\Delta Q_{out}$. Likewise, what the trader sells, $q_{in}$, is added to the contract's balance. Therefore $q_{in} = \Delta Q_{in}$.
+First of all, we know that what the trader buys, $A_{o}$, is subtracted from the contract's balance. Therefore $A_{o}=-\Delta B_{o}$. Likewise, what the trader sells, $A_{i}$, is added to the contract's balance. Therefore $A_{i} = \Delta B_{i}$.
 
 Substituting in Eq.\ref{equation:EER_tends_to_SER} we get:
 
 \begin{equation}
 \label{equation:proof_partial_derivative_1}
-SER^{out}_{in} = \lim_{q_{out},q_{in}\to 0} EER^{out}_{in} = \lim_{\Delta Q_{out},\Delta Q_{in}\to 0} \frac{-\Delta Q_{out}}{\Delta Q_{in}}
+SER^{o}_{i} = \lim_{A_{o},A_{i}\to 0} EER^{o}_{i} = \lim_{\Delta B_{o},\Delta B_{i}\to 0} \frac{-\Delta B_{o}}{\Delta B_{i}}
 \end{equation}
 
-This limit is, by definition, minus the partial derivative of $Q_{out}$ in function of $Q_{in}$. 
+This limit is, by definition, minus the partial derivative of $B_{o}$ in function of $B_{i}$:
 
 \begin{equation}
 \label{equation:proof_partial_derivative_2}
-SER^{out}_{in} = -\frac{\partial Q_{out}}{\partial Q_{in}}
+SER^{o}_{i} = -\frac{\partial B_{o}}{\partial B_{i}}
 \end{equation}
 
-From the value function definition in Eq.\ref{equation:value_function} we can isolate $Q_{out}$:
+From the value function definition in Eq.\ref{equation:value_function} we can isolate $B_{o}$:
 
 \begin{equation}
 \label{equation:proof_partial_derivative_3}
 \begin{gathered}
-(Q_{out})^{w_{out}} =  \frac{V}{\left(\prod_{k\neq out, k\neq in}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\\
-Q_{out} =  \left(\frac{V}{\left(\prod_{k\neq out, k\neq in}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\right)^\frac{1}{w_{out}}
+(B_{o})^{W_{o}} =  \frac{V}{\left(\prod_{k\neq out, k\neq in}(B_k)^{W_k}\right).(B_{i})^{W_{i}}}\\
+B_{o} =  \left(\frac{V}{\left(\prod_{k\neq out, k\neq in}(B_k)^{W_k}\right).(B_{i})^{W_{i}}}\right)^\frac{1}{W_{o}}
 \end{gathered}
 \end{equation}
 
@@ -182,53 +182,54 @@ Now we use Eq.\ref{equation:proof_partial_derivative_3} to expand the partial de
 
 \begin{equation}
 \begin{gathered}
-SER^{out}_{in} = 
--\frac{\partial Q_{out}}{\partial Q_{in}} =
--\frac{\partial{\left(\left(\frac{V}{\left(\prod_{k\neq out, k\neq in}(Q_k)^{w_k}\right).(Q_{in})^{w_{in}}}\right)^\frac{1}{w_{out}}\right)}}{\partial Q_{in}}  =\\
-=-\left(\frac{V}{\prod_{k\neq out, k\neq in}(Q_k)^{w_k}}\right)^\frac{1}{w_{out}}
+SER^{o}_{i} =
+-\frac{\partial B_{o}}{\partial B_{i}} =
+-\frac{\partial{\left(\left(\frac{V}{\left(\prod_{k\neq out, k\neq in}(B_k)^{W_k}\right).(B_{i})^{W_{i}}}\right)^\frac{1}{W_{o}}\right)}}{\partial B_{i}}  =\\
+=-\left(\frac{V}{\prod_{k\neq out, k\neq in}(B_k)^{W_k}}\right)^\frac{1}{W_{o}}
 .
-\frac{\partial{\left(Q_{in}^{-\frac{w_{in}}{w_{out}}}\right)}}{\partial Q_{in}} =\\
-=-\left(\frac{V}{\prod_{k\neq out, k\neq in}(Q_k)^{w_k}}\right)^\frac{1}{w_{out}}
+\frac{\partial{\left(B_{i}^{-\frac{W_{i}}{W_{o}}}\right)}}{\partial B_{i}} =\\
+=-\left(\frac{V}{\prod_{k\neq out, k\neq in}(B_k)^{W_k}}\right)^\frac{1}{W_{o}}
 .
--\frac{w_{in}}{w_{out}}.Q_{in}^{-\frac{w_{in}}{w_{out}}-1} =\\
-=\left(\frac{V}{\prod_{k}(Q_k)^{w_k}}\right)^\frac{1}{w_{out}}
-.Q_{in}^{\frac{w_{in}}{w_{out}}}.Q_{out}
-.\frac{w_{in}}{w_{out}}.Q_{in}^{-\frac{w_{in}}{w_{out}}-1} = \frac{\frac{Q_{out}}{w_{out}}}{\frac{Q_{in}}{w_{in}}}
+-\frac{W_{i}}{W_{o}}.B_{i}^{-\frac{W_{i}}{W_{o}}-1} =\\
+=\left(\frac{V}{\prod_{k}(B_k)^{W_k}}\right)^\frac{1}{W_{o}}
+.B_{i}^{\frac{W_{i}}{W_{o}}}.B_{o}
+.\frac{W_{i}}{W_{o}}.B_{i}^{-\frac{W_{i}}{W_{o}}-1} = \frac{\frac{B_{o}}{W_{o}}}{\frac{B_{i}}{W_{i}}}
 \end{gathered}
 \end{equation}
 
 which concludes our proof.
 
 \subsection{Constant Value Distribution Proof}
-We will now prove that: 
+\label{section:proof_constant_value_distribution}
+We will now prove that:
 \begin{enumerate}
     \item Balancer Pools maintain a constant share of value across all tokens in the pool and;
     \item These shares of value are equal to the weights associated to each token.
 \end{enumerate}
 
-Let's calculate $V^1$, the total pool value in terms of token $1$---it can really be any token in the pool since they are not necessarily ordered. Since we already know that the pool has $Q_1$ tokens $1$, let's calculate how many tokens $1$ all the other remaining tokens are worth. It does not make sense to use their Effective Exchange Rate relative to token $1$ since we are not going to do any actual trade. Instead, to calculate the theoretical value we use their Spot Exchange Rates relative to token $1$.
+Let's calculate $V^1$, the total pool value in terms of token $1$---it can really be any token in the pool since they are not necessarily ordered. Since we already know that the pool has $B_1$ tokens $1$, let's calculate how many tokens $1$ all the other remaining tokens are worth. It does not make sense to use their Effective Exchange Rate relative to token $1$ since we are not going to do any actual trade. Instead, to calculate the theoretical value we use their Spot Exchange Rates relative to token $1$.
 
 From Eq.\ref{equation:SER} we can calculate $V^1_n$, i.e how many tokens $1$ the balance of each token $n$ is worth:
-\begin{equation} 
-\label{equation:value_in_tokens1}
-V^1_n = Q_{n} . SER^{1}_{n} = Q_{n} . \frac{\frac{Q_{1}}{w_{1}}}{\frac{Q_{n}}{w_{n}}} = 
-Q_{1}.\frac{w_{n}}{w_{1}}
+\begin{equation}
+\label{equation:value_i_tokens1}
+V^1_n = B_{n} . SER^{1}_{n} = B_{n} . \frac{\frac{B_{1}}{W_{1}}}{\frac{B_{n}}{W_{n}}} =
+B_{1}.\frac{W_{n}}{W_{1}}
 \end{equation}
 
 We know that the total pool value in terms of tokens $1$ is the sum of the values of each token in terms of tokens $1$:
 
-\begin{equation} 
-\label{equation:total_value_in_tokens1}
-V^1 = \sum_{k}V^1_k = Q_{1} +\sum_{k\neq 1}V^1_k = 
-Q_{1} + \frac{Q_{1}}{w_{1}}.\sum_{k\neq 1}w_n =
-\frac{Q_{1}}{w_{1}}.(w_1+\sum_{k\neq 1}w_n) = \frac{Q_{1}}{w_{1}}
+\begin{equation}
+\label{equation:total_value_i_tokens1}
+V^1 = \sum_{k}V^1_k = B_{1} +\sum_{k\neq 1}V^1_k =
+B_{1} + \frac{B_{1}}{W_{1}}.\sum_{k\neq 1}W_n =
+\frac{B_{1}}{W_{1}}.(W_1+\sum_{k\neq 1}W_n) = \frac{B_{1}}{W_{1}}
 \end{equation}
 
 Now to calculate $S_n$, the share of value each token represents in the pool, all we have to do is divide the value of each token $V^1_n$ by the total pool value $V^1$:
 
-\begin{equation} 
-\label{equation:total_value_in_tokens1}
-S_n = \frac{V^1_n}{V^1} = w_n
+\begin{equation}
+\label{equation:total_value_i_tokens1}
+S_n = \frac{V^1_n}{V^1} = W_n
 \end{equation}
 
 which proves both that the share each token represents of the total pool value is constant and also that it is equal to the weight of that token.
@@ -238,41 +239,41 @@ which proves both that the share each token represents of the total pool value i
 
 Calculating the trade outcomes for any given Balancer Pool is easy if we bear in mind that the Value Function $V$ must remain invariant\footnote{Again, this is a simplification for a Balancer Pool that does not charge any fees for trades, in practice trades are charged a fee that causes the value function to strictly increase}, i.e. $V$ must have the same value before and after any trade.
 
-\subsection{Amount of Token $out$ for Given Amount of Token $in$}
-When a user sends tokens $in$ to get tokens $out$, all other token balances remain the same. Therefore, if we define $q_{in}$ and $q_{out}$ as the amount of tokens $in$ and $out$ exchanged, we can calculate the amount $q_{out}$ a users gets when sending $q_{in}$:
+\subsection{Amount of Token $o$ for Given Amount of Token $i$}
+When a user sends tokens $i$ to get tokens $o$, all other token balances remain the same. Therefore, if we define $A_{i}$ and $A_{o}$ as the amount of tokens $i$ and $o$ exchanged, we can calculate the amount $A_{o}$ a users gets when sending $A_{i}$:
 
 \begin{equation}
-\label{equation:q_out}
+\label{equation:A_o}
 \begin{gathered}
-(Q_{out}-q_{out})^{w_{out}}.(Q_{in}+q_{in})^{w_{in}} = Q_{out}^{w_{out}}.Q_{in}^{w_{in}} \\
-Q_{out}-q_{out} = \frac{Q_{in}^{\frac{w_{in}}{w_{out}}}.Q_{out}}{(Q_{in}+q_{in})^{\frac{w_{in}}{w_{out}}}}\\
-q_{out} = \left(1 - \left(\frac{Q_{in}}{Q_{in}+q_{in}}\right)^{\frac{w_{in}}{w_{out}}}\right).Q_{out}
+(B_{o}-A_{o})^{W_{o}}.(B_{i}+A_{i})^{W_{i}} = B_{o}^{W_{o}}.B_{i}^{W_{i}} \\
+B_{o}-A_{o} = \frac{B_{i}^{\frac{W_{i}}{W_{o}}}.B_{o}}{(B_{i}+A_{i})^{\frac{W_{i}}{W_{o}}}}\\
+A_{o} = \left(1 - \left(\frac{B_{i}}{B_{i}+A_{i}}\right)^{\frac{W_{i}}{W_{o}}}\right).B_{o}
 \end{gathered}
 \end{equation}
 
-\subsection{Amount of Token $in$ for Given Amount of Token $out$}
-It is also very useful for traders to know how much they need to send of the input token $q_{in}$ to get a desired amount of output token $q_{out}$. We can calculate the amount $q_{in}$ as a function of $q_{out}$ similarly as follows:
+\subsection{Amount of Token $i$ for Given Amount of Token $o$}
+It is also very useful for traders to know how much they need to send of the input token $A_{i}$ to get a desired amount of output token $A_{o}$. We can calculate the amount $A_{i}$ as a function of $A_{o}$ similarly as follows:
 
 \begin{equation}
 \begin{gathered}
-(Q_{out}-q_{out})^{w_{out}}.(Q_{in}+q_{in})^{w_{in}} = Q_{out}^{w_{out}}.Q_{in}^{w_{in}} \\
-Q_{in}+q_{in} = \frac{Q_{out}^{\frac{w_{out}}{w_{in}}}.Q_{in}}{(Q_{out}-q_{out})^{\frac{w_{out}}{w_{in}}}}\\
-q_{in} = \left(\left(\frac{Q_{out}}{Q_{out}-q_{out}}\right)^{\frac{w_{out}}{w_{in}}}-1\right).Q_{in}
+(B_{o}-A_{o})^{W_{o}}.(B_{i}+A_{i})^{W_{i}} = B_{o}^{W_{o}}.B_{i}^{W_{i}} \\
+B_{i}+A_{i} = \frac{B_{o}^{\frac{W_{o}}{W_{i}}}.B_{i}}{(B_{o}-A_{o})^{\frac{W_{o}}{W_{i}}}}\\
+A_{i} = \left(\left(\frac{B_{o}}{B_{o}-A_{o}}\right)^{\frac{W_{o}}{W_{i}}}-1\right).B_{i}
 \end{gathered}
 \end{equation}
 
-Notice that $q_{out}$ as defined by Eq.\ref{equation:q_out} tends to $SER^{out}_{in}.q_{in}$ when $q_{in} << Q_{in}$, as expected. This can be proved by using L'Hopital's rule\footnote{https://en.wikipedia.org/wiki/L'Hopital's\_rule} but this proof is out of the scope of this paper.
+Notice that $A_{o}$ as defined by Eq.\ref{equation:A_o} tends to $SER^{o}_{i}.A_{i}$ when $A_{i} << B_{i}$, as expected. This can be proved by using L'Hopital's rule\footnote{https://en.wikipedia.org/wiki/L'Hopital's\_rule} but this proof is out of the scope of this paper.
 
-\subsection{Amount of Token $in$ to New Desired Spot Exchange Rate}
-For practical purposes, traders intending to use our contract for arbitrage will like to know what amount of tokens $in$ -- $q_{in}$ -- they will have to send to the contract to change the current spot exchange rate $SER^{out}_{in}$ to another desired one $SER^{out}_{in}'$. The desired spot exchange rate will usually be the external market exchange rate and, so long as the contract spot exchange rate differs from the external market's, any arbitrageur can profit by trading with the contract and bringing the contract exchange rate closer to the external market's. 
+\subsection{Amount of Token $i$ to New Desired Spot Exchange Rate}
+For practical purposes, traders intending to use our contract for arbitrage will like to know what amount of tokens $i$ -- $A_{i}$ -- they will have to send to the contract to change the current spot exchange rate $SER^{o}_{i}$ to another desired one $SER^{o}_{i}'$. The desired spot exchange rate will usually be the external market exchange rate and, so long as the contract spot exchange rate differs from the external market's, any arbitrageur can profit by trading with the contract and bringing the contract exchange rate closer to the external market's.
 
 The highest profit possible by an arbitrageur is when they bring the contract spot exchange rate exactly to the external market's exchange rate. As already mentioned, this is the main reason why our design is successful in keeping track of the market prices, thus being a reliable on-chain price sensor.
 
-It can be proved with a little math effort, which we consider out of this paper's scope, that the amount of tokens $in$ -- $q_{in}$ -- a user needs to trade against tokens $out$ so that the contract spot exchange rate changes from $SER^{out}_{in}$ to $SER^{out}_{in}'$ is:
+It can be proved with a little math effort, which we consider out of this paper's scope, that the amount of tokens $i$ -- $A_{i}$ -- a user needs to trade against tokens $o$ so that the pool's spot exchange rate changes from $SER^{o}_{i}$ to $SER^{o}_{i}'$ is:
 
 \begin{equation}
 \begin{gathered}
-q_{in} = \left(\left(\frac{SER^{out}_{in}}{SER^{out}_{in}'}\right)^\frac{w_{out}}{w_{out}+w_{in}} - 1 \right).Q_{in}
+A_{i} = \left(\left(\frac{SER^{o}_{i}}{SER^{o}_{i}'}\right)^\frac{W_{o}}{W_{o}+W_{i}} - 1 \right).B_{i}
 \end{gathered}
 \end{equation}
 
