@@ -20,19 +20,19 @@
 \section{Original formulas to be approximated}
 %\subsection{}
 
-When a user sends to Balancer tokens $j$ to get tokens $i$, we can calculate $q_i$ (the amount of tokens $i$) a user gets when sending $q_j$ (the amount of tokens $j$):
+When a user sends to Balancer tokens $i$ to get tokens $o$, we can calculate $A_o$ (the amount of tokens $o$) a user gets when sending $A_i$ (the amount of tokens $i$):
 
 \begin{equation}
 \begin{gathered}
-q_i = \left(1 - \left(\frac{Q_j}{Q_j+q_j}\right)^{\frac{w_j}{w_i}}\right).Q_i
+A_o = \left(1 - \left(\frac{B_i}{B_i+A_i}\right)^{\frac{W_i}{W_o}}\right).B_o
 \end{gathered}
 \end{equation}
 
-It is also very useful for traders to know how much they need to send of the input token $q_j$ to get a desired amount of output token $q_i$. We can calculate the amount $q_j$ as a function of $q_i$ similarly as follows:
+It is also very useful for traders to know how much they need to send of the input token $A_i$ to get a desired amount of output token $A_o$. We can calculate the amount $A_i$ as a function of $A_o$ similarly as follows:
 
 \begin{equation}
 \begin{gathered}
-q_j = \left(\left(\frac{Q_i}{Q_i-q_i}\right)^{\frac{w_i}{w_j}}-1\right).Q_j
+A_i = \left(\left(\frac{B_o}{B_o-A_o}\right)^{\frac{W_o}{W_i}}-1\right).B_i
 \end{gathered}
 \end{equation}
 
@@ -48,19 +48,21 @@ Since solidity does not have fixed point algebra or more complex functions like 
 
 which converges for ${|x| < 1}$
 \\
+
+\subsection{Derivation for $A_o$}
 We derive the solidity approximation of the first equation using the binomial approximation above:
 
 \begin{equation}
 \begin{gathered}
-q_i = \left(1 - \left(1+x\right)^{\alpha}\right).Q_i
+A_o = \left(1 - \left(1+x\right)^{\alpha}\right).B_o
 \end{gathered}
 \end{equation}
 
-where 
+where
 
 \begin{equation}
 \begin{gathered}
-x = \frac{Q_j}{Q_j+q_j} - 1 = \frac{-q_j}{Q_j+q_j}
+x = \frac{B_i}{B_i+A_i} - 1 = \frac{-A_i}{B_i+A_i}
 \end{gathered}
 \end{equation}
 
@@ -68,11 +70,11 @@ and
 
 \begin{equation}
 \begin{gathered}
-\alpha = \frac{w_j}{w_i}
+\alpha = \frac{W_i}{W_o}
 \end{gathered}
 \end{equation}
 
-$q_j$ is by design limited to $10\%$ of $Q_j$. That is, no trade can exchange/sell more than $10\%$ of Balancer's balance of those tokens. This prevents excessive slippage loss for traders.
+$A_i$ is by design limited to $10\%$ of $B_i$. That is, no trade can exchange/sell more than $10\%$ of Balancer's balance of those tokens. This prevents excessive slippage loss for traders.
 \\
 \\
 $|x|$ is then by design always lower than 0.1.
@@ -81,23 +83,31 @@ $|x|$ is then by design always lower than 0.1.
 Since calculations in solidity are done in integers, the order of the operations we choose is fundamental for the calculation to be correct. E.g. $(99/100)*100 = 0$. This happens because $99/100$ is truncated to 0 and then multiplied by 100.
 \\
 
-To avoid dividing two numbers that are close to each other (which truncates all the precision as in the example above), we multiply by $Q_i$ all terms in the binomial expansion used for approximating $q_i$:
+To avoid dividing two numbers that are close to each other (which truncates all the precision as in the example above), we multiply by $B_o$ all terms in the binomial expansion used for approximating $A_o$:
 
 
 \begin{equation}
 \begin{gathered}
-q_i=Q_i+Q_i\alpha x+
-Q_i\frac{(\alpha)(\alpha-1)}{2!}x^2+
-Q_i\frac{(\alpha)(\alpha-1)(\alpha-2)}{3!}x^3+
-\cdots 
+A_o=
+\left(1 - \left(1+x\right)^{\alpha}\right).B_o =
+\\
+B_o - \left(B_o + B_o\alpha x+
+B_o\frac{(\alpha)(\alpha-1)}{2!}x^2+
+B_o\frac{(\alpha)(\alpha-1)(\alpha-2)}{3!}x^3+
+\cdots\right) =
+\\
+-\left(B_o\alpha x+
+B_o\frac{(\alpha)(\alpha-1)}{2!}x^2+
+B_o\frac{(\alpha)(\alpha-1)(\alpha-2)}{3!}x^3+
+\cdots \right)
 \end{gathered}
 \end{equation}
 
-To make the solidity implementation simpler and more elegant using recursive functions, we can rewrite $q_i$ as:
+To make the solidity implementation simpler and more elegant using recursive functions, we can rewrite $A_o$ as:
 
 \begin{equation}
 \begin{gathered}
-q_i = \sum_{k=0}^{n}T_k
+A_o = -\sum_{k=1}^{n}T_k
 \end{gathered}
 \end{equation}
 
@@ -105,7 +115,7 @@ q_i = \sum_{k=0}^{n}T_k
 where:
 \begin{equation}
 \begin{gathered}
-T_0 = Q_i
+T_0 = B_o
 \end{gathered}
 \end{equation}
 and
@@ -119,7 +129,82 @@ The binomial approximation described above is especially accurate for small valu
 
 \begin{equation}
 \begin{gathered}
-q_i = \left(1 - \left(\frac{Q_j}{Q_j+q_j}\right)^{int\left(\frac{w_j}{w_i}\right)}\left(\frac{Q_j}{Q_j+q_j}\right)^{w_j\%w_i}\right).Q_i
+A_o = \left(1 - \left(\frac{B_i}{B_i+A_i}\right)^{int\left(\frac{W_i}{W_o}\right)}\left(\frac{B_i}{B_i+A_i}\right)^{\frac{W_i}{W_o}\%1}\right).B_o
+\end{gathered}
+\end{equation}
+
+\subsection{Derivation for $A_i$}
+Similarly to $A_o$, we have for $A_i$:
+
+\begin{equation}
+\begin{gathered}
+A_i = \left(\left(1+x\right)^{\alpha}-1\right).B_i
+\end{gathered}
+\end{equation}
+
+where
+
+\begin{equation}
+\begin{gathered}
+x = \frac{B_o}{B_o-A_o} - 1 = \frac{A_o}{B_o-A_o}
+\end{gathered}
+\end{equation}
+
+and
+
+\begin{equation}
+\begin{gathered}
+\alpha = \frac{W_o}{W_i}
+\end{gathered}
+\end{equation}
+
+To avoid dividing two numbers that are close to each other (which truncates all the precision as in the example above), we multiply by $B_i$ all terms in the binomial expansion used for approximating $A_i$:
+
+
+\begin{equation}
+\begin{gathered}
+A_i=
+\left(\left(1+x\right)^{\alpha}-1\right).B_i =
+\\
+\left(B_i + B_i\alpha x+
+B_i\frac{(\alpha)(\alpha-1)}{2!}x^2+
+B_i\frac{(\alpha)(\alpha-1)(\alpha-2)}{3!}x^3+
+\cdots\right) - B_i =
+\\
+\left(B_i\alpha x+
+B_i\frac{(\alpha)(\alpha-1)}{2!}x^2+
+B_i\frac{(\alpha)(\alpha-1)(\alpha-2)}{3!}x^3+
+\cdots \right)
+\end{gathered}
+\end{equation}
+
+To make the solidity implementation simpler and more elegant using recursive functions, we can rewrite $A_i$ as:
+
+\begin{equation}
+\begin{gathered}
+A_i = \sum_{k=1}^{n}T_k
+\end{gathered}
+\end{equation}
+
+
+where:
+\begin{equation}
+\begin{gathered}
+T_0 = B_i
+\end{gathered}
+\end{equation}
+and
+\begin{equation}
+\begin{gathered}
+T_k = \frac{\left(\alpha-(k-1)\right)x}{k} T_{k-1}
+\end{gathered}
+\end{equation}
+
+The binomial approximation described above is especially accurate for small values of $\alpha$. When $\alpha>1$ we split the calculation into two parts for increased accuracy:
+
+\begin{equation}
+\begin{gathered}
+A_i = \left(1 - \left(\frac{B_o}{B_o-A_o}\right)^{int\left(\frac{W_o}{W_i}\right)}\left(\frac{B_o}{B_o-A_o}\right)^{\frac{W_o}{W_i}\%1}\right).B_i
 \end{gathered}
 \end{equation}
 
