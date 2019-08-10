@@ -29,6 +29,9 @@ var environment = { // Base scenario universe
 beforeEach((done) => {
     // web3.js / ganache-core bug, hangs on .send().then()
     // Can be extracted manually
+    web3.eth.getAccounts(function(err, accts) {
+        environment.acct0 = accts[0];
+    });
     deployer.deployType(web3, BalanceMath, (address) => {
         environment.math = new web3.eth.Contract(JSON.parse(BalanceMath.abi), address);
         deployer.deployType(web3, BalanceTest, (address) => {
@@ -76,7 +79,7 @@ describe("balanceMath", function() {
 describe("test scenario", () => {
     it("`run`", async () => {
         var t = environment.bTest;
-        await t.methods.run().send({from: acct0, gasLimit: 0xffffffff});
+        await t.methods.run().send({from: environment.acct0, gasLimit: 0xffffffff});
         var fails = await t.getPastEvents('Fail');
         if( fails.length != 0 ) {
             for (fail of fails) {
