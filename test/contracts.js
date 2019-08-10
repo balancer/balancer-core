@@ -38,13 +38,10 @@ beforeEach((done) => {
         new web3.eth.Contract(JSON.parse(type.abi))
             .deploy({data: type.bin})
             .send({from: objects.acct0, gas: 6000000}, (err,tx) => {
-                //console.log(err, tx);
-                setTimeout(() => {
-                    web3.eth.getTransactionReceipt(tx, (err, receipt) => {
-                        //console.log(err, receipt);
-                        cb(receipt.contractAddress);
-                    })
-                }, 25);
+                web3.eth.getTransactionReceipt(tx, (err, receipt) => {
+                    //console.log(err, receipt);
+                    cb(receipt.contractAddress);
+                })
             })
     }
 
