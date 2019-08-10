@@ -34,10 +34,10 @@ beforeEach((done) => {
             throw new Error("Trying to deploy contract with empty `bin`");
         }
         let accounts = await web3.eth.getAccounts();
-        acct0 = accounts[0];
+        objects.acct0 = accounts[0];
         new web3.eth.Contract(JSON.parse(type.abi))
             .deploy({data: type.bin})
-            .send({from: acct0, gas: 6000000}, (err,tx) => {
+            .send({from: objects.acct0, gas: 6000000}, (err,tx) => {
                 //console.log(err, tx);
                 setTimeout(() => {
                     web3.eth.getTransactionReceipt(tx, (err, receipt) => {
@@ -79,7 +79,7 @@ describe("balanceMath", function() {
 describe("test contracts", () => {
     it("`run`", async () => {
         var t = objects.bTest;
-        await t.methods.run().send({from: environment.acct0, gasLimit: 0xffffffff});
+        await t.methods.run().send({from: objects.acct0, gasLimit: 0xffffffff});
         var fails = await t.getPastEvents('Fail');
         if( fails.length != 0 ) {
             for (fail of fails) {
