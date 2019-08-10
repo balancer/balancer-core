@@ -3,10 +3,9 @@
 // Wi := Weight of token In
 // Wo := Weight of token Out
 // Ai := Amount of token In
-
 module.exports.floatMath = {
 
-    spotPrice: function(Bo, Bi, Wi, Wo) {
+    spotPrice: function(Bo, Bi, Wo, Wi) {
         if( Bo<=0 || Bi<=0 || Wi<=0 || Wo<=0) {
             throw "Bad argument";
         }
@@ -51,7 +50,7 @@ module.exports.floatMath = {
         }
 
         if (ratio >= 1) {
-            a    = ratio | 0; 
+            a    = Math.floor(ratio); 
             sum *= 1 - y ** a;
         }
 

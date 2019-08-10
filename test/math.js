@@ -37,7 +37,15 @@ describe("math.js", () => {
         assert.closeTo(14, fMath.swapImathApprox(16, 16, 16, 3, 1, 0), tolerance);
     });
     it("whitepaper spotPrice points", () => {
-        throw new Error("unimplemented");
+        let wWETH = 0.5;
+        let wMKR  = 0.2;
+        let wZRX  = 0.3;
+        let BWETH = 10;
+        let BMKR  = 1;
+        let BZRX  = 6000;
+        assert.closeTo(fMath.spotPrice(BWETH, BMKR, wWETH, wMKR), 4, tolerance);
+        assert.closeTo(fMath.spotPrice(BMKR, BZRX, wMKR, wZRX), 0.00025, tolerance);
+        assert.closeTo(fMath.spotPrice(BZRX, BWETH, wZRX, wWETH), 1000, tolerance);
     });
 
     it("should throw for bad arguments", () => {
