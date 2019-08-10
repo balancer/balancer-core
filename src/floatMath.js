@@ -27,6 +27,9 @@ module.exports.floatMath = {
     },
 
     swapImathApprox: function(Bo, Bi, Ai, Wi, Wo, fee) {
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
         // let partial = Wi % Wo;
         // let integer = (Wi / Wo) - partial;
         let ratio = Wi / Wo;

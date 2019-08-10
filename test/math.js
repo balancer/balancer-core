@@ -37,23 +37,24 @@ describe("math.js", () => {
         assert.closeTo(14, fMath.swapImathApprox(16, 16, 16, 3, 1, 0), tolerance);
     });
     it("whitepaper spotPrice points", () => {
-        let wWETH = 0.5;
-        let wMKR  = 0.2;
-        let wZRX  = 0.3;
-        let BWETH = 10;
-        let BMKR  = 1;
-        let BZRX  = 6000;
-        assert.closeTo(fMath.spotPrice(BWETH, BMKR, wWETH, wMKR), 4, tolerance);
-        assert.closeTo(fMath.spotPrice(BMKR, BZRX, wMKR, wZRX), 0.00025, tolerance);
-        assert.closeTo(fMath.spotPrice(BZRX, BWETH, wZRX, wWETH), 1000, tolerance);
+        var weights  = [0.5, 0.2, 0.3];
+        var balances = [10, 1, 6000];
+        var expected = [4, 0.001, 0.00025];
+        var testIdx  = 0;
+        for (var i = 0; i < expected.length - 1; i++) {
+            var j = i + 1;
+            for (; j < expected.length; j++) {
+                assert.closeTo(fMath.spotPrice(balances[i], balances[j], weights[i], weights[j]), expected[testIdx++], tolerance);
+            }
+        }
     });
 
     it("should throw for bad arguments", () => {
-        assert.throws(() => {
-            fMath.swapImath(10, 10, 11, 1, 0);
-        });
-        assert.throws(() => {
-            fMath.swapImath(0, 0, 1, 1, 1);
-        });
+        var good = [2,2,1,1,0.01];
+        for (var k = 0; k < 4; k++) {
+            bad    = [].concat(good);
+            bad[k] = 0;
+            assert.throws(() => { fMath.swapImathExact.apply(null, bad); });
+        }
     });
 });
