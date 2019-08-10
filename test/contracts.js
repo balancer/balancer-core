@@ -5,10 +5,6 @@ let ganache = require("ganache-core");
 let deployer = require("../src/deployer.js")
 
 let buildout = require("../out/combined.json");
-let types = buildout.contracts;
-let Balancer = types["src/Balancer.sol:Balancer"];
-let BalanceMath = types["src/BalanceMath.sol:BalanceMath"];
-let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
@@ -30,7 +26,7 @@ beforeEach(async () => {
 });
 
 describe("balanceMath", function() {
-    it("bAdd", async () => {
+    it("bAdd", async function () {
         let M = objects.math;
         var one = await M.methods.bOne().call();
         var two = await M.methods.bAdd(one, one).call();
@@ -39,6 +35,12 @@ describe("balanceMath", function() {
         assert.equal(fourAdd, fourMul);
         
     }); 
+    it("bMath.ratio(1, 1, 1, 1)", async function() {
+        let M = objects.math;
+        let one = await M.methods.bOne().call();
+        var res = await M.methods.ratio(one, one, one, one).call();
+        assert.equal(one, res);
+    });
     it("swapIMath", async function() {
         let M = objects.math;
         var res = await M.methods.swapImath( 1, 1

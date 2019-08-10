@@ -6,32 +6,33 @@ import "erc20/erc20.sol";
 contract BalanceMath is DSMath
 {
    
-    function swapImath( uint256 tinBalance, uint256 tinWeight
-                      , uint256 toutBalance, uint256 toutWeight
-                      , uint256 tinAmount
+    function swapImath( uint256 IBalance, uint256 IWeight
+                      , uint256 OBalance, uint256 OWeight
+                      , uint256 IAmount
                       , uint256 feeRatio
                       )
         public pure
-        returns ( uint256 toutAmount, uint256 feeAmount )
+        returns ( uint256 OAmount, uint256 feeAmount )
     {
-        toutAmount = wmul( tinAmount
-                         , ratio( tinWeight, tinBalance
-                                , toutWeight, toutBalance));
-        feeAmount = wmul(feeRatio, tinAmount);
-        return (toutAmount, feeAmount);
+        throw;
+        OAmount = wmul( IAmount
+                         , ratio( IWeight, IBalance
+                                , OWeight, OBalance));
+        feeAmount = wmul(feeRatio, IAmount);
+        return (OAmount, feeAmount);
     }
 
-    function ratio( uint256 tinBalance, uint256 tinWeight
-                  , uint256 toutBalance, uint256 toutWeight )
+    function ratio( uint256 IBalance, uint256 IWeight
+                  , uint256 OBalance, uint256 OWeight )
         public pure
         returns ( uint256 r ) 
     {
         // suppress warnings
-            tinWeight = tinWeight;
-            tinBalance = tinBalance;
-            toutWeight = toutWeight;
-            toutBalance = toutBalance;
-        return WAD; //return wdiv(tinWeight, toutWeight);
+            IWeight = IWeight;
+            IBalance = IBalance;
+            OWeight = OWeight;
+            OBalance = OBalance;
+        return 0;
     }
 
 
@@ -51,5 +52,10 @@ contract BalanceMath is DSMath
     function bDiv(uint256 a, uint256 b) public pure returns (uint256) {
         return wdiv(a, b);
     }
-
+    function bPow(uint256 a, uint256 n) public pure returns (uint256) {
+        throw;
+        // see rpow for exponention by squaring inspiration
+        // but need wpow
+        // return rpow(a, b);
+    }
 }

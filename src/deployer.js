@@ -13,7 +13,6 @@ module.exports.deployTestEnv = async function(web3, buildout) {
     objects.acct0 = objects.accts[0];
     objects.math = await module.exports.deployType(web3, BalanceMath);
     objects.bTest = await module.exports.deployType(web3, BalanceTest);
-    //console.log(objects);
     return objects;
 }
 
