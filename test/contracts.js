@@ -76,10 +76,10 @@ describe("balanceMath", function() {
     });
 });
 
-describe("test scenario", () => {
+describe("test contracts", () => {
     it("`run`", async () => {
         var t = objects.bTest;
-        await t.methods.run().send({from: acct0, gasLimit: 0xffffffff});
+        await t.methods.run().send({from: environment.acct0, gasLimit: 0xffffffff});
         var fails = await t.getPastEvents('Fail');
         if( fails.length != 0 ) {
             for (fail of fails) {
