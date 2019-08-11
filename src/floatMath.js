@@ -30,19 +30,34 @@ module.exports.floatMath = {
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
-        let ratio = Wi / Wo;
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+        var exponent = (Wi / Wo);
+        var adjustedIn = Ai * (1-fee);
+        var foo = Bi / (Bi + adjustedIn);
+        var bar = this.powApprox(foo, exponent);
+        
+        return Bo * (1 - bar);
 
-        let y = (Bi / (Bi + Ai));
-        let x = y - 1;
+    },
 
+    powApprox: function(base, exponent) {
+        let x = base - 1;
+   
+        let whole = Math.floor(exponent);   
+        let remain = exponent - whole;
+        let wholePow = base ** whole;
+        console.log(base, exponent, x, whole, remain, wholePow);
+        if (remain == 0) {
+            return wholePow;
+        }
+     
         // term 0:
-        var a     = ratio;
+        var a     = remain;
         var numer = 1;
         var denom = 1;
         var sum   = 1;
-        if (ratio >= 1) {
-            a = (Wi % Wo) / Wo;
-        } 
 
         for( var k = 1; k < 8; k++ ) {
             numer    = numer * (a - (k-1)) * (x**k);
@@ -50,12 +65,7 @@ module.exports.floatMath = {
             sum     += numer / denom;
         }
 
-        if (ratio >= 1) {
-            a    = Math.floor(ratio); 
-            sum *= 1 - y ** a;
-        }
-
-        return Bo * sum;
+        return sum * wholePow;
     }
 }
 

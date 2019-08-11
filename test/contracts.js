@@ -36,6 +36,7 @@ describe("balanceMath", function() {
         var two = await M.methods.bAdd(one, one).call();
         var fourAdd = await M.methods.bAdd(two, two).call();
         var fourMul = await M.methods.bMul(two, two).call();
+        
         assert.equal(fourAdd, fourMul);
         
     }); 
@@ -48,7 +49,7 @@ describe("balanceMath", function() {
     it("bMath.spotPrice(1, 2, 3, 4)", async function() {
         let M = env.math;
         let one = await M.methods.bOne().call();
-        var res = await M.methods.spotPrice(one, one, one, one).call();
+        var res = await M.methods.spotPrice(one, bn("2"), bn("3"), bn("4")).call();
         assert.equal(one, res);
     });
     it("swapIMath", async function() {
