@@ -4,7 +4,8 @@ var fMath = math.floatMath;
 
 let tolerance = 0.00001;
 
-describe("math.js", function () {
+describe("floatMath.js", function () {
+    // result, Bi, Wi, Bo, Wo, Ai, fee
     var swapImathPoints = [
         [1, 2, 1, 2, 1, 2, 0],
         [10, 20, 10, 20, 10, 20, 0],
@@ -44,7 +45,6 @@ describe("math.js", function () {
         assert.closeTo(1, fMath.swapImathApprox(2, 2, 2, 1, 1, 0), tolerance);
         assert.closeTo(10, fMath.swapImathApprox(20, 20, 20, 10, 10, 0), tolerance);
     });
-
     it("swapIMathApprox ratio > 1", () => {
          // Weight ratio 2
         assert.closeTo(15, fMath.swapImathApprox(20, 20, 20, 2, 1, 0), tolerance);

@@ -74,8 +74,9 @@ contract BalanceMath is DSMath
     }
     function bPow(uint256 a, uint256 n) public pure returns (uint256) {
         revert("unimplemented");
+        // https://github.com/dapphub/ds-math/blob/master/src/math.sol#L58
         // see rpow for exponention by squaring inspiration
         // but need wpow
-        // return rpow(a, b);
+        // return wpow(a, b);
     }
 }
