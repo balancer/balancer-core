@@ -10,3 +10,9 @@
 [submodule "lib/ds-math"]
 	path = lib/ds-math
 	url = https://github.com/balancerpro/ds-math
+[submodule "lib/ds-stop"]
+	path = lib/ds-stop
+	url = https://github.com/dapphub/ds-stop
+[submodule "lib/ds-auth"]
+	path = lib/ds-auth
+	url = https://github.com/dapphub/ds-auth
