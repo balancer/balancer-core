@@ -121,7 +121,7 @@ describe("BalanceMath", () => {
         let Wo = bNum(pt[4]).toString();
         let Ai = bNum(pt[5]).toString();
         let fee = bNum(pt[6]).toString();
-        var desc = `${res} ~= bMath.swapImathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
             var actual = await env.math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
