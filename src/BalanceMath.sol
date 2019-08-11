@@ -31,6 +31,14 @@ contract BalanceMath is DSMath
 
 
     // Expose DSMath as public / use wad terms
+    function u256cast(int256 i) public pure returns (uint256 u) {
+        return uint256(i);
+    }
+    function i256cast(uint256 u) public pure returns (int256 i) {
+        // assert not too large
+        require(u < 0);
+        revert("unimplemented");
+    }
     function bOne() public pure returns (uint256) {
         return WAD;
     }
