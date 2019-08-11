@@ -15,23 +15,18 @@ contract BalanceMath is DSMath
         returns ( uint256 OAmount )
     {
         revert("unimplemented");
-        OAmount = wmul( IAmount
-                       , ratio( IWeight, IBalance
-                              , OWeight, OBalance));
-        return OAmount;
     }
 
-    function ratio( uint256 IBalance, uint256 IWeight
-                  , uint256 OBalance, uint256 OWeight )
+    function spotPrice( uint256 IBalance, uint256 IWeight
+                      , uint256 OBalance, uint256 OWeight )
         public pure
         returns ( uint256 r ) 
     {
         // suppress warnings
-            IWeight = IWeight;
-            IBalance = IBalance;
-            OWeight = OWeight;
-            OBalance = OBalance;
-        revert("unimplemented");
+        uint256 numer = bDiv(OBalance, OWeight);
+        uint256 denom = bDiv(IBalance, IWeight);
+        r = bDiv(numer, denom);
+        return r;
     }
 
 

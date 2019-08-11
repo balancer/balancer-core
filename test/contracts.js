@@ -24,7 +24,7 @@ beforeEach(async () => {
 });
 
 describe("balanceMath", function() {
-    it("bAdd", async function () {
+    it("bAdd, bMul", async function () {
         let M = env.math;
         var one = await M.methods.bOne().call();
         var two = await M.methods.bAdd(one, one).call();
@@ -33,10 +33,10 @@ describe("balanceMath", function() {
         assert.equal(fourAdd, fourMul);
         
     }); 
-    it("bMath.ratio(1, 1, 1, 1)", async function() {
+    it("bMath.spotPrice(1, 1, 1, 1)", async function() {
         let M = env.math;
         let one = await M.methods.bOne().call();
-        var res = await M.methods.ratio(one, one, one, one).call();
+        var res = await M.methods.spotPrice(one, one, one, one).call();
         assert.equal(one, res);
     });
     it("swapIMath", async function() {
