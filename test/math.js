@@ -5,9 +5,15 @@ var fMath = math.floatMath;
 let tolerance = 0.00001;
 
 describe("math.js", () => {
-    it("swapImathExact ratio > 1", () => {
+    it("1 == swapIMathExact(...)", () => {
+        Bi = 2; Wi = 1;
+        Bo = 2; Wo = 1;
+        Ai = 2; fee = 0;
+        Ao = 1;
+        assert.equal(Ao, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+    });
+    it("swapImathExact ", () => {
         // Weight ratio 1
-        assert.equal(1, fMath.swapImathExact(2, 2, 2, 1, 1, 0));
         // Weight ratio 1
         assert.equal(10, fMath.swapImathExact(20, 20, 20, 10, 10, 0));
         // Weight ratio 2
