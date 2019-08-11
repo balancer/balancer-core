@@ -72,4 +72,5 @@ describe("math.js", function () {
             assert.throws(() => { fMath.swapImathExact.apply(null, bad); });
         }
     });
+
 });

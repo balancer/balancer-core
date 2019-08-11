@@ -70,5 +70,39 @@ module.exports.floatMath = {
         return Bo * (bar - 1);
     },
 
+    swapOmathApprox: function (Bo, Bi, Ao, Wi, Wo, fee) {
+        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+
+        let ratio = Wi / Wo;
+
+        let y = (Bo / (Bo - Ao));
+        let x = y - 1;
+
+        // term 0:
+        var a     = ratio;
+        var numer = 1;
+        var denom = 1;
+        var sum   = -1;
+        if (ratio >= 1) {
+            a = (Wo % Wi) / Wi;
+        } 
+
+        for( var k = 1; k < 8; k++ ) {
+            numer    = numer * (a - (k-1)) * (x**k);
+            denom    = denom * k;
+            sum     += numer / denom;
+        }
+
+        if (ratio >= 1) {
+            a    = Math.floor(ratio); 
+            sum *= y ** a + 1;
+        }
+
+        return Bi * sum;
+ 
+    }
+
 }
 
