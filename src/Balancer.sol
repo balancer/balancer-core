@@ -47,7 +47,7 @@ contract Balancer is BalanceMath {
         ERC20(To).transfer(msg.sender, Ao);
         return Ao;
     }
-    function swapO(uint256 Ao, ERC20 Ti, ERC20 To)
+    function swapO(ERC20 Ti, ERC20 To, uint256 Ao)
         public returns (uint256 Ai)
     {
         revert("unimplemented");
