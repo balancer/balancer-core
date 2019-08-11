@@ -21,7 +21,18 @@ contract BalanceMath is DSMath
                       , uint256 feeRatio
                       )
         public pure
-        returns ( uint256 OAmount )
+        returns ( uint256 Ao )
+    {
+        revert("unimplemented");
+    }
+
+    function swapOmath( uint256 Bi, uint256 Wi
+                      , uint256 Bo, uint256 Wo
+                      , uint256 Ao
+                      , uint256 feeRatio
+                      )
+        public pure
+        returns ( uint256 Ai )
     {
         revert("unimplemented");
     }
@@ -36,7 +47,6 @@ contract BalanceMath is DSMath
         r = bDiv(numer, denom);
         return r;
     }
-
 
     // Expose DSMath as public / use wad terms
     function u256cast(int256 i) public pure returns (uint256 u) {

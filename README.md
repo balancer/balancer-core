@@ -17,13 +17,13 @@ To, Bo, Ao, Wo: token/balance/amount/weight out
 
 Pool:
     // swap specify-IN nolimit-out
-    swapI(Ai, Ti, To) returns (toutAmount)
+    swapI(Ti, Ai, To) returns (toutAmount)
 
     // swap nolimit-in specify-OUT
     swapO(Ti, To, Ao) returns (tinAmount)
 
     // swap specify-IN, limit-out
-    swapSILO(Ai, Ti, Lo, To) returns (toutAmount)
+    swapSILO(Ti, Ai, To, Lo) returns (toutAmount)
 
     // swap limit-in, specify-OUT
     swapLISO(Ti, Li, To, Ao) returns (tinAmount)
@@ -45,5 +45,5 @@ Math:
         public pure
         returns ( Ai );
 
-    ratio( Bi, Wi, Bo, Wo );
+    spotPrice( Bi, Wi, Bo, Wo );
 ```

@@ -4,12 +4,26 @@ var fMath = math.floatMath;
 
 let tolerance = 0.00001;
 
-describe("math.js", () => {
-    it("swapImathExact ratio > 1", () => {
-        // Weight ratio 1
-        assert.equal(1, fMath.swapImathExact(2, 2, 2, 1, 1, 0));
-        // Weight ratio 1
-        assert.equal(10, fMath.swapImathExact(20, 20, 20, 10, 10, 0));
+describe("math.js", function () {
+    var points = [
+        [1, 2, 1, 2, 1, 2, 0],
+        [10, 20, 10, 20, 10, 20, 0]
+    ]
+    for( i_ in points ) {
+        (function (i) {
+            let pt = points[i];
+            let res = pt[0];
+            let Bi = pt[1]; let Wi = pt[2];
+            let Bo = pt[3]; let Wo = pt[4];
+            let Ai = pt[5]; let fee = pt[6];
+            var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+            it(desc, function () {
+                console.log(res);
+                assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+            });
+        })(i_);
+    }
+    it("swapImathExact ", () => {
         // Weight ratio 2
         assert.equal(15, fMath.swapImathExact(20, 20, 20, 2, 1, 0));
         // Weight ratio 3
@@ -43,7 +57,7 @@ describe("math.js", () => {
         for (var i = 0; i < expected.length - 1; i++) {
             var j = i + 1;
             for (; j < expected.length; j++) {
-                assert.closeTo(fMath.spotPrice(balances[i], balances[j], weights[i], weights[j]), expected[testIdx++], tolerance);
+                assert.closeTo(fMath.spotPrice(balances[i], weights[i], balances[j], weights[j]), expected[testIdx++], tolerance);
             }
         }
     });

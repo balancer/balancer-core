@@ -5,7 +5,7 @@
 // Ai := Amount of token In
 module.exports.floatMath = {
 
-    spotPrice: function(Bo, Bi, Wo, Wi) {
+    spotPrice: function(Bi, Wi, Bo, Wo) {
         if( Bo<=0 || Bi<=0 || Wi<=0 || Wo<=0) {
             throw "Bad argument";
         }
@@ -14,7 +14,7 @@ module.exports.floatMath = {
         return numer/denom;
     },
 
-    swapImathExact: function (Bo, Bi, Ai, Wi, Wo, fee) {
+    swapImathExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
@@ -26,7 +26,7 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
     },
 
-    swapImathApprox: function(Bo, Bi, Ai, Wi, Wo, fee) {
+    swapImathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
