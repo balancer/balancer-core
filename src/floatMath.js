@@ -1,5 +1,3 @@
-var assert = require("assert");
-
 // Bi := Balance of token In
 // Bo := Balance of token Out
 // Wi := Weight of token In
@@ -84,13 +82,12 @@ module.exports.floatMath = {
         var denom = 1;
         var sum   = 1;
 
-        for( var k = 1; k < 8; k++ ) {
+        for( var k = 1; k < 12; k++ ) {
             numer    = numer * (a - (k-1)) * x;
             denom    = denom * k;
             sum     += numer / denom;
         }
 
-        assert.closeTo(base**exponent, sum * wholePow, 0.001);
         return sum * wholePow;
     }
 
