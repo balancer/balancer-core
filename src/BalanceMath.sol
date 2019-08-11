@@ -22,7 +22,6 @@ contract BalanceMath is DSMath
         public pure
         returns ( uint256 r ) 
     {
-        // suppress warnings
         uint256 numer = bDiv(OBalance, OWeight);
         uint256 denom = bDiv(IBalance, IWeight);
         r = bDiv(numer, denom);
@@ -36,7 +35,7 @@ contract BalanceMath is DSMath
     }
     function i256cast(uint256 u) public pure returns (int256 i) {
         // assert not too large
-        require(u < 0);
+        require(u < 2**127);
         revert("unimplemented");
     }
     function bOne() public pure returns (uint256) {
