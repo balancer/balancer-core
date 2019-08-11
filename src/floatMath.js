@@ -7,19 +7,26 @@ module.exports.floatMath = {
 
 
     spotPrice: function(Bi, Wi, Bo, Wo) {
-        if( Bo<=0 || Bi<=0 || Wi<=0 || Wo<=0) {
-            throw "Bad argument";
-        }
+        assert(Bi > 0, "Bi must be positive");
+        assert(Wi > 0, "Wi must be positive");
+        assert(Bo > 0, "Bo must be positive");
+        assert(Wo > 0, "Wo must be positive");
+
         var numer = Bo/Wo;
         var denom = Bi/Wi;
         return numer/denom;
     },
 
     swapImathExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
-        assert( Ai < Bi, "Ai must be less than Bi" );
+        assert(Bi > 0, "Bi must be positive");
+        assert(Wi > 0, "Wi must be positive");
+        assert(Bo > 0, "Bo must be positive");
+        assert(Wo > 0, "Wo must be positive");
+        assert(Ai > 0, "Ai must be positive");
+        assert(Ai < Bi, "Ai must be less than Bi" );
+        assert(fee => 0, "fee must be nonnegative");
+        assert(fee < 1, "fee must be less than one");
+
         var exponent = (Wi / Wo);
         var adjustedIn = Ai * (1-fee);
         var foo = Bi / (Bi + adjustedIn);
@@ -29,6 +36,15 @@ module.exports.floatMath = {
     },
 
     swapImathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
+        assert(Bi > 0, "Bi must be positive");
+        assert(Wi > 0, "Wi must be positive");
+        assert(Bo > 0, "Bo must be positive");
+        assert(Wo > 0, "Wo must be positive");
+        assert(Ai > 0, "Ai must be positive");
+        assert(Ai < Bi, "Ai must be less than Bi" );
+        assert(fee => 0, "fee must be nonnegative");
+        assert(fee < 1, "fee must be less than one");
+
         assert( Ai < Bi, "Ai must be less than Bi" );
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
@@ -43,9 +59,15 @@ module.exports.floatMath = {
     },
     
     swapOmathExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
+        assert(Bi > 0, "Bi must be positive");
+        assert(Wi > 0, "Wi must be positive");
+        assert(Bo > 0, "Bo must be positive");
+        assert(Wo > 0, "Wo must be positive");
+        assert(Ao > 0, "Ao must be positive");
+        assert(Ao < Bo, "Ao must be less than Bi" );
+        assert(fee => 0, "fee must be nonnegative");
+        assert(fee < 1, "fee must be less than one");
+
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
         var bar = foo**exponent;
@@ -54,9 +76,15 @@ module.exports.floatMath = {
     },
 
     swapOmathApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
-        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
+        assert(Bi > 0, "Bi must be positive");
+        assert(Wi > 0, "Wi must be positive");
+        assert(Bo > 0, "Bo must be positive");
+        assert(Wo > 0, "Wo must be positive");
+        assert(Ao > 0, "Ao must be positive");
+        assert(Ao < Bo, "Ao must be less than Bi" );
+        assert(fee => 0, "fee must be nonnegative");
+        assert(fee < 1, "fee must be less than one");
+
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
