@@ -21,6 +21,16 @@ describe("math.js", function () {
             assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
         });
     }
+    for( pt of swapImathPoints ) {
+        let res = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        let Ai = pt[5]; let fee = pt[6];
+        var desc = `${res} ~= swapIMathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        it(desc, function () {
+            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), tolerance);
+        });
+    }
     it("swapImathExact ratio < 1", () => {
         // Weight ratio 1/2
         assert.closeTo(10, fMath.swapImathExact(30, 4, 5, 1, 2, 0), tolerance);
