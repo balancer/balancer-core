@@ -20,9 +20,9 @@ let bn = (num) => { return web3.utils.toBN(num); }
 let bNum = (num) => {
     return bn(Math.floor(num * 10**9)).mul(bn(10**9));
 }
-let closeBN = (a, b, tolerance) => {
+let assertCloseBN = (a, b, tolerance) => {
     tolerance = bNum(tolerance);
-    assert(a.sub(b).lt(tolerance), `closeBN( ${a} , ${b} )`);
+    assert(a.sub(b).lt(tolerance), `assertCloseBN( ${a} , ${b} )`);
 }
 
 var env = {};
@@ -109,20 +109,22 @@ describe("BalanceMath", () => {
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
             var actual = await env.math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            closeBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
-/*
     for( pt of swapImathPoints ) {
-        let M = env.math;
-        let res = pt[0];
-        let Bi = pt[1]; let Wi = pt[2];
-        let Bo = pt[3]; let Wo = pt[4];
-        let Ai = pt[5]; let fee = pt[6];
-        var desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
-        it(desc, function () {
-            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), approxTolerance);
+        let res = bNum(pt[0]);
+        let Bi = bNum(pt[1]).toString();
+        let Wi = bNum(pt[2]).toString();
+        let Bo = bNum(pt[3]).toString();
+        let Wo = bNum(pt[4]).toString();
+        let Ai = bNum(pt[5]).toString();
+        let fee = bNum(pt[6]).toString();
+        var desc = `${res} ~= bMath.swapImathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        it(desc, async () => {
+            env = await deployer.deployTestEnv(web3, buildout);
+            var actual = await env.math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
-*/
 });
