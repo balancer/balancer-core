@@ -58,6 +58,19 @@ module.exports.floatMath = {
         }
 
         return Bo * sum;
-    }
+    },
+
+    swapOmathExact: function (Bo, Bi, Ao, Wi, Wo, fee) {
+        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+        var exponent = (Wo / Wi);
+        var adjustedOut = Ao * (1-fee);
+        var foo = Bo / (Bo - adjustedOut);
+        var bar = foo**exponent;
+        
+        return Bo * (bar - 1);
+    },
+
 }
 

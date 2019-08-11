@@ -23,6 +23,9 @@ describe("math.js", () => {
         // Weight ratio 1/3
         assert.closeTo(30, fMath.swapImathExact(90, 8, 19, 1, 3, 0), tolerance); 
     });
+    it("swap output math exact", () => {
+        assert.closeTo(13.2, fMath.swapOmathExact(30, 4, 5, 1, 2, 0), tolerance);
+    });
     it("working _Approx2", () => {
         assert.closeTo(1, fMath.swapImathApprox(2, 2, 2, 1, 1, 0), tolerance);
         assert.closeTo(10, fMath.swapImathApprox(20, 20, 20, 10, 10, 0), tolerance);
