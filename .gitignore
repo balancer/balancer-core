@@ -1,5 +1,5 @@
 node_modules
-.swp
+*.swp
 .DS_Store
 .idea/balance.iml
 .idea/misc.xml
