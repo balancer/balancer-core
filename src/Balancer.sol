@@ -41,7 +41,7 @@ contract Balancer is BalanceMath {
     
         amountOut = swapImath( I.balance, I.weight
                              , O.balance, O.weight
-                             , Ai, feeRatio );
+                             , trueIn, feeRatio );
 
         ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         ERC20(To).transfer(msg.sender, amountOut);
