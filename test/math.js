@@ -29,14 +29,6 @@ let assertCloseBN = (a, b, tolerance) => {
 
 var env = {};
 
-// result, Bi, Wi, Bo, Wo, Ai, fee
-var swapImathPoints = [
-    [2/3, 2, 1, 2, 1, 1, 0],
-    [20/3, 20, 10, 20, 10, 10, 0],
-    [10/9, 2, 1, 2, 0.5, 1, 0],
-    [2*(1-Math.pow(2/3, 1/2)), 2, 0.5, 2, 1, 1, 0],
-]
-
 describe("floatMath.js", function () {
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
@@ -45,24 +37,20 @@ describe("floatMath.js", function () {
             assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
         });
     }
-    for( pt of swapImathPoints ) {
-        let res = pt[0];
-        let Bi = pt[1]; let Wi = pt[2];
-        let Bo = pt[3]; let Wo = pt[4];
-        let Ai = pt[5]; let fee = pt[6];
-        var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+    for( pt_ of testPoints.swapImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} == swapIMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee), floatEqTolerance);
+            assert.closeTo( pt.res, fMath.swapImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+                          , floatEqTolerance);
         });
     }
-    for( pt of swapImathPoints ) {
-        let res = pt[0];
-        let Bi = pt[1]; let Wi = pt[2];
-        let Bo = pt[3]; let Wo = pt[4];
-        let Ai = pt[5]; let fee = pt[6];
-        var desc = `${res} ~= swapIMathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+    for( pt_ of testPoints.swapImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), approxTolerance);
+            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+                          , approxTolerance);
         });
     }
 
