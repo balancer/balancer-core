@@ -48,6 +48,12 @@ contract Balancer is BalanceMath {
         return amountOut;
     }
 
+    function setFee(uint256 feeRatio_)
+        public
+    {
+        require(msg.sender == manager);
+        feeRatio = feeRatio_;
+    }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
         public
     {

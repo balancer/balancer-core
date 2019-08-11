@@ -28,6 +28,7 @@ Pool:
     // swap limit-in, specify-OUT
     swapLISO(Ti, Li, To, Ao) returns (tinAmount)
 
+    setFee
     setParams
     bind/unbind
     pause/start
