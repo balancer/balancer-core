@@ -45,5 +45,5 @@ Math:
         public pure
         returns ( Ai );
 
-    ratio( Bi, Wi, Bo, Wo );
+    spotPrice( Bi, Wi, Bo, Wo );
 ```

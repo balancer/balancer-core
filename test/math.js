@@ -40,7 +40,7 @@ describe("math.js", () => {
         for (var i = 0; i < expected.length - 1; i++) {
             var j = i + 1;
             for (; j < expected.length; j++) {
-                assert.closeTo(fMath.spotPrice(balances[i], balances[j], weights[i], weights[j]), expected[testIdx++], tolerance);
+                assert.closeTo(fMath.spotPrice(balances[i], weights[i], balances[j], weights[j]), expected[testIdx++], tolerance);
             }
         }
     });

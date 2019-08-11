@@ -28,7 +28,7 @@ contract Balancer is BalanceMath {
         paused = true;
     }
 
-    function swapI(uint256 Ai, ERC20 Ti, ERC20 To)
+    function swapI(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao)
     {
         require( ! paused);
