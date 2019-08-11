@@ -96,33 +96,4 @@ module.exports.floatMath = {
         return sum * wholePow;
     }
 
-
-    powApprox: function(base, exponent) {
-        let x = base - 1;
-   
-        let whole = Math.floor(exponent);   
-        let remain = exponent - whole;
-        let wholePow = base ** whole;
-
-        if (remain == 0) {
-            return wholePow;
-        }
-     
-        // term 0:
-        var a     = remain;
-        var numer = 1;
-        var denom = 1;
-        var sum   = 1;
-
-        for( var k = 1; k < 8; k++ ) {
-            numer    = numer * (a - (k-1)) * (x**k);
-            denom    = denom * k;
-            sum     += numer / denom;
-        }
-
-        return sum * wholePow;
-    }
-
-
 }
-
