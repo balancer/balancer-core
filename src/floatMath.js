@@ -39,6 +39,35 @@ module.exports.floatMath = {
         var adjustedIn = Ai * (1-fee);
         var foo = Bi / (Bi + adjustedIn);
         var bar = this.powApprox(foo, exponent);
+        console.log("POWAPPROX " + bar + " " + foo + " " + exponent + " " + foo**exponent);
+        
+        return Bo * (1 - bar);
+
+    },
+    
+    swapOmathExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+        var exponent = (Wi / Wo);
+        var adjustedIn = Ai * (1-fee);
+        var foo = Bi / (Bi + adjustedIn);
+        var bar = foo**exponent;
+        
+        return Bo * (1 - bar);
+    },
+
+    swapOmathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+            throw new Error("Invalid arguments");
+        }
+        var exponent = (Wi / Wo);
+        var adjustedIn = Ai * (1-fee);
+        var foo = Bi / (Bi + adjustedIn);
+        var bar = this.powApprox(foo, exponent);
         
         return Bo * (1 - bar);
 
@@ -62,12 +91,12 @@ module.exports.floatMath = {
         var sum   = 1;
 
         for( var k = 1; k < 8; k++ ) {
-            numer    = numer * (a - (k-1)) * (x**k);
+            numer    = numer * (a - (k-1)) * x;
             denom    = denom * k;
             sum     += numer / denom;
         }
 
         return sum * wholePow;
     }
-}
 
+}

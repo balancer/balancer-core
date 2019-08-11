@@ -96,6 +96,7 @@ describe("floatMath.js", function () {
         assert.throws(() => { fMath.swapIMathApprox(1, 1, 1, 0, 0.1, 0); });
         assert.throws(() => { fMath.swapIMathApprox(1, 1, 1, 1, 0, 0); });
     });
+
 });
 
 describe("BalanceMath", () => {
