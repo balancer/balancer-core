@@ -7,13 +7,24 @@ import 'erc20/erc20.sol';
 
 import "./BalanceMath.sol";
 
-contract Balancer is BalanceMath {
+contract Balancer is BalanceMath
+                   , DSNote
+{
     bool                      public paused;
     address                   public manager;
     uint256                   public feeRatio;
     uint256                   public unclaimedFees;
 
     mapping(address=>Record)  public records;
+
+    event Swap( address indexed sender
+              , address indexed Ti
+              , uint256         Ai
+              , address indexed To
+              , uint256         Ao
+              , bool            variant
+              , uint256         fee
+              );
 
     struct Record {
         bool    bound;
@@ -53,12 +64,14 @@ contract Balancer is BalanceMath {
     }
 
     function setFee(uint256 feeRatio_)
+        note
         public
     {
         require(msg.sender == manager);
         feeRatio = feeRatio_;
     }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
+        note
         public
     {
         require(msg.sender == manager);
@@ -77,7 +90,10 @@ contract Balancer is BalanceMath {
         return records[address(token)].bound;
     }
 
-    function bind(ERC20 token) public {
+    function bind(ERC20 token)
+        note
+        public
+    {
         require(msg.sender == manager);
         require( ! isBound(token));
         records[address(token)] = Record({
@@ -87,25 +103,37 @@ contract Balancer is BalanceMath {
           , balance: 0
         });
     }
-    function unbind(ERC20 token) public {
+    function unbind(ERC20 token)
+        note
+        public
+    {
         require(msg.sender == manager);
         require(isBound(token));
         require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
         delete records[address(token)];
     }
-    // Collect fees and any excess token that may have been xferred in
-    function sweep(ERC20 token) public {
+    // Collect fees and any excess token that may have been transferred in
+    function sweep(ERC20 token)
+        note
+        public
+    {
         require(msg.sender == manager);
         require(isBound(token));
         uint256 selfBalance = records[address(token)].balance;
         uint256 trueBalance = token.balanceOf(address(this));
         token.transfer(msg.sender, trueBalance - selfBalance);
     }
-    function pause() public {
+    function pause()
+        note
+        public
+    {
         assert(msg.sender == manager);
         paused = true;
     }
-    function start() public {
+    function start()
+        note
+        public
+    {
         assert(msg.sender == manager);
         paused = false;
     }
