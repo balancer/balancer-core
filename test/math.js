@@ -46,6 +46,21 @@ describe("floatMath.js", function () {
             assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), approxTolerance);
         });
     }
+    /*
+    for( pt of swapImathPoints ) {
+        let Ao = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        let Ai = pt[5]; let fee = pt[6];
+        var desc = `${Ai} ~= swapOmath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ao}, ${fee})`;
+        it(desc, function () {
+            assert.closeTo(fMath.swapOmathExact(Bi, Wi, Bo, Wo, Ao, fee), 
+                           fMath.swapOmathApprox(Bi, Wi, Bo, Wo, Ao, fee), 
+                           approxTolerance);
+        });
+    }
+    */
+ 
     for( pt of spotPricePoints ) {
         let res = pt[0];
         let Bi = pt[1]; let Wi = pt[2];

@@ -40,37 +40,31 @@ module.exports.floatMath = {
         var adjustedIn = Ai * (1-fee);
         var foo = Bi / (Bi + adjustedIn);
         var bar = this.powApprox(foo, exponent);
-        console.log("POWAPPROX " + bar + " " + foo + " " + exponent + " " + foo**exponent);
         
         return Bo * (1 - bar);
 
     },
     
-    swapOmathExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+    swapOmathExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
+        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
+        var exponent = (Wo / Wi);
+        var foo = Bo / (Bo - Ao);
         var bar = foo**exponent;
         
-        return Bo * (1 - bar);
+        return Bi * (1 - bar) / (1 - fee);
     },
 
-    swapOmathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
+    swapOmathApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
+        if( Bo<=0 || Bi<=0 || Ao<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
+        var exponent = (Wo / Wi);
+        var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
         
-        return Bo * (1 - bar);
+        return Bi * (1 - bar) / (1 - fee);
 
     },
 
@@ -97,6 +91,7 @@ module.exports.floatMath = {
             sum     += numer / denom;
         }
 
+        assert.closeTo(base**exponent, sum * wholePow, 0.001);
         return sum * wholePow;
     }
 
