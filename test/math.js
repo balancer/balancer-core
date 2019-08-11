@@ -38,8 +38,11 @@ describe("floatMath.js", function () {
         // Weight ratio 1/3
         assert.closeTo(30, fMath.swapImathExact(90, 8, 19, 1, 3, 0), tolerance); 
     });
-    it("swap output math exact", () => {
-        assert.closeTo(13.2, fMath.swapOmathExact(30, 4, 5, 1, 2, 0), tolerance);
+    it("swap output math", () => {
+        let exact = fMath.swapOmathExact(30, 4, 5, 1, 2, 0);
+        let approx = fMath.swapOmathApprox(30, 4, 5, 1, 2, 0);
+        assert.closeTo(13.2, exact, tolerance);
+        assert.closeTo(exact, approx);
     });
     it("swapImathApprox ratio < 1", () => {
         assert.closeTo(1, fMath.swapImathApprox(2, 2, 2, 1, 1, 0), tolerance);
