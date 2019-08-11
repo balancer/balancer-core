@@ -40,6 +40,7 @@ module.exports.floatMath = {
         var adjustedIn = Ai * (1-fee);
         var foo = Bi / (Bi + adjustedIn);
         var bar = this.powApprox(foo, exponent);
+        console.log("POWAPPROX " + bar + " " + foo + " " + exponent + " " + foo**exponent);
         
         return Bo * (1 - bar);
 
@@ -91,7 +92,7 @@ module.exports.floatMath = {
         var sum   = 1;
 
         for( var k = 1; k < 8; k++ ) {
-            numer    = numer * (a - (k-1)) * (x**k);
+            numer    = numer * (a - (k-1)) * x;
             denom    = denom * k;
             sum     += numer / denom;
         }
