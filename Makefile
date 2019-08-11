@@ -11,7 +11,7 @@ all:; \
 		ds-stop=lib/ds-stop/src \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
-	-o out \
+	-o evm \
 	src/BalanceMath.sol \
 	src/BalanceTest.sol \
 	src/Balancer.sol \

@@ -3,7 +3,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let deployer = require("../src/deployer.js")
-let buildout = require("../out/combined.json");
+let buildout = require("../evm/combined.json");
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,

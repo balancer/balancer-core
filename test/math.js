@@ -9,7 +9,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let deployer = require("../src/deployer.js")
-let buildout = require("../out/combined.json");
+let buildout = require("../evm/combined.json");
 
 let testPoints = require("./points.js");
 
@@ -90,14 +90,14 @@ describe("BalanceMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
-    for( pt of swapImathPoints ) {
-        let res = bNum(pt[0]);
-        let Bi = bNum(pt[1]).toString();
-        let Wi = bNum(pt[2]).toString();
-        let Bo = bNum(pt[3]).toString();
-        let Wo = bNum(pt[4]).toString();
-        let Ai = bNum(pt[5]).toString();
-        let fee = bNum(pt[6]).toString();
+    for( pt of testPoints.swapImathPoints ) {
+        let res = bNum(pt.res).toString();
+        let Bi = bNum(pt.Bi).toString();
+        let Wi = bNum(pt.Wi).toString();
+        let Bo = bNum(pt.Bo).toString();
+        let Wo = bNum(pt.Wo).toString();
+        let Ai = bNum(pt.Ai).toString();
+        let fee = bNum(pt.fee).toString();
         var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
