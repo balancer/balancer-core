@@ -14,7 +14,6 @@ import "erc20/erc20.sol";
 
 contract BalanceMath is DSMath
 {
-   
     function swapImath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ai
@@ -23,6 +22,9 @@ contract BalanceMath is DSMath
         public pure
         returns ( uint256 Ao )
     {
+        uint256 ratio = bDiv(Wi, Wo);
+        uint256 y = bDiv(Bi, bAdd(Bi, Ai));
+
         revert("unimplemented");
     }
 
