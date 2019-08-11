@@ -5,7 +5,7 @@ var fMath = math.floatMath;
 let tolerance = 0.00001;
 
 describe("math.js", () => {
-    it("1 == swapIMathExact(...)", () => {
+    it("1 == swapIMathExact(2, 1, 2, 1, 2, 0)", () => {
         Bi = 2; Wi = 1;
         Bo = 2; Wo = 1;
         Ai = 2; fee = 0;
