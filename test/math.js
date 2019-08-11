@@ -2,7 +2,8 @@ assert = require("chai").assert;
 var math = require("../src/floatMath.js")
 var fMath = math.floatMath;
 
-let tolerance = 0.00001;
+let approxTolerance = 0.00001;
+let floatEqTolerance = 0.00000000001
 
 describe("floatMath.js", function () {
     // Result, Bi, Wi, Bo, Wo
@@ -19,10 +20,10 @@ describe("floatMath.js", function () {
 
     // result, Bi, Wi, Bo, Wo, Ai, fee
     var swapImathPoints = [
-        [1, 2, 1, 2, 1, 2, 0],
-        [10, 20, 10, 20, 10, 20, 0],
-        [15, 20, 2, 20, 1, 20, 0],
-        [14, 16, 3, 16, 1, 16, 0],
+        [2/3, 2, 1, 2, 1, 1, 0],
+        [20/3, 20, 10, 20, 10, 10, 0],
+        [10/9, 2, 1, 2, 0.5, 1, 0],
+        [2*(1-Math.pow(2/3, 1/2)), 2, 0.5, 2, 1, 1, 0],
     ]
 
     for( pt of swapImathPoints ) {
@@ -32,7 +33,7 @@ describe("floatMath.js", function () {
         let Ai = pt[5]; let fee = pt[6];
         var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, function () {
-            assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+            assert.closeTo(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee), floatEqTolerance);
         });
     }
     for( pt of swapImathPoints ) {
@@ -42,7 +43,7 @@ describe("floatMath.js", function () {
         let Ai = pt[5]; let fee = pt[6];
         var desc = `${res} ~= swapIMathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, function () {
-            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), tolerance);
+            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), approxTolerance);
         });
     }
     for( pt of spotPricePoints ) {
@@ -51,7 +52,7 @@ describe("floatMath.js", function () {
         let Bo = pt[3]; let Wo = pt[4];
         var desc = `${res} ~= spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
         it(desc, function () {
-            assert.closeTo(res, fMath.spotPrice(Bi, Wi, Bo, Wo), tolerance);
+            assert.closeTo(res, fMath.spotPrice(Bi, Wi, Bo, Wo), floatEqTolerance);
         });
     }
 
