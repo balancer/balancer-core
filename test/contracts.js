@@ -17,42 +17,8 @@ var env = {};
 beforeEach(async () => {
     env = await deployer.deployTestEnv(web3, buildout);
 });
-/*
-describe("balanceMath", function() {
-    it("bOne is toWei(1)", async () => {
-        let M = env.math;
-        var bOne = await M.methods.bOne().call();
-        var one = web3.utils.toWei("1");
-        assert.equal(bOne, one);
-    });
-    it("bAdd, bSub, bMul, bDiv basic values", async function () {
-        let M = env.math;
-        var one = await M.methods.bOne().call();
-        var two = await M.methods.bAdd(one, one).call();
-        var fourAdd = await M.methods.bAdd(two, two).call();
-        var fourMul = await M.methods.bMul(two, two).call();
-        assert.equal(fourAdd, fourMul);
-        var twoSub = await M.methods.bSub(fourMul, two).call();
-        var twoDiv = await M.methods.bDiv(fourMul, two).call();
-        assert.equal(twoSub, twoDiv);
-        
-    }); 
-    it("bMath.spotPrice(1, 1, 1, 1)", async function() {
-        let M = env.math;
-        let one = await M.methods.bOne().call();
-        var res = await M.methods.spotPrice(one, one, one, one).call();
-        assert.equal(one, res);
-    });
-    it("swapIMath", async function() {
-        let M = env.math;
-        var res = await M.methods.swapImath( 1, 1
-                                           , 1, 1
-                                           , 1, 0).call();
-        assert.equal(res.toutAmount, 1, "wrong amount");
-    });
-});
-*/
-describe("test contracts", () => {
+
+describe("test scenario", () => {
     it("`run`", async () => {
         var t = env.bTest;
         await t.methods.run().send({from: env.acct0, gasLimit: 0xffffffff});

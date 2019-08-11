@@ -11,6 +11,8 @@ let ganache = require("ganache-core");
 let deployer = require("../src/deployer.js")
 let buildout = require("../out/combined.json");
 
+let testPoints = require("./points.js");
+
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true
@@ -27,18 +29,6 @@ let assertCloseBN = (a, b, tolerance) => {
 
 var env = {};
 
-// Result, Bi, Wi, Bo, Wo
-var spotPricePoints = [
-    [4, 1, 0.2, 10, 0.5],
-    [1/4, 10, 0.5, 1, 0.2],
-
-    [0.00025, 6000, 0.3, 1, 0.2],
-    [1/0.00025, 1, 0.2, 6000, 0.3],
-
-    [1000, 10, 0.5, 6000, 0.3],
-    [1/1000, 6000, 0.3, 10, 0.5]
-];
-
 // result, Bi, Wi, Bo, Wo, Ai, fee
 var swapImathPoints = [
     [2/3, 2, 1, 2, 1, 1, 0],
@@ -48,6 +38,13 @@ var swapImathPoints = [
 ]
 
 describe("floatMath.js", function () {
+    for( pt_ of testPoints.spotPricePoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
+        it(desc, function () {
+            assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
+        });
+    }
     for( pt of swapImathPoints ) {
         let res = pt[0];
         let Bi = pt[1]; let Wi = pt[2];
@@ -68,16 +65,7 @@ describe("floatMath.js", function () {
             assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), approxTolerance);
         });
     }
-    for( pt of spotPricePoints ) {
-        let res = pt[0];
-        let Bi = pt[1]; let Wi = pt[2];
-        let Bo = pt[3]; let Wo = pt[4];
-        var desc = `${res} ~= spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
-        it(desc, function () {
-            (res, fMath.spotPrice(Bi, Wi, Bo, Wo), floatEqTolerance);
-        });
-    }
- 
+
     it("should throw if Ai >= Bi", () => {
         assert.throws(() => { fMath.swapIMathExact(1, 2, 2, 2, 1, 0); });
     });
@@ -100,12 +88,13 @@ describe("floatMath.js", function () {
 });
 
 describe("BalanceMath", () => {
-    for( pt of spotPricePoints ) {
-        let res = bNum(pt[0]);
-        let Bi = bNum(pt[1]).toString();
-        let Wi = bNum(pt[2]).toString();
-        let Bo = bNum(pt[3]).toString();
-        let Wo = bNum(pt[4]).toString();
+    for( pt_ of testPoints.spotPricePoints ) {
+        let pt = pt_;
+        let res = bNum(pt.res);
+        let Bi = bNum(pt.Bi).toString();
+        let Wi = bNum(pt.Wi).toString();
+        let Bo = bNum(pt.Bo).toString();
+        let Wo = bNum(pt.Wo).toString();
         let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
