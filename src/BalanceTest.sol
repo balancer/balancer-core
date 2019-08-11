@@ -41,6 +41,6 @@ contract BalanceTest is BalanceMath {
 
         uint256 outAmt;
         uint256 feeAmt;
-        (outAmt, feeAmt) = b.swapI(1 ether, A, B);
+        outAmt = b.swapI(1 ether, A, B);
     }
 }

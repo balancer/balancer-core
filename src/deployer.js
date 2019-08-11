@@ -1,20 +1,19 @@
 module.exports.deployTestEnv = async function(web3, buildout) {
-    var objects = { // Base scenario universe
+    var env = { // Base scenario universe
         acct0: undefined,
         math: undefined,
         bTest: undefined,
+        types: buildout.contracts
     };
-    let types = buildout.contracts;
-    let Balancer = types["src/Balancer.sol:Balancer"];
-    let BalanceMath = types["src/BalanceMath.sol:BalanceMath"];
-    let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
+    let Balancer = env.types["src/Balancer.sol:Balancer"];
+    let BalanceMath = env.types["src/BalanceMath.sol:BalanceMath"];
+    let BalanceTest = env.types["src/BalanceTest.sol:BalanceTest"];
 
-    objects.accts = await web3.eth.getAccounts();
-    objects.acct0 = objects.accts[0];
-    objects.math = await module.exports.deployType(web3, BalanceMath);
-    objects.bTest = await module.exports.deployType(web3, BalanceTest);
-    //console.log(objects);
-    return objects;
+    env.accts = await web3.eth.getAccounts();
+    env.acct0 = env.accts[0];
+    env.math = await module.exports.deployType(web3, BalanceMath);
+    env.bTest = await module.exports.deployType(web3, BalanceTest);
+    return env;
 }
 
 module.exports.deployType = async function (web3, type) {
@@ -28,5 +27,3 @@ module.exports.deployType = async function (web3, type) {
             .deploy({data: type.bin})
             .send({from: acct0, gas: 0xfffffff});
 }
-
-

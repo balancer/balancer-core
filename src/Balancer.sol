@@ -13,7 +13,6 @@ contract Balancer is BalanceMath {
     uint256                   public feeRatio;
     uint256                   public unclaimedFees;
 
-    uint256 constant public   MAX_TOKENS = 8;
     uint256                   numTokens;
     mapping(address=>Record)  public records;
 
@@ -29,25 +28,37 @@ contract Balancer is BalanceMath {
         paused = true;
     }
 
-    function swapI(uint256 amountIn, ERC20 tin, ERC20 tout)
-        public returns (uint256 amountOut, uint256 feeAmount)
+    function swapI(uint256 Ai, ERC20 Ti, ERC20 To)
+        public returns (uint256 Ao)
     {
         require( ! paused);
-        require(isBound(tin), "tin not bound");
-        require(isBound(tout), "tout not bound");
-        Record storage I = records[address(tin)];
-        Record storage O = records[address(tout)];
+        require(isBound(Ti), "Token-in not bound");
+        require(isBound(To), "Token-out not bound");
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
 
-        (amountOut, feeAmount) = swapImath( I.balance, I.weight
-                                          , O.balance, O.weight
-                                          , amountIn, feeRatio );
+        uint256 trueIn = bSub(Ai, wmul(Ai, feeRatio));
+    
+        Ao = swapImath( I.balance, I.weight
+                             , O.balance, O.weight
+                             , trueIn, feeRatio );
 
-        ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
-        ERC20(tout).transfer(msg.sender, amountOut);
-        unclaimedFees += feeAmount;
-        return (amountOut, feeAmount);
+        ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        ERC20(To).transfer(msg.sender, Ao);
+        return Ao;
+    }
+    function swapO(uint256 Ao, ERC20 Ti, ERC20 To)
+        public returns (uint256 Ai)
+    {
+        revert("unimplemented");
     }
 
+    function setFee(uint256 feeRatio_)
+        public
+    {
+        require(msg.sender == manager);
+        feeRatio = feeRatio_;
+    }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
         public
     {
@@ -70,7 +81,6 @@ contract Balancer is BalanceMath {
     function bind(ERC20 token) public {
         require(msg.sender == manager);
         require( ! isBound(token));
-        require( numTokens < MAX_TOKENS );
         records[address(token)] = Record({
             addr: token
           , bound: true
@@ -82,8 +92,17 @@ contract Balancer is BalanceMath {
     function unbind(ERC20 token) public {
         require(msg.sender == manager);
         require(isBound(token));
+        require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
         delete records[address(token)];
         numTokens--;
+    }
+    // Collect fees and any excess token that may have been xferred in
+    function sweep(ERC20 token) public {
+        require(msg.sender == manager);
+        require(isBound(token));
+        uint256 selfBalance = records[address(token)].balance;
+        uint256 trueBalance = token.balanceOf(address(this));
+        token.transfer(msg.sender, trueBalance - selfBalance);
     }
     function pause() public {
         assert(msg.sender == manager);

@@ -5,33 +5,33 @@ let ganache = require("ganache-core");
 let deployer = require("../src/deployer.js")
 
 let buildout = require("../out/combined.json");
-let types = buildout.contracts;
-let Balancer = types["src/Balancer.sol:Balancer"];
-let BalanceMath = types["src/BalanceMath.sol:BalanceMath"];
-let BalanceTest = types["src/BalanceTest.sol:BalanceTest"];
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true
 }));
 
-let RAY = web3.utils.toBN('1000000000000000000000000000');
-let WAD = web3.utils.toBN('1000000000000000000');
 let bn = (num) => { return web3.utils.toBN(num); }
 
-var objects = { // Base scenario universe
+var env = { // Base scenario universe
     acct0: undefined,
     math: undefined,
     bTest: undefined,
 };
 
 beforeEach(async () => {
-    objects = await deployer.deployTestEnv(web3, buildout);
+    env = await deployer.deployTestEnv(web3, buildout);
 });
 
 describe("balanceMath", function() {
-    it("bAdd", async () => {
-        let M = objects.math;
+    it("bOne is toWei(1)", async () => {
+        let M = env.math;
+        var bOne = await M.methods.bOne().call();
+        var one = web3.utils.toWei("1");
+        assert.equal(bOne, one);
+    });
+    it("bAdd, bMul", async function () {
+        let M = env.math;
         var one = await M.methods.bOne().call();
         var two = await M.methods.bAdd(one, one).call();
         var fourAdd = await M.methods.bAdd(two, two).call();
@@ -39,8 +39,20 @@ describe("balanceMath", function() {
         assert.equal(fourAdd, fourMul);
         
     }); 
+    it("bMath.spotPrice(1, 1, 1, 1)", async function() {
+        let M = env.math;
+        let one = await M.methods.bOne().call();
+        var res = await M.methods.spotPrice(one, one, one, one).call();
+        assert.equal(one, res);
+    });
+    it("bMath.spotPrice(1, 2, 3, 4)", async function() {
+        let M = env.math;
+        let one = await M.methods.bOne().call();
+        var res = await M.methods.spotPrice(one, one, one, one).call();
+        assert.equal(one, res);
+    });
     it("swapIMath", async function() {
-        let M = objects.math;
+        let M = env.math;
         var res = await M.methods.swapImath( 1, 1
                                            , 1, 1
                                            , 1, 0).call();
@@ -50,8 +62,8 @@ describe("balanceMath", function() {
 
 describe("test contracts", () => {
     it("`run`", async () => {
-        var t = objects.bTest;
-        await t.methods.run().send({from: objects.acct0, gasLimit: 0xffffffff});
+        var t = env.bTest;
+        await t.methods.run().send({from: env.acct0, gasLimit: 0xffffffff});
         var fails = await t.getPastEvents('Fail');
         if( fails.length != 0 ) {
             for (fail of fails) {
