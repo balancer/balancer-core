@@ -5,30 +5,32 @@ var fMath = math.floatMath;
 let tolerance = 0.00001;
 
 describe("math.js", function () {
-    var points = [
+    var swapImathPoints = [
         [1, 2, 1, 2, 1, 2, 0],
-        [10, 20, 10, 20, 10, 20, 0]
+        [10, 20, 10, 20, 10, 20, 0],
+        [15, 20, 2, 20, 1, 20, 0],
+        [14, 16, 3, 16, 1, 16, 0],
     ]
-    for( i_ in points ) {
-        (function (i) {
-            let pt = points[i];
-            let res = pt[0];
-            let Bi = pt[1]; let Wi = pt[2];
-            let Bo = pt[3]; let Wo = pt[4];
-            let Ai = pt[5]; let fee = pt[6];
-            var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
-            it(desc, function () {
-                console.log(res);
-                assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
-            });
-        })(i_);
+    for( pt of swapImathPoints ) {
+        let res = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        let Ai = pt[5]; let fee = pt[6];
+        var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        it(desc, function () {
+            assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+        });
     }
-    it("swapImathExact ", () => {
-        // Weight ratio 2
-        assert.equal(15, fMath.swapImathExact(20, 20, 20, 2, 1, 0));
-        // Weight ratio 3
-        assert.equal(14, fMath.swapImathExact(16, 16, 16, 3, 1, 0));
-    });
+    for( pt of swapImathPoints ) {
+        let res = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        let Ai = pt[5]; let fee = pt[6];
+        var desc = `${res} ~= swapIMathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        it(desc, function () {
+            assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), tolerance);
+        });
+    }
     it("swapImathExact ratio < 1", () => {
         // Weight ratio 1/2
         assert.closeTo(10, fMath.swapImathExact(30, 4, 5, 1, 2, 0), tolerance);
