@@ -40,5 +40,10 @@ Math:
         public pure
         returns ( Ao );
 
+    swapOmath( Bi, Wi, Bo, Wo
+             , Ao, feeRatio )
+        public pure
+        returns ( Ai );
+
     ratio( Bi, Wi, Bo, Wo );
 ```
