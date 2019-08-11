@@ -5,6 +5,18 @@ var fMath = math.floatMath;
 let tolerance = 0.00001;
 
 describe("floatMath.js", function () {
+    // Result, Bi, Wi, Bo, Wo
+    var spotPricePoints = [
+        [4, 1, 0.2, 10, 0.5],
+        [1/4, 10, 0.5, 1, 0.2],
+
+        [0.00025, 6000, 0.3, 1, 0.2],
+        [1/0.00025, 1, 0.2, 6000, 0.3],
+
+        [1000, 10, 0.5, 6000, 0.3],
+        [1/1000, 6000, 0.3, 10, 0.5]
+    ];
+
     // result, Bi, Wi, Bo, Wo, Ai, fee
     var swapImathPoints = [
         [1, 2, 1, 2, 1, 2, 0],
@@ -12,6 +24,7 @@ describe("floatMath.js", function () {
         [15, 20, 2, 20, 1, 20, 0],
         [14, 16, 3, 16, 1, 16, 0],
     ]
+
     for( pt of swapImathPoints ) {
         let res = pt[0];
         let Bi = pt[1]; let Wi = pt[2];
@@ -32,20 +45,20 @@ describe("floatMath.js", function () {
             assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), tolerance);
         });
     }
-    it("whitepaper spotPrice points", () => {
-        var weights  = [0.5, 0.2, 0.3];
-        var balances = [10, 1, 6000];
-        var expected = [4, 0.001, 0.00025];
-        var testIdx  = 0;
-        for (var i = 0; i < expected.length - 1; i++) {
-            var j = i + 1;
-            for (; j < expected.length; j++) {
-                assert.closeTo(fMath.spotPrice(balances[i], weights[i], balances[j], weights[j]), expected[testIdx++], tolerance);
-            }
-        }
-    });
+    for( pt of spotPricePoints ) {
+        let res = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        var desc = `${res} ~= spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+        it(desc, function () {
+            assert.closeTo(res, fMath.spotPrice(Bi, Wi, Bo, Wo), tolerance);
+        });
+    }
 
-    it("should throw for bad arguments", () => {
+    it("should throw if Ai >= Bi", () => {
+        assert.throws(() => { fMath.swapIMathExact(1, 1, 1, 1, 1, 0); });
+    });
+    it("should throw if any arg except fee is 0", () => {
         var good = [2,2,1,1,0.01];
         for (var k = 0; k < 4; k++) {
             bad    = [].concat(good);

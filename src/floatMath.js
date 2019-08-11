@@ -18,6 +18,9 @@ module.exports.floatMath = {
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
         }
+        if( Ai >= Bi ) {
+            throw new Error("Ai must be less than Bi");
+        }
         var exponent = (Wi / Wo);
         var adjustedIn = Ai * (1-fee);
         var foo = Bi / (Bi + adjustedIn);
@@ -27,8 +30,8 @@ module.exports.floatMath = {
     },
 
     swapImathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
+        if( Ai >= Bi ) {
+            throw new Error("Ai must be less than Bi");
         }
         if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
             throw new Error("Invalid arguments");
