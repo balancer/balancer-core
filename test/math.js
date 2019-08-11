@@ -4,18 +4,26 @@ var fMath = math.floatMath;
 
 let tolerance = 0.00001;
 
-describe("math.js", () => {
-    it("1 == swapIMathExact(2, 1, 2, 1, 2, 0)", () => {
-        Bi = 2; Wi = 1;
-        Bo = 2; Wo = 1;
-        Ai = 2; fee = 0;
-        Ao = 1;
-        assert.equal(Ao, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
-    });
+describe("math.js", function () {
+    var points = [
+        [1, 2, 1, 2, 1, 2, 0],
+        [10, 20, 10, 20, 10, 20, 0]
+    ]
+    for( i_ in points ) {
+        (function (i) {
+            let pt = points[i];
+            let res = pt[0];
+            let Bi = pt[1]; let Wi = pt[2];
+            let Bo = pt[3]; let Wo = pt[4];
+            let Ai = pt[5]; let fee = pt[6];
+            var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+            it(desc, function () {
+                console.log(res);
+                assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+            });
+        })(i_);
+    }
     it("swapImathExact ", () => {
-        // Weight ratio 1
-        // Weight ratio 1
-        assert.equal(10, fMath.swapImathExact(20, 20, 20, 10, 10, 0));
         // Weight ratio 2
         assert.equal(15, fMath.swapImathExact(20, 20, 20, 2, 1, 0));
         // Weight ratio 3
