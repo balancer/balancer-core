@@ -9,19 +9,16 @@ describe("math.js", function () {
         [1, 2, 1, 2, 1, 2, 0],
         [10, 20, 10, 20, 10, 20, 0]
     ]
-    for( i_ in points ) {
-        (function (i) {
-            let pt = points[i];
-            let res = pt[0];
-            let Bi = pt[1]; let Wi = pt[2];
-            let Bo = pt[3]; let Wo = pt[4];
-            let Ai = pt[5]; let fee = pt[6];
-            var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
-            it(desc, function () {
-                console.log(res);
-                assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
-            });
-        })(i_);
+    for( i in points ) {
+        let pt = points[i];
+        let res = pt[0];
+        let Bi = pt[1]; let Wi = pt[2];
+        let Bo = pt[3]; let Wo = pt[4];
+        let Ai = pt[5]; let fee = pt[6];
+        var desc = `${res} == swapIMathExact(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        it(desc, function () {
+            assert.equal(res, fMath.swapImathExact(Bi, Wi, Bo, Wo, Ai, fee));
+        });
     }
     it("swapImathExact ", () => {
         // Weight ratio 2
