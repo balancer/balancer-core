@@ -24,6 +24,12 @@ beforeEach(async () => {
 });
 
 describe("balanceMath", function() {
+    it("bOne is toWei(1)", async () => {
+        let M = env.math;
+        var bOne = await M.methods.bOne().call();
+        var one = web3.utils.toWei("1");
+        assert.equal(bOne, one);
+    });
     it("bAdd, bMul", async function () {
         let M = env.math;
         var one = await M.methods.bOne().call();
