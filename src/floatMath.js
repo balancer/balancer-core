@@ -48,7 +48,7 @@ module.exports.floatMath = {
         let whole = Math.floor(exponent);   
         let remain = exponent - whole;
         let wholePow = base ** whole;
-        console.log(base, exponent, x, whole, remain, wholePow);
+
         if (remain == 0) {
             return wholePow;
         }

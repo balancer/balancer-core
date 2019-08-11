@@ -32,22 +32,6 @@ describe("floatMath.js", function () {
             assert.closeTo(res, fMath.swapImathApprox(Bi, Wi, Bo, Wo, Ai, fee), tolerance);
         });
     }
-    it("swapImathExact ratio < 1", () => {
-        // Weight ratio 1/2
-        assert.closeTo(10, fMath.swapImathExact(30, 4, 5, 1, 2, 0), tolerance);
-        // Weight ratio 1/3
-        assert.closeTo(30, fMath.swapImathExact(90, 8, 19, 1, 3, 0), tolerance); 
-    });
-    it("swapImathApprox ratio < 1", () => {
-        assert.closeTo(1, fMath.swapImathApprox(2, 2, 2, 1, 1, 0), tolerance);
-        assert.closeTo(10, fMath.swapImathApprox(20, 20, 20, 10, 10, 0), tolerance);
-    });
-    it("swapIMathApprox ratio > 1", () => {
-         // Weight ratio 2
-        assert.closeTo(15, fMath.swapImathApprox(20, 20, 20, 2, 1, 0), tolerance);
-         // Weight ratio 3
-        assert.closeTo(14, fMath.swapImathApprox(16, 16, 16, 3, 1, 0), tolerance);
-    });
     it("whitepaper spotPrice points", () => {
         var weights  = [0.5, 0.2, 0.3];
         var balances = [10, 1, 6000];
