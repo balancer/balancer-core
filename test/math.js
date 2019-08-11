@@ -57,14 +57,21 @@ describe("floatMath.js", function () {
     }
 
     it("should throw if Ai >= Bi", () => {
-        assert.throws(() => { fMath.swapIMathExact(1, 1, 1, 1, 1, 0); });
+        assert.throws(() => { fMath.swapIMathExact(1, 2, 2, 2, 1, 0); });
+    });
+    it("should throw if fee >= 1", () => {
+        assert.throws(() => { fMath.swapIMathExact(2, 2, 2, 2, 2, 1); });
     });
     it("should throw if any arg except fee is 0", () => {
-        var good = [2,2,1,1,0.01];
-        for (var k = 0; k < 4; k++) {
-            bad    = [].concat(good);
-            bad[k] = 0;
-            assert.throws(() => { fMath.swapImathExact.apply(null, bad); });
-        }
+        assert.throws(() => { fMath.swapIMathExact(0, 1, 1, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathExact(1, 0, 1, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathExact(1, 1, 0, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathExact(1, 1, 1, 0, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathExact(1, 1, 1, 1, 0, 0); });
+        assert.throws(() => { fMath.swapIMathApprox(0, 1, 1, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathApprox(1, 0, 1, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathApprox(1, 1, 0, 1, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathApprox(1, 1, 1, 0, 0.1, 0); });
+        assert.throws(() => { fMath.swapIMathApprox(1, 1, 1, 1, 0, 0); });
     });
 });
