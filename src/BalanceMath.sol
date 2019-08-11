@@ -12,14 +12,13 @@ contract BalanceMath is DSMath
                       , uint256 feeRatio
                       )
         public pure
-        returns ( uint256 OAmount, uint256 feeAmount )
+        returns ( uint256 OAmount )
     {
-        throw;
+        revert("unimplemented");
         OAmount = wmul( IAmount
-                         , ratio( IWeight, IBalance
-                                , OWeight, OBalance));
-        feeAmount = wmul(feeRatio, IAmount);
-        return (OAmount, feeAmount);
+                       , ratio( IWeight, IBalance
+                              , OWeight, OBalance));
+        return OAmount;
     }
 
     function ratio( uint256 IBalance, uint256 IWeight
@@ -32,7 +31,7 @@ contract BalanceMath is DSMath
             IBalance = IBalance;
             OWeight = OWeight;
             OBalance = OBalance;
-        return 0;
+        revert("unimplemented");
     }
 
 
@@ -53,7 +52,7 @@ contract BalanceMath is DSMath
         return wdiv(a, b);
     }
     function bPow(uint256 a, uint256 n) public pure returns (uint256) {
-        throw;
+        revert("unimplemented");
         // see rpow for exponention by squaring inspiration
         // but need wpow
         // return rpow(a, b);

@@ -29,23 +29,24 @@ contract Balancer is BalanceMath {
         paused = true;
     }
 
-    function swapI(uint256 amountIn, ERC20 tin, ERC20 tout)
-        public returns (uint256 amountOut, uint256 feeAmount)
+    function swapI(uint256 Ai, ERC20 Ti, ERC20 To)
+        public returns (uint256 amountOut)
     {
         require( ! paused);
-        require(isBound(tin), "tin not bound");
-        require(isBound(tout), "tout not bound");
-        Record storage I = records[address(tin)];
-        Record storage O = records[address(tout)];
+        require(isBound(Ti), "Ti not bound");
+        require(isBound(To), "To not bound");
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
 
-        (amountOut, feeAmount) = swapImath( I.balance, I.weight
-                                          , O.balance, O.weight
-                                          , amountIn, feeRatio );
+        uint256 trueIn = bSub(Ai, wmul(Ai, feeRatio));
+    
+        amountOut = swapImath( I.balance, I.weight
+                             , O.balance, O.weight
+                             , Ai, feeRatio );
 
-        ERC20(tin).transferFrom(msg.sender, address(this), amountIn);
-        ERC20(tout).transfer(msg.sender, amountOut);
-        unclaimedFees += feeAmount;
-        return (amountOut, feeAmount);
+        ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        ERC20(To).transfer(msg.sender, amountOut);
+        return amountOut;
     }
 
     function setParams(ERC20 token, uint256 weight, uint256 balance)
