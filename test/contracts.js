@@ -45,6 +45,12 @@ describe("balanceMath", function() {
         var res = await M.methods.spotPrice(one, one, one, one).call();
         assert.equal(one, res);
     });
+    it("bMath.spotPrice(1, 2, 3, 4)", async function() {
+        let M = env.math;
+        let one = await M.methods.bOne().call();
+        var res = await M.methods.spotPrice(one, one, one, one).call();
+        assert.equal(one, res);
+    });
     it("swapIMath", async function() {
         let M = env.math;
         var res = await M.methods.swapImath( 1, 1

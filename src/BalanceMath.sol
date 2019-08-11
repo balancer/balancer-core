@@ -3,12 +3,21 @@ pragma solidity ^0.5.10;
 import "ds-math/math.sol";
 import "erc20/erc20.sol";
 
+// Bi := Balance In
+// Bo := Balance Out
+// Wi := Weight In
+// Wo := Weight Out
+// Ai := Amount In
+// Ao := Amount Out
+// Ti := Token In
+// To := Token Out
+
 contract BalanceMath is DSMath
 {
    
-    function swapImath( uint256 IBalance, uint256 IWeight
-                      , uint256 OBalance, uint256 OWeight
-                      , uint256 IAmount
+    function swapImath( uint256 Bi, uint256 Wi
+                      , uint256 Bo, uint256 Wo
+                      , uint256 Ai
                       , uint256 feeRatio
                       )
         public pure
@@ -17,13 +26,13 @@ contract BalanceMath is DSMath
         revert("unimplemented");
     }
 
-    function spotPrice( uint256 IBalance, uint256 IWeight
-                      , uint256 OBalance, uint256 OWeight )
+    function spotPrice( uint256 Bi, uint256 Wi
+                      , uint256 Bo, uint256 Wo )
         public pure
         returns ( uint256 r ) 
     {
-        uint256 numer = bDiv(OBalance, OWeight);
-        uint256 denom = bDiv(IBalance, IWeight);
+        uint256 numer = bDiv(Bo, Wo);
+        uint256 denom = bDiv(Bi, Wi);
         r = bDiv(numer, denom);
         return r;
     }
@@ -36,7 +45,7 @@ contract BalanceMath is DSMath
     function i256cast(uint256 u) public pure returns (int256 i) {
         // assert not too large
         require(u < 2**127);
-        revert("unimplemented");
+        return int256(u);
     }
     function bOne() public pure returns (uint256) {
         return WAD;
