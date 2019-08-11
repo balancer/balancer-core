@@ -13,7 +13,6 @@ contract Balancer is BalanceMath {
     uint256                   public feeRatio;
     uint256                   public unclaimedFees;
 
-    uint256                   numTokens;
     mapping(address=>Record)  public records;
 
     struct Record {
@@ -87,14 +86,12 @@ contract Balancer is BalanceMath {
           , weight: 0
           , balance: 0
         });
-        numTokens++;
     }
     function unbind(ERC20 token) public {
         require(msg.sender == manager);
         require(isBound(token));
         require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
         delete records[address(token)];
-        numTokens--;
     }
     // Collect fees and any excess token that may have been xferred in
     function sweep(ERC20 token) public {
