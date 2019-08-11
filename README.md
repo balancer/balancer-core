@@ -28,6 +28,11 @@ Pool:
     // swap limit-in, specify-OUT
     swapLISO(Ti, Li, To, Ao) returns (tinAmount)
 
+    setParams
+    bind/unbind
+    pause/start
+    sweep
+
 Math:
     swapImath( Bi, Wi, Bo, Wo
              , Ai, feeRatio )
@@ -36,7 +41,3 @@ Math:
 
     ratio( Bi, Wi, Bo, Wo );
 ```
-
-
-
-
