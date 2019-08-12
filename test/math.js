@@ -1,22 +1,15 @@
 assert = require("chai").assert;
-var math = require("../src/floatMath.js")
-var fMath = math.floatMath;
-
-let approxTolerance = 10 ** -6;
-let floatEqTolerance = 10 ** -12;
-
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 
-let deployer = require("../src/deployer.js")
-let buildout = require("../evm/combined.json");
+let pkg = require("../pkg.js");
+let math = require("../src/floatMath.js")
+let fMath = math.floatMath;
 
 let testPoints = require("./points.js");
 
-let web3 = new Web3(ganache.provider({
-    gasLimit: 0xffffffff,
-    allowUnlimitedContractSize: true
-}));
+let approxTolerance = 10 ** -6;
+let floatEqTolerance = 10 ** -12;
 
 let bn = (num) => { return web3.utils.toBN(num); }
 let bNum = (num) => {
@@ -28,6 +21,12 @@ let assertCloseBN = (a, b, tolerance) => {
 }
 
 var env = {};
+
+let web3 = new Web3(ganache.provider({
+    gasLimit: 0xffffffff,
+    allowUnlimitedContractSize: true
+}));
+
 
 describe("floatMath.js", function () {
     for( pt_ of testPoints.spotPricePoints ) {
@@ -85,8 +84,9 @@ describe("BalanceMath", () => {
         let Wo = bNum(pt.Wo).toString();
         let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
         it(desc, async () => {
-            env = await deployer.deployTestEnv(web3, buildout);
-            var actual = await env.math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalanceMath");
+            var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
@@ -100,8 +100,9 @@ describe("BalanceMath", () => {
         let fee = bNum(pt.fee).toString();
         var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, async () => {
-            env = await deployer.deployTestEnv(web3, buildout);
-            var actual = await env.math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalanceMath");
+            var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
