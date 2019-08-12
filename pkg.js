@@ -24,3 +24,4 @@ module.exports.deploy = async function(web3, from, typeName) {
 }
 
 module.exports.types = types;
+module.exports.floatMath = require("./src/floatMath.js");
