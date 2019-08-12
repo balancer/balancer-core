@@ -47,7 +47,7 @@ contract Balancer is BalanceMath
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint256 trueIn = bSub(Ai, wmul(Ai, feeRatio));
+        uint256 trueIn = wsub(Ai, wmul(Ai, feeRatio));
     
         Ao = swapImath( I.balance, I.weight
                              , O.balance, O.weight

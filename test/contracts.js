@@ -7,7 +7,8 @@ let buildout = require("../evm/combined.json");
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
-    allowUnlimitedContractSize: true
+    allowUnlimitedContractSize: true,
+    debug: true
 }));
 
 let bn = (num) => { return web3.utils.toBN(num); }

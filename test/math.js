@@ -15,7 +15,8 @@ let testPoints = require("./points.js");
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
-    allowUnlimitedContractSize: true
+    allowUnlimitedContractSize: true,
+    debug: true
 }));
 
 let bn = (num) => { return web3.utils.toBN(num); }
@@ -87,7 +88,7 @@ describe("BalanceMath", () => {
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
             var actual = await env.math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
     for( pt of testPoints.swapImathPoints ) {
@@ -102,7 +103,7 @@ describe("BalanceMath", () => {
         it(desc, async () => {
             env = await deployer.deployTestEnv(web3, buildout);
             var actual = await env.math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
 });
