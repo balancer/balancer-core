@@ -16,4 +16,20 @@ module.exports.swapImathPoints = [
     {res: 2*(1-Math.pow(2/3, 1/2)), Bi: 2, Wi: 0.5, Bo: 2, Wo: 1, Ai: 1, fee: 0},
 ]
 
+module.exports.spotPriceImathPoints = [
+    {res: 10, SER0: 400, Bi: 10, Wi: 0.3, SER1: 100, Wo: 0.3},
+    {res: 0,  SER0: 400, Bi: 10, Wi: 0.3, SER1: 400, Wo: 0.3},
+    {res: 20, SER0: 900, Bi: 10, Wi: 0.3, SER1: 100, Wo: 0.3},
+];
+
+module.exports.powPoints = [
+    {res: 0.1 ** 1.5,    base: 0.1, exp: 1.5},
+    {res: 0.0,           base: 0.0,   exp: 0},
+    {res: 1,             base: 0.05, exp: 0},
+    {res: 0.5 ** 0.5,    base: 0.5, exp: 0.5},
+    {res: 0.01 ** 0.2,   base: 0.01, exp: 0.2},
+];
+
+
+
 
