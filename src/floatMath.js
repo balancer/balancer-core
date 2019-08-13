@@ -94,6 +94,7 @@ module.exports.floatMath = {
     },
 
     powApprox: function(base, exponent) {
+        assert(base <= 2, "base must be <= 2 for powApprox");
         let x = base - 1;
    
         let whole = Math.floor(exponent);   

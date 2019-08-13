@@ -90,8 +90,7 @@ describe("BalancerMath", () => {
         let base = bNum(1.5);
         let exponent = bNum(1.5);
         var expected = bNum(1.5**1.5);
-        // TODO
-        result = await math.methods.approxpow(base.toString(), exponent.toString());
+        result = await math.methods.wpowapprox(base.toString(), exponent.toString()).call();
         assertCloseBN(expected, result, approxTolerance);
     });
     for( pt_ of testPoints.spotPricePoints ) {
