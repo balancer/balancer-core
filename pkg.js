@@ -8,10 +8,6 @@ function lift(type) {
     types[`src/${type}.sol:${type}`] = undefined;
 }
 
-lift("BalancerPool");
-lift("BalancerMath");
-lift("BToken");
-
 module.exports.deploy = async function(web3, from, typeName, args) {
     let type = types[typeName];
     if(type.bin == '') {

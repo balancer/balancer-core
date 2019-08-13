@@ -79,14 +79,11 @@ contract BalancerPool is BalancerMath
         records[address(token)].weight = weight;
         uint256 oldBalance = records[address(token)].balance;
         records[address(token)].balance = balance;
-        token.transferFrom(msg.sender, address(this), balance);
-/*
         if (balance > oldBalance) {
             token.transferFrom(msg.sender, address(this), balance - oldBalance);
         } else {
             token.transfer(msg.sender, oldBalance - balance);
         }
-*/
     }
 
     function isBound(ERC20 token) public view returns (bool) {

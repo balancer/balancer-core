@@ -74,7 +74,11 @@ describe("BalancerPool", () => {
         let BBalance = web3.utils.toWei("50");
         await bpool.methods.setParams(acoin._address, AWeight, ABalance)
                            .send({from: acct0, gas: 0xffffffff});
-//        let arec = await bpool.methods.records(acoin._address).call();
-//        assert.equal(AWeight, arec.weight);
+        let arec = await bpool.methods.records(acoin._address).call();
+        assert.equal(AWeight, arec.weight);
+        assert.equal(ABalance, arec.balance);
+        assert.equal(ABalance, (await acoin.methods.balanceOf(bpool._address).call()));
+        assert.equal(initBalance - ABalance,
+                    (await acoin.methods.balanceOf(acct0).call()));
     });
 });
