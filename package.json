@@ -1,6 +1,6 @@
 {
   "name": "balancer-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "pkg.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/balancerpro/balancer-core.git"
+    "url": "git+https://github.com/balancer-labs/balancer-core.git"
   },
   "contributors": [],
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/balancerpro/balancer-core/issues"
+    "url": "https://github.com/balancer-labs/balancer-core/issues"
   },
-  "homepage": "https://github.com/balancerpro/balancer-core#readme",
+  "homepage": "https://github.com/balancer-labs/balancer-core#readme",
   "devDependencies": {
     "chai": "^4.2.0",
     "ganache-core": "^2.6.1",
