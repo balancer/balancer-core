@@ -11,7 +11,7 @@ import "ds-math/math.sol";
 // Ti := Token In
 // To := Token Out
 
-contract BalanceMath is DSMath
+contract BalancerMath is DSMath
 {
     function swapImath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
@@ -60,6 +60,13 @@ contract BalanceMath is DSMath
     function wfloor(uint x) internal pure returns (uint z) {
         z = x & ~(WAD - 1);
     }
+    function wsub(uint256 a, uint256 b) public pure returns (uint256) {
+        return sub(a, b);
+    }
+    function wadd(uint256 a, uint256 b) public pure returns (uint256) {
+        return add(a, b);
+    }
+
 
 
 
