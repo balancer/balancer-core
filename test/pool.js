@@ -13,7 +13,10 @@ describe("BalancerPool", () => {
     var acct0; var acct1; var acct2;
     var bpool;
     var acoin; var bcoin; var ccoin;
-    var initBalance; // balance of each account (for each coin) at start of each test
+
+    // balance of each account (for each coin) at start of each test
+    let initBalance = web3.utils.toWei("1000");
+
     beforeEach(async () => {
         accts = await web3.eth.getAccounts();
         acct0 = accts[0];
