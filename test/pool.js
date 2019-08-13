@@ -44,8 +44,12 @@ describe("BalancerPool", () => {
         var bound = await bpool.methods.isBound(acoin._address).call();
         assert(bound);
     });
+    it("setup sanity check: acct0 initBalance", async () => {
+        assert.equal(initBalance, (await acoin.methods.balanceOf(acct0).call()));
+        assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()));
+        assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()));
+    });
     it("setup sanity check: approvals", async () => {
-        assert.equal(initBalance, (await coin.methods.balanceOf(acct0).call()));
         for (acct of [acct0, acct1, acct2]) {
             for (coin of [acoin, bcoin, ccoin]) {
                 let max = web3.utils.toTwosComplement('-1');
@@ -54,5 +58,23 @@ describe("BalancerPool", () => {
                 assert.equal(max, web3.utils.toHex(res));
             }
         }
+    });
+    it("can transfer tokens", async () => {
+        var sent = web3.utils.toWei("10");
+        await acoin.methods.transfer(acct1, sent)
+                           .send({from:acct0});
+        var bal = await acoin.methods.balanceOf(acct1)
+                             .call();
+        assert.equal(sent, bal);
+    });
+    it("setParams basics", async () => {
+        let AWeight = web3.utils.toWei("1.5");
+        let ABalance = web3.utils.toWei("100");
+        let BWeight = web3.utils.toWei("2.5");
+        let BBalance = web3.utils.toWei("50");
+        await bpool.methods.setParams(acoin._address, AWeight, ABalance)
+                           .send({from: acct0, gas: 0xffffffff});
+//        let arec = await bpool.methods.records(acoin._address).call();
+//        assert.equal(AWeight, arec.weight);
     });
 });
