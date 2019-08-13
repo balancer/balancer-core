@@ -26,8 +26,6 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(a.sub(b).abs().lt(tolerance), `assertCloseBN( ${a} , ${b} )`);
 }
 
-var env = {};
-
 describe("floatMath.js", function () {
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;

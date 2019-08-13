@@ -2,11 +2,14 @@ let buildout = require("./evm/combined.json");
 
 let types = buildout.contracts;
 
-types.BalancerPool = types["src/BalancerPool.sol:BalancerPool"];
-types.BalancerMath = types["src/BalancerMath.sol:BalancerMath"];
+function lift(type) {
+    types[type] = types[`src/${type}.sol:${type}`];
+    types[`src/${type}.sol:${type}`] = undefined;
+}
 
-types["src/BalancerPool.sol:BalancerPool"] = undefined;
-types["src/BalancerMath.sol:BalancerMath"] = undefined;
+lift("BalancerPool");
+lift("BalancerMath");
+lift("BToken");
 
 module.exports.deploy = async function(web3, from, typeName) {
     //console.log(type);

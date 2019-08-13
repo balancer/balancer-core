@@ -14,3 +14,4 @@ all:; \
 	-o evm \
 	src/BalancerMath.sol \
 	src/BalancerPool.sol \
+	src/BToken.sol \
