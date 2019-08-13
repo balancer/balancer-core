@@ -14,7 +14,7 @@ describe("BalancerPool", () => {
     var bpool;
     var acoin; var bcoin; var ccoin;
 
-    // balance of each account (for each coin) at start of each test
+    // balance of acct0 (for each coin) at start of each test
     let initBalance = web3.utils.toWei("1000");
 
     beforeEach(async () => {
@@ -29,17 +29,14 @@ describe("BalancerPool", () => {
 
         bpool = await pkg.deploy(web3, acct0, "BalancerPool");
 
-        await bpool.methods.bind(acoin._address).send({from: acct0});
-        await bpool.methods.bind(bcoin._address).send({from: acct0});
-        await bpool.methods.bind(ccoin._address).send({from: acct0});
+        for (coin of [acoin, bcoin, ccoin]) {
+            await bpool.methods.bind(coin._address).send({from: acct0});
+            await coin.methods.mint(initBalance).send({from: acct0});
 
-        for (acct of [acct0, acct1, acct2]) {
-            for (coin of [acoin, bcoin, ccoin]) {
+            for (acct of [acct0, acct1, acct2]) {
                 let maxApproval = web3.utils.toTwosComplement('-1');
                 await coin.methods.approve(bpool._address, maxApproval)
                                   .send({from: acct});
-                await acoin.methods.mint(web3.utils.toWei(initBalance))
-                                   .send({from: acct0});
             }
         }
     });
@@ -48,6 +45,7 @@ describe("BalancerPool", () => {
         assert(bound);
     });
     it("setup sanity check: approvals", async () => {
+        assert.equal(initBalance, (await coin.methods.balanceOf(acct0).call()));
         for (acct of [acct0, acct1, acct2]) {
             for (coin of [acoin, bcoin, ccoin]) {
                 let max = web3.utils.toTwosComplement('-1');
