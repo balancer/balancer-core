@@ -50,6 +50,16 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
+    for( pt_ of testPoints.powPoints) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.powApprox(pt.base, pt.exp)
+                          , approxTolerance);
+        });
+    }
+
+
 
     it("should throw if Ai >= Bi", () => {
         assert.throws(() => { fMath.swapIMathExact(1, 2, 2, 2, 1, 0); });
@@ -83,6 +93,17 @@ describe("BalancerMath", () => {
         result = await math.methods.approxpow(base.toString(), exponent.toString());
         assertCloseBN(expected, result, approxTolerance);
     });
+    for( pt_ of testPoints.powPoints ) {
+        let pt = pt_;
+        let desc = `${pt.res} ~= math.approxpow(${pt.base}, ${pt.exp})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.approxpow(pt.base, pt.exp).call()
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+ 
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
         let res = bNum(pt.res);
@@ -98,6 +119,22 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+    for( pt_ of testPoints.spotPricePoints ) {
+        let pt = pt_;
+        let res = bNum(pt.res);
+        let Bi = bNum(pt.Bi).toString();
+        let Wi = bNum(pt.Wi).toString();
+        let Bo = bNum(pt.Bo).toString();
+        let Wo = bNum(pt.Wo).toString();
+        let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+ 
     for( pt of testPoints.swapImathPoints ) {
         let res = bNum(pt.res);
         let Bi = bNum(pt.Bi).toString();
