@@ -76,8 +76,14 @@ describe("floatMath.js", function () {
 
 describe("BalanceMath", () => {
     it("approxPow", async () => {
-        accts = await web3.eth.getAccounts();
-        math = await pkg.deploy(web3, accts[0], "BalanceMath");
+        let accts = await web3.eth.getAccounts();
+        let math = await pkg.deploy(web3, accts[0], "BalanceMath");
+        let base = bNum(1.5);
+        let exponent = bNum(1.5);
+        var expected = bNum(1.5**1.5);
+        // TODO
+        result = await math.methods.approxpow(base.toString(), exponent.toString());
+        assertCloseBN(expected, result, approxTolerance);
     });
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
