@@ -26,10 +26,10 @@ contract BalanceMath is DSMath
     {
 
         uint256 wRatio     = wdiv(Wi, Wo);
- 		uint256 adjustedIn = wmul(Ai, wsub(1 ether, feeRatio));
+ 		uint256 adjustedIn = wmul(Ai, wsub(wone(), feeRatio));
         uint256 y          = wdiv(Bi, wadd(Bi, adjustedIn));
-        uint256 exp        = wpowapprox(y, wRatio);
-		Ao                 = wmul(Bo, wsub(max(wone(), exp), min(wone(), exp)));
+        uint256 foo        = wpowapprox(y, wRatio);
+		Ao                 = wmul(Bo, wsub(wone(), foo));
 	}
 
     function swapOmath( uint256 Bi, uint256 Wi
@@ -42,9 +42,9 @@ contract BalanceMath is DSMath
     {
         uint256 wRatio     = wdiv(Wo, Wi);
         uint256 y          = wdiv(Bo, wadd(Bo, Ai));
-        uint256 exp        = wpowapprox(y, wRatio);
-		Ai                 = wmul(Bi, wsub(max(wone(), exp), min(wone(), exp)));
- 		Ai                 = wdiv(Ai, wsub(1 ether, feeRatio));
+        uint256 foo        = wpowapprox(y, wRatio);
+		Ai                 = wmul(Bi, wsub(wone(), foo));
+ 		Ai                 = wdiv(Ai, wsub(wone(), feeRatio));
     }
 
 
