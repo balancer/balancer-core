@@ -13,6 +13,7 @@ describe("BalancerPool", () => {
     var acct0; var acct1; var acct2;
     var bpool;
     var acoin; var bcoin; var ccoin;
+    var initBalance; // balance of each account (for each coin) at start of each test
     beforeEach(async () => {
         accts = await web3.eth.getAccounts();
         acct0 = accts[0];
@@ -26,12 +27,16 @@ describe("BalancerPool", () => {
         bpool = await pkg.deploy(web3, acct0, "BalancerPool");
 
         await bpool.methods.bind(acoin._address).send({from: acct0});
+        await bpool.methods.bind(bcoin._address).send({from: acct0});
+        await bpool.methods.bind(ccoin._address).send({from: acct0});
 
         for (acct of [acct0, acct1, acct2]) {
             for (coin of [acoin, bcoin, ccoin]) {
-                let max = web3.utils.toTwosComplement('-1');
-                await coin.methods.approve(bpool._address, max)
+                let maxApproval = web3.utils.toTwosComplement('-1');
+                await coin.methods.approve(bpool._address, maxApproval)
                                   .send({from: acct});
+                await acoin.methods.mint(web3.utils.toWei(initBalance))
+                                   .send({from: acct0});
             }
         }
     });
