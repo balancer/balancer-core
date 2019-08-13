@@ -23,11 +23,14 @@ module.exports.spotPriceImathPoints = [
 ];
 
 module.exports.powPoints = [
-    {res: 0.1 ** 1.5,    base: 0.1, exp: 1.5},
-    {res: 0 ** 0,        base: 0.0,   exp: 0},
-    {res: 1,             base: 0.05, exp: 0},
-    {res: 0.5 ** 0.5,    base: 0.5, exp: 0.5},
-    {res: 0.01 ** 0.2,   base: 0.01, exp: 0.2},
+    {res: 1.1 ** 1.5,    base: 1.1, exp: 1.5},
+    {res: 0 ** 0,        base: 1.0,   exp: 0},
+    {res: 1.05 ** 0,     base: 1.05, exp: 0},
+    {res: 1.01 ** 0.2,   base: 1.01, exp: 0.2},
+    {res: 0.9 ** 1.5,    base: 0.9, exp: 1.5},
+    {res: 0.95 ** 0,     base: 0.95, exp: 0},
+    {res: 0.91 ** 0.2,   base: 0.91, exp: 0.2},
+    {res: 0.9 ** 0.2,    base: 0.9, exp: 0.2},
 ];
 
 
