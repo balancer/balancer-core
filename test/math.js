@@ -75,6 +75,10 @@ describe("floatMath.js", function () {
 });
 
 describe("BalanceMath", () => {
+    it("approxPow", () => {
+        accts = await web3.eth.getAccounts();
+        math = await pkg.deploy(web3, accts[0], "BalanceMath");
+    });
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
         let res = bNum(pt.res);
