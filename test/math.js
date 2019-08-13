@@ -51,6 +51,17 @@ describe("floatMath.js", function () {
         });
     }
 
+    it("powApprox approximate float precision range", () => {
+        for( base = 1.95; base > 0.05; base *= 0.95 ) {
+            for( exponent = 10; exponent > 0.1; exponent *= 0.95) {
+                assert.closeTo(base ** exponent
+                              , fMath.powApprox(base, exponent)
+                              , 0.001
+                              , `base: ${base}, exponent: ${exponent}`);
+            }
+        }
+    });
+
     it("should throw if Ai >= Bi", () => {
         assert.throws(() => { fMath.swapIMathExact(1, 2, 2, 2, 1, 0); });
     });
