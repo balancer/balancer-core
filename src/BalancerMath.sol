@@ -53,4 +53,88 @@ contract BalanceMath is DSMath
         r = wdiv(numer, denom);
         return r;
     }
+
+    function wone() public pure returns (uint256) {
+        return WAD;
+    }
+    function wfloor(uint x) internal pure returns (uint z) {
+        z = x & ~(WAD - 1);
+    }
+
+
+
+    function wpow(uint x, uint n) internal pure returns (uint z) {
+        z = n % 2 != 0 ? x : WAD;
+
+        for (n /= 2; n != 0; n /= 2) {
+            x = wmul(x, x);
+
+            if (n % 2 != 0) {
+                z = wmul(z, x);
+            }
+        }
+    }
+
+
+
+
+    function wpowfracapprox(uint256 base, uint256 exp) public pure returns (uint256)
+    {
+        uint256 x = sub(base, wone());
+
+        uint256 whole = wfloor(exp);   
+        uint256 remain = 0;//sub(exp, whole);
+        uint256 wholePow = wpow(base, whole);
+
+        if (remain == 0) {
+            return wholePow;
+        }
+
+        // term 0:
+        uint256 a     = remain;
+        uint256 numer = 1;
+        uint256 denom = 1;
+        uint256 sum   = 1;
+
+        for( uint k = 1 ether; k < 12 ether; k += 1 ether ) {
+        //numer    = wmul(numer, wmul(sub(a, sub(k, 1 ether)), x));
+        denom    = wmul(denom, k);
+        sum     += wdiv(numer, denom);
+        }
+
+        return sum;
+
+    }
+
+    function wpowapprox(uint256 base, uint256 exp) public pure returns (uint256)
+    {
+        uint256 whole    = wfloor(exp);   
+        uint256 remain   = sub(exp, whole);
+        uint256 wholePow = wpow(base, whole);
+
+        if (remain == 0) {
+            return wholePow;
+        }
+
+        // term 0:
+        uint256 a     = remain;
+        uint256 numer = 1;
+        uint256 denom = 1;
+        uint256 sum   = 1;
+        bool    flip  = base < wone();
+        uint256 x     = sub(max(base, wone()), min(base, wone()));
+
+
+        for( uint k = 1 ether; k < 12 ether; k += 1 ether ) {
+            numer    = wmul(numer, wmul(sub(a, sub(k, 1 ether)), x));
+            denom    = wmul(denom, k);
+            if (flip && (k % 2 == 1)) {
+                sum      = add(sum, wdiv(numer, denom));
+            } else {
+                //sum      = sub(sum, wdiv(numer, denom));
+            }
+        }
+
+        return wmul(sum, wholePow);
+    }
 }
