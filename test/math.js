@@ -74,10 +74,10 @@ describe("floatMath.js", function () {
 
 });
 
-describe("BalanceMath", () => {
+describe("BalancerMath", () => {
     it("approxPow", async () => {
         let accts = await web3.eth.getAccounts();
-        let math = await pkg.deploy(web3, accts[0], "BalanceMath");
+        let math = await pkg.deploy(web3, accts[0], "BalancerMath");
         let base = bNum(1.5);
         let exponent = bNum(1.5);
         var expected = bNum(1.5**1.5);
@@ -95,7 +95,7 @@ describe("BalanceMath", () => {
         let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalanceMath");
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
@@ -111,7 +111,7 @@ describe("BalanceMath", () => {
         var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalanceMath");
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
