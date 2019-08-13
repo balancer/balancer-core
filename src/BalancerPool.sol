@@ -5,10 +5,10 @@ import 'ds-note/note.sol';
 import 'ds-token/token.sol';
 import 'erc20/erc20.sol';
 
-import "./BalanceMath.sol";
+import "./BalancerMath.sol";
 
-contract Balancer is BalanceMath
-                   , DSNote
+contract BalancerPool is BalancerMath
+                       , DSNote
 {
     bool                      public paused;
     address                   public manager;

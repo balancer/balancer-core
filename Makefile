@@ -12,6 +12,5 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o evm \
-	src/BalanceMath.sol \
-	src/BalanceTest.sol \
-	src/Balancer.sol \
+	src/BalancerMath.sol \
+	src/BalancerPool.sol \

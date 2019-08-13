@@ -75,7 +75,7 @@ describe("floatMath.js", function () {
 });
 
 describe("BalanceMath", () => {
-    it("approxPow", () => {
+    it("approxPow", async () => {
         accts = await web3.eth.getAccounts();
         math = await pkg.deploy(web3, accts[0], "BalanceMath");
     });
