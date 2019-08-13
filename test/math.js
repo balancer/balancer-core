@@ -8,6 +8,12 @@ let fMath = math.floatMath;
 
 let testPoints = require("./points.js");
 
+let web3 = new Web3(ganache.provider({
+    gasLimit: 0xffffffff,
+    allowUnlimitedContractSize: true,
+    debug: true
+}));
+
 let approxTolerance = 10 ** -6;
 let floatEqTolerance = 10 ** -12;
 
@@ -21,12 +27,6 @@ let assertCloseBN = (a, b, tolerance) => {
 }
 
 var env = {};
-
-let web3 = new Web3(ganache.provider({
-    gasLimit: 0xffffffff,
-    allowUnlimitedContractSize: true
-}));
-
 
 describe("floatMath.js", function () {
     for( pt_ of testPoints.spotPricePoints ) {
@@ -87,7 +87,7 @@ describe("BalanceMath", () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalanceMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
     for( pt of testPoints.swapImathPoints ) {
@@ -103,7 +103,7 @@ describe("BalanceMath", () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalanceMath");
             var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
 });
