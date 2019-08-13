@@ -23,7 +23,7 @@ let bNum = (num) => {
 }
 let assertCloseBN = (a, b, tolerance) => {
     tolerance = bNum(tolerance);
-    assert(a.sub(b).lt(tolerance), `assertCloseBN( ${a} , ${b} )`);
+    assert(a.sub(b).abs().lt(tolerance), `assertCloseBN( ${a} , ${b} )`);
 }
 
 var env = {};
@@ -87,11 +87,11 @@ describe("BalanceMath", () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalanceMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
     for( pt of testPoints.swapImathPoints ) {
-        let res = bNum(pt.res).toString();
+        let res = bNum(pt.res);
         let Bi = bNum(pt.Bi).toString();
         let Wi = bNum(pt.Wi).toString();
         let Bo = bNum(pt.Bo).toString();
@@ -103,7 +103,7 @@ describe("BalanceMath", () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalanceMath");
             var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
-            assertCloseBN(bn(res), web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
 });

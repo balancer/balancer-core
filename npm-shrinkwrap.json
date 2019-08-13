@@ -1,6 +1,6 @@
 {
-  "name": "balancer",
-  "version": "0.0.1",
+  "name": "balancer-core",
+  "version": "0.0.2",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
