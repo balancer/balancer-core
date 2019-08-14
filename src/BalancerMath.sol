@@ -21,11 +21,13 @@ contract BalancerMath is DSMath
         public pure
         returns ( uint256 Ao )
     {
-        uint256 wRatio     = wdiv(Wi, Wo);
-        uint256 adjustedIn = wmul(Ai, wsub(wone(), feeRatio));
-        uint256 y          = wdiv(Bi, wadd(Bi, adjustedIn));
-        uint256 foo        = wpowapprox(y, wRatio);
-        Ao                 = wmul(Bo, wsub(wone(), foo));
+        uint256 wRatio          = wdiv(Wi, Wo);
+        (uint256 adjustedIn,)   = wsub(wone(), feeRatio);
+        adjustedIn              = wmul(Ai, adjustedIn);
+        uint256 y               = wdiv(Bi, wadd(Bi, adjustedIn));
+        uint256 foo             = wpowapprox(y, wRatio);
+        (Ao,)                   = wsub(wone(), foo);
+        Ao                      = wmul(Bo, Ao);
 	}
 
     function swapOmath( uint256 Bi, uint256 Wi
@@ -39,8 +41,9 @@ contract BalancerMath is DSMath
         uint256 wRatio     = wdiv(Wo, Wi);
         uint256 y          = wdiv(Bo, wadd(Bo, Ai));
         uint256 foo        = wpowapprox(y, wRatio);
-        Ai                 = wmul(Bi, wsub(wone(), foo));
-        Ai                 = wdiv(Ai, wsub(wone(), feeRatio));
+        (foo,)             = wsub(wone(), foo);
+        (Ai,)              = wsub(wone(), feeRatio);
+        Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
 
     function spotPrice( uint256 Bi, uint256 Wi
@@ -58,10 +61,14 @@ contract BalancerMath is DSMath
         return WAD;
     }
     function wfloor(uint x) internal pure returns (uint z) {
-        z = x & ~(WAD - 1);
+        z = x / wone() * wone();
     }
-    function wsub(uint256 a, uint256 b) public pure returns (uint256) {
-        return sub(a, b);
+    function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
+        if (a > b) {
+            return (sub(a, b), false);
+        } else {
+            return (sub(b, a), true);
+        }
     }
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return add(a, b);
@@ -82,42 +89,15 @@ contract BalancerMath is DSMath
         }
     }
 
-
-
-
-    function wpowfracapprox(uint256 base, uint256 exp) public pure returns (uint256)
-    {
-        uint256 x = sub(base, wone());
-
-        uint256 whole = wfloor(exp);   
-        uint256 remain = 0;//sub(exp, whole);
-        uint256 wholePow = wpow(base, whole);
-
-        if (remain == 0) {
-            return wholePow;
-        }
-
-        // term 0:
-        uint256 a     = remain;
-        uint256 numer = 1;
-        uint256 denom = 1;
-        uint256 sum   = 1;
-
-        for( uint k = 1 ether; k < 12 ether; k += 1 ether ) {
-        //numer    = wmul(numer, wmul(sub(a, sub(k, 1 ether)), x));
-        denom    = wmul(denom, k);
-        sum     += wdiv(numer, denom);
-        }
-
-        return sum;
-
+    function wtoi(uint w) internal pure returns (uint) {
+        return w / wone();
     }
 
     function wpowapprox(uint256 base, uint256 exp) public pure returns (uint256)
     {
         uint256 whole    = wfloor(exp);   
         uint256 remain   = sub(exp, whole);
-        uint256 wholePow = wpow(base, whole);
+        uint256 wholePow = wpow(base, wtoi(whole));
 
         if (remain == 0) {
             return wholePow;
@@ -125,20 +105,25 @@ contract BalancerMath is DSMath
 
         // term 0:
         uint256 a     = remain;
-        uint256 numer = 1;
-        uint256 denom = 1;
-        uint256 sum   = 1;
-        bool    flip  = base < wone();
-        uint256 x     = sub(max(base, wone()), min(base, wone()));
+        uint256 numer = wone();
+        uint256 denom = wone();
+        uint256 sum   = wone();
+        (uint256 x, bool xneg)  = wsub(base, wone());
 
 
-        for( uint k = 1 ether; k < 12 ether; k += 1 ether ) {
-            numer    = wmul(numer, wmul(sub(a, sub(k, 1 ether)), x));
+        uint select = 0;
+        for( uint i = 1; i < 12; i++) {
+            uint256 k = i * wone();
+            
+            (uint256 c, bool cneg) = wsub(a, sub(k, wone()));
+            numer    = wmul(numer, wmul(c, x));
             denom    = wmul(denom, k);
-            if (flip && (k % 2 == 1)) {
-                sum      = add(sum, wdiv(numer, denom));
+            if (xneg) select += 1;
+            if (cneg) select += 1;
+            if (select % 2 == 1) {
+                sum      = sub(sum, wdiv(numer, denom));
             } else {
-                //sum      = sub(sum, wdiv(numer, denom));
+                sum      = add(sum, wdiv(numer, denom));
             }
         }
 

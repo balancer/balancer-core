@@ -50,6 +50,24 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= spotPriceImathExact(${pt.SER0}, ${pt.SER1}, ${pt.Wi}, ${pt.Wo}, ${pt.Bi}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.spotPriceImathExact(pt.SER0, pt.SER1, pt.Wi, pt.Wo, pt.Bi, pt.fee)
+                          , approxTolerance);
+        });
+    }
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= spotPriceImathApprox(${pt.SER0}, ${pt.SER1}, ${pt.Wi}, ${pt.Wo}, ${pt.Bi}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.spotPriceImathApprox(pt.SER0, pt.SER1, pt.Wi, pt.Wo, pt.Bi, pt.fee)
+                          , approxTolerance);
+        });
+    }
+ 
+ 
     for( pt_ of testPoints.powPoints) {
         let pt = pt_;
         var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
@@ -83,24 +101,16 @@ describe("floatMath.js", function () {
 });
 
 describe("BalancerMath", () => {
-    it("approxPow", async () => {
-        let accts = await web3.eth.getAccounts();
-        let math = await pkg.deploy(web3, accts[0], "BalancerMath");
-        let base = bNum(1.5);
-        let exponent = bNum(1.5);
-        var expected = bNum(1.5**1.5);
-        // TODO
-        result = await math.methods.approxpow(base.toString(), exponent.toString());
-        assertCloseBN(expected, result, approxTolerance);
-    });
     for( pt_ of testPoints.powPoints ) {
         let pt = pt_;
-        let desc = `${pt.res} ~= math.approxpow(${pt.base}, ${pt.exp})`;
+        let desc = `${pt.res} ~= math.wpowapprox(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            var actual = await math.methods.approxpow(pt.base, pt.exp).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            let base = bNum(pt.base).toString();
+            let exp  = bNum(pt.exp).toString();
+            var actual = await math.methods.wpowapprox(base, exp).call()
+            assertCloseBN(bNum(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
  
@@ -151,4 +161,6 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+
+
 });
