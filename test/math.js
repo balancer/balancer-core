@@ -50,6 +50,34 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= spotPriceImathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.spotPriceImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
+                          , approxTolerance);
+        });
+    }
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= spotPriceImathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.spotPriceImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
+                          , approxTolerance);
+        });
+    }
+ 
+ 
+    for( pt_ of testPoints.powPoints) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.powApprox(pt.base, pt.exp)
+                          , approxTolerance);
+        });
+    }
+
+
 
     it("powApprox approximate float precision range", () => {
         for( base = 1.95; base > 0.05; base *= 0.95 ) {
@@ -84,6 +112,18 @@ describe("floatMath.js", function () {
 });
 
 describe("BalancerMath", () => {
+    for( pt_ of testPoints.powPoints ) {
+        let pt = pt_;
+        let desc = `${pt.res} ~= math.wpowapprox(${pt.base}, ${pt.exp})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            let base = bNum(pt.base).toString();
+            let exp  = bNum(pt.exp).toString();
+            var actual = await math.methods.wpowapprox(base, exp).call()
+            assertCloseBN(bNum(pt.res), web3.utils.toBN(actual), approxTolerance);
+        });
+    }
     it("approxPow", async () => {
         let accts = await web3.eth.getAccounts();
         let math = await pkg.deploy(web3, accts[0], "BalancerMath");
@@ -108,6 +148,42 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+    for( pt_ of testPoints.spotPricePoints ) {
+        let pt = pt_;
+        let res = bNum(pt.res);
+        let Bi = bNum(pt.Bi).toString();
+        let Wi = bNum(pt.Wi).toString();
+        let Bo = bNum(pt.Bo).toString();
+        let Wo = bNum(pt.Wo).toString();
+        let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        let res  = bNum(pt.res);
+        //let SER0 = bNum(pt.SER0).toString();
+        let SER1 = bNum(pt.SER1).toString();
+        let Bi   = bNum(pt.Bi).toString();
+        let Wi   = bNum(pt.Wi).toString();
+        let Bo   = bNum(pt.Bo).toString();
+        let Wo   = bNum(pt.Wo).toString();
+        let fee  = bNum(pt.fee).toString();
+        let desc = `${res} ~= bMath.spotPriceImathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${SER1}, ${fee})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.spotpriceimathapprox(Bi, Wi, Bo, Wo, SER1, fee).call()
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+ 
+ 
     for( pt of testPoints.swapImathPoints ) {
         let res = bNum(pt.res);
         let Bi = bNum(pt.Bi).toString();
@@ -124,4 +200,6 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+
+
 });

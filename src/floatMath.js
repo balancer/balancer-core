@@ -93,6 +93,22 @@ module.exports.floatMath = {
 
     },
 
+    spotPriceImathExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
+        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
+        var exponent = Wo/(Wo + Wi);
+        var foo = SER0/SER1;
+
+        return (foo ** exponent - 1) * Bi;
+    },
+
+
+    spotPriceImathApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
+        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
+        var exponent = Wo/(Wo + Wi);
+        var foo = SER0/SER1;
+        return (this.powApprox(foo, exponent) - 1) * Bi;
+    },
+
     powApprox: function(base, exponent) {
         assert(base <= 2, "base must be <= 2 for powApprox");
         let x = base - 1;
@@ -118,6 +134,7 @@ module.exports.floatMath = {
         }
 
         return sum * wholePow;
-    }
+    },
+
 
 }

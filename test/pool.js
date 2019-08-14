@@ -69,6 +69,7 @@ describe("BalancerPool", () => {
         assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()));
     });
     it("setup sanity check: approvals", async () => {
+        assert.equal(initBalance, (await coin.methods.balanceOf(acct0).call()));
         for (acct of [acct0, acct1, acct2]) {
             for (coin of [acoin, bcoin, ccoin]) {
                 let max = web3.utils.toTwosComplement('-1');
