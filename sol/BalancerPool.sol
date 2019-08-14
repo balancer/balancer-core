@@ -51,12 +51,9 @@ contract BalancerPool is BalancerMath
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        (uint256 trueIn, bool n) = wsub(Ai, wmul(Ai, feeRatio));
-        require( !n, "balancer-swapI-critical");
-    
         Ao = swapImath( I.balance, I.weight
                       , O.balance, O.weight
-                      , trueIn, feeRatio );
+                      , Ai, feeRatio );
 
         ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         ERC20(To).transfer(msg.sender, Ao);
