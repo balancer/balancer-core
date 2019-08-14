@@ -108,8 +108,8 @@ describe("floatMath.js", function () {
 });
 
 describe("BalancerMath", () => {
-    for( pt_ of testPoints.powPoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.powPoints ) {
+        
         let desc = `${pt.res} ~= math.wpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
@@ -120,14 +120,13 @@ describe("BalancerMath", () => {
             assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
-    for( pt_ of testPoints.spotPricePoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.spotPricePoints ) {
         let res = toWei(pt.res);
         let Bi = toWei(pt.Bi).toString();
         let Wi = toWei(pt.Wi).toString();
         let Bo = toWei(pt.Bo).toString();
         let Wo = toWei(pt.Wo).toString();
-        let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+        let desc = `${pt.res} ~= bMath.spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
@@ -136,8 +135,7 @@ describe("BalancerMath", () => {
         });
     }
 
-    for( pt_ of testPoints.amountUpToPricePoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.amountUpToPricePoints ) {
         let res  = toWei(pt.res);
         let SER1 = toWei(pt.SER1).toString();
         let Bi   = toWei(pt.Bi).toString();
@@ -145,7 +143,7 @@ describe("BalancerMath", () => {
         let Bo   = toWei(pt.Bo).toString();
         let Wo   = toWei(pt.Wo).toString();
         let fee  = toWei(pt.fee).toString();
-        let desc = `${res} ~= bMath.amountUpToPriceApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${SER1}, ${fee})`;
+        let desc = `${pt.res} ~= bMath.amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
@@ -154,7 +152,7 @@ describe("BalancerMath", () => {
         });
     }
  
-    for( pt of testPoints.swapImathPoints ) {
+    for( let pt of testPoints.swapImathPoints ) {
         let res = toWei(pt.res);
         let Bi = toWei(pt.Bi).toString();
         let Wi = toWei(pt.Wi).toString();
@@ -162,7 +160,7 @@ describe("BalancerMath", () => {
         let Wo = toWei(pt.Wo).toString();
         let Ai = toWei(pt.Ai).toString();
         let fee = toWei(pt.fee).toString();
-        var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+        var desc = `${pt.res} ~= bMath.swapImath(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
