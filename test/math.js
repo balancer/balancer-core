@@ -106,8 +106,8 @@ describe("BalancerMath", () => {
         
         let desc = `${pt.res} ~= math.wpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
-            accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            let accts = await web3.eth.getAccounts();
+            let math = await pkg.deploy(web3, accts[0], "BalancerMath");
             let base = toWei(pt.base).toString();
             let exp  = toWei(pt.exp).toString();
             var actual = await math.methods.wpow(base, exp).call()
@@ -122,8 +122,8 @@ describe("BalancerMath", () => {
         let Wo = toWei(pt.Wo).toString();
         let desc = `${pt.res} ~= bMath.spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, async () => {
-            accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            let accts = await web3.eth.getAccounts();
+            let math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
@@ -139,8 +139,8 @@ describe("BalancerMath", () => {
         let fee  = toWei(pt.fee).toString();
         let desc = `${pt.res} ~= bMath.amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
-            accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            let accts = await web3.eth.getAccounts();
+            let math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.amountUpToPriceApprox(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
@@ -156,8 +156,8 @@ describe("BalancerMath", () => {
         let fee = toWei(pt.fee).toString();
         var desc = `${pt.res} ~= bMath.swapImath(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, async () => {
-            accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            let accts = await web3.eth.getAccounts();
+            let math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
