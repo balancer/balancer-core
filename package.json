@@ -2,7 +2,7 @@
   "name": "balancer-core",
   "version": "0.0.3",
   "description": "",
-  "main": "pkg.js",
+  "main": "package.js",
   "scripts": {
     "test": "make && mocha"
   },

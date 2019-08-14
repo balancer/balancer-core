@@ -2,7 +2,7 @@ assert = require("chai").assert;
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 
-let pkg = require("../pkg.js");
+let pkg = require("../package.js");
 let math = require("../util/floatMath.js")
 let fMath = math.floatMath;
 
