@@ -60,6 +60,7 @@ contract BalancerPool is BalancerMath
     function swapO(ERC20 Ti, ERC20 To, uint256 Ao)
         public returns (uint256 Ai)
     {
+        Ti = Ti; To = To; Ai = Ao; feeRatio = Ao; // hide warnings
         revert("unimplemented");
     }
 
