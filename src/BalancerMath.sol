@@ -25,7 +25,7 @@ contract BalancerMath is DSMath
         (uint256 adjustedIn,)   = wsub(wone(), feeRatio);
         adjustedIn              = wmul(Ai, adjustedIn);
         uint256 y               = wdiv(Bi, wadd(Bi, adjustedIn));
-        uint256 foo             = wpowapprox(y, wRatio);
+        uint256 foo             = wpow(y, wRatio);
         (Ao,)                   = wsub(wone(), foo);
         Ao                      = wmul(Bo, Ao);
 	}
@@ -40,7 +40,7 @@ contract BalancerMath is DSMath
     {
         uint256 wRatio     = wdiv(Wo, Wi);
         uint256 y          = wdiv(Bo, wadd(Bo, Ai));
-        uint256 foo        = wpowapprox(y, wRatio);
+        uint256 foo        = wpow(y, wRatio);
         (foo,)             = wsub(wone(), foo);
         (Ai,)              = wsub(wone(), feeRatio);
         Ai                 = wdiv(wmul(Bi, foo), Ai);
@@ -58,18 +58,18 @@ contract BalancerMath is DSMath
     }
 
     function amountUpToPriceApprox( uint256 Bi
-                                 , uint256 Wi
-                                 , uint256 Bo
-                                 , uint256 Wo
-                                 , uint256 SER1
-                                 , uint256 fee)
+                                  , uint256 Wi
+                                  , uint256 Bo
+                                  , uint256 Wo
+                                  , uint256 SER1
+                                  , uint256 fee)
         public pure
         returns ( uint256 Ai )
     {
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
-        Ai = sub(wpowapprox(base, exp), wone());
+        Ai = sub(wpow(base, exp), wone());
         Ai = wmul(Ai, Bi);
         Ai = wdiv(Ai, sub(wone(), fee));
     }
@@ -91,7 +91,7 @@ contract BalancerMath is DSMath
         return add(a, b);
     }
 
-    function wpow(uint x, uint n) internal pure returns (uint z) {
+    function wpown(uint x, uint n) internal pure returns (uint z) {
         z = n % 2 != 0 ? x : WAD;
 
         for (n /= 2; n != 0; n /= 2) {
@@ -107,11 +107,11 @@ contract BalancerMath is DSMath
         return w / wone();
     }
 
-    function wpowapprox(uint256 base, uint256 exp) public pure returns (uint256)
+    function wpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
         uint256 whole    = wfloor(exp);   
         uint256 remain   = sub(exp, whole);
-        uint256 wholePow = wpow(base, wtoi(whole));
+        uint256 wholePow = wpown(base, wtoi(whole));
 
         if (remain == 0) {
             return wholePow;

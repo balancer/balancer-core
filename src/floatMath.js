@@ -5,7 +5,6 @@
 // Ai := Amount of token In
 module.exports.floatMath = {
 
-
     spotPrice: function(Bi, Wi, Bo, Wo) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
@@ -101,7 +100,6 @@ module.exports.floatMath = {
         return (foo ** exponent - 1) * Bi;
     },
 
-
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
@@ -135,6 +133,5 @@ module.exports.floatMath = {
 
         return sum * wholePow;
     },
-
 
 }

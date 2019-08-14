@@ -110,13 +110,13 @@ describe("floatMath.js", function () {
 describe("BalancerMath", () => {
     for( pt_ of testPoints.powPoints ) {
         let pt = pt_;
-        let desc = `${pt.res} ~= math.wpowapprox(${pt.base}, ${pt.exp})`;
+        let desc = `${pt.res} ~= math.wpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
             let base = toWei(pt.base).toString();
             let exp  = toWei(pt.exp).toString();
-            var actual = await math.methods.wpowapprox(base, exp).call()
+            var actual = await math.methods.wpow(base, exp).call()
             assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
