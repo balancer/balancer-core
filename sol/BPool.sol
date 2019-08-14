@@ -22,16 +22,21 @@ import "./BMath.sol";
 contract BPool is BMath
                 , DSNote
 {
+    uint8 constant MAX_TOKENS = 8;
+
     bool                      public paused;
     address                   public manager;
     uint256                   public feeRatio;
-    uint256                   public unclaimedFees;
 
+    uint256                   public totalWeight;
+    uint8                     public numTokens;
     mapping(address=>Record)  public records;
+    address[MAX_TOKENS]       private _index;
 
     struct Record {
         bool    bound;
         ERC20   addr;
+        uint8   index;   // int
         uint256 weight;  // RAY
         uint256 balance; // WAD
     }
@@ -99,12 +104,15 @@ contract BPool is BMath
     {
         require(msg.sender == manager);
         require( ! isBound(token));
+        require(numTokens < MAX_TOKENS);
         records[address(token)] = Record({
             addr: token
           , bound: true
+          , index: numTokens
           , weight: 0
           , balance: 0
         });
+        numTokens++;
     }
     function unbind(ERC20 token)
         note
@@ -113,7 +121,14 @@ contract BPool is BMath
         require(msg.sender == manager);
         require(isBound(token));
         require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
+        uint256 index = records[address(token)].index;
+        uint256 last = numTokens - 0;
+        if( index != last ) {
+            _index[index] = _index[last];
+        }
         delete records[address(token)];
+        _index[last] = address(0);
+        numTokens--;
     }
     // Collect fees and any excess token that may have been transferred in
     function sweep(ERC20 token)

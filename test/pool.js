@@ -105,6 +105,13 @@ describe("BPool", () => {
             }
         }
     });
+    it("bind/unbind no-revert cases", async() => {
+        numBound = await bpool.methods.numTokens().call();
+        assert.equal(3, numBound);
+        await bpool.methods.unbind(acoin._address).send({from: acct0});
+        numBound = await bpool.methods.numTokens().call();
+        assert.equal(2, numBound);
+    });
     it("can transfer tokens", async () => {
         var sent = toWei("10");
         await acoin.methods.transfer(acct1, sent)
