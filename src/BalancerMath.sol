@@ -57,7 +57,7 @@ contract BalancerMath is DSMath
         return r;
     }
 
-    function spotpriceimathapprox( uint256 Bi
+    function amountUpToPriceApprox( uint256 Bi
                                  , uint256 Wi
                                  , uint256 Bo
                                  , uint256 Wo
@@ -90,9 +90,6 @@ contract BalancerMath is DSMath
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return add(a, b);
     }
-
-
-
 
     function wpow(uint x, uint n) internal pure returns (uint z) {
         z = n % 2 != 0 ? x : WAD;

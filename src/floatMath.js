@@ -93,7 +93,7 @@ module.exports.floatMath = {
 
     },
 
-    spotPriceImathExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
+    amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
@@ -102,7 +102,7 @@ module.exports.floatMath = {
     },
 
 
-    spotPriceImathApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
+    amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
