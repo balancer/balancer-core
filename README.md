@@ -5,39 +5,32 @@ yarn install
 make # builds the contracts
 yarn test
 ```
-
-terminology
+interface
 ```
 Ti/To: token (address) in/out
-Ai/Ao: amount of tokens in/out (amount specified for one trade)
-Bi/Bo: total balance of token in a pool
-Wi/Wo: weight of token in pool
-Li/Lo: token limit in/out for trade (upper bound for Li, lower bound for Lo)
+Ai/Ao: amount (wei) of tokens in/out (amount specified for one trade)
+Bi/Bo: total balance (wei) of token in a pool
+Wi/Wo: weight of token in pool (as wei, i.e. 1.5 = 15*10**17)
+Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
 
-Pool:
+BalancerPool.
     swapExactInLimitOut(Ti, Ai, To, Lo) returns (Ao)
     swapLimitInExactOut(Ti, Li, To, Ao) returns (Ai)
 
+    try_swapExactInLimitOut(Ti, Ai, To, Lo) returns (Ao, bool)
+    try_swapLimitInExactOut(Ti, Li, To, Ao) returns (Ai, bool)
+
+    view_swapExactInLimitOut(Ti, Ai, To, Lo) returns (Ao, bool)
+    view_swapLimitInExactOut(Ti, Li, To, Ao) returns (Ai, bool)
+
+    math_ExactInDeriveOut(Bi, Wi, Bo, Wo, Ai, f) returns (Ao, bool);
+    math_DeriveInExactOut(Bi, Wi, Bo, Wo, Ao, f) returns (Ai, bool);
+
     setFee(T, f)
     setParams(T, B, W)
-    bind(T) / unbind(T)
-    pause() / start()
     clean(T)
-
-Math:
-    swapImath( Bi, Wi, Bo, Wo
-             , Ai, feeRatio )
-        public pure
-        returns ( Ao );
-
-    swapOmath( Bi, Wi, Bo, Wo
-             , Ao, feeRatio )
-        public pure
-        returns ( Ai );
-
-    spotPrice( Bi, Wi, Bo, Wo );
-    
-    spotPriceChangeMath( Bi, Wi, Bo, Wo, SER1, fee)
-        public pure
-        returns ( Ai );
+    bind(T)
+    unbind(T)
+    pause()
+    start()
 ```
