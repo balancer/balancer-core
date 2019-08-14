@@ -12,6 +12,6 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o evm \
-	src/BalancerMath.sol \
-	src/BalancerPool.sol \
-	src/BToken.sol \
+	sol/BalancerMath.sol \
+	sol/BalancerPool.sol \
+	sol/BToken.sol \

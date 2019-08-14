@@ -2,8 +2,8 @@ assert = require("chai").assert;
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 
-let pkg = require("../pkg.js");
-let math = require("../src/floatMath.js")
+let pkg = require("../package.js");
+let math = require("../util/floatMath.js")
 let fMath = math.floatMath;
 
 let testPoints = require("./points.js");
@@ -17,13 +17,13 @@ let web3 = new Web3(ganache.provider({
 let approxTolerance = 10 ** -6;
 let floatEqTolerance = 10 ** -12;
 
-let bn = (num) => { return web3.utils.toBN(num); }
-let bNum = (num) => {
-    return bn(Math.floor(num * 10**9)).mul(bn(10**9));
-}
+let toBN = web3.utils.toBN;
+let toWei = (n) => web3.utils.toWei(n.toString());
+
 let assertCloseBN = (a, b, tolerance) => {
-    tolerance = bNum(tolerance);
-    assert(a.sub(b).abs().lt(tolerance), `assertCloseBN( ${a} , ${b} )`);
+    tolerance = toBN(toWei(tolerance));
+    let diff = toBN(a).sub(toBN(b)).abs();
+    assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
 describe("floatMath.js", function () {
@@ -42,6 +42,16 @@ describe("floatMath.js", function () {
                           , floatEqTolerance);
         });
     }
+
+    for( pt_ of testPoints.swapImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+                          , approxTolerance);
+        });
+    }
+ 
     for( pt_ of testPoints.swapOmathPoints ) {
         let pt = pt_;
         var desc = `${pt.res} == swapOMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
@@ -60,34 +70,22 @@ describe("floatMath.js", function () {
         });
     }
 
-    for( pt_ of testPoints.spotPriceImathPoints ) {
+    for( pt_ of testPoints.amountUpToPricePoints ) {
         let pt = pt_;
-        var desc = `${pt.res} ~= spotPriceImathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
+        var desc = `${pt.res} ~= amountUpToPriceExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.spotPriceImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
+            assert.closeTo( pt.res, fMath.amountUpToPriceExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
-
-    for( pt_ of testPoints.swapImathPoints ) {
+    for( pt_ of testPoints.amountUpToPricePoints ) {
         let pt = pt_;
-        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
+        var desc = `${pt.res} ~= amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+            assert.closeTo( pt.res, fMath.amountUpToPriceApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
- 
-    for( pt_ of testPoints.spotPriceImathPoints ) {
-        let pt = pt_;
-        var desc = `${pt.res} ~= spotPriceImathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
-        it(desc, function () {
-            assert.closeTo( pt.res, fMath.spotPriceImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
-                          , approxTolerance);
-        });
-    }
- 
- 
     for( pt_ of testPoints.powPoints) {
         let pt = pt_;
         var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
@@ -96,8 +94,6 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
-
-
 
     it("powApprox approximate float precision range", () => {
         for( base = 1.95; base > 0.05; base *= 0.95 ) {
@@ -132,87 +128,59 @@ describe("floatMath.js", function () {
 });
 
 describe("BalancerMath", () => {
-    for( pt_ of testPoints.powPoints ) {
-        let pt = pt_;
-        let desc = `${pt.res} ~= math.wpowapprox(${pt.base}, ${pt.exp})`;
+    for( let pt of testPoints.powPoints ) {
+        
+        let desc = `${pt.res} ~= math.wpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            let base = bNum(pt.base).toString();
-            let exp  = bNum(pt.exp).toString();
-            var actual = await math.methods.wpowapprox(base, exp).call()
-            assertCloseBN(bNum(pt.res), web3.utils.toBN(actual), approxTolerance);
+            let base = toWei(pt.base).toString();
+            let exp  = toWei(pt.exp).toString();
+            var actual = await math.methods.wpow(base, exp).call()
+            assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
-    it("approxPow", async () => {
-        let accts = await web3.eth.getAccounts();
-        let math = await pkg.deploy(web3, accts[0], "BalancerMath");
-        let base = bNum(1.5);
-        let exponent = bNum(1.5);
-        var expected = bNum(1.5**1.5);
-        result = await math.methods.wpowapprox(base.toString(), exponent.toString()).call();
-        assertCloseBN(expected, web3.utils.toBN(result), approxTolerance);
-    });
-    for( pt_ of testPoints.spotPricePoints ) {
-        let pt = pt_;
-        let res = bNum(pt.res);
-        let Bi = bNum(pt.Bi).toString();
-        let Wi = bNum(pt.Wi).toString();
-        let Bo = bNum(pt.Bo).toString();
-        let Wo = bNum(pt.Wo).toString();
-        let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+    for( let pt of testPoints.spotPricePoints ) {
+        let res = toWei(pt.res);
+        let Bi = toWei(pt.Bi).toString();
+        let Wi = toWei(pt.Wi).toString();
+        let Bo = toWei(pt.Bo).toString();
+        let Wo = toWei(pt.Wo).toString();
+        let desc = `${pt.res} ~= bMath.spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
-        });
-    }
-    for( pt_ of testPoints.spotPricePoints ) {
-        let pt = pt_;
-        let res = bNum(pt.res);
-        let Bi = bNum(pt.Bi).toString();
-        let Wi = bNum(pt.Wi).toString();
-        let Bo = bNum(pt.Bo).toString();
-        let Wo = bNum(pt.Wo).toString();
-        let desc = `${res} ~= bMath.spotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
-        it(desc, async () => {
-            accts = await web3.eth.getAccounts();
-            math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
 
-    for( pt_ of testPoints.spotPriceImathPoints ) {
-        let pt = pt_;
-        let res  = bNum(pt.res);
-        //let SER0 = bNum(pt.SER0).toString();
-        let SER1 = bNum(pt.SER1).toString();
-        let Bi   = bNum(pt.Bi).toString();
-        let Wi   = bNum(pt.Wi).toString();
-        let Bo   = bNum(pt.Bo).toString();
-        let Wo   = bNum(pt.Wo).toString();
-        let fee  = bNum(pt.fee).toString();
-        let desc = `${res} ~= bMath.spotPriceImathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${SER1}, ${fee})`;
+    for( let pt of testPoints.amountUpToPricePoints ) {
+        let res  = toWei(pt.res);
+        let SER1 = toWei(pt.SER1).toString();
+        let Bi   = toWei(pt.Bi).toString();
+        let Wi   = toWei(pt.Wi).toString();
+        let Bo   = toWei(pt.Bo).toString();
+        let Wo   = toWei(pt.Wo).toString();
+        let fee  = toWei(pt.fee).toString();
+        let desc = `${pt.res} ~= bMath.amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            var actual = await math.methods.spotPriceChangeMath(Bi, Wi, Bo, Wo, SER1, fee).call()
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+            var actual = await math.methods.amountUpToPriceApprox(Bi, Wi, Bo, Wo, SER1, fee).call()
+            assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
  
- 
-    for( pt of testPoints.swapImathPoints ) {
-        let res = bNum(pt.res);
-        let Bi = bNum(pt.Bi).toString();
-        let Wi = bNum(pt.Wi).toString();
-        let Bo = bNum(pt.Bo).toString();
-        let Wo = bNum(pt.Wo).toString();
-        let Ai = bNum(pt.Ai).toString();
-        let fee = bNum(pt.fee).toString();
-        var desc = `${res} ~= bMath.swapImath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ai}, ${fee})`;
+    for( let pt of testPoints.swapImathPoints ) {
+        let res = toWei(pt.res);
+        let Bi = toWei(pt.Bi).toString();
+        let Wi = toWei(pt.Wi).toString();
+        let Bo = toWei(pt.Bo).toString();
+        let Wo = toWei(pt.Wo).toString();
+        let Ai = toWei(pt.Ai).toString();
+        let fee = toWei(pt.fee).toString();
+        var desc = `${pt.res} ~= bMath.swapImath(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
@@ -222,13 +190,13 @@ describe("BalancerMath", () => {
     }
 
     for( pt of testPoints.swapOmathPoints ) {
-        let res = bNum(pt.res);
-        let Bi = bNum(pt.Bi).toString();
-        let Wi = bNum(pt.Wi).toString();
-        let Bo = bNum(pt.Bo).toString();
-        let Wo = bNum(pt.Wo).toString();
-        let Ao = bNum(pt.Ao).toString();
-        let fee = bNum(pt.fee).toString();
+        let res = toWei(pt.res);
+        let Bi = toWei(pt.Bi).toString();
+        let Wi = toWei(pt.Wi).toString();
+        let Bo = toWei(pt.Bo).toString();
+        let Wo = toWei(pt.Wo).toString();
+        let Ao = toWei(pt.Ao).toString();
+        let fee = toWei(pt.fee).toString();
         var desc = `${res} ~= bMath.swapOmath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ao}, ${fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
@@ -237,8 +205,4 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
-
-
-
-
 });

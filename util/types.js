@@ -1,15 +1,15 @@
-let buildout = require("./evm/combined.json");
-
+let buildout = require("../evm/combined.json");
 let types = buildout.contracts;
 
 function lift(type) {
-    types[type] = types[`src/${type}.sol:${type}`];
-    types[`src/${type}.sol:${type}`] = undefined;
+    types[type] = types[`sol/${type}.sol:${type}`];
+    types[`sol/${type}.sol:${type}`] = undefined;
 }
-
 lift("BalancerMath");
 lift("BalancerPool");
 lift("BToken");
+
+module.exports.types = types;
 
 module.exports.deploy = async function(web3, from, typeName, args) {
     let type = types[typeName];
@@ -24,5 +24,3 @@ module.exports.deploy = async function(web3, from, typeName, args) {
             .send({from: from, gas: 0xfffffff});
 }
 
-module.exports.types = types;
-module.exports.floatMath = require("./src/floatMath.js");
