@@ -22,7 +22,8 @@ let toWei = (n) => web3.utils.toWei(n.toString());
 
 let assertCloseBN = (a, b, tolerance) => {
     tolerance = toBN(toWei(tolerance));
-    assert(toBN(a).sub(toBN(b)).abs().lt(tolerance), `assertCloseBN( ${a} , ${b}, ${tolerance} )`);
+    let diff = toBN(a).sub(toBN(b)).abs();
+    assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
 describe("floatMath.js", function () {

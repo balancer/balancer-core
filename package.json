@@ -4,7 +4,7 @@
   "description": "",
   "main": "pkg.js",
   "scripts": {
-    "test": "mocha"
+    "test": "make && mocha"
   },
   "repository": {
     "type": "git",
