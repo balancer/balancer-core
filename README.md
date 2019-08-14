@@ -1,9 +1,9 @@
 ```
 git submodule update --init --recursive
-npm install
+yarn install
 
 make # builds the contracts
-npm test
+yarn test
 ```
 
 terminology
