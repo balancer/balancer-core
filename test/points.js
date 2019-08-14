@@ -10,17 +10,25 @@ module.exports.spotPricePoints = [
 ];
 
 module.exports.swapImathPoints = [
-    {res: 2/3, Bi: 2, Wi: 1, Bo: 2, Wo: 1, Ai: 1, fee: 0},
-    {res: 20/3, Bi: 20, Wi: 10, Bo: 20, Wo: 10, Ai: 10, fee: 0},
-    {res: 10/9, Bi: 2, Wi: 1, Bo: 2, Wo: 0.5, Ai: 1, fee: 0},
-    {res: 2*(1-Math.pow(2/3, 1/2)), Bi: 2, Wi: 0.5, Bo: 2, Wo: 1, Ai: 1, fee: 0},
+    {res: (1 - Math.pow((2/(2+1)),(0.1/0.1))) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ai: 1, fee: 0},//2/3
+    {res: (1 - Math.pow((20/(20+10)),(0.1/0.1))) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ai: 10, fee: 0},//20/3
+    {res: (1 - Math.pow((200/(200+1)),(0.5/0.3))) * 20, Bi: 200, Wi: 0.5, Bo: 20, Wo: 0.3, Ai: 1, fee: 0}, //10/9
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0},
+    {res: (1 - Math.pow((2/(2+1*0.98)),(0.1/0.1))) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ai: 1, fee: 0.02},//2/3
+    {res: (1 - Math.pow((20/(20+10*0.99)),(0.1/0.1))) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ai: 10, fee: 0.01},//20/3
+    {res: (1 - Math.pow((200/(200+1*0.97)),(0.5/0.3))) * 20, Bi: 200, Wi: 0.5, Bo: 20, Wo: 0.3, Ai: 1, fee: 0.03}, //10/9
+    {res: (1 - Math.pow((235/(235+32*0.9)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0.1},
 ]
 
 module.exports.swapOmathPoints = [
-    {res: 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0},
-    {res: 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0},
-    {res: 2.1032221871, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0},
-    {res: 3.24265857925, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 7, fee: 0},
+    {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0},//2
+    {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0},//20
+    {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0},
+    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0},
+    {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2 / 0.98, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0.02},//2
+    {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20 / 0.99, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0.01},//20
+    {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523 / 0.97, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0.03},
+    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / 0.9, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0.1},
 ]
 
 module.exports.amountUpToPricePoints = [
@@ -28,6 +36,10 @@ module.exports.amountUpToPricePoints = [
     {res: 0.12011996945, Bi: 10, Wi: 0.2, Bo: 4405, Wo: 0.1, SER1: 850, fee: 0},
     {res: 0,             Bi: 10, Wi: 0.5, Bo: 8810, Wo: 0.5, SER1: 881, fee: 0},
     {res: 0.97653399825, Bi: 10, Wi: 0.2, Bo: 4600, Wo: 0.4, SER1: 200, fee: 0},
+    {res: 1.08172405558, Bi: 10, Wi: 0.3, Bo: 5260, Wo: 0.3, SER1: 430, fee: 0.02},
+    {res: 0.12133330247, Bi: 10, Wi: 0.2, Bo: 4405, Wo: 0.1, SER1: 850, fee: 0.01},
+    {res: 0,             Bi: 10, Wi: 0.5, Bo: 8810, Wo: 0.5, SER1: 881, fee: 0.03},
+    {res: 1.08503777583, Bi: 10, Wi: 0.2, Bo: 4600, Wo: 0.4, SER1: 200, fee: 0.1},
 ];
 
 module.exports.powPoints = [

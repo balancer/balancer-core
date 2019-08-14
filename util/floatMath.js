@@ -110,14 +110,15 @@ module.exports.floatMath = {
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
 
-        return (foo ** exponent - 1) * Bi;
+        return (foo ** exponent - 1) * Bi / (1 - fee);
     },
 
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
-        return (this.powApprox(foo, exponent) - 1) * Bi;
+        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi
+        return Ai / (1 - fee);
     },
 
     powApprox: function(base, exponent) {
