@@ -16,12 +16,11 @@ pragma solidity ^0.5.10;
 import 'erc20/erc20.sol';
 import 'ds-note/note.sol';
 import 'ds-token/token.sol';
-import 'erc20/erc20.sol';
 
-import "./BalancerMath.sol";
+import "./BMath.sol";
 
-contract BalancerPool is BalancerMath
-                       , DSNote
+contract BPool is BMath
+                , DSNote
 {
     bool                      public paused;
     address                   public manager;

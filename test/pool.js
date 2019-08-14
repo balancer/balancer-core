@@ -24,7 +24,7 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
-describe("BalancerPool", () => {
+describe("BPool", () => {
     var accts;
     var acct0; var acct1; var acct2;
     var bpool;
@@ -43,7 +43,7 @@ describe("BalancerPool", () => {
         bcoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("B")]);
         ccoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
 
-        bpool = await pkg.deploy(web3, acct0, "BalancerPool");
+        bpool = await pkg.deploy(web3, acct0, "BPool");
 
         for (coin of [acoin, bcoin, ccoin]) {
             await bpool.methods.bind(coin._address).send({from: acct0});
