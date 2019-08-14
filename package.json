@@ -2,6 +2,7 @@
   "name": "balancer-core",
   "version": "0.0.3",
   "description": "",
+  "license": "GPL3",
   "main": "package.js",
   "scripts": {
     "test": "make && mocha"
