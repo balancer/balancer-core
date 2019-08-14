@@ -66,8 +66,6 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
- 
- 
     for( pt_ of testPoints.powPoints) {
         let pt = pt_;
         var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
@@ -76,8 +74,6 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
-
-
 
     it("powApprox approximate float precision range", () => {
         for( base = 1.95; base > 0.05; base *= 0.95 ) {
@@ -124,15 +120,6 @@ describe("BalancerMath", () => {
             assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
-    it("approxPow", async () => {
-        let accts = await web3.eth.getAccounts();
-        let math = await pkg.deploy(web3, accts[0], "BalancerMath");
-        let base = toWei(1.5);
-        let exponent = toWei(1.5);
-        var expected = toWei(1.5**1.5);
-        result = await math.methods.wpowapprox(base.toString(), exponent.toString()).call();
-        assertCloseBN(toBN(expected), web3.utils.toBN(result), approxTolerance);
-    });
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
         let res = toWei(pt.res);
