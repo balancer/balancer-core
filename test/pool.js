@@ -8,6 +8,8 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
+let testPoints = require("./points.js");
+
 describe("BalancerPool", () => {
     var accts;
     var acct0; var acct1; var acct2;
@@ -40,6 +42,23 @@ describe("BalancerPool", () => {
             }
         }
     });
+    for( pt of testPoints.swapImathPoints ) {
+        let Ai = web3.utils.toWei(pt.Ai.toString());
+        let Bi = web3.utils.toWei(pt.Bi.toString());
+        let Wi = web3.utils.toWei(pt.Wi.toString());
+        let Bo = web3.utils.toWei(pt.Bo.toString());
+        let Wo = web3.utils.toWei(pt.Wo.toString());
+        let expected = web3.utils.toWei(pt.res.toString());
+        it(`${pt.res} ?= swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
+            let Ainit = initBalance;
+            let Binit = initBalance;
+            await bpool.methods.setParams(acoin._address, Wi, Bi);
+            await bpool.methods.setParams(bcoin._address, Wo, Bo);
+            var result = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+                                            .send({from: acct0, gas: 0xffffffff});
+            assert.equal(expected, result);
+        });
+    }
     it("setup sanity check: acoin is bound", async () => {
         var bound = await bpool.methods.isBound(acoin._address).call();
         assert(bound);
