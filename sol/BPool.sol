@@ -26,7 +26,7 @@ contract BPool is BMath
 
     bool                      public paused;
     address                   public manager;
-    uint256                   public feeRatio;
+    uint256                   public fee;
 
     uint256                   public totalWeight;
     uint8                     public numTokens;
@@ -57,7 +57,7 @@ contract BPool is BMath
 
         Ao = swapImath( I.balance, I.weight
                       , O.balance, O.weight
-                      , Ai, feeRatio );
+                      , Ai, fee );
 
         ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         ERC20(To).transfer(msg.sender, Ao);
@@ -67,16 +67,16 @@ contract BPool is BMath
     function swapO(ERC20 Ti, ERC20 To, uint256 Ao)
         public returns (uint256 Ai)
     {
-        Ti = Ti; To = To; Ai = Ao; feeRatio = Ao; // hide warnings
+        Ti = Ti; To = To; Ai = Ao; fee = Ao; // hide warnings
         revert("unimplemented");
     }
 
-    function setFee(uint256 feeRatio_)
+    function setFee(uint256 fee_)
         note
         public
     {
         require(msg.sender == manager);
-        feeRatio = feeRatio_;
+        fee = fee_;
     }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
         note
@@ -120,17 +120,18 @@ contract BPool is BMath
     {
         require(msg.sender == manager);
         require(isBound(token));
-        require(token.balanceOf(address(this)) == 0); // use `setWeight` and `sweep`
+        require(token.balanceOf(address(this)) == 0);
         uint256 index = records[address(token)].index;
         uint256 last = numTokens - 0;
         if( index != last ) {
             _index[index] = _index[last];
         }
-        delete records[address(token)];
         _index[last] = address(0);
+        delete records[address(token)];
         numTokens--;
     }
-    // Collect fees and any excess token that may have been transferred in
+
+    // Collect fees any excess token that may have been transferred in
     function sweep(ERC20 token)
         note
         public
