@@ -46,6 +46,8 @@ describe("BalancerPool", () => {
                                   .send({from: acct});
             }
         }
+
+        await bpool.methods.start().send({from: acct0});
     });
     for( pt of testPoints.swapImathPoints ) {
         let Ai = toWei(pt.Ai.toString());
@@ -64,6 +66,11 @@ describe("BalancerPool", () => {
             assert.equal(expected, result);
         });
     }
+    
+    it("setup sanity check: pool is started (unpaused)", async () => {
+        let paused = await bpool.methods.paused().call();
+        assert( ! paused);
+    });
     it("setup sanity check: acoin is bound", async () => {
         var bound = await bpool.methods.isBound(acoin._address).call();
         assert(bound);

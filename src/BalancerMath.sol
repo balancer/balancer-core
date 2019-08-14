@@ -21,13 +21,15 @@ contract BalancerMath is DSMath
         public pure
         returns ( uint256 Ao )
     {
-        uint256 wRatio          = wdiv(Wi, Wo);
-        (uint256 adjustedIn,)   = wsub(wone(), feeRatio);
-        adjustedIn              = wmul(Ai, adjustedIn);
-        uint256 y               = wdiv(Bi, wadd(Bi, adjustedIn));
-        uint256 foo             = wpow(y, wRatio);
-        (Ao,)                   = wsub(wone(), foo);
-        Ao                      = wmul(Bo, Ao);
+        uint256 wRatio               = wdiv(Wi, Wo);
+        (uint256 adjustedIn, bool n) = wsub(wone(), feeRatio);
+        require( !n, "balancer-swapImath");
+        adjustedIn                   = wmul(Ai, adjustedIn);
+        uint256 y                    = wdiv(Bi, wadd(Bi, adjustedIn));
+        uint256 foo                  = wpow(y, wRatio);
+        (Ao,n)                       = wsub(wone(), foo);
+        require( !n, "balancer-swapImath");
+        Ao                           = wmul(Bo, Ao);
 	}
 
     function swapOmath( uint256 Bi, uint256 Wi
@@ -41,8 +43,11 @@ contract BalancerMath is DSMath
         uint256 wRatio     = wdiv(Wo, Wi);
         uint256 y          = wdiv(Bo, wadd(Bo, Ai));
         uint256 foo        = wpow(y, wRatio);
-        (foo,)             = wsub(wone(), foo);
-        (Ai,)              = wsub(wone(), feeRatio);
+        bool n;
+        (foo,n)            = wsub(wone(), foo);
+        require( !n, "balancer-swapOmath");
+        (Ai,n)             = wsub(wone(), feeRatio);
+        require( !n, "balancer-swapOmath");
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
 

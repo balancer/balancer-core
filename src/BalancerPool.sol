@@ -41,17 +41,18 @@ contract BalancerPool is BalancerMath
     function swapI(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao)
     {
-        require( ! paused);
-        require(isBound(Ti), "Token-in not bound");
-        require(isBound(To), "Token-out not bound");
+        require( ! paused, "balancer-swapI-paused");
+        require(isBound(Ti), "balancer-swapI-token-not-bound");
+        require(isBound(To), "balancer-swapI-token-not-bound");
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        (uint256 trueIn,) = wsub(Ai, wmul(Ai, feeRatio));
+        (uint256 trueIn, bool n) = wsub(Ai, wmul(Ai, feeRatio));
+        require( !n, "balancer-swapI-critical");
     
         Ao = swapImath( I.balance, I.weight
-                             , O.balance, O.weight
-                             , trueIn, feeRatio );
+                      , O.balance, O.weight
+                      , trueIn, feeRatio );
 
         ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         ERC20(To).transfer(msg.sender, Ao);
