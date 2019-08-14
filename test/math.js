@@ -188,7 +188,7 @@ describe("BalancerMath", () => {
         let Wo = toWei(pt.Wo).toString();
         let Ao = toWei(pt.Ao).toString();
         let fee = toWei(pt.fee).toString();
-        var desc = `${res} ~= bMath.swapOmath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ao}, ${fee})`;
+        var desc = `${pt.res} ~= bMath.swapOmath(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
