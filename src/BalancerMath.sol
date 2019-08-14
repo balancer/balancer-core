@@ -57,15 +57,16 @@ contract BalancerMath is DSMath
         return r;
     }
 
-    function spotpriceimathapprox( uint256 SER0
-                                 , uint256 SER1
+    function spotpriceimathapprox( uint256 Bi
                                  , uint256 Wi
+                                 , uint256 Bo
                                  , uint256 Wo
-                                 , uint256 Bi
+                                 , uint256 SER1
                                  , uint256 fee)
         public pure
         returns ( uint256 Ai )
     {
+        uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
         Ai = sub(wpowapprox(base, exp), wone());

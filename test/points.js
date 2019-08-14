@@ -17,10 +17,10 @@ module.exports.swapImathPoints = [
 ]
 
 module.exports.spotPriceImathPoints = [
-    {res: 1.06008957447, SER0: 526, SER1: 430, Wi: 0.3, Wo: 0.3, Bi: 10, fee: 0},
-    {res: 0.12011996945, SER0: 881, SER1: 850, Wi: 0.2, Wo: 0.1, Bi: 10, fee: 0},
-    {res: 0,             SER0: 881, SER1: 881, Wi: 0.5, Wo: 0.5, Bi: 10, fee: 0},
-    {res: 0.97653399825, SER0: 230, SER1: 200, Wi: 0.2, Wo: 0.4, Bi: 10, fee: 0},
+    {res: 1.06008957447, Bi: 10, Wi: 0.3, Bo: 5260, Wo: 0.3, SER1: 430, fee: 0},//SER0: 526, SER1: 430, Wi: 0.3, Wo: 0.3, Bi: 10, fee: 0},
+    {res: 0.12011996945, Bi: 10, Wi: 0.2, Bo: 4405, Wo: 0.1, SER1: 850, fee: 0},//SER0: 881, SER1: 850, Wi: 0.2, Wo: 0.1, Bi: 10, fee: 0},
+    {res: 0,             Bi: 10, Wi: 0.5, Bo: 8810, Wo: 0.5, SER1: 881, fee: 0},//SER0: 881, SER1: 881, Wi: 0.5, Wo: 0.5, Bi: 10, fee: 0},
+    {res: 0.97653399825, Bi: 10, Wi: 0.2, Bo: 4600, Wo: 0.4, SER1: 200, fee: 0},//SER0: 230, SER1: 200, Wi: 0.2, Wo: 0.4, Bi: 10, fee: 0},
 ];
 
 module.exports.powPoints = [

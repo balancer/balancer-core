@@ -52,17 +52,17 @@ describe("floatMath.js", function () {
     }
     for( pt_ of testPoints.spotPriceImathPoints ) {
         let pt = pt_;
-        var desc = `${pt.res} ~= spotPriceImathExact(${pt.SER0}, ${pt.SER1}, ${pt.Wi}, ${pt.Wo}, ${pt.Bi}, ${pt.fee})`;
+        var desc = `${pt.res} ~= spotPriceImathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.spotPriceImathExact(pt.SER0, pt.SER1, pt.Wi, pt.Wo, pt.Bi, pt.fee)
+            assert.closeTo( pt.res, fMath.spotPriceImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
     for( pt_ of testPoints.spotPriceImathPoints ) {
         let pt = pt_;
-        var desc = `${pt.res} ~= spotPriceImathApprox(${pt.SER0}, ${pt.SER1}, ${pt.Wi}, ${pt.Wo}, ${pt.Bi}, ${pt.fee})`;
+        var desc = `${pt.res} ~= spotPriceImathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.spotPriceImathApprox(pt.SER0, pt.SER1, pt.Wi, pt.Wo, pt.Bi, pt.fee)
+            assert.closeTo( pt.res, fMath.spotPriceImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
@@ -148,17 +148,18 @@ describe("BalancerMath", () => {
     for( pt_ of testPoints.spotPriceImathPoints ) {
         let pt = pt_;
         let res  = bNum(pt.res);
-        let SER0 = bNum(pt.SER0).toString();
+        //let SER0 = bNum(pt.SER0).toString();
         let SER1 = bNum(pt.SER1).toString();
-        let Wi   = bNum(pt.Wi).toString();
-        let Wo   = bNum(pt.Wo).toString();
         let Bi   = bNum(pt.Bi).toString();
+        let Wi   = bNum(pt.Wi).toString();
+        let Bo   = bNum(pt.Bo).toString();
+        let Wo   = bNum(pt.Wo).toString();
         let fee  = bNum(pt.fee).toString();
-        let desc = `${res} ~= bMath.spotPriceImathApprox(${SER0}, ${SER1}, ${Wi}, ${Wo}, ${Bi}, ${fee})`;
+        let desc = `${res} ~= bMath.spotPriceImathApprox(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${SER1}, ${fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            var actual = await math.methods.spotpriceimathapprox(SER0, SER1, Wi, Wo, Bi, fee).call()
+            var actual = await math.methods.spotpriceimathapprox(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
