@@ -41,10 +41,12 @@ contract BalancerMath is DSMath
         returns ( uint256 Ai )
     {
         uint256 wRatio     = wdiv(Wo, Wi);
-        uint256 y          = wdiv(Bo, wadd(Bo, Ai));
+        uint256 diff; bool n;
+        (diff, n)          = wsub(Bo, Ao);
+        require( !n, "balancer-swapOmath");
+        uint256 y          = wdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
-        bool n;
-        (foo,n)            = wsub(wone(), foo);
+        (foo,n)            = wsub(foo, wone());
         require( !n, "balancer-swapOmath");
         (Ai,n)             = wsub(wone(), feeRatio);
         require( !n, "balancer-swapOmath");
@@ -82,9 +84,11 @@ contract BalancerMath is DSMath
     function wone() public pure returns (uint256) {
         return WAD;
     }
+
     function wfloor(uint x) internal pure returns (uint z) {
         z = x / wone() * wone();
     }
+
     function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
         if (a > b) {
             return (sub(a, b), false);
@@ -92,6 +96,7 @@ contract BalancerMath is DSMath
             return (sub(b, a), true);
         }
     }
+
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return add(a, b);
     }

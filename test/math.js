@@ -42,6 +42,7 @@ describe("floatMath.js", function () {
                           , floatEqTolerance);
         });
     }
+
     for( pt_ of testPoints.swapImathPoints ) {
         let pt = pt_;
         var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
@@ -50,6 +51,25 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
+ 
+    for( pt_ of testPoints.swapOmathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} == swapOMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.swapOmathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ao, pt.fee)
+                          , floatEqTolerance);
+        });
+    }
+
+    for( pt_ of testPoints.swapOmathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= swapOMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.swapOmathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ao, pt.fee)
+                          , approxTolerance);
+        });
+    }
+
     for( pt_ of testPoints.amountUpToPricePoints ) {
         let pt = pt_;
         var desc = `${pt.res} ~= amountUpToPriceExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
@@ -169,4 +189,20 @@ describe("BalancerMath", () => {
         });
     }
 
+    for( pt of testPoints.swapOmathPoints ) {
+        let res = toWei(pt.res);
+        let Bi = toWei(pt.Bi).toString();
+        let Wi = toWei(pt.Wi).toString();
+        let Bo = toWei(pt.Bo).toString();
+        let Wo = toWei(pt.Wo).toString();
+        let Ao = toWei(pt.Ao).toString();
+        let fee = toWei(pt.fee).toString();
+        var desc = `${res} ~= bMath.swapOmath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ao}, ${fee})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.swapOmath(Bi, Wi, Bo, Wo, Ao, fee).call();
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
 });
