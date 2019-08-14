@@ -148,4 +148,13 @@ module.exports.floatMath = {
         return sum * wholePow;
     },
 
+    getValue: function(tokenList) {
+        if (tokenList.length == 0) return 0;
+        let res = 1;
+        for (let token of tokenList) {
+            res *= Math.pow(token.b, token.w);
+        }
+        return res;
+    },
+
 }

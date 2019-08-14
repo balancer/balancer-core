@@ -55,6 +55,16 @@ module.exports.powPoints = [
     {res: 1.5 ** 1.5,    base: 1.5, exp: 1.5},
 ];
 
+module.exports.valuePoints = [
+    {res: 0, tokens: []},
+    {res: Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1), 
+        tokens: [{b: 300, w: 0.399},
+                 {b: 874, w: 0.2},
+                 {b: 375, w: 0.001},
+                 {b: 282, w: 0.3},
+                 {b: 2,   w: 0.1}]},
+];
+
 
 
 
