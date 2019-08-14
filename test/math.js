@@ -27,47 +27,41 @@ let assertCloseBN = (a, b, tolerance) => {
 }
 
 describe("floatMath.js", function () {
-    for( pt_ of testPoints.spotPricePoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.spotPricePoints ) {
         var desc = `${pt.res} ~= spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, function () {
             assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
         });
     }
-    for( pt_ of testPoints.swapImathPoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.swapImathPoints ) {
         var desc = `${pt.res} == swapIMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
             assert.closeTo( pt.res, fMath.swapImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
                           , floatEqTolerance);
         });
     }
-    for( pt_ of testPoints.swapImathPoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.swapImathPoints ) {
         var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
             assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
                           , approxTolerance);
         });
     }
-    for( pt_ of testPoints.amountUpToPricePoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.amountUpToPricePoints ) {
         var desc = `${pt.res} ~= amountUpToPriceExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
             assert.closeTo( pt.res, fMath.amountUpToPriceExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
-    for( pt_ of testPoints.amountUpToPricePoints ) {
-        let pt = pt_;
+    for( let pt of testPoints.amountUpToPricePoints ) {
         var desc = `${pt.res} ~= amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, function () {
             assert.closeTo( pt.res, fMath.amountUpToPriceApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.SER1, pt.fee)
                           , approxTolerance);
         });
     }
-    for( pt_ of testPoints.powPoints) {
-        let pt = pt_;
+    for( let pt of testPoints.powPoints) {
         var desc = `${pt.res} ~= powApprox(${pt.base}, ${pt.exp})`;
         it(desc, function () {
             assert.closeTo( pt.res, fMath.powApprox(pt.base, pt.exp)
