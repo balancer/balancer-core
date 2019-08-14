@@ -144,6 +144,25 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+
+    for( pt_ of testPoints.spotPriceImathPoints ) {
+        let pt = pt_;
+        let res  = bNum(pt.res);
+        let SER0 = bNum(pt.SER0).toString();
+        let SER1 = bNum(pt.SER1).toString();
+        let Wi   = bNum(pt.Wi).toString();
+        let Wo   = bNum(pt.Wo).toString();
+        let Bi   = bNum(pt.Bi).toString();
+        let fee  = bNum(pt.fee).toString();
+        let desc = `${res} ~= bMath.spotPriceImathApprox(${SER0}, ${SER1}, ${Wi}, ${Wo}, ${Bi}, ${fee})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.spotpriceimathapprox(SER0, SER1, Wi, Wo, Bi, fee).call()
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+ 
  
     for( pt of testPoints.swapImathPoints ) {
         let res = bNum(pt.res);

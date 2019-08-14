@@ -57,6 +57,22 @@ contract BalancerMath is DSMath
         return r;
     }
 
+    function spotpriceimathapprox( uint256 SER0
+                                 , uint256 SER1
+                                 , uint256 Wi
+                                 , uint256 Wo
+                                 , uint256 Bi
+                                 , uint256 fee)
+        public pure
+        returns ( uint256 Ai )
+    {
+        uint256 base = wdiv(SER0, SER1);
+        uint256 exp  = wdiv(Wo, add(Wo, Wi));
+        Ai = sub(wpowapprox(base, exp), wone());
+        Ai = wmul(Ai, Bi);
+        Ai = wdiv(Ai, sub(wone(), fee));
+    }
+
     function wone() public pure returns (uint256) {
         return WAD;
     }
@@ -112,7 +128,7 @@ contract BalancerMath is DSMath
 
 
         uint select = 0;
-        for( uint i = 1; i < 12; i++) {
+        for( uint i = 1; i < 20; i++) {
             uint256 k = i * wone();
             
             (uint256 c, bool cneg) = wsub(a, sub(k, wone()));
