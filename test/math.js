@@ -131,7 +131,7 @@ describe("BalancerMath", () => {
         let exponent = bNum(1.5);
         var expected = bNum(1.5**1.5);
         result = await math.methods.wpowapprox(base.toString(), exponent.toString()).call();
-        assertCloseBN(expected, result, approxTolerance);
+        assertCloseBN(expected, web3.utils.toBN(result), approxTolerance);
     });
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
