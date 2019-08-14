@@ -47,6 +47,7 @@ contract BalancerPool is BalancerMath
 
         ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         ERC20(To).transfer(msg.sender, Ao);
+        
         return Ao;
     }
     function swapO(ERC20 Ti, ERC20 To, uint256 Ao)

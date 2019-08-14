@@ -15,6 +15,15 @@ let toBN = web3.utils.toBN;
 let toHex = web3.utils.toHex;
 let asciiToHex = web3.utils.asciiToHex;
 
+let approxTolerance = 10 ** -6;
+let floatEqTolerance = 10 ** -12;
+
+let assertCloseBN = (a, b, tolerance) => {
+    tolerance = toBN(toWei(tolerance));
+    let diff = toBN(a).sub(toBN(b)).abs();
+    assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
+}
+
 describe("BalancerPool", () => {
     var accts;
     var acct0; var acct1; var acct2;
@@ -56,14 +65,22 @@ describe("BalancerPool", () => {
         let Bo = toWei(pt.Bo.toString());
         let Wo = toWei(pt.Wo.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ?= swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
-            let Ainit = initBalance;
-            let Binit = initBalance;
-            await bpool.methods.setParams(acoin._address, Wi, Bi);
-            await bpool.methods.setParams(bcoin._address, Wo, Bo);
+        it(`${pt.res} ?= bpool.swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
+            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
+            var abefore = await acoin.methods.balanceOf(acct0).call();
+            var bbefore = await bcoin.methods.balanceOf(acct0).call();
+            var resultStatic = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+                                                  .call();
             var result = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
                                             .send({from: acct0, gas: 0xffffffff});
-            assert.equal(expected, result);
+            var aafter = await acoin.methods.balanceOf(acct0).call();
+            var bafter = await bcoin.methods.balanceOf(acct0).call();
+            var adiff = toBN(abefore).sub(toBN(aafter));
+            var bdiff = toBN(bafter).sub(toBN(bbefore));
+            assert.equal(bdiff, resultStatic);
+            assert.equal(adiff, Ai);
+            assertCloseBN(expected, resultStatic, approxTolerance.toString());
         });
     }
     
