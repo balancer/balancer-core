@@ -110,6 +110,7 @@ module.exports.floatMath = {
     },
 
     powApprox: function(base, exponent) {
+        assert(base <= 2, "base must be <= 2 for powApprox");
         let x = base - 1;
    
         let whole = Math.floor(exponent);   
@@ -126,7 +127,7 @@ module.exports.floatMath = {
         var denom = 1;
         var sum   = 1;
 
-        for( var k = 1; k < 12; k++ ) {
+        for( var k = 1; k < 100; k++ ) {
             numer    = numer * (a - (k-1)) * x;
             denom    = denom * k;
             sum     += numer / denom;

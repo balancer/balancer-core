@@ -79,6 +79,17 @@ describe("floatMath.js", function () {
 
 
 
+    it("powApprox approximate float precision range", () => {
+        for( base = 1.95; base > 0.05; base *= 0.95 ) {
+            for( exponent = 10; exponent > 0.1; exponent *= 0.95) {
+                assert.closeTo(base ** exponent
+                              , fMath.powApprox(base, exponent)
+                              , 0.001
+                              , `base: ${base}, exponent: ${exponent}`);
+            }
+        }
+    });
+
     it("should throw if Ai >= Bi", () => {
         assert.throws(() => { fMath.swapIMathExact(1, 2, 2, 2, 1, 0); });
     });
@@ -113,7 +124,15 @@ describe("BalancerMath", () => {
             assertCloseBN(bNum(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }
- 
+    it("approxPow", async () => {
+        let accts = await web3.eth.getAccounts();
+        let math = await pkg.deploy(web3, accts[0], "BalancerMath");
+        let base = bNum(1.5);
+        let exponent = bNum(1.5);
+        var expected = bNum(1.5**1.5);
+        result = await math.methods.wpowapprox(base.toString(), exponent.toString()).call();
+        assertCloseBN(expected, result, approxTolerance);
+    });
     for( pt_ of testPoints.spotPricePoints ) {
         let pt = pt_;
         let res = bNum(pt.res);
