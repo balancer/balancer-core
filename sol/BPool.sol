@@ -131,6 +131,20 @@ contract BPool is BMath
         numTokens--;
     }
 
+    function getWeightedValue() public view returns (uint256 Wt) {
+        if (numTokens == 0) {
+            return 0;
+        }
+        Wt = 1;
+        for( uint8 i = 0; i < numTokens; i++ ) {
+            uint256 weight = records[_index[i]].weight;
+            require(weight > 0, "unreachable, bound token with zero weight");
+            // TODO enforce this on bind, setWeight etc ^^
+            Wt = wdiv(Wt, weight); // TODO
+        }
+        return Wt;
+    }
+
     // Collect fees any excess token that may have been transferred in
     function sweep(ERC20 token)
         note
