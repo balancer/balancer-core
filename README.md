@@ -13,7 +13,7 @@ Bi/Bo: total balance (wei) of token in a pool
 Wi/Wo: weight of token in pool (as wei, i.e. 1.5 = 15*10**17)
 Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
 
-BalancerPool.
+BPool.
     swapExactInLimitOut(Ti, Ai, To, Lo) returns (Ao)
     swapLimitInExactOut(Ti, Li, To, Ao) returns (Ai)
 
