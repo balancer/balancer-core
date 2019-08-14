@@ -42,14 +42,24 @@ describe("floatMath.js", function () {
                           , floatEqTolerance);
         });
     }
-    for( pt_ of testPoints.swapImathPoints ) {
+    for( pt_ of testPoints.swapOmathPoints ) {
         let pt = pt_;
-        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
+        var desc = `${pt.res} == swapOMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+            assert.closeTo( pt.res, fMath.swapOmathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ao, pt.fee)
+                          , floatEqTolerance);
+        });
+    }
+
+    for( pt_ of testPoints.swapOmathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= swapOMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.swapOmathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ao, pt.fee)
                           , approxTolerance);
         });
     }
+
     for( pt_ of testPoints.spotPriceImathPoints ) {
         let pt = pt_;
         var desc = `${pt.res} ~= spotPriceImathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
@@ -58,6 +68,16 @@ describe("floatMath.js", function () {
                           , approxTolerance);
         });
     }
+
+    for( pt_ of testPoints.swapImathPoints ) {
+        let pt = pt_;
+        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+                          , approxTolerance);
+        });
+    }
+ 
     for( pt_ of testPoints.spotPriceImathPoints ) {
         let pt = pt_;
         var desc = `${pt.res} ~= spotPriceImathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
@@ -200,6 +220,25 @@ describe("BalancerMath", () => {
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
+
+    for( pt of testPoints.swapOmathPoints ) {
+        let res = bNum(pt.res);
+        let Bi = bNum(pt.Bi).toString();
+        let Wi = bNum(pt.Wi).toString();
+        let Bo = bNum(pt.Bo).toString();
+        let Wo = bNum(pt.Wo).toString();
+        let Ao = bNum(pt.Ao).toString();
+        let fee = bNum(pt.fee).toString();
+        var desc = `${res} ~= bMath.swapOmath(${Bi}, ${Wi}, ${Bo}, ${Wo}, ${Ao}, ${fee})`;
+        it(desc, async () => {
+            accts = await web3.eth.getAccounts();
+            math = await pkg.deploy(web3, accts[0], "BalancerMath");
+            var actual = await math.methods.swapOmath(Bi, Wi, Bo, Wo, Ao, fee).call();
+            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
+        });
+    }
+
+
 
 
 });

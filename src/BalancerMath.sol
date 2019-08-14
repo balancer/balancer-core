@@ -39,9 +39,10 @@ contract BalancerMath is DSMath
         returns ( uint256 Ai )
     {
         uint256 wRatio     = wdiv(Wo, Wi);
-        uint256 y          = wdiv(Bo, wadd(Bo, Ai));
+        (uint256 diff,)    = wsub(Bo, Ao);
+        uint256 y          = wdiv(Bo, diff);
         uint256 foo        = wpowapprox(y, wRatio);
-        (foo,)             = wsub(wone(), foo);
+        (foo,)             = wsub(foo, wone());
         (Ai,)              = wsub(wone(), feeRatio);
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }

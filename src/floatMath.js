@@ -72,7 +72,7 @@ module.exports.floatMath = {
         var foo = Bo / (Bo - Ao);
         var bar = foo**exponent;
         
-        return Bi * (1 - bar) / (1 - fee);
+        return Bi * (bar - 1) / (1 - fee);
     },
 
     swapOmathApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
@@ -89,7 +89,7 @@ module.exports.floatMath = {
         var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
         
-        return Bi * (1 - bar) / (1 - fee);
+        return Bi * (bar - 1) / (1 - fee);
 
     },
 
