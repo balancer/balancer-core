@@ -68,6 +68,8 @@ describe("BalancerPool", () => {
         it(`${pt.res} ?= bpool.swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('100')) // shouldn't impact calc
+                               .send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
             var resultStatic = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
@@ -84,21 +86,14 @@ describe("BalancerPool", () => {
         });
     }
     
-    it("setup sanity check: pool is started (unpaused)", async () => {
+    it("setup sanity checks", async () => {
         let paused = await bpool.methods.paused().call();
-        assert( ! paused);
-    });
-    it("setup sanity check: acoin is bound", async () => {
+        assert( ! paused, "pool not started (unpaused)");
         var bound = await bpool.methods.isBound(acoin._address).call();
-        assert(bound);
-    });
-    it("setup sanity check: acct0 initBalance", async () => {
-        assert.equal(initBalance, (await acoin.methods.balanceOf(acct0).call()));
-        assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()));
-        assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()));
-    });
-    it("setup sanity check: approvals", async () => {
-        assert.equal(initBalance, (await coin.methods.balanceOf(acct0).call()));
+        assert(bound, "acoin not bound");
+        assert.equal(initBalance, (await acoin.methods.balanceOf(acct0).call()), "acoin wrong init balance");
+        assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()), "bcoin wrong init balance");
+        assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()), "ccoin wrong init balance");
         for (acct of [acct0, acct1, acct2]) {
             for (coin of [acoin, bcoin, ccoin]) {
                 let max = web3.utils.toTwosComplement('-1');
