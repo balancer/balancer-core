@@ -68,6 +68,8 @@ describe("BalancerPool", () => {
         it(`${pt.res} ?= bpool.swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('100')) // shouldn't impact calc
+                               .send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
             var resultStatic = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
