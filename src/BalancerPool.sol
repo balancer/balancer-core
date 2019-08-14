@@ -17,15 +17,6 @@ contract BalancerPool is BalancerMath
 
     mapping(address=>Record)  public records;
 
-    event Swap( address indexed sender
-              , address indexed Ti
-              , uint256         Ai
-              , address indexed To
-              , uint256         Ao
-              , bool            variant
-              , uint256         fee
-              );
-
     struct Record {
         bool    bound;
         ERC20   addr;
