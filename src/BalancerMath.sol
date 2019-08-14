@@ -58,7 +58,7 @@ contract BalancerMath is DSMath
         return r;
     }
 
-    function spotpriceimathapprox( uint256 Bi
+    function spotPriceChangeMath(  uint256 Bi
                                  , uint256 Wi
                                  , uint256 Bo
                                  , uint256 Wo
@@ -78,9 +78,11 @@ contract BalancerMath is DSMath
     function wone() public pure returns (uint256) {
         return WAD;
     }
+
     function wfloor(uint x) internal pure returns (uint z) {
         z = x / wone() * wone();
     }
+
     function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
         if (a > b) {
             return (sub(a, b), false);
@@ -88,6 +90,7 @@ contract BalancerMath is DSMath
             return (sub(b, a), true);
         }
     }
+
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return add(a, b);
     }

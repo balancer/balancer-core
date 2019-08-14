@@ -36,4 +36,8 @@ Math:
         returns ( Ai );
 
     spotPrice( Bi, Wi, Bo, Wo );
+    
+    spotPriceChangeMath( Bi, Wi, Bo, Wo, SER1, fee)
+        public pure
+        returns ( Ai );
 ```

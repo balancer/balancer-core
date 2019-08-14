@@ -198,7 +198,7 @@ describe("BalancerMath", () => {
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
             math = await pkg.deploy(web3, accts[0], "BalancerMath");
-            var actual = await math.methods.spotpriceimathapprox(Bi, Wi, Bo, Wo, SER1, fee).call()
+            var actual = await math.methods.spotPriceChangeMath(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }
