@@ -3,8 +3,8 @@ module.exports.floatMath = require("./util/floatMath.js");
 let buildout = require("./evm/combined.json");
 let types = buildout.contracts;
 function lift(type) {
-    types[type] = types[`src/${type}.sol:${type}`];
-    types[`src/${type}.sol:${type}`] = undefined;
+    types[type] = types[`sol/${type}.sol:${type}`];
+    types[`sol/${type}.sol:${type}`] = undefined;
 }
 lift("BalancerMath");
 lift("BalancerPool");
