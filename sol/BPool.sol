@@ -21,7 +21,7 @@ import "./BError.sol";
 import "./BEvent.sol";
 
 contract BPool is BConst
-                //, BMath // TODO better linearization
+                , BMath
                 , BError
                 , BEvent
 {

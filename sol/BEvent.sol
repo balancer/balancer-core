@@ -15,5 +15,6 @@ pragma solidity ^0.5.10;
 
 import 'ds-note/note.sol';
 
-contract BEvent is DSNote {
+contract BEvent is DSNote
+{
 }

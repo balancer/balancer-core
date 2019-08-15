@@ -15,7 +15,8 @@ pragma solidity ^0.5.10;
 
 import "./BMath.sol";
 
-contract BConst is BMath {
+contract BConst is BNum
+{
     bytes8  constant          public COLOR             = "BRONZE";
     uint8   constant          public MAX_BOUND_TOKENS  = 8;
     uint256 constant          public MAX_FEE           = WAD / 10;

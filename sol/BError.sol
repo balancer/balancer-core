@@ -16,7 +16,8 @@ pragma solidity ^0.5.10;
 // `pure internal` operating on constants should get fully optimized by compiler
 // in other cases, should be used as a library
 
-contract BError {
+contract BError
+{
     byte constant ERR_NONE          = 0x00;
 
     byte constant ERR_PAUSED        = 0x10;

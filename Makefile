@@ -17,5 +17,6 @@ all:; \
 	sol/BError.sol \
 	sol/BEvent.sol \
 	sol/BMath.sol \
+	sol/BNum.sol \
 	sol/BPool.sol \
 
