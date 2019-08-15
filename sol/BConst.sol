@@ -15,12 +15,12 @@ pragma solidity ^0.5.10;
 
 contract BConst
 {
-    bytes8  constant          public COLOR             = "BRONZE";
-    uint8   constant          public MAX_BOUND_TOKENS  = 8;
-    uint256 constant          public BONE              = 10**18;
-    uint256 constant          public MAX_FEE           = BONE / 10;
-    uint256 constant          public MIN_TOKEN_WEIGHT  = BONE / 100;
-    uint256 constant          public MAX_TOTAL_WEIGHT  = BONE * 100; // total
-    uint256 constant          public MIN_TOKEN_BALANCE = BONE / 100;
-    uint256 constant          public MAX_TOKEN_BALANCE = BONE * BONE;
+    bytes8  constant COLOR             = "BRONZE";
+    uint8   constant MAX_BOUND_TOKENS  = 8;
+    uint256 constant BONE              = 10**18;
+    uint256 constant MAX_FEE           = BONE / 10;
+    uint256 constant MIN_TOKEN_WEIGHT  = BONE / 100;
+    uint256 constant MAX_TOTAL_WEIGHT  = BONE * 100; // total
+    uint256 constant MIN_TOKEN_BALANCE = BONE / 100;
+    uint256 constant MAX_TOKEN_BALANCE = BONE * BONE;
 }
