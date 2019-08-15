@@ -49,11 +49,9 @@ describe("BPool", () => {
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
 
-            for (acct of [acct0, acct1, acct2]) {
-                let maxApproval = web3.utils.toTwosComplement('-1');
-                await coin.methods.approve(bpool._address, maxApproval)
-                                  .send({from: acct});
-            }
+            let maxApproval = web3.utils.toTwosComplement('-1');
+            await coin.methods.approve(bpool._address, maxApproval)
+                              .send({from: acct0});
         }
 
         await bpool.methods.start().send({from: acct0});
@@ -96,13 +94,11 @@ describe("BPool", () => {
         assert.equal(initBalance, (await acoin.methods.balanceOf(acct0).call()), "acoin wrong init balance");
         assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()), "bcoin wrong init balance");
         assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()), "ccoin wrong init balance");
-        for (acct of [acct0, acct1, acct2]) {
-            for (coin of [acoin, bcoin, ccoin]) {
-                let max = web3.utils.toTwosComplement('-1');
-                let res = await coin.methods.allowance(acct, bpool._address)
-                                            .call()
-                assert.equal(max, toHex(res));
-            }
+        for (coin of [acoin, bcoin, ccoin]) {
+            let max = web3.utils.toTwosComplement('-1');
+            let res = await coin.methods.allowance(acct0, bpool._address)
+                                        .call()
+            assert.equal(max, toHex(res));
         }
     });
     it("bind/unbind no-revert cases", async() => {
