@@ -18,7 +18,14 @@ function lift(type) {
     types[type] = types[`sol/${type}.sol:${type}`];
     types[`sol/${type}.sol:${type}`] = undefined;
 }
+
+lift("BCoin");
+lift("BConst");
+lift("BError");
+lift("BEvent");
+lift("BFactory");
 lift("BMath");
+lift("BNum");
 lift("BPool");
 lift("BToken");
 
