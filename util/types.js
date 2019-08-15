@@ -25,6 +25,7 @@ lift("BError");
 lift("BEvent");
 lift("BFactory");
 lift("BMath");
+lift("BNote");
 lift("BNum");
 lift("BPool");
 lift("BToken");

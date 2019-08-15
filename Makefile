@@ -21,6 +21,7 @@ build:
 	sol/BEvent.sol \
 	sol/BFactory.sol \
 	sol/BMath.sol \
+	sol/BNote.sol \
 	sol/BNum.sol \
 	sol/BPool.sol \
 	sol/BToken.sol \

@@ -31,19 +31,19 @@ contract BNum is BConst
         return bfloor(x);
     }
 
-    function badd(uint256 a, uint256 b) public pure returns (uint256) {
+    function badd(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c = a + b;
         check(c >= a, ERR_MATH_ADD_OVERFLOW);
         return c;
     }
 
-    function bsub(uint256 a, uint256 b) public pure returns (uint256) {
+    function bsub(uint256 a, uint256 b) internal pure returns (uint256) {
         (uint256 c, bool flag) = bsubSign(a, b);
         check(!flag, ERR_MATH_SUB_UNDERFLOW);
         return c;
     }
 
-    function bsubSign(uint256 a, uint256 b) public pure returns (uint256, bool) {
+    function bsubSign(uint256 a, uint256 b) internal pure returns (uint256, bool) {
         if (a >= b) {
             return (a - b, false);
         } else {

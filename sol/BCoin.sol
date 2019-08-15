@@ -14,11 +14,9 @@
 pragma solidity ^0.5.10;
 
 import "./BNum.sol";
-import "./BError.sol";
-import "./BEvent.sol";
+import "./BNote.sol";
 
-contract BCoin is BEvent
-                , BError
+contract BCoin is BNote
                 , BNum
 {
     address                     public owner;
@@ -32,10 +30,10 @@ contract BCoin is BEvent
 
     function move(address src, address dst, uint256 amt)
       public note {
-        check( msg.sender == owner
-            || msg.sender == src
-            || trusts[src][msg.sender]
-        , ERR_BAD_CALLER );
+        require( msg.sender == src
+              || trusts[src][msg.sender]
+              || msg.sender == owner
+        , "ERR_BAD_CALLER" );
         balanceOf[src] = bsub(balanceOf[src], amt);
         balanceOf[dst] = badd(balanceOf[dst], amt);
     }
