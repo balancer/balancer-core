@@ -34,7 +34,6 @@ contract BError {
 
     byte constant ERR_ERC20_FALSE   = 0xe0;
     
-    byte constant ERR_UNIMPLEMENTED = 0xfe;
     byte constant ERR_UNREACHABLE   = 0xff;
 
     function serr(byte berr)

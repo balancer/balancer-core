@@ -220,7 +220,7 @@ contract BPool is BMath
             uint256 weight = records[_index[i]].weight;
             check(weight > 0, ERR_UNREACHABLE);
             Wt = wdiv(Wt, weight);
-            check(ERR_UNIMPLEMENTED);
+            revert('getWeightedValue unimplemented');
         }
         return Wt;
     }
@@ -230,24 +230,25 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager, "sender==manager");
-        require(isBound(token));
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
         uint256 selfBalance = records[token].balance;
         uint256 trueBalance = ERC20(token).balanceOf(address(this));
-        ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
+        bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
+        check(ok, ERR_ERC20_FALSE);
     }
     function pause()
         public
         note
     {
-        require(msg.sender == manager, "sender==manager");
+        check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
     function start()
         public
         note
     {
-        require(msg.sender == manager, "sender==manager");
+        check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
 }
