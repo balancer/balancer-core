@@ -90,7 +90,7 @@ contract BPool is BMath
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
-        require(err == ERR_NONE);
+        check(err);
         return Ao;
     }
 

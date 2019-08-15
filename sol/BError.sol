@@ -28,9 +28,19 @@ contract BError {
     {
         if( berr == ERR_NONE )
             return "ERR_NONE";
+        if( berr == ERR_PAUSED )
+            return "ERR_PAUSED";
+        if( berr == ERR_NOT_BOUND )
+            return "ERR_NOT_BOUND";
+
         return "err-meta--unkown-berr";
     }
-   
+  
+    function check(byte berr)
+        pure internal
+    {
+        check(berr == ERR_NONE, berr);
+    } 
     function check(bool cond, byte berr)
         pure internal
     {
