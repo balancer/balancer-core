@@ -22,7 +22,7 @@ import "./BEvent.sol";
 
 contract BPool is BConst
                 , BMath
-                , BError
+//                , BError
                 , BEvent
 {
     bool                      public paused;

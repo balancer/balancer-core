@@ -18,22 +18,26 @@ pragma solidity ^0.5.10;
 
 contract BError
 {
-    byte constant ERR_NONE          = 0x00;
+    byte constant ERR_NONE               = 0x00;
 
-    byte constant ERR_PAUSED        = 0x10;
-    byte constant ERR_BAD_CALLER    = 0x11;
+    byte constant ERR_PAUSED             = 0x10;
+    byte constant ERR_BAD_CALLER         = 0x11;
 
-    byte constant ERR_MAX_TOKENS    = 0x20;
-    byte constant ERR_NOT_BOUND     = 0x21;
-    byte constant ERR_ALREADY_BOUND = 0x22;
+    byte constant ERR_MAX_TOKENS         = 0x20;
+    byte constant ERR_NOT_BOUND          = 0x21;
+    byte constant ERR_ALREADY_BOUND      = 0x22;
 
-    byte constant ERR_MIN_WEIGHT    = 0x30;
-    byte constant ERR_MAX_WEIGHT    = 0x31;
-    byte constant ERR_MAX_FEE       = 0x32;
+    byte constant ERR_MIN_WEIGHT         = 0x30;
+    byte constant ERR_MAX_WEIGHT         = 0x31;
+    byte constant ERR_MAX_FEE            = 0x32;
 
-    byte constant ERR_ERC20_FALSE   = 0xe0;
+    byte constant ERR_MATH_ADD_OVERFLOW  = 0x40;
+    byte constant ERR_MATH_SUB_UNDERFLOW = 0x40;
+    byte constant ERR_MATH_MUL_OVERFLOW  = 0x40;
+
+    byte constant ERR_ERC20_FALSE        = 0xe0;
     
-    byte constant ERR_UNREACHABLE   = 0xff;
+    byte constant ERR_UNREACHABLE        = 0xff;
 
     function serr(byte berr)
         pure internal
