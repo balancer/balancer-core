@@ -7,13 +7,20 @@ yarn test
 ```
 interface
 ```
-Ti/To: token (address) in/out
-Ai/Ao: amount (wei) of tokens in/out (amount specified for one trade)
-Bi/Bo: total balance (wei) of token in a pool
-Wi/Wo: weight of token in pool (as wei, i.e. 1.5 = 15*10**17)
-Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
+roles:
+    traders: users who call `swap` variants
+    poolers: users who call `pool`/`unpool`
+    manager: user or contract that calls "admin" and config functions
 
-BPool.
+arguments:
+    Ti/To: token (address) in/out
+    Ai/Ao: amount (wei) of tokens in/out (amount specified for one trade)
+    Bi/Bo: total balance (wei) of token in a pool
+    Wi/Wo: weight of token in pool (as wei, i.e. 1.5 = 15*10**17)
+    Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
+
+BPool
+  traders
     swapExactInLimitOut(Ti, Ai, To, Lo) returns (Ao)
     swapLimitInExactOut(Ti, Li, To, Ao) returns (Ai)
 
@@ -26,6 +33,20 @@ BPool.
     math_ExactInDeriveOut(Bi, Wi, Bo, Wo, Ai, f) returns (Ao, bool);
     math_DeriveInExactOut(Bi, Wi, Bo, Wo, Ao, f) returns (Ai, bool);
 
+    swapToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
+    try_
+    view_
+    math_
+
+    swapExactInLimitPrice
+    swapExactOutLimitPrice
+    try_
+    view_
+    math_
+
+  poolers
+
+  manager
     setFee(T, f)
     setParams(T, B, W)
     clean(T)
