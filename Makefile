@@ -1,4 +1,7 @@
-all:; \
+all: build dist
+dist:
+	cp tmp/combined.json out
+build:
 	solc \
 	--optimize \
 	--pretty-json \
@@ -11,7 +14,7 @@ all:; \
 		ds-stop=lib/ds-stop/src \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
-	-o evm \
+	-o tmp \
 	sol/BCoin.sol \
 	sol/BConst.sol \
 	sol/BError.sol \

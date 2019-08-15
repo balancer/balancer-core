@@ -11,7 +11,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-let buildout = require("../evm/combined.json");
+let buildout = require("../out/combined.json");
 let types = buildout.contracts;
 
 function lift(type) {
