@@ -18,9 +18,12 @@ import "ds-math/math.sol";
 // `pure internal` operating on constants should get fully optimized by compiler
 
 contract BError {
-    byte constant ERR_NONE      = 0x00;
-    byte constant ERR_PAUSED    = 0x01;
-    byte constant ERR_NOT_BOUND = 0x02;
+    byte constant ERR_NONE        = 0x00;
+    byte constant ERR_PAUSED      = 0x01;
+    byte constant ERR_NOT_BOUND   = 0x02;
+    byte constant ERR_BAD_CALLER  = 0x03;
+
+    byte constant ERR_MIN_WEIGHT  = 0x10;
     
     function serr(byte berr)
         pure internal
@@ -32,8 +35,11 @@ contract BError {
             return "ERR_PAUSED";
         if( berr == ERR_NOT_BOUND )
             return "ERR_NOT_BOUND";
-
-        return "err-meta--unkown-berr";
+        if( berr == ERR_BAD_CALLER )
+            return "ERR_BAD_CALLER";
+        if( berr == ERR_MIN_WEIGHT )
+            return "ERR_MIN_WEIGHT";
+        return "ERR_META_PANIC";
     }
   
     function check(byte berr)

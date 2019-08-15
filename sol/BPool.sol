@@ -106,8 +106,8 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager);
-        require(isBound(token));
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
         require(weight >= MIN_TOKEN_WEIGHT);
 
         uint256 oldWeight = records[token].weight;
