@@ -218,9 +218,9 @@ contract BPool is BMath
         Wt = 1;
         for( uint8 i = 0; i < numTokens; i++ ) {
             uint256 weight = records[_index[i]].weight;
-            require(weight > 0, "unreachable, bound token with zero weight");
-            // TODO enforce this on bind, setWeight etc ^^
-            Wt = wdiv(Wt, weight); // TODO
+            check(weight > 0, ERR_UNREACHABLE);
+            Wt = wdiv(Wt, weight);
+            check(ERR_UNIMPLEMENTED);
         }
         return Wt;
     }

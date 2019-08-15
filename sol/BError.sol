@@ -19,17 +19,23 @@ import "ds-math/math.sol";
 // in other cases, should be used as a library
 
 contract BError {
-    byte constant ERR_NONE        = 0x00;
-    byte constant ERR_PAUSED      = 0x01;
-    byte constant ERR_NOT_BOUND   = 0x02;
-    byte constant ERR_ALREADY_BOUND   = 0x03;
-    byte constant ERR_BAD_CALLER  = 0x04;
+    byte constant ERR_NONE          = 0x00;
 
-    byte constant ERR_MIN_WEIGHT  = 0x10;
-    byte constant ERR_MAX_WEIGHT  = 0x11;
-    byte constant ERR_MAX_FEE     = 0x12;
+    byte constant ERR_PAUSED        = 0x10;
+    byte constant ERR_BAD_CALLER    = 0x11;
 
-    byte constant ERR_ERC20_FALSE = 0x20;
+    byte constant ERR_MAX_TOKENS    = 0x20;
+    byte constant ERR_NOT_BOUND     = 0x21;
+    byte constant ERR_ALREADY_BOUND = 0x22;
+
+    byte constant ERR_MIN_WEIGHT    = 0x30;
+    byte constant ERR_MAX_WEIGHT    = 0x31;
+    byte constant ERR_MAX_FEE       = 0x32;
+
+    byte constant ERR_ERC20_FALSE   = 0xe0;
+    
+    byte constant ERR_UNIMPLEMENTED = 0xfe;
+    byte constant ERR_UNREACHABLE   = 0xff;
 
     function serr(byte berr)
         pure internal
@@ -47,7 +53,7 @@ contract BError {
             return "ERR_MIN_WEIGHT";
         if( berr == ERR_ERC20_FALSE )
             return "ERR_ERC20_FALSE";
-        revert("ERR_META_UNKNOWN_BERR");
+        revert("ERR_PANIC_UNKNOWN_BERR");
     }
   
     function check(byte berr)
