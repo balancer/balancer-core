@@ -31,19 +31,33 @@ contract BCoin is BEvent
     }
 
     function move(address src, address dst, uint256 amt)
-        public note
-    {
+      public note {
         check( msg.sender == owner
             || msg.sender == src
             || trusts[src][address(this)]
-          , ERR_BAD_CALLER);
+          , ERR_BAD_CALLER );
         balanceOf[src] = bsub(balanceOf[src], amt);
         balanceOf[dst] = badd(balanceOf[dst], amt);
     }
 
+    function mint(uint256 amt) public { mint(msg.sender, amt); }
+    function mint(address dst, uint256 amt)
+      public note {
+        check( msg.sender == owner, ERR_BAD_CALLER );
+        balanceOf[dst] = badd(balanceOf[dst], amt);
+    }
+
+    function burn()
+      public note {
+        balanceOf[address(this)] = 0;
+    }
+    function burn(uint256 amt)
+      public note {
+        balanceOf[msg.sender] = bsub(balanceOf[msg.sender], amt);
+    }
+
     function trust(address whom, bool t)
-        public note
-    {
+      public note {
         trusts[msg.sender][whom] = t;
     }
 }
