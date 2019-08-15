@@ -53,6 +53,14 @@ contract BNum is BError
         return c2;
     }
 
+    function bdiv(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c0 = a * WAD;
+        check(a == 0 || c0 / a == WAD, ERR_MATH_DIV_INTERFLOW);
+        uint256 c1 = c0 + (b / 2);
+        check(c1 >= c0, ERR_MATH_DIV_INTERFLOW);
+        uint256 c2 = c1 / b;
+        return c2;
+    }
 
 
     function wpown(uint x, uint n) internal pure returns (uint z) {

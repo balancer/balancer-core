@@ -32,8 +32,9 @@ contract BError
     byte constant ERR_MAX_FEE            = 0x32;
 
     byte constant ERR_MATH_ADD_OVERFLOW  = 0x40;
-    byte constant ERR_MATH_SUB_UNDERFLOW = 0x40;
-    byte constant ERR_MATH_MUL_OVERFLOW  = 0x40;
+    byte constant ERR_MATH_SUB_UNDERFLOW = 0x41;
+    byte constant ERR_MATH_MUL_OVERFLOW  = 0x42;
+    byte constant ERR_MATH_DIV_INTERFLOW = 0x44; // intermdiate values overflow (we keep precision)
 
     byte constant ERR_ERC20_FALSE        = 0xe0;
     
@@ -55,6 +56,15 @@ contract BError
             return "ERR_MIN_WEIGHT";
         if( berr == ERR_ERC20_FALSE )
             return "ERR_ERC20_FALSE";
+        if( berr == ERR_MATH_ADD_OVERFLOW )
+            return "ERR_MATH_ADD_OVERFLOW";
+        if( berr == ERR_MATH_SUB_UNDERFLOW )
+            return "ERR_MATH_SUB_UNDERFLOW";
+        if( berr == ERR_MATH_MUL_OVERFLOW )
+            return "ERR_MATH_MUL_OVERFLOW";
+        if( berr == ERR_MATH_DIV_INTERFLOW )
+            return "ERR_MATH_DIV_INTERFLOW";
+
         revert("ERR_PANIC_UNKNOWN");
     }
   

@@ -36,12 +36,12 @@ contract BMath is BNum
         returns ( uint256 Ao )
     {
         bool flag;
-        uint256 wRatio               = wdiv(Wi, Wo);
+        uint256 wRatio               = bdiv(Wi, Wo);
         uint256 adjustedIn;
         (adjustedIn, flag)           = bsubTry(ONE, fee);
         require( !flag, "BMath.swapImath");
         adjustedIn                   = bmul(Ai, adjustedIn);
-        uint256 y                    = wdiv(Bi, badd(Bi, adjustedIn));
+        uint256 y                    = bdiv(Bi, badd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
         uint256 bar;
         (bar, flag)                  = bsubTry(ONE, foo);
@@ -58,17 +58,17 @@ contract BMath is BNum
         returns ( uint256 Ai )
     {
         bool flag;
-        uint256 wRatio     = wdiv(Wo, Wi);
+        uint256 wRatio     = bdiv(Wo, Wi);
         uint256 diff;
         (diff, flag)       = bsubTry(Bo, Ao);
         require( !flag, "BMath.swapOmath");
-        uint256 y          = wdiv(Bo, diff);
+        uint256 y          = bdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
         (foo,flag)         = bsubTry(foo, ONE);
         require( !flag, "BMath.swapOmath");
         (Ai,flag)             = bsubTry(ONE, fee);
         require( !flag, "BMath.swapOmath");
-        Ai                 = wdiv(bmul(Bi, foo), Ai);
+        Ai                 = bdiv(bmul(Bi, foo), Ai);
     }
 
     function spotPrice( uint256 Bi, uint256 Wi
@@ -76,9 +76,9 @@ contract BMath is BNum
         public pure
         returns ( uint256 r ) 
     {
-        uint256 numer = wdiv(Bo, Wo);
-        uint256 denom = wdiv(Bi, Wi);
-        r = wdiv(numer, denom);
+        uint256 numer = bdiv(Bo, Wo);
+        uint256 denom = bdiv(Bi, Wi);
+        r = bdiv(numer, denom);
         return r;
     }
 
@@ -93,11 +93,11 @@ contract BMath is BNum
     {
         bool flag;
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
-        uint256 base = wdiv(SER0, SER1);
-        uint256 exp  = wdiv(Wo, add(Wo, Wi));
+        uint256 base = bdiv(SER0, SER1);
+        uint256 exp  = bdiv(Wo, add(Wo, Wi));
         (Ai,flag) = bsubTry(wpow(base, exp), ONE);
         require( !flag, "BMath.amountUpToPriceApprox");
         Ai = bmul(Ai, Bi);
-        Ai = wdiv(Ai, sub(ONE, fee)); // TODO bsubTry, require etc
+        Ai = bdiv(Ai, sub(ONE, fee)); // TODO bsubTry, require etc
     }
 }
