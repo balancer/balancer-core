@@ -34,12 +34,12 @@ contract BNum is BError
     }
 
     function bsub(uint256 a, uint256 b) public pure returns (uint256) {
-        (uint256 c, bool flag) = bsubTry(a, b);
+        (uint256 c, bool flag) = bsubSign(a, b);
         check(!flag, ERR_MATH_SUB_UNDERFLOW);
         return c;
     }
 
-    function bsubTry(uint256 a, uint256 b) public pure returns (uint256, bool) {
+    function bsubSign(uint256 a, uint256 b) public pure returns (uint256, bool) {
         if (a >= b) {
             return (a - b, false);
         } else {
@@ -85,7 +85,7 @@ contract BNum is BError
     function bpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
         uint256 whole                 = bfloor(exp);   
-        (uint256 remain, bool flag)   = bsubTry(exp, whole);
+        (uint256 remain, bool flag)   = bsubSign(exp, whole);
         require( !flag, "BMath.bpow");
         uint256 wholePow              = bpown(base, btoi(whole));
 
@@ -98,14 +98,13 @@ contract BNum is BError
         uint256 numer = BONE;
         uint256 denom = BONE;
         uint256 sum   = BONE;
-        (uint256 x, bool xneg)  = bsubTry(base, BONE);
-
+        (uint256 x, bool xneg)  = bsubSign(base, BONE);
 
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
             uint256 k = i * BONE;
             
-            (uint256 c, bool cneg) = bsubTry(a, bsub(k, BONE));
+            (uint256 c, bool cneg) = bsubSign(a, bsub(k, BONE));
             numer    = bmul(numer, bmul(c, x));
             denom    = bmul(denom, k);
             if (xneg) select += 1;
@@ -119,5 +118,4 @@ contract BNum is BError
 
         return bmul(sum, wholePow);
     }
-
 }
