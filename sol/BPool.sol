@@ -50,12 +50,14 @@ contract BPool is BMath
         paused = true;
     }
 
-    function do_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
-        public returns (uint256 Ao)
+    function view_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+        public view returns (uint256 Ao, byte err)
     {
+        // TODO return err
         require( ! paused, "balancer-swapI-paused");
         require(isBound(Ti), "balancer-swapI-token-not-bound");
         require(isBound(To), "balancer-swapI-token-not-bound");
+
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
@@ -63,11 +65,33 @@ contract BPool is BMath
                       , O.balance, O.weight
                       , Ai, fee );
 
-        ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        ERC20(To).transfer(msg.sender, Ao);
-        
+        return (Ao, byte(0x0));
+    }
+
+    function try_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+        public returns (uint256 Ao, byte err)
+    {
+        (Ao, err) = view_swap_ExactIn_AnyOut(Ti, Ai, To);
+        if (err != 0x0) {
+            return (Ao, err);
+        } else {
+            ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            ERC20(To).transfer(msg.sender, Ao);
+            
+            return (Ao, byte(0x0));
+        }
+    }
+
+    function do_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+        public returns (uint256 Ao)
+    {
+        byte err;
+        (Ao, err) = try_swap_ExactIn_AnyOut(Ti, Ai, To);
+        require(err == byte(0x0));
         return Ao;
     }
+
+
     function swapO(ERC20 Ti, ERC20 To, uint256 Ao)
         public returns (uint256 Ai)
     {
