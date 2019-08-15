@@ -92,8 +92,13 @@ contract BMath is DSMath
         public pure
         returns ( uint256 Ai )
     {
+        require( Bi > 0);
+        require( Wi > 0);
+        require( Bo > 0);
+        require( Wo > 0);
         bool flag;
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
+        require( SER1 <= SER0);
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
         (Ai,flag) = wsub(wpow(base, exp), ONE);
@@ -136,6 +141,8 @@ contract BMath is DSMath
 
     function wpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
+        require(base <= ONE + ONE);
+        require(base >= 0);
         uint256 whole                 = wfloor(exp);   
         (uint256 remain, bool flag)   = wsub(exp, whole);
         require( !flag, "BMath.wpow");

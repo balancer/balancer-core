@@ -51,7 +51,6 @@ module.exports.powPoints = [
     {res: 0.95 ** 0,     base: 0.95, exp: 0},
     {res: 0.91 ** 0.2,   base: 0.91, exp: 0.2},
     {res: 0.9 ** 0.2,    base: 0.9, exp: 0.2},
-    {res: 2 ** 2,        base: 2, exp: 2},
     {res: 1.5 ** 1.5,    base: 1.5, exp: 1.5},
 ];
 
