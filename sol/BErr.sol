@@ -54,21 +54,12 @@ contract BErr {
     }
   
     function check(byte berr)
-        pure internal
-    {
+        pure internal {
         check(berr == ERR_NONE, berr);
     } 
     function check(bool cond, byte berr)
-        pure internal
-    {
+        pure internal {
         if(!cond)
-            chuck(berr);
-    }
-
-    // like throw haha 
-    function chuck(byte berr)
-        pure internal
-    {
-        revert(serr(berr));
+            revert(serr(berr));
     }
 }
