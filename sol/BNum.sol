@@ -18,13 +18,10 @@
 pragma solidity ^0.5.10;
 
 import "./BError.sol";
-import 'ds-math/math.sol';
 
 contract BNum is BError
-               , DSMath
 {
-    uint256 constant ONE  = WAD;
-    uint256 constant BONE = ONE;
+    uint256 constant BONE = 10**18;
 
     function wfloor(uint x) internal pure returns (uint z) {
         z = x / BONE * BONE;
@@ -33,6 +30,12 @@ contract BNum is BError
     function badd(uint256 a, uint256 b) public pure returns (uint256) {
         uint256 c = a + b;
         check(c >= a, ERR_MATH_ADD_OVERFLOW);
+        return c;
+    }
+
+    function bsub(uint256 a, uint256 b) public pure returns (uint256) {
+        (uint256 c, bool flag) = bsubTry(a, b);
+        check(!flag, ERR_MATH_SUB_UNDERFLOW);
         return c;
     }
 
@@ -47,15 +50,15 @@ contract BNum is BError
     function bmul(uint256 a, uint256 b) internal pure returns (uint256) {
         uint256 c0 = a * b;
         check(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
-        uint256 c1 = c0 + (WAD / 2);
+        uint256 c1 = c0 + (BONE / 2);
         check(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
-        uint256 c2 = c1 / WAD;
+        uint256 c2 = c1 / BONE;
         return c2;
     }
 
     function bdiv(uint256 a, uint256 b) internal pure returns (uint256) {
-        uint256 c0 = a * WAD;
-        check(a == 0 || c0 / a == WAD, ERR_MATH_DIV_INTERFLOW);
+        uint256 c0 = a * BONE;
+        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERFLOW);
         uint256 c1 = c0 + (b / 2);
         check(c1 >= c0, ERR_MATH_DIV_INTERFLOW);
         uint256 c2 = c1 / b;
@@ -67,10 +70,10 @@ contract BNum is BError
         z = n % 2 != 0 ? x : BONE;
 
         for (n /= 2; n != 0; n /= 2) {
-            x = wmul(x, x);
+            x = bmul(x, x);
 
             if (n % 2 != 0) {
-                z = wmul(z, x);
+                z = bmul(z, x);
             }
         }
     }
@@ -102,19 +105,19 @@ contract BNum is BError
         for( uint i = 1; i < 20; i++) {
             uint256 k = i * BONE;
             
-            (uint256 c, bool cneg) = bsubTry(a, sub(k, BONE));
-            numer    = wmul(numer, wmul(c, x));
-            denom    = wmul(denom, k);
+            (uint256 c, bool cneg) = bsubTry(a, bsub(k, BONE));
+            numer    = bmul(numer, bmul(c, x));
+            denom    = bmul(denom, k);
             if (xneg) select += 1;
             if (cneg) select += 1;
             if (select % 2 == 1) {
-                sum      = sub(sum, wdiv(numer, denom));
+                sum      = bsub(sum, bdiv(numer, denom));
             } else {
-                sum      = add(sum, wdiv(numer, denom));
+                sum      = badd(sum, bdiv(numer, denom));
             }
         }
 
-        return wmul(sum, wholePow);
+        return bmul(sum, wholePow);
     }
 
 }

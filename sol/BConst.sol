@@ -13,15 +13,14 @@
 
 pragma solidity ^0.5.10;
 
-import "./BMath.sol";
-
-contract BConst is BNum
+contract BConst
 {
     bytes8  constant          public COLOR             = "BRONZE";
     uint8   constant          public MAX_BOUND_TOKENS  = 8;
-    uint256 constant          public MAX_FEE           = WAD / 10;
-    uint256 constant          public MIN_TOKEN_WEIGHT  = WAD / 100;
-    uint256 constant          public MAX_TOTAL_WEIGHT  = WAD * 100; // total
-    uint256 constant          public MIN_TOKEN_BALANCE = WAD / 100;
-    uint256 constant          public MAX_TOKEN_BALANCE = WAD * WAD;
+    uint256 constant          public BONE              = 10**18;
+    uint256 constant          public MAX_FEE           = BONE / 10;
+    uint256 constant          public MIN_TOKEN_WEIGHT  = BONE / 100;
+    uint256 constant          public MAX_TOTAL_WEIGHT  = BONE * 100; // total
+    uint256 constant          public MIN_TOKEN_BALANCE = BONE / 100;
+    uint256 constant          public MAX_TOKEN_BALANCE = BONE * BONE;
 }

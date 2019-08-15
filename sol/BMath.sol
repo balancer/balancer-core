@@ -38,13 +38,13 @@ contract BMath is BNum
         bool flag;
         uint256 wRatio               = bdiv(Wi, Wo);
         uint256 adjustedIn;
-        (adjustedIn, flag)           = bsubTry(ONE, fee);
+        (adjustedIn, flag)           = bsubTry(BONE, fee);
         require( !flag, "BMath.swapImath");
         adjustedIn                   = bmul(Ai, adjustedIn);
         uint256 y                    = bdiv(Bi, badd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
         uint256 bar;
-        (bar, flag)                  = bsubTry(ONE, foo);
+        (bar, flag)                  = bsubTry(BONE, foo);
         require( !flag, "BMath.swapImath");
         Ao                           = bmul(Bo, bar);
 	}
@@ -64,9 +64,9 @@ contract BMath is BNum
         require( !flag, "BMath.swapOmath");
         uint256 y          = bdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
-        (foo,flag)         = bsubTry(foo, ONE);
+        (foo,flag)         = bsubTry(foo, BONE);
         require( !flag, "BMath.swapOmath");
-        (Ai,flag)             = bsubTry(ONE, fee);
+        (Ai,flag)             = bsubTry(BONE, fee);
         require( !flag, "BMath.swapOmath");
         Ai                 = bdiv(bmul(Bi, foo), Ai);
     }
@@ -94,10 +94,10 @@ contract BMath is BNum
         bool flag;
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
         uint256 base = bdiv(SER0, SER1);
-        uint256 exp  = bdiv(Wo, add(Wo, Wi));
-        (Ai,flag) = bsubTry(wpow(base, exp), ONE);
+        uint256 exp  = bdiv(Wo, badd(Wo, Wi));
+        (Ai,flag) = bsubTry(wpow(base, exp), BONE);
         require( !flag, "BMath.amountUpToPriceApprox");
         Ai = bmul(Ai, Bi);
-        Ai = bdiv(Ai, sub(ONE, fee)); // TODO bsubTry, require etc
+        Ai = bdiv(Ai, bsub(BONE, fee)); // TODO bsubTry, require etc
     }
 }

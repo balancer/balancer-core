@@ -21,9 +21,9 @@ import "./BError.sol";
 import "./BEvent.sol";
 
 contract BPool is BConst
-                , BMath
-//                , BError
+                , BError
                 , BEvent
+                , BMath
 {
     bool                      public paused;
     address                   public manager;
@@ -111,10 +111,10 @@ contract BPool is BConst
         records[token].balance = balance;
 
         if (weight > oldWeight) {
-            totalWeight = add(totalWeight, weight - oldWeight);
+            totalWeight = badd(totalWeight, weight - oldWeight);
             check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_WEIGHT);
         } else {
-            totalWeight = sub(totalWeight, oldWeight - weight);
+            totalWeight = bsub(totalWeight, oldWeight - weight);
         }        
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
@@ -212,7 +212,7 @@ contract BPool is BConst
         for( uint8 i = 0; i < numTokens; i++ ) {
             uint256 weight = records[_index[i]].weight;
             check(weight > 0, ERR_UNREACHABLE);
-            Wt = wdiv(Wt, weight);
+            Wt = bdiv(Wt, weight);
             revert('getWeightedValue unimplemented');
         }
         return Wt;
