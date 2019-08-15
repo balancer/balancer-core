@@ -13,15 +13,33 @@
 
 pragma solidity ^0.5.10;
 
-import "ds-math/math.sol";
-
 // `pure internal` operating on constants should get fully optimized by compiler
+// in other cases, should be used as a library
 
-contract BError {
-    byte constant ERR_NONE      = 0x00;
-    byte constant ERR_PAUSED    = 0x01;
-    byte constant ERR_NOT_BOUND = 0x02;
+contract BError
+{
+    byte constant ERR_NONE               = 0x00;
+
+    byte constant ERR_PAUSED             = 0x10;
+    byte constant ERR_BAD_CALLER         = 0x11;
+
+    byte constant ERR_MAX_TOKENS         = 0x20;
+    byte constant ERR_NOT_BOUND          = 0x21;
+    byte constant ERR_ALREADY_BOUND      = 0x22;
+
+    byte constant ERR_MIN_WEIGHT         = 0x30;
+    byte constant ERR_MAX_WEIGHT         = 0x31;
+    byte constant ERR_MAX_FEE            = 0x32;
+
+    byte constant ERR_MATH_ADD_OVERFLOW  = 0x40;
+    byte constant ERR_MATH_SUB_UNDERFLOW = 0x41;
+    byte constant ERR_MATH_MUL_OVERFLOW  = 0x42;
+    byte constant ERR_MATH_DIV_INTERFLOW = 0x44; // intermdiate values overflow (we keep precision)
+
+    byte constant ERR_ERC20_FALSE        = 0xe0;
     
+    byte constant ERR_UNREACHABLE        = 0xff;
+
     function serr(byte berr)
         pure internal
         returns (string memory)
@@ -32,26 +50,31 @@ contract BError {
             return "ERR_PAUSED";
         if( berr == ERR_NOT_BOUND )
             return "ERR_NOT_BOUND";
+        if( berr == ERR_BAD_CALLER )
+            return "ERR_BAD_CALLER";
+        if( berr == ERR_MIN_WEIGHT )
+            return "ERR_MIN_WEIGHT";
+        if( berr == ERR_ERC20_FALSE )
+            return "ERR_ERC20_FALSE";
+        if( berr == ERR_MATH_ADD_OVERFLOW )
+            return "ERR_MATH_ADD_OVERFLOW";
+        if( berr == ERR_MATH_SUB_UNDERFLOW )
+            return "ERR_MATH_SUB_UNDERFLOW";
+        if( berr == ERR_MATH_MUL_OVERFLOW )
+            return "ERR_MATH_MUL_OVERFLOW";
+        if( berr == ERR_MATH_DIV_INTERFLOW )
+            return "ERR_MATH_DIV_INTERFLOW";
 
-        return "err-meta--unkown-berr";
+        revert("ERR_PANIC_UNKNOWN");
     }
   
     function check(byte berr)
-        pure internal
-    {
+        pure internal {
         check(berr == ERR_NONE, berr);
     } 
     function check(bool cond, byte berr)
-        pure internal
-    {
+        pure internal {
         if(!cond)
-            chuck(berr);
-    }
-
-    // like throw haha 
-    function chuck(byte berr)
-        pure internal
-    {
-        revert(serr(berr));
+            revert(serr(berr));
     }
 }
