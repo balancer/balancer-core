@@ -86,6 +86,14 @@ describe("floatMath.js", function () {
         });
     }
 
+    for( let pt of testPoints.valuePoints) {
+        var desc = `${pt.res} ~= getValue(${pt.tokens})`;
+        it(desc, function () {
+            assert.closeTo( pt.res, fMath.getValue(pt.tokens)
+                          , approxTolerance);
+        });
+    }
+
     it("powApprox approximate float precision range", () => {
         for( base = 1.95; base > 0.05; base *= 0.95 ) {
             for( exponent = 10; exponent > 0.1; exponent *= 0.95) {
