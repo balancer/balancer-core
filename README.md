@@ -33,6 +33,7 @@ arguments / state:
 BPool
     view_spotPrice(Ti, To)
     view_refPrice(T)
+    view refValue()
 
     viewSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
     trySwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
@@ -72,6 +73,8 @@ BMath
 
     setFee(T, f)
     setParams(T, B, W)
+    setWeightFixRatio(T, W) returns (B)
+    setBalanceFixRatio(T, B) returns (W)
     clean(T)
     bind(T)
     unbind(T)

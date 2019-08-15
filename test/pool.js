@@ -44,7 +44,6 @@ describe("BPool", () => {
         ccoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
 
         bpool = await pkg.deploy(web3, acct0, "BPool");
-
         for (coin of [acoin, bcoin, ccoin]) {
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
@@ -53,7 +52,6 @@ describe("BPool", () => {
             await coin.methods.approve(bpool._address, maxApproval)
                               .send({from: acct0});
         }
-
         await bpool.methods.start().send({from: acct0});
     });
     for( pt of testPoints.swapImathPoints ) {
@@ -64,10 +62,10 @@ describe("BPool", () => {
         let Wo  = toWei(pt.Wo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_ExactIn_AnyOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.doSwap_ExactInAnyOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('100')) // shouldn't impact calc
+            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
                                .send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();

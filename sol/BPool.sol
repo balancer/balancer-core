@@ -22,6 +22,7 @@ contract BPool is BMath
                 , DSNote
 {
     uint8   constant public MAX_BOUND_TOKENS  = 8;
+    uint256 constant public MAX_FEE           = WAD / 10;
     uint256 constant public MIN_TOKEN_WEIGHT  = WAD / 100;
     uint256 constant public MAX_TOTAL_WEIGHT  = WAD * 100;
     uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
@@ -81,8 +82,8 @@ contract BPool is BMath
         if (err != ERR_NONE) {
             return (Ao, err);
         } else {
-            require( ERC20(Ti).transferFrom(msg.sender, address(this), Ai) );
-            require( ERC20(To).transfer(msg.sender, Ao) );
+            require( ERC20(Ti).transferFrom(msg.sender, address(this), Ai), "xfer" );
+            require( ERC20(To).transfer(msg.sender, Ao), "xfer" );
             return (Ao, ERR_NONE);
         }
     }
@@ -104,13 +105,6 @@ contract BPool is BMath
         revert("unimplemented");
     }
 
-    function setFee(uint256 fee_)
-        public
-        note
-    {
-        require(msg.sender == manager);
-        fee = fee_;
-    }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
         public
         note
@@ -138,6 +132,38 @@ contract BPool is BMath
         }
     }
 
+    function setBalanceFixRatio(ERC20 token, uint256 balance)
+        public
+        note
+    {
+        uint256 oldBalance = records[address(token)].balance;
+        uint256 oldWeight = records[address(token)].weight;
+        uint256 oldRatio = 0;
+        uint256 newWeight = 0;
+        setParams(token, newWeight, balance);
+        revert("unimplemented");
+    }
+    function setWeightFixRatio(ERC20 token, uint256 weight)
+        public
+        note
+    {
+        uint256 oldBalance = records[address(token)].balance;
+        uint256 oldWeight = records[address(token)].weight;
+        uint256 oldRatio = 0;
+        uint256 newBalance = 0;
+        setParams(token, weight, newBalance);
+        revert("unimplemented");
+    }
+
+    function setFee(uint256 fee_)
+        public
+        note
+    {
+        require(msg.sender == manager);
+        require(fee_ <= MAX_FEE);
+        fee = fee_;
+    }
+
     function isBound(ERC20 token)
         public view
         returns (bool)
@@ -149,14 +175,14 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager);
-        require( ! isBound(token));
-        require(numTokens < MAX_BOUND_TOKENS);
-        require(balance >= MIN_TOKEN_BALANCE);
-        require(balance <= MAX_TOKEN_BALANCE);
-        require(weight >= MIN_TOKEN_WEIGHT);
+        require(msg.sender == manager, "msg.sender==manager");
+        require( ! isBound(token), "token-bound");
+        require(numTokens < MAX_BOUND_TOKENS, "numTokens<MAX");
+        require(balance >= MIN_TOKEN_BALANCE, "bind minTokenBalance");
+        require(balance <= MAX_TOKEN_BALANCE, "bind max token balance");
+        require(weight >= MIN_TOKEN_WEIGHT, "bind mind token weight");
         totalWeight += weight;
-        require(totalWeight <= MAX_TOTAL_WEIGHT);
+        require(totalWeight <= MAX_TOTAL_WEIGHT, "bind max total weight");
         records[address(token)] = Record({
             bound: true
           , index: numTokens
@@ -205,7 +231,7 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager);
+        require(msg.sender == manager, "sender==manager");
         require(isBound(token));
         uint256 selfBalance = records[address(token)].balance;
         uint256 trueBalance = token.balanceOf(address(this));
@@ -215,14 +241,14 @@ contract BPool is BMath
         public
         note
     {
-        assert(msg.sender == manager);
+        require(msg.sender == manager, "sender==manager");
         paused = true;
     }
     function start()
         public
         note
     {
-        assert(msg.sender == manager);
+        require(msg.sender == manager, "sender==manager");
         paused = false;
     }
 }
