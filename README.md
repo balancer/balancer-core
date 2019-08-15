@@ -7,11 +7,6 @@ yarn test
 ```
 interface
 ```
-roles:
-    traders: users who call `swap` variants
-    poolers: users who call `pool`/`unpool`
-    manager: user or contract that calls "admin" and config functions
-
 arguments / state:
     Ti/To: token (address) in/out
     Ai/Ao: amount (wei) of tokens in/out (amount specified for one trade)
@@ -20,7 +15,6 @@ arguments / state:
     Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
 
 BPool
-  traders
     view_spotPrice(Ti, To)
     pure_spotPrice(Bi, Wi, Bo, Wo)
 
@@ -59,9 +53,6 @@ BPool
     swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
 
 
-  poolers
-
-  manager
     setFee(T, f)
     setParams(T, B, W)
     clean(T)
