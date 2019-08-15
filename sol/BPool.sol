@@ -23,12 +23,12 @@ contract BPool is BMath
                 , BError
                 , DSNote
 {
-    uint8   constant public MAX_BOUND_TOKENS  = 8;
-    uint256 constant public MAX_FEE           = WAD / 10;
-    uint256 constant public MIN_TOKEN_WEIGHT  = WAD / 100;
-    uint256 constant public MAX_TOTAL_WEIGHT  = WAD * 100;
-    uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
-    uint256 constant public MAX_TOKEN_BALANCE = WAD * WAD;
+    uint8   constant          public MAX_BOUND_TOKENS  = 8;
+    uint256 constant          public MAX_FEE           = WAD / 10;
+    uint256 constant          public MIN_TOKEN_WEIGHT  = WAD / 100;
+    uint256 constant          public MAX_TOTAL_WEIGHT  = WAD * 100;
+    uint256 constant          public MIN_TOKEN_BALANCE = WAD / 100;
+    uint256 constant          public MAX_TOKEN_BALANCE = WAD * WAD;
 
     bool                      public paused;
     address                   public manager;
@@ -42,7 +42,6 @@ contract BPool is BMath
     struct Record {
         bool    bound;
         uint8   index;   // int
-        address token;
         uint256 weight;  // WAD
         uint256 balance; // WAD
     }
@@ -185,7 +184,6 @@ contract BPool is BMath
         records[token] = Record({
             bound: true
           , index: numTokens
-          , token: token
           , weight: 0
           , balance: 0
         });
