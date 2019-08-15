@@ -16,7 +16,16 @@ pragma solidity ^0.5.10;
 import "ds-math/math.sol";
 
 contract BError {
-    bytes32 constant internal ERR_NONE      = bytes32("ERR_NONE");
-    bytes32 constant internal ERR_PAUSED    = bytes32("ERR_PAUSED");
-    bytes32 constant internal ERR_NOT_BOUND = bytes32("ERR_NOT_BOUND");
+    bytes32 constant internal ERR_NONE      = bytes32(uint256(0x0));
+    bytes32 constant internal ERR_PAUSED    = bytes32(uint256(0x1));
+    bytes32 constant internal ERR_NOT_BOUND = bytes32(uint256(0x2));
+    
+    bytes32[1] errs;
+ 
+    constructor() public {
+        errs[uint256(ERR_NONE)] = "ERR_NONE";
+    }
+    
+    function chuck(bytes32 errcode) public {
+    }
 }
