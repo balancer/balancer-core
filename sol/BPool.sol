@@ -28,6 +28,9 @@ contract BPool is BMath
     uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
     uint256 constant public MAX_TOKEN_BALANCE = WAD * WAD;
 
+    byte constant public ERR_NONE    = byte(uint8(0x0));
+    byte constant public ERR_PAUSED  = byte(uint8(0x1));
+
     bool                      public paused;
     address                   public manager;
     uint256                   public fee;
@@ -53,8 +56,10 @@ contract BPool is BMath
     function view_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public view returns (uint256 Ao, byte err)
     {
-        // TODO return err
-        require( ! paused, "balancer-swapI-paused");
+        if( paused ) {
+            return (0, ERR_PAUSED);
+        }
+        // TODO
         require(isBound(Ti), "balancer-swapI-token-not-bound");
         require(isBound(To), "balancer-swapI-token-not-bound");
 
