@@ -15,3 +15,4 @@ all:; \
 	sol/BMath.sol \
 	sol/BPool.sol \
 	sol/BToken.sol \
+	sol/BError.sol \
