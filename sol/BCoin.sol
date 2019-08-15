@@ -26,12 +26,13 @@ contract BCoin is BEvent
     mapping(address=>
         mapping(address=>bool)) public trusts;
 
-    constructor(address erc20) public {
+    constructor() public {
         owner = msg.sender;
-        inner = erc20;
     }
 
-    function move(address src, address dst, uint256 amt) public {
+    function move(address src, address dst, uint256 amt)
+        public note
+    {
         check( msg.sender == owner
             || msg.sender == src
             || trusts[src][address(this)]
@@ -40,7 +41,9 @@ contract BCoin is BEvent
         balanceOf[dst] = badd(balanceOf[dst], amt);
     }
 
-    function trust(address whom, bool t) public {
+    function trust(address whom, bool t)
+        public note
+    {
         trusts[msg.sender][whom] = t;
     }
 }
