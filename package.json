@@ -5,7 +5,7 @@
   "license": "GPL3",
   "main": "package.js",
   "scripts": {
-    "test": "make && mocha"
+    "test": "make build && mocha"
   },
   "repository": {
     "type": "git",
