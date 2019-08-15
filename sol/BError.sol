@@ -15,17 +15,33 @@ pragma solidity ^0.5.10;
 
 import "ds-math/math.sol";
 
+// `pure internal` operating on constants should get fully optimized by compiler
+
 contract BError {
-    bytes32 constant internal ERR_NONE      = bytes32(uint256(0x0));
-    bytes32 constant internal ERR_PAUSED    = bytes32(uint256(0x1));
-    bytes32 constant internal ERR_NOT_BOUND = bytes32(uint256(0x2));
+    bytes32 constant ERR_NONE      = bytes32(uint256( 0x00 ));
+    bytes32 constant ERR_PAUSED    = bytes32(uint256( 0x01 ));
+    bytes32 constant ERR_NOT_BOUND = bytes32(uint256( 0x02 ));
     
-    bytes32[1] errs;
- 
-    constructor() public {
-        errs[uint256(ERR_NONE)] = "ERR_NONE";
+    function serr(bytes32 berr)
+        pure internal
+        returns (string memory)
+    {
+        if( berr == ERR_NONE )
+            return "ERR_NONE";
+        return "err-meta--unkown-berr";
     }
-    
-    function chuck(bytes32 errcode) public {
+   
+    function check(bool cond, bytes32 berr)
+        pure internal
+    {
+        if(!cond)
+            chuck(berr);
+    }
+
+    // like throw haha 
+    function chuck(bytes32 berr)
+        pure internal
+    {
+        revert(serr(berr));
     }
 }
