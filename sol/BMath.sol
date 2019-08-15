@@ -154,7 +154,7 @@ contract BMath is DSMath
 
 
         uint select = 0;
-        for( uint i = 1; i < 15; i++) {
+        for( uint i = 1; i < 20; i++) {
             uint256 k = i * ONE;
             (uint256 c, bool cneg) = wsub(a, sub(k, ONE));
             numer    = wmul(numer, wmul(c, x));
