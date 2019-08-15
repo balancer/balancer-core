@@ -50,7 +50,7 @@ contract BPool is BMath
         paused = true;
     }
 
-    function swapI(ERC20 Ti, uint256 Ai, ERC20 To)
+    function do_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao)
     {
         require( ! paused, "balancer-swapI-paused");

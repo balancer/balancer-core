@@ -64,7 +64,7 @@ describe("BPool", () => {
         let Wo  = toWei(pt.Wo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ?= bpool.swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.do_swap_ExactIn_AnyOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('100')) // shouldn't impact calc
@@ -72,9 +72,9 @@ describe("BPool", () => {
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+            var resultStatic = await bpool.methods.do_swap_ExactIn_AnyOut(acoin._address, Ai, bcoin._address)
                                                   .call();
-            var result = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+            var result = await bpool.methods.do_swap_ExactIn_AnyOut(acoin._address, Ai, bcoin._address)
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();

@@ -23,34 +23,34 @@ BPool
 
     view_swap_ExactIn_AnyOut
     try_swap_ExactIn_AnyOut
-    swap_ExactIn_AnyOut(Ti, Ai, To)
+    do_swap_ExactIn_AnyOut(Ti, Ai, To)
 
     view_swap
     try_swap
-    swap_AnyIn_ExactOut(Ti, To, Ao)
+    do_swap_AnyIn_ExactOut(Ti, To, Ao)
 
 
     view_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, bool)
     try_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, bool)
-    swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao)
+    do_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao)
 
     view_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, bool)
     try_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, bool)
-    swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai)
+    do_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai)
 
 
     view_swap_
     try_swap_
-    swap_ExactIn_MaxPrice(Ti, To, Ai, P)
+    do_swap_ExactIn_MaxPrice(Ti, To, Ai, P)
 
     view_swap_
     try_swap_
-    swap_ExactOut_MinPrice(Ti, To, Ao, P)
+    do_swap_ExactOut_MinPrice(Ti, To, Ao, P)
 
 
     view_swap_
     try_swap_
-    swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
+    do_swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
 
 
     setFee(T, f)
