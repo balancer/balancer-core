@@ -27,8 +27,9 @@ contract BPool is BMath
     uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
     uint256 constant public MAX_TOKEN_BALANCE = WAD * WAD;
 
-    bytes32 constant public ERR_NONE    = bytes32("ERR_NONE");
-    bytes32 constant public ERR_PAUSED  = bytes32("ERR_PAUSED");
+    bytes32 constant private ERR_NONE             = bytes32("ERR_NONE");
+    bytes32 constant private ERR_PAUSED           = bytes32("ERR_PAUSED");
+    bytes32 constant private ERR_NOT_BOUND        = bytes32("ERR_NOT_BOUND");
 
 
     bool                      public paused;
@@ -44,7 +45,7 @@ contract BPool is BMath
         bool    bound;
         uint8   index;   // int
         ERC20   token;
-        uint256 weight;  // RAY
+        uint256 weight;  // WAD
         uint256 balance; // WAD
     }
 
@@ -56,11 +57,8 @@ contract BPool is BMath
     function viewSwap_ExactInAnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public view returns (uint256 Ao, bytes32 err)
     {
-        if( paused ) {
-            return (0, ERR_PAUSED);
-        }
-        require(isBound(Ti), "balancer-swapI-token-not-bound");
-        require(isBound(To), "balancer-swapI-token-not-bound");
+        if( ! isBound(Ti)) { return (0, ERR_NOT_BOUND); }
+        if( ! isBound(To)) { return (0, ERR_NOT_BOUND); }
 
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
@@ -68,6 +66,10 @@ contract BPool is BMath
         Ao = swapImath( I.balance, I.weight
                       , O.balance, O.weight
                       , Ai, fee );
+
+        if( paused ) {
+            return (Ao, ERR_PAUSED);
+        }
 
         return (Ao, ERR_NONE);
     }
@@ -79,9 +81,8 @@ contract BPool is BMath
         if (err != ERR_NONE) {
             return (Ao, err);
         } else {
-            ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            ERC20(To).transfer(msg.sender, Ao);
-            
+            require( ERC20(Ti).transferFrom(msg.sender, address(this), Ai) );
+            require( ERC20(To).transfer(msg.sender, Ao) );
             return (Ao, ERR_NONE);
         }
     }
