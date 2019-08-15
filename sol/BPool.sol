@@ -37,8 +37,8 @@ contract BPool is BConst
     struct Record {
         bool    bound;
         uint8   index;   // int
-        uint256 weight;  // WAD
-        uint256 balance; // WAD
+        uint256 weight;  // bnum
+        uint256 balance; // bnum
     }
 
     constructor() public {
@@ -155,6 +155,13 @@ contract BPool is BConst
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
+    }
+    function setManager(address manager_)
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        manager = manager_;
     }
 
     function isBound(address token)

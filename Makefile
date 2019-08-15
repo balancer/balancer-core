@@ -12,11 +12,13 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o evm \
+	sol/BCoin.sol \
 	sol/BConst.sol \
-	sol/BToken.sol \
 	sol/BError.sol \
 	sol/BEvent.sol \
+	sol/BFactory.sol \
 	sol/BMath.sol \
 	sol/BNum.sol \
 	sol/BPool.sol \
+	sol/BToken.sol \
 
