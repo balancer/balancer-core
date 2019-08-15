@@ -44,6 +44,17 @@ contract BNum is BError
         }
     }
 
+    function bmul(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c0 = a * b;
+        check(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
+        uint256 c1 = c0 + (WAD / 2);
+        check(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
+        uint256 c2 = c1 / WAD;
+        return c2;
+    }
+
+
+
     function wpown(uint x, uint n) internal pure returns (uint z) {
         z = n % 2 != 0 ? x : BONE;
 
