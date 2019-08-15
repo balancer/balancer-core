@@ -36,15 +36,18 @@ contract BMath is DSMath
         public pure
         returns ( uint256 Ao )
     {
+        bool flag;
         uint256 wRatio               = wdiv(Wi, Wo);
-        (uint256 adjustedIn, bool n) = wsub(ONE, fee);
-        require( !n, "balancer-swapImath");
+        uint256 adjustedIn;
+        (adjustedIn, flag)           = wsub(ONE, fee);
+        require( !flag, "balancer-swapImath");
         adjustedIn                   = wmul(Ai, adjustedIn);
         uint256 y                    = wdiv(Bi, wadd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
-        (Ao,n)                       = wsub(ONE, foo);
-        require( !n, "balancer-swapImath");
-        Ao                           = wmul(Bo, Ao);
+        uint256 bar;
+        (bar, flag)                  = wsub(ONE, foo);
+        require( !flag, "balancer-swapImath");
+        Ao                           = wmul(Bo, bar);
 	}
 
     function swapOmath( uint256 Bi, uint256 Wi
@@ -55,16 +58,17 @@ contract BMath is DSMath
         public pure
         returns ( uint256 Ai )
     {
+        bool flag;
         uint256 wRatio     = wdiv(Wo, Wi);
-        uint256 diff; bool n;
-        (diff, n)          = wsub(Bo, Ao);
-        require( !n, "balancer-swapOmath");
+        uint256 diff;
+        (diff, flag)       = wsub(Bo, Ao);
+        require( !flag, "balancer-swapOmath");
         uint256 y          = wdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
-        (foo,n)            = wsub(foo, ONE);
-        require( !n, "balancer-swapOmath");
-        (Ai,n)             = wsub(ONE, fee);
-        require( !n, "balancer-swapOmath");
+        (foo,flag)         = wsub(foo, ONE);
+        require( !flag, "balancer-swapOmath");
+        (Ai,flag)             = wsub(ONE, fee);
+        require( !flag, "balancer-swapOmath");
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
 
@@ -88,12 +92,14 @@ contract BMath is DSMath
         public pure
         returns ( uint256 Ai )
     {
+        bool flag;
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
-        Ai = sub(wpow(base, exp), ONE);
+        (Ai,flag) = wsub(wpow(base, exp), ONE);
+        require( !flag, "critical: amountUpToPriceApprox");
         Ai = wmul(Ai, Bi);
-        Ai = wdiv(Ai, sub(ONE, fee));
+        Ai = wdiv(Ai, sub(ONE, fee)); // TODO wsub, require etc
     }
 
     function wfloor(uint x) internal pure returns (uint z) {
@@ -101,7 +107,7 @@ contract BMath is DSMath
     }
 
     function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
-        if (a > b) {
+        if (a >= b) {
             return (sub(a, b), false);
         } else {
             return (sub(b, a), true);
@@ -130,9 +136,10 @@ contract BMath is DSMath
 
     function wpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
-        uint256 whole    = wfloor(exp);   
-        uint256 remain   = sub(exp, whole);
-        uint256 wholePow = wpown(base, wtoi(whole));
+        uint256 whole                 = wfloor(exp);   
+        (uint256 remain, bool flag)   = wsub(exp, whole);
+        require( !flag, "critical: wpow");
+        uint256 wholePow              = wpown(base, wtoi(whole));
 
         if (remain == 0) {
             return wholePow;
