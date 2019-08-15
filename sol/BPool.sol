@@ -17,13 +17,13 @@ import 'erc20/erc20.sol';
 
 import "./BConst.sol";
 import "./BMath.sol";
-import "./BErr.sol";
-import "./BLog.sol";
+import "./BError.sol";
+import "./BEvent.sol";
 
 contract BPool is BConst
                 //, BMath // TODO better linearization
-                , BErr
-                , BLog
+                , BError
+                , BEvent
 {
     bool                      public paused;
     address                   public manager;

@@ -14,7 +14,8 @@ all:; \
 	-o evm \
 	sol/BConst.sol \
 	sol/BToken.sol \
+	sol/BError.sol \
+	sol/BEvent.sol \
 	sol/BMath.sol \
 	sol/BPool.sol \
-	sol/BErr.sol \
-	sol/BLog.sol \
+
