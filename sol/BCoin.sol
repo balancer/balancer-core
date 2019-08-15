@@ -34,7 +34,7 @@ contract BCoin is BEvent
       public note {
         check( msg.sender == owner
             || msg.sender == src
-            || trusts[src][address(this)]
+            || trusts[src][msg.sender]
         , ERR_BAD_CALLER );
         balanceOf[src] = bsub(balanceOf[src], amt);
         balanceOf[dst] = badd(balanceOf[dst], amt);
