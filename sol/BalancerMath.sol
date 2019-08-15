@@ -149,7 +149,7 @@ contract BalancerMath is DSMath
 
 
         uint select = 0;
-        for( uint i = 1; i < 20; i++) {
+        for( uint i = 1; i < 15; i++) {
             uint256 k = i * wone();
             
             (uint256 c, bool cneg) = wsub(a, sub(k, wone()));

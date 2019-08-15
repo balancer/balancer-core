@@ -87,9 +87,23 @@ describe("floatMath.js", function () {
     }
 
     for( let pt of testPoints.valuePoints) {
-        var desc = `${pt.res} ~= getValue(${pt.tokens})`;
+        let tokens = pt.tokens;
+        let res    = pt.res;
+        var desc = `${res} ~= getValue(${tokens})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.getValue(pt.tokens)
+            assert.closeTo( res, fMath.getValue(tokens)
+                          , approxTolerance);
+        });
+    }
+
+    for( let pt of testPoints.refSpotPricePoints) {
+        let Bo     = pt.Bo;
+        let Wo     = pt.Wo;
+        let tokens = pt.tokens;
+        let res    = pt.res;
+        var desc = `${res} ~= getRefSpotPrice(Bo, Wo, ${tokens})`;
+        it(desc, function () {
+            assert.closeTo( res, fMath.getRefSpotPrice(Bo, Wo, tokens)
                           , approxTolerance);
         });
     }

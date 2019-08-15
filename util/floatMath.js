@@ -157,4 +157,8 @@ module.exports.floatMath = {
         return res;
     },
 
+    getRefSpotPrice: function(Bo, Wo, tokens) {
+        return (Bo/Wo) / this.getValue(tokens);
+    }
+
 }

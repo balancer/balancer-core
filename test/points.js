@@ -64,6 +64,19 @@ module.exports.valuePoints = [
                  {b: 282, w: 0.3},
                  {b: 2,   w: 0.1}]},
 ];
+module.exports.refSpotPricePoints = [
+    {res: (526/0.32)/(Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1)), 
+        Bo: 526,
+        Wo: 0.32,
+
+        tokens: [{b: 300, w: 0.399},
+                 {b: 874, w: 0.2},
+                 {b: 375, w: 0.001},
+                 {b: 282, w: 0.3},
+                 {b: 2,   w: 0.1}],}
+];
+
+
 
 
 
