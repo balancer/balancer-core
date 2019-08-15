@@ -18,8 +18,8 @@ function lift(type) {
     types[type] = types[`sol/${type}.sol:${type}`];
     types[`sol/${type}.sol:${type}`] = undefined;
 }
-lift("BalancerMath");
-lift("BalancerPool");
+lift("BMath");
+lift("BPool");
 lift("BToken");
 
 module.exports.types = types;

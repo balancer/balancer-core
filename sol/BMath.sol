@@ -24,7 +24,7 @@ import "ds-math/math.sol";
 // Ti := Token In
 // To := Token Out
 
-contract BalancerMath is DSMath
+contract BMath is DSMath
 {
     function swapImath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
