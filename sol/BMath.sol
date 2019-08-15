@@ -27,105 +27,105 @@ contract BMath is BNum
     // Ti := Token In
     // To := Token Out
 
-    function swapImath( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo
-                      , uint256 Ai
-                      , uint256 fee
+    function swapImath( uint Bi, uint Wi
+                      , uint Bo, uint Wo
+                      , uint Ai
+                      , uint fee
                       )
         public pure
-        returns ( uint256 Ao )
+        returns ( uint Ao )
     {
         bool flag;
-        uint256 wRatio               = bdiv(Wi, Wo);
-        uint256 adjustedIn;
-        (adjustedIn, flag)           = bsubSign(BONE, fee);
+        uint wRatio                         = bdiv(Wi, Wo);
+        uint adjustedIn;
+        (adjustedIn, flag)                  = bsubSign(BONE, fee);
         require( !flag, "BMath.swapImath");
-        adjustedIn                   = bmul(Ai, adjustedIn);
-        uint256 y                    = bdiv(Bi, badd(Bi, adjustedIn));
-        uint256 foo                  = bpow(y, wRatio);
-        uint256 bar;
-        (bar, flag)                  = bsubSign(BONE, foo);
+        adjustedIn                          = bmul(Ai, adjustedIn);
+        uint y                              = bdiv(Bi, badd(Bi, adjustedIn));
+        uint foo                            = bpow(y, wRatio);
+        uint bar;
+        (bar, flag)                         = bsubSign(BONE, foo);
         require( !flag, "BMath.swapImath");
-        Ao                           = bmul(Bo, bar);
+        Ao                                  = bmul(Bo, bar);
 	}
 
-    function swapOmath( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo
-                      , uint256 Ao
-                      , uint256 fee
+    function swapOmath( uint Bi, uint Wi
+                      , uint Bo, uint Wo
+                      , uint Ao
+                      , uint fee
                       )
         public pure
-        returns ( uint256 Ai )
+        returns ( uint Ai )
     {
         bool flag;
-        uint256 wRatio     = bdiv(Wo, Wi);
-        uint256 diff;
-        (diff, flag)       = bsubSign(Bo, Ao);
+        uint wRatio                         = bdiv(Wo, Wi);
+        uint diff;
+        (diff, flag)                        = bsubSign(Bo, Ao);
         require( !flag, "BMath.swapOmath");
-        uint256 y          = bdiv(Bo, diff);
-        uint256 foo        = bpow(y, wRatio);
-        (foo,flag)         = bsubSign(foo, BONE);
+        uint y                              = bdiv(Bo, diff);
+        uint foo                            = bpow(y, wRatio);
+        (foo,flag)                          = bsubSign(foo, BONE);
         require( !flag, "BMath.swapOmath");
-        (Ai,flag)          = bsubSign(BONE, fee);
+        (Ai,flag)                           = bsubSign(BONE, fee);
         require( !flag, "BMath.swapOmath");
-        Ai                 = bdiv(bmul(Bi, foo), Ai);
+        Ai                                  = bdiv(bmul(Bi, foo), Ai);
     }
 
-    function spotPrice( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo )
+    function spotPrice( uint Bi, uint Wi
+                      , uint Bo, uint Wo )
         public pure
-        returns ( uint256 r ) 
+        returns ( uint r ) 
     {
-        uint256 numer = bdiv(Bo, Wo);
-        uint256 denom = bdiv(Bi, Wi);
+        uint numer = bdiv(Bo, Wo);
+        uint denom = bdiv(Bi, Wi);
         r = bdiv(numer, denom);
         return r;
     }
 
-    function amountUpToPriceApprox( uint256 Bi
-                                  , uint256 Wi
-                                  , uint256 Bo
-                                  , uint256 Wo
-                                  , uint256 SER1
-                                  , uint256 fee)
+    function amountUpToPriceApprox( uint Bi
+                                  , uint Wi
+                                  , uint Bo
+                                  , uint Wo
+                                  , uint SER1
+                                  , uint fee)
         public pure
-        returns ( uint256 Ai )
+        returns ( uint Ai )
     {
         bool flag;
-        uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
-        uint256 base = bdiv(SER0, SER1);
-        uint256 exp  = bdiv(Wo, badd(Wo, Wi));
-        (Ai,flag)    = bsubSign(bpow(base, exp), BONE);
+        uint SER0 = spotPrice(Bi, Wi, Bo, Wo);
+        uint base = bdiv(SER0, SER1);
+        uint exp  = bdiv(Wo, badd(Wo, Wi));
+        (Ai,flag) = bsubSign(bpow(base, exp), BONE);
         require( !flag, "BMath.amountUpToPriceApprox");
-        Ai           = bmul(Ai, Bi);
-        Ai           = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
+        Ai        = bmul(Ai, Bi);
+        Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
 
-    function bpow(uint256 base, uint256 exp) public pure returns (uint256)
+    function bpow(uint base, uint exp) public pure returns (uint)
     {
-        uint256 whole                 = bfloor(exp);   
-        (uint256 remain, bool flag)   = bsubSign(exp, whole);
+        uint whole                 = bfloor(exp);   
+        (uint remain, bool flag)   = bsubSign(exp, whole);
         require( !flag, "BMath.bpow");
-        uint256 wholePow              = bpown(base, btoi(whole));
+        uint wholePow              = bpown(base, btoi(whole));
 
         if (remain == 0) {
             return wholePow;
         }
 
         // term 0:
-        uint256 a     = remain;
-        uint256 numer = BONE;
-        uint256 denom = BONE;
-        uint256 sum   = BONE;
-        (uint256 x, bool xneg)  = bsubSign(base, BONE);
+        uint a     = remain;
+        uint numer = BONE;
+        uint denom = BONE;
+        uint sum   = BONE;
+        (uint x, bool xneg)  = bsubSign(base, BONE);
 
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
-            uint256 k = i * BONE;
+            uint k = i * BONE;
             
-            (uint256 c, bool cneg) = bsubSign(a, bsub(k, BONE));
-            numer    = bmul(numer, bmul(c, x));
-            denom    = bmul(denom, k);
+            (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
+            numer               = bmul(numer, bmul(c, x));
+            denom               = bmul(denom, k);
             if (xneg) select += 1;
             if (cneg) select += 1;
             if (select % 2 == 1) {
