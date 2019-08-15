@@ -18,38 +18,29 @@ arguments / state:
     bytes32 err:   error
 
 
-// function shortlist:
-    alias: ExactIn(Ti, Ai, To) returns (Ao, err)
-    ExactIn_AnyOut(Ti, Ai, To) returns (Ao, err)
-    ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, err)
-    ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao, err)
+// shortlist:
+    _ExactIn_AnyOut(Ti, Ai, To) returns (Ao, err)
+    _ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, err)
+    _ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao, err)
 
-    alias: ExactOut(Ti, To, Ao) returns (Ai, err)
-    AnyIn_ExactOut(Ti, To, Ao) returns (Ai, err)
-    MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, err)
-    ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai, err)
+    _AnyIn_ExactOut(Ti, To, Ao) returns (Ai, err)
+    _MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, err)
+    _ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai, err)
 
-    alias: ToPrice
-    MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    _MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
 
-// actual definitions:
+// variants:
 BPool
-    math_spotPrice(Bi, Wi, Bo, Wo) returns (P, err);
-    math_ExactIn(Bi, Wi, Bo, Wo, Ai, f) returns (Ao, err);
-    math_ExactOut(Bi, Wi, Bo, Wo, Ao, f) returns (Ai, err);
-    math_AmountUpToPrice(Bi, Wi, Bo, Wo, P) returns (Ai, Ao, err)
-
     view_spotPrice(Ti, To)
+    view_refPrice(T)
 
     viewSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
     trySwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
     doSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao)
-    doSwap_ExactIn(Ti, Ai, To) returns (Ao) // alias
 
     viewSwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
     trySwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
     doSwap_AnyInExactOut(Ti, To, Ao) returns (Ai)
-    doSwap_ExactOut(Ti, To, Ao) returns (Ai) // alias
 
     viewSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
     trySwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
@@ -70,7 +61,13 @@ BPool
     viewSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
     trySwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
     doSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
-    doSwap_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao) // alias
+
+BMath
+    math_spotPrice(Bi, Wi, Bo, Wo) returns (P, err);
+    math_ExactIn(Bi, Wi, Bo, Wo, Ai, f) returns (Ao, err);
+    math_ExactOut(Bi, Wi, Bo, Wo, Ao, f) returns (Ai, err);
+    math_AmountUpToPrice(Bi, Wi, Bo, Wo, P) returns (Ai, Ao, err)
+
 
 
     setFee(T, f)
