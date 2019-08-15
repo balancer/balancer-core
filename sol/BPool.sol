@@ -55,8 +55,8 @@ contract BPool is BMath
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
-        if( ! isBound(Ti)) { return (0, ERR_NOT_BOUND); }
-        if( ! isBound(To)) { return (0, ERR_NOT_BOUND); }
+        check(isBound(Ti), ERR_NOT_BOUND);
+        check(isBound(To), ERR_NOT_BOUND);
 
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
