@@ -24,7 +24,7 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
-describe("BalancerPool", () => {
+describe("BPool", () => {
     var accts;
     var acct0; var acct1; var acct2;
     var bpool;
@@ -43,10 +43,10 @@ describe("BalancerPool", () => {
         bcoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("B")]);
         ccoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
 
-        bpool = await pkg.deploy(web3, acct0, "BalancerPool");
+        bpool = await pkg.deploy(web3, acct0, "BPool");
 
         for (coin of [acoin, bcoin, ccoin]) {
-            await bpool.methods.bind(coin._address).send({from: acct0});
+            await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
 
             for (acct of [acct0, acct1, acct2]) {
@@ -104,6 +104,13 @@ describe("BalancerPool", () => {
                 assert.equal(max, toHex(res));
             }
         }
+    });
+    it("bind/unbind no-revert cases", async() => {
+        numBound = await bpool.methods.numTokens().call();
+        assert.equal(3, numBound);
+        await bpool.methods.unbind(acoin._address).send({from: acct0});
+        numBound = await bpool.methods.numTokens().call();
+        assert.equal(2, numBound);
     });
     it("can transfer tokens", async () => {
         var sent = toWei("10");
