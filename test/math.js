@@ -129,13 +129,13 @@ describe("floatMath.js", function () {
 describe("BMath", () => {
     for( let pt of testPoints.powPoints ) {
         
-        let desc = `${pt.res} ~= math.wpow(${pt.base}, ${pt.exp})`;
+        let desc = `${pt.res} ~= math.bpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
             let math = await pkg.deploy(web3, accts[0], "BMath");
             let base = toWei(pt.base).toString();
             let exp  = toWei(pt.exp).toString();
-            var actual = await math.methods.wpow(base, exp).call()
+            var actual = await math.methods.bpow(base, exp).call()
             assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance);
         });
     }

@@ -23,7 +23,7 @@ contract BNum is BError
 {
     uint256 constant BONE = 10**18;
 
-    function wfloor(uint x) internal pure returns (uint z) {
+    function bfloor(uint x) internal pure returns (uint z) {
         z = x / BONE * BONE;
     }
 
@@ -66,7 +66,7 @@ contract BNum is BError
     }
 
 
-    function wpown(uint x, uint n) internal pure returns (uint z) {
+    function bpown(uint x, uint n) internal pure returns (uint z) {
         z = n % 2 != 0 ? x : BONE;
 
         for (n /= 2; n != 0; n /= 2) {
@@ -78,16 +78,16 @@ contract BNum is BError
         }
     }
 
-    function wtoi(uint w) internal pure returns (uint) {
+    function btoi(uint w) internal pure returns (uint) {
         return w / BONE;
     }
 
-    function wpow(uint256 base, uint256 exp) public pure returns (uint256)
+    function bpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
-        uint256 whole                 = wfloor(exp);   
+        uint256 whole                 = bfloor(exp);   
         (uint256 remain, bool flag)   = bsubTry(exp, whole);
-        require( !flag, "BMath.wpow");
-        uint256 wholePow              = wpown(base, wtoi(whole));
+        require( !flag, "BMath.bpow");
+        uint256 wholePow              = bpown(base, btoi(whole));
 
         if (remain == 0) {
             return wholePow;
