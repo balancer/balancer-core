@@ -22,7 +22,11 @@ import "./BMath.sol";
 contract BPool is BMath
                 , DSNote
 {
-    uint8 constant MAX_TOKENS = 8;
+    uint8   constant public MAX_BOUND_TOKENS  = 8;
+    uint256 constant public MIN_TOKEN_WEIGHT  = WAD / 100;
+    uint256 constant public MAX_TOTAL_WEIGHT  = WAD * 100;
+    uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
+    uint256 constant public MAX_TOKEN_BALANCE = WAD * WAD;
 
     bool                      public paused;
     address                   public manager;
@@ -31,12 +35,12 @@ contract BPool is BMath
     uint256                   public totalWeight;
     uint8                     public numTokens;
     mapping(address=>Record)  public records;
-    address[MAX_TOKENS]       private _index;
+    address[MAX_BOUND_TOKENS] private _index;
 
     struct Record {
         bool    bound;
-        ERC20   addr;
         uint8   index;   // int
+        ERC20   token;
         uint256 weight;  // RAY
         uint256 balance; // WAD
     }
@@ -84,9 +88,20 @@ contract BPool is BMath
     {
         require(msg.sender == manager);
         require(isBound(token));
-        records[address(token)].weight = weight;
+        require(weight >= MIN_TOKEN_WEIGHT);
+
+        uint256 oldWeight = records[address(token)].weight;
         uint256 oldBalance = records[address(token)].balance;
+
+        records[address(token)].weight = weight;
         records[address(token)].balance = balance;
+
+        if (weight > oldWeight) {
+            totalWeight = add(totalWeight, weight - oldWeight);
+            require(totalWeight <= MAX_TOTAL_WEIGHT);
+        } else {
+            totalWeight = sub(totalWeight, oldWeight - weight);
+        }        
         if (balance > oldBalance) {
             token.transferFrom(msg.sender, address(this), balance - oldBalance);
         } else {
@@ -98,17 +113,22 @@ contract BPool is BMath
         return records[address(token)].bound;
     }
 
-    function bind(ERC20 token)
+    function bind(ERC20 token, uint256 balance, uint256 weight)
         note
         public
     {
         require(msg.sender == manager);
         require( ! isBound(token));
-        require(numTokens < MAX_TOKENS);
+        require(numTokens < MAX_BOUND_TOKENS);
+        require(balance >= MIN_TOKEN_BALANCE);
+        require(balance <= MAX_TOKEN_BALANCE);
+        require(weight >= MIN_TOKEN_WEIGHT);
+        totalWeight += weight;
+        require(totalWeight <= MAX_TOTAL_WEIGHT);
         records[address(token)] = Record({
-            addr: token
-          , bound: true
+            bound: true
           , index: numTokens
+          , token: token
           , weight: 0
           , balance: 0
         });
