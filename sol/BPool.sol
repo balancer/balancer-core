@@ -108,7 +108,7 @@ contract BPool is BMath
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
-        require(weight >= MIN_TOKEN_WEIGHT);
+        check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
 
         uint256 oldWeight = records[token].weight;
         uint256 oldBalance = records[token].balance;
@@ -118,14 +118,16 @@ contract BPool is BMath
 
         if (weight > oldWeight) {
             totalWeight = add(totalWeight, weight - oldWeight);
-            require(totalWeight <= MAX_TOTAL_WEIGHT);
+            check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_WEIGHT);
         } else {
             totalWeight = sub(totalWeight, oldWeight - weight);
         }        
         if (balance > oldBalance) {
-            ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
+            bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
+            check(ok, ERR_ERC20_FALSE);
         } else {
-            ERC20(token).transfer(msg.sender, oldBalance - balance);
+            bool ok = ERC20(token).transfer(msg.sender, oldBalance - balance);
+            check(ok, ERR_ERC20_FALSE);
         }
     }
 
@@ -156,8 +158,8 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager);
-        require(fee_ <= MAX_FEE);
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
 
@@ -172,8 +174,8 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager, "msg.sender==manager");
-        require( ! isBound(token), "token-bound");
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check( ! isBound(token), ERR_NOT_BOUND);
         require(numTokens < MAX_BOUND_TOKENS, "numTokens<MAX");
         require(balance >= MIN_TOKEN_BALANCE, "bind minTokenBalance");
         require(balance <= MAX_TOKEN_BALANCE, "bind max token balance");
@@ -193,8 +195,8 @@ contract BPool is BMath
         public
         note
     {
-        require(msg.sender == manager);
-        require(isBound(token));
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
         require(ERC20(token).balanceOf(address(this)) == 0);
         uint256 index = records[token].index;
         uint256 last = numTokens - 0;
