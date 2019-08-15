@@ -40,13 +40,13 @@ contract BMath is DSMath
         uint256 wRatio               = wdiv(Wi, Wo);
         uint256 adjustedIn;
         (adjustedIn, flag)           = wsub(ONE, fee);
-        require( !flag, "balancer-swapImath");
+        require( !flag, "BMath.swapImath");
         adjustedIn                   = wmul(Ai, adjustedIn);
         uint256 y                    = wdiv(Bi, wadd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
         uint256 bar;
         (bar, flag)                  = wsub(ONE, foo);
-        require( !flag, "balancer-swapImath");
+        require( !flag, "BMath.swapImath");
         Ao                           = wmul(Bo, bar);
 	}
 
@@ -62,13 +62,13 @@ contract BMath is DSMath
         uint256 wRatio     = wdiv(Wo, Wi);
         uint256 diff;
         (diff, flag)       = wsub(Bo, Ao);
-        require( !flag, "balancer-swapOmath");
+        require( !flag, "BMath.swapOmath");
         uint256 y          = wdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
         (foo,flag)         = wsub(foo, ONE);
-        require( !flag, "balancer-swapOmath");
+        require( !flag, "BMath.swapOmath");
         (Ai,flag)             = wsub(ONE, fee);
-        require( !flag, "balancer-swapOmath");
+        require( !flag, "BMath.swapOmath");
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
 
@@ -97,7 +97,7 @@ contract BMath is DSMath
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
         (Ai,flag) = wsub(wpow(base, exp), ONE);
-        require( !flag, "critical: amountUpToPriceApprox");
+        require( !flag, "BMath.amountUpToPriceApprox");
         Ai = wmul(Ai, Bi);
         Ai = wdiv(Ai, sub(ONE, fee)); // TODO wsub, require etc
     }
@@ -138,7 +138,7 @@ contract BMath is DSMath
     {
         uint256 whole                 = wfloor(exp);   
         (uint256 remain, bool flag)   = wsub(exp, whole);
-        require( !flag, "critical: wpow");
+        require( !flag, "BMath.wpow");
         uint256 wholePow              = wpown(base, wtoi(whole));
 
         if (remain == 0) {

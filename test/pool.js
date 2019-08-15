@@ -49,11 +49,9 @@ describe("BPool", () => {
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
 
-            for (acct of [acct0, acct1, acct2]) {
-                let maxApproval = web3.utils.toTwosComplement('-1');
-                await coin.methods.approve(bpool._address, maxApproval)
-                                  .send({from: acct});
-            }
+            let maxApproval = web3.utils.toTwosComplement('-1');
+            await coin.methods.approve(bpool._address, maxApproval)
+                              .send({from: acct0});
         }
 
         await bpool.methods.start().send({from: acct0});
@@ -66,7 +64,7 @@ describe("BPool", () => {
         let Wo  = toWei(pt.Wo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ?= bpool.swapI<${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.doSwap_ExactIn_AnyOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('100')) // shouldn't impact calc
@@ -74,9 +72,9 @@ describe("BPool", () => {
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+            var resultStatic = await bpool.methods.doSwap_ExactInAnyOut(acoin._address, Ai, bcoin._address)
                                                   .call();
-            var result = await bpool.methods.swapI(acoin._address, Ai, bcoin._address)
+            var result = await bpool.methods.doSwap_ExactInAnyOut(acoin._address, Ai, bcoin._address)
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();
@@ -96,13 +94,11 @@ describe("BPool", () => {
         assert.equal(initBalance, (await acoin.methods.balanceOf(acct0).call()), "acoin wrong init balance");
         assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()), "bcoin wrong init balance");
         assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()), "ccoin wrong init balance");
-        for (acct of [acct0, acct1, acct2]) {
-            for (coin of [acoin, bcoin, ccoin]) {
-                let max = web3.utils.toTwosComplement('-1');
-                let res = await coin.methods.allowance(acct, bpool._address)
-                                            .call()
-                assert.equal(max, toHex(res));
-            }
+        for (coin of [acoin, bcoin, ccoin]) {
+            let max = web3.utils.toTwosComplement('-1');
+            let res = await coin.methods.allowance(acct0, bpool._address)
+                                        .call()
+            assert.equal(max, toHex(res));
         }
     });
     it("bind/unbind no-revert cases", async() => {
