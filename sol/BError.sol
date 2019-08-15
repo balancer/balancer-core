@@ -18,9 +18,9 @@ import "ds-math/math.sol";
 // `pure internal` operating on constants should get fully optimized by compiler
 
 contract BError {
-    bytes32 constant ERR_NONE      = bytes32(uint256( 0x00 ));
-    bytes32 constant ERR_PAUSED    = bytes32(uint256( 0x01 ));
-    bytes32 constant ERR_NOT_BOUND = bytes32(uint256( 0x02 ));
+    byte constant ERR_NONE      = byte(uint8( 0x00 ));
+    byte constant ERR_PAUSED    = byte(uint8( 0x01 ));
+    byte constant ERR_NOT_BOUND = byte(uint8( 0x02 ));
     
     function serr(bytes32 berr)
         pure internal

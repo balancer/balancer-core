@@ -53,7 +53,7 @@ contract BPool is BMath
     }
 
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public view returns (uint256 Ao, bytes32 err)
+        public view returns (uint256 Ao, byte err)
     {
         if( ! isBound(Ti)) { return (0, ERR_NOT_BOUND); }
         if( ! isBound(To)) { return (0, ERR_NOT_BOUND); }
@@ -73,7 +73,7 @@ contract BPool is BMath
     }
 
     function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao, bytes32 err)
+        public returns (uint256 Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
         if (err != ERR_NONE) {
@@ -88,7 +88,7 @@ contract BPool is BMath
     function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao)
     {
-        bytes32 err;
+        byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
         require(err == ERR_NONE);
         return Ao;
