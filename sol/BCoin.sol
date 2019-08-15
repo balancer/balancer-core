@@ -13,9 +13,9 @@
 
 pragma solidity ^0.5.10;
 
-import "./BEvent.sol";
-import "./BError.sol";
 import "./BNum.sol";
+import "./BError.sol";
+import "./BEvent.sol";
 
 contract BCoin is BEvent
                 , BError
@@ -35,7 +35,7 @@ contract BCoin is BEvent
         check( msg.sender == owner
             || msg.sender == src
             || trusts[src][address(this)]
-          , ERR_BAD_CALLER );
+        , ERR_BAD_CALLER );
         balanceOf[src] = bsub(balanceOf[src], amt);
         balanceOf[dst] = badd(balanceOf[dst], amt);
     }
