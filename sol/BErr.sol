@@ -13,8 +13,6 @@
 
 pragma solidity ^0.5.10;
 
-import "ds-math/math.sol";
-
 // `pure internal` operating on constants should get fully optimized by compiler
 // in other cases, should be used as a library
 
