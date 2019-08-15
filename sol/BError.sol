@@ -18,11 +18,11 @@ import "ds-math/math.sol";
 // `pure internal` operating on constants should get fully optimized by compiler
 
 contract BError {
-    byte constant ERR_NONE      = byte(uint8( 0x00 ));
-    byte constant ERR_PAUSED    = byte(uint8( 0x01 ));
-    byte constant ERR_NOT_BOUND = byte(uint8( 0x02 ));
+    byte constant ERR_NONE      = 0x00;
+    byte constant ERR_PAUSED    = 0x01;
+    byte constant ERR_NOT_BOUND = 0x02;
     
-    function serr(bytes32 berr)
+    function serr(byte berr)
         pure internal
         returns (string memory)
     {
@@ -31,7 +31,7 @@ contract BError {
         return "err-meta--unkown-berr";
     }
    
-    function check(bool cond, bytes32 berr)
+    function check(bool cond, byte berr)
         pure internal
     {
         if(!cond)
@@ -39,7 +39,7 @@ contract BError {
     }
 
     // like throw haha 
-    function chuck(bytes32 berr)
+    function chuck(byte berr)
         pure internal
     {
         revert(serr(berr));
