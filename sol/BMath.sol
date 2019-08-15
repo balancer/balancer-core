@@ -26,8 +26,14 @@ import "ds-math/math.sol";
 
 contract BMath is DSMath
 {
+
+
     uint256 constant ONE = WAD;
 
+    // @swapImath
+    //      do swap math on I
+    //      return output amount from corresponding input amount
+    //      Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
     function swapImath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ai
@@ -38,10 +44,14 @@ contract BMath is DSMath
     {
         bool flag;
         uint256 wRatio               = wdiv(Wi, Wo);
+
+        // adjustedIn = Ai * (1 - fee)
         uint256 adjustedIn;
         (adjustedIn, flag)           = wsub(ONE, fee);
         require( !flag, "BMath.swapImath");
         adjustedIn                   = wmul(Ai, adjustedIn);
+
+        // y = Bi / (Bi + Ai * (1 - fee))
         uint256 y                    = wdiv(Bi, wadd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
         uint256 bar;
@@ -50,6 +60,10 @@ contract BMath is DSMath
         Ao                           = wmul(Bo, bar);
 	}
 
+    // @swapOmath
+    //      do swap math on O
+    //      return input amount from corresponding output amount
+    //      Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
     function swapOmath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ao
@@ -60,18 +74,22 @@ contract BMath is DSMath
     {
         bool flag;
         uint256 wRatio     = wdiv(Wo, Wi);
+
+        // y = Bo / (Bo - Ao)
         uint256 diff;
         (diff, flag)       = wsub(Bo, Ao);
         require( !flag, "BMath.swapOmath");
         uint256 y          = wdiv(Bo, diff);
+
         uint256 foo        = wpow(y, wRatio);
         (foo,flag)         = wsub(foo, ONE);
         require( !flag, "BMath.swapOmath");
-        (Ai,flag)             = wsub(ONE, fee);
+        (Ai,flag)          = wsub(ONE, fee);
         require( !flag, "BMath.swapOmath");
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
 
+    // @spotPrice
     function spotPrice( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo )
         public pure
@@ -83,6 +101,9 @@ contract BMath is DSMath
         return r;
     }
 
+    // @amountUpToPriceApprox
+    //      returns how much TokenIn is needed to lower
+    //      the exchange rate to SER1
     function amountUpToPriceApprox( uint256 Bi
                                   , uint256 Wi
                                   , uint256 Bo
@@ -107,10 +128,13 @@ contract BMath is DSMath
         Ai = wdiv(Ai, sub(ONE, fee)); // TODO wsub, require etc
     }
 
+    // wad floor
     function wfloor(uint x) internal pure returns (uint z) {
         z = x / ONE * ONE;
     }
 
+    // wad sub
+    // return result and overflow flag
     function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
         if (a >= b) {
             return (sub(a, b), false);
@@ -119,10 +143,15 @@ contract BMath is DSMath
         }
     }
 
+    // wad add
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return add(a, b);
     }
 
+    // @wpown
+    // @params
+    //      x - WAD, base
+    //      n - int, exp
     function wpown(uint x, uint n) internal pure returns (uint z) {
         z = n % 2 != 0 ? x : ONE;
 
@@ -135,10 +164,19 @@ contract BMath is DSMath
         }
     }
 
+    // @wtoi
+    // @params
+    //      @w - WAD
+    // convert wad to int
     function wtoi(uint w) internal pure returns (uint) {
         return w / ONE;
     }
 
+    // @wpow
+    // @params:
+    //      base - WAD
+    //      exp  - WAD
+    // splits b^e.w into b^e*b^0.w
     function wpow(uint256 base, uint256 exp) public pure returns (uint256)
     {
         require(base <= ONE + ONE);
@@ -146,6 +184,7 @@ contract BMath is DSMath
         uint256 whole                 = wfloor(exp);   
         (uint256 remain, bool flag)   = wsub(exp, whole);
         require( !flag, "BMath.wpow");
+        // make whole agree with wpown def
         uint256 wholePow              = wpown(base, wtoi(whole));
 
         if (remain == 0) {
@@ -160,12 +199,16 @@ contract BMath is DSMath
         (uint256 x, bool xneg)  = wsub(base, ONE);
 
 
+        // term(k) = numer / denom 
+        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
+        // each iteration, multiply previous term by (a-(k-1)) * x / k
+        // since we can't underflow, keep a tally of negative signs in 'select'
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
             uint256 k = i * ONE;
-            (uint256 c, bool cneg) = wsub(a, sub(k, ONE));
-            numer    = wmul(numer, wmul(c, x));
-            denom    = wmul(denom, k);
+            (uint256 c, bool cneg) = wsub(a, sub(k, ONE)); // * a-(k-1)
+            numer    = wmul(numer, wmul(c, x));            // * x
+            denom    = wmul(denom, k);                     // * k
             if (xneg) select += 1;
             if (cneg) select += 1;
             if (select % 2 == 1) {
@@ -177,4 +220,5 @@ contract BMath is DSMath
 
         return wmul(sum, wholePow);
     }
+
 }

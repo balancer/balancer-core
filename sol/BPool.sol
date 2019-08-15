@@ -23,7 +23,7 @@ contract BPool is BMath
                 , BError
                 , DSNote
 {
-    uint8   constant public MAX_BOUND_TOKENS  = 8;
+    uint8   constant public MAX_BOUND_TOKENS  = 8; 
     uint256 constant public MAX_FEE           = WAD / 10;
     uint256 constant public MIN_TOKEN_WEIGHT  = WAD / 100;
     uint256 constant public MAX_TOTAL_WEIGHT  = WAD * 100;
@@ -34,11 +34,6 @@ contract BPool is BMath
     address                   public manager;
     uint256                   public fee;
 
-    uint256                   public totalWeight;
-    uint8                     public numTokens;
-    mapping(address=>Record)  public records;
-    address[MAX_BOUND_TOKENS] private _index;
-
     struct Record {
         bool    bound;
         uint8   index;   // int
@@ -46,6 +41,11 @@ contract BPool is BMath
         uint256 weight;  // WAD
         uint256 balance; // WAD
     }
+
+    uint256                   public totalWeight;
+    uint8                     public numTokens;
+    mapping(address=>Record)  public records;
+    address[MAX_BOUND_TOKENS] private _index;
 
     constructor() public {
         manager = msg.sender;
@@ -248,4 +248,13 @@ contract BPool is BMath
         require(msg.sender == manager, "sender==manager");
         paused = false;
     }
+
+    function getValue() public returns (uint256 res) {
+        if (_index.length == 0) return 0;
+        res = 1;
+        for (uint i = 0; i < _index.length; i++) {
+            res *= wpow(records[_index[i]].balance, records[_index[i]].weight);
+        }
+    }
+
 }
