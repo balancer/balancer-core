@@ -12,7 +12,8 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o evm \
+	sol/BToken.sol \
 	sol/BMath.sol \
 	sol/BPool.sol \
-	sol/BToken.sol \
-	sol/BError.sol \
+	sol/BErr.sol \
+	sol/BLog.sol \

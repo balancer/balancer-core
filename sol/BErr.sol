@@ -18,7 +18,7 @@ import "ds-math/math.sol";
 // `pure internal` operating on constants should get fully optimized by compiler
 // in other cases, should be used as a library
 
-contract BError {
+contract BErr {
     byte constant ERR_NONE          = 0x00;
 
     byte constant ERR_PAUSED        = 0x10;
@@ -52,7 +52,7 @@ contract BError {
             return "ERR_MIN_WEIGHT";
         if( berr == ERR_ERC20_FALSE )
             return "ERR_ERC20_FALSE";
-        revert("ERR_PANIC_UNKNOWN_BERR");
+        revert("ERR_PANIC_UNKNOWN");
     }
   
     function check(byte berr)

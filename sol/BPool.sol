@@ -17,16 +17,18 @@ import 'erc20/erc20.sol';
 import 'ds-note/note.sol';
 
 import "./BMath.sol";
-import "./BError.sol";
+import "./BErr.sol";
+import "./BLog.sol";
 
 contract BPool is BMath
-                , BError
-                , DSNote
+                , BErr
+                , BLog
 {
+    bytes8  constant          public COLOR             = "BRONZE";
     uint8   constant          public MAX_BOUND_TOKENS  = 8;
     uint256 constant          public MAX_FEE           = WAD / 10;
     uint256 constant          public MIN_TOKEN_WEIGHT  = WAD / 100;
-    uint256 constant          public MAX_TOTAL_WEIGHT  = WAD * 100;
+    uint256 constant          public MAX_TOTAL_WEIGHT  = WAD * 100; // total
     uint256 constant          public MIN_TOKEN_BALANCE = WAD / 100;
     uint256 constant          public MAX_TOKEN_BALANCE = WAD * WAD;
 
