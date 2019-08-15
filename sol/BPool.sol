@@ -15,22 +15,16 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import "./BConst.sol";
 import "./BMath.sol";
 import "./BErr.sol";
 import "./BLog.sol";
 
-contract BPool is BMath
+contract BPool is BConst
+                //, BMath // TODO better linearization
                 , BErr
                 , BLog
 {
-    bytes8  constant          public COLOR             = "BRONZE";
-    uint8   constant          public MAX_BOUND_TOKENS  = 8;
-    uint256 constant          public MAX_FEE           = WAD / 10;
-    uint256 constant          public MIN_TOKEN_WEIGHT  = WAD / 100;
-    uint256 constant          public MAX_TOTAL_WEIGHT  = WAD * 100; // total
-    uint256 constant          public MIN_TOKEN_BALANCE = WAD / 100;
-    uint256 constant          public MAX_TOKEN_BALANCE = WAD * WAD;
-
     bool                      public paused;
     address                   public manager;
     uint256                   public fee;

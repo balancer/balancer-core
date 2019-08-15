@@ -12,6 +12,7 @@ all:; \
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o evm \
+	sol/BConst.sol \
 	sol/BToken.sol \
 	sol/BMath.sol \
 	sol/BPool.sol \
