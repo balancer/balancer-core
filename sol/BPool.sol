@@ -15,7 +15,6 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 import 'ds-note/note.sol';
-import 'ds-token/token.sol';
 
 import "./BMath.sol";
 
@@ -28,8 +27,9 @@ contract BPool is BMath
     uint256 constant public MIN_TOKEN_BALANCE = WAD / 100;
     uint256 constant public MAX_TOKEN_BALANCE = WAD * WAD;
 
-    byte constant public ERR_NONE    = byte(uint8(0x0));
-    byte constant public ERR_PAUSED  = byte(uint8(0x1));
+    bytes32 constant public ERR_NONE    = bytes32("ERR_NONE");
+    bytes32 constant public ERR_PAUSED  = bytes32("ERR_PAUSED");
+
 
     bool                      public paused;
     address                   public manager;
@@ -54,12 +54,11 @@ contract BPool is BMath
     }
 
     function view_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
-        public view returns (uint256 Ao, byte err)
+        public view returns (uint256 Ao, bytes32 err)
     {
         if( paused ) {
             return (0, ERR_PAUSED);
         }
-        // TODO
         require(isBound(Ti), "balancer-swapI-token-not-bound");
         require(isBound(To), "balancer-swapI-token-not-bound");
 
@@ -70,29 +69,29 @@ contract BPool is BMath
                       , O.balance, O.weight
                       , Ai, fee );
 
-        return (Ao, byte(0x0));
+        return (Ao, ERR_NONE);
     }
 
     function try_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
-        public returns (uint256 Ao, byte err)
+        public returns (uint256 Ao, bytes32 err)
     {
         (Ao, err) = view_swap_ExactIn_AnyOut(Ti, Ai, To);
-        if (err != 0x0) {
+        if (err != ERR_NONE) {
             return (Ao, err);
         } else {
             ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
             ERC20(To).transfer(msg.sender, Ao);
             
-            return (Ao, byte(0x0));
+            return (Ao, ERR_NONE);
         }
     }
 
     function do_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao)
     {
-        byte err;
+        bytes32 err;
         (Ao, err) = try_swap_ExactIn_AnyOut(Ti, Ai, To);
-        require(err == byte(0x0));
+        require(err == ERR_NONE);
         return Ao;
     }
 
@@ -105,15 +104,15 @@ contract BPool is BMath
     }
 
     function setFee(uint256 fee_)
-        note
         public
+        note
     {
         require(msg.sender == manager);
         fee = fee_;
     }
     function setParams(ERC20 token, uint256 weight, uint256 balance)
-        note
         public
+        note
     {
         require(msg.sender == manager);
         require(isBound(token));
@@ -138,13 +137,16 @@ contract BPool is BMath
         }
     }
 
-    function isBound(ERC20 token) public view returns (bool) {
+    function isBound(ERC20 token)
+        public view
+        returns (bool)
+    {
         return records[address(token)].bound;
     }
 
     function bind(ERC20 token, uint256 balance, uint256 weight)
-        note
         public
+        note
     {
         require(msg.sender == manager);
         require( ! isBound(token));
@@ -164,8 +166,8 @@ contract BPool is BMath
         numTokens++;
     }
     function unbind(ERC20 token)
-        note
         public
+        note
     {
         require(msg.sender == manager);
         require(isBound(token));
@@ -180,7 +182,10 @@ contract BPool is BMath
         numTokens--;
     }
 
-    function getWeightedValue() public view returns (uint256 Wt) {
+    function getWeightedValue()
+        public view 
+        returns (uint256 Wt)
+    {
         if (numTokens == 0) {
             return 0;
         }
@@ -194,10 +199,10 @@ contract BPool is BMath
         return Wt;
     }
 
-    // Collect fees any excess token that may have been transferred in
+    // Collect any excess token that may have been transferred in
     function sweep(ERC20 token)
-        note
         public
+        note
     {
         require(msg.sender == manager);
         require(isBound(token));
@@ -206,15 +211,15 @@ contract BPool is BMath
         token.transfer(msg.sender, trueBalance - selfBalance);
     }
     function pause()
-        note
         public
+        note
     {
         assert(msg.sender == manager);
         paused = true;
     }
     function start()
-        note
         public
+        note
     {
         assert(msg.sender == manager);
         paused = false;

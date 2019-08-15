@@ -15,7 +15,7 @@ arguments / state:
     uint256 Li/Lo: token limit in/out (wei) for trade (upper bound for Li, lower bound for Lo)
     uint256 P:     price
     uint256 F:     fee
-    byte  err:    error
+    bytes32 err:   error
 
 
 // function shortlist:
