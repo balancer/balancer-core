@@ -26,21 +26,23 @@ import "ds-math/math.sol";
 
 contract BMath is DSMath
 {
+    uint256 constant ONE = WAD;
+
     function swapImath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ai
-                      , uint256 feeRatio
+                      , uint256 fee
                       )
         public pure
         returns ( uint256 Ao )
     {
         uint256 wRatio               = wdiv(Wi, Wo);
-        (uint256 adjustedIn, bool n) = wsub(wone(), feeRatio);
+        (uint256 adjustedIn, bool n) = wsub(ONE, fee);
         require( !n, "balancer-swapImath");
         adjustedIn                   = wmul(Ai, adjustedIn);
         uint256 y                    = wdiv(Bi, wadd(Bi, adjustedIn));
         uint256 foo                  = wpow(y, wRatio);
-        (Ao,n)                       = wsub(wone(), foo);
+        (Ao,n)                       = wsub(ONE, foo);
         require( !n, "balancer-swapImath");
         Ao                           = wmul(Bo, Ao);
 	}
@@ -48,7 +50,7 @@ contract BMath is DSMath
     function swapOmath( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ao
-                      , uint256 feeRatio
+                      , uint256 fee
                       )
         public pure
         returns ( uint256 Ai )
@@ -59,9 +61,9 @@ contract BMath is DSMath
         require( !n, "balancer-swapOmath");
         uint256 y          = wdiv(Bo, diff);
         uint256 foo        = wpow(y, wRatio);
-        (foo,n)            = wsub(foo, wone());
+        (foo,n)            = wsub(foo, ONE);
         require( !n, "balancer-swapOmath");
-        (Ai,n)             = wsub(wone(), feeRatio);
+        (Ai,n)             = wsub(ONE, fee);
         require( !n, "balancer-swapOmath");
         Ai                 = wdiv(wmul(Bi, foo), Ai);
     }
@@ -89,17 +91,13 @@ contract BMath is DSMath
         uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
         uint256 base = wdiv(SER0, SER1);
         uint256 exp  = wdiv(Wo, add(Wo, Wi));
-        Ai = sub(wpow(base, exp), wone());
+        Ai = sub(wpow(base, exp), ONE);
         Ai = wmul(Ai, Bi);
-        Ai = wdiv(Ai, sub(wone(), fee));
-    }
-
-    function wone() public pure returns (uint256) {
-        return WAD;
+        Ai = wdiv(Ai, sub(ONE, fee));
     }
 
     function wfloor(uint x) internal pure returns (uint z) {
-        z = x / wone() * wone();
+        z = x / ONE * ONE;
     }
 
     function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
@@ -115,7 +113,7 @@ contract BMath is DSMath
     }
 
     function wpown(uint x, uint n) internal pure returns (uint z) {
-        z = n % 2 != 0 ? x : WAD;
+        z = n % 2 != 0 ? x : ONE;
 
         for (n /= 2; n != 0; n /= 2) {
             x = wmul(x, x);
@@ -127,7 +125,7 @@ contract BMath is DSMath
     }
 
     function wtoi(uint w) internal pure returns (uint) {
-        return w / wone();
+        return w / ONE;
     }
 
     function wpow(uint256 base, uint256 exp) public pure returns (uint256)
@@ -142,17 +140,17 @@ contract BMath is DSMath
 
         // term 0:
         uint256 a     = remain;
-        uint256 numer = wone();
-        uint256 denom = wone();
-        uint256 sum   = wone();
-        (uint256 x, bool xneg)  = wsub(base, wone());
+        uint256 numer = ONE;
+        uint256 denom = ONE;
+        uint256 sum   = ONE;
+        (uint256 x, bool xneg)  = wsub(base, ONE);
 
 
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
-            uint256 k = i * wone();
+            uint256 k = i * ONE;
             
-            (uint256 c, bool cneg) = wsub(a, sub(k, wone()));
+            (uint256 c, bool cneg) = wsub(a, sub(k, ONE));
             numer    = wmul(numer, wmul(c, x));
             denom    = wmul(denom, k);
             if (xneg) select += 1;
