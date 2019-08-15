@@ -22,7 +22,6 @@ contract BCoin is BEvent
                 , BNum
 {
     address                     public owner;
-    address                     public inner;
     mapping(address=>uint256)   public balanceOf;
     mapping(address=>
         mapping(address=>bool)) public trusts;
