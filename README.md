@@ -41,36 +41,36 @@ BPool
 
     view_spotPrice(Ti, To)
 
-    view_swap_ExactIn_AnyOut(Ti, Ai, To) returns (Ao, err)
-    try_swap_ExactIn_AnyOut(Ti, Ai, To) returns (Ao, err)
-    do_swap_ExactIn_AnyOut(Ti, Ai, To) returns (Ao)
-    do_swap_ExactIn(Ti, Ai, To) returns (Ao) // alias
+    viewSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
+    trySwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
+    doSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao)
+    doSwap_ExactIn(Ti, Ai, To) returns (Ao) // alias
 
-    view_swap_AnyIn_ExactOut(Ti, To, Ao) returns (Ai, err)
-    try_swap_AnyIn_ExactOut(Ti, To, Ao) returns (Ai, err)
-    do_swap_AnyIn_ExactOut(Ti, To, Ao) returns (Ai)
-    do_swap_ExactOut(Ti, To, Ao) returns (Ai) // alias
+    viewSwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
+    trySwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
+    doSwap_AnyInExactOut(Ti, To, Ao) returns (Ai)
+    doSwap_ExactOut(Ti, To, Ao) returns (Ai) // alias
 
-    view_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, err)
-    try_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, err)
-    do_swap_ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao)
+    viewSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
+    trySwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
+    doSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao)
 
-    view_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, err)
-    try_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, err)
-    do_swap_MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai)
+    viewSwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
+    trySwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
+    doSwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai)
 
-    view_swap_ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao, err)
-    try_swap_ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao, err)
-    do_swap_ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao)
+    viewSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
+    trySwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
+    doSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao)
 
-    view_swap_ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai, err)
-    try_swap_ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai, err)
-    do_swap_ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai)
+    viewSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
+    trySwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
+    doSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai)
 
-    view_swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
-    try_swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
-    do_swap_MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
-    do_swap_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao) // alias
+    viewSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    trySwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    doSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
+    doSwap_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao) // alias
 
 
     setFee(T, f)

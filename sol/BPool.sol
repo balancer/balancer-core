@@ -53,7 +53,7 @@ contract BPool is BMath
         paused = true;
     }
 
-    function view_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+    function viewSwap_ExactInAnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public view returns (uint256 Ao, bytes32 err)
     {
         if( paused ) {
@@ -72,10 +72,10 @@ contract BPool is BMath
         return (Ao, ERR_NONE);
     }
 
-    function try_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+    function trySwap_ExactInAnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao, bytes32 err)
     {
-        (Ao, err) = view_swap_ExactIn_AnyOut(Ti, Ai, To);
+        (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
         if (err != ERR_NONE) {
             return (Ao, err);
         } else {
@@ -86,11 +86,11 @@ contract BPool is BMath
         }
     }
 
-    function do_swap_ExactIn_AnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
+    function doSwap_ExactInAnyOut(ERC20 Ti, uint256 Ai, ERC20 To)
         public returns (uint256 Ao)
     {
         bytes32 err;
-        (Ao, err) = try_swap_ExactIn_AnyOut(Ti, Ai, To);
+        (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
         require(err == ERR_NONE);
         return Ao;
     }
