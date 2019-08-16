@@ -22,51 +22,42 @@ arguments / state:
     uint256 F:     fee
     byte    err:   error
 
-
-// shortlist:
-    _ExactIn_AnyOut(Ti, Ai, To) returns (Ao, err)
-    _ExactIn_MinOut(Ti, Ai, To, Lo) returns (Ao, err)
-    _ExactIn_MaxPrice(Ti, To, Ai, P) returns (Ao, err)
-
-    _AnyIn_ExactOut(Ti, To, Ao) returns (Ai, err)
-    _MaxIn_ExactOut(Ti, Li, To, Ao) returns (Ai, err)
-    _ExactOut_MinPrice(Ti, To, Ao, P) returns (Ai, err)
-
-    _MaxIn_MinOut_ToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
-
 // variants:
 BPool
-    view_spotPrice(Ti, To)
-    view_refPrice(T)
-    view refValue()
-
-    viewSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
-    trySwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
+    swapEIAO(Ti, Ai, To) returns (Ao);
     doSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao)
+    trySwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
+    viewSwap_ExactInAnyOut(Ti, Ai, To) returns (Ao, err)
 
-    viewSwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
-    trySwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
+    swapAIEO(Ti, To, Ao) returns (Ai)
     doSwap_AnyInExactOut(Ti, To, Ao) returns (Ai)
+    trySwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
+    viewSwap_AnyInExactOut(Ti, To, Ao) returns (Ai, err)
 
-    viewSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
-    trySwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
+    swapEIMO(Ti, Ai, To, Lo) returns (Ao)
     doSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao)
+    trySwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
+    viewSwap_ExactInMinOut(Ti, Ai, To, Lo) returns (Ao, err)
 
-    viewSwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
-    trySwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
+    swapMIEO(Ti, Li, To, Ao) returns (Ai)
     doSwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai)
+    trySwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
+    viewSwap_MaxInExactOut(Ti, Li, To, Ao) returns (Ai, err)
 
-    viewSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
-    trySwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
+    swapEIMP(Ti, To, Ai, P) returns (Ao)
     doSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao)
+    trySwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
+    viewSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
 
-    viewSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
-    trySwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
+    swapEOMP(Ti, To, Ao, P) returns (Ai)
     doSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai)
+    trySwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
+    viewSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
 
-    viewSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
-    trySwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    swapMMTP(Ti, Li, To, Lo, P) returns (Ai, Ao)
     doSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
+    trySwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    viewSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
 
 BMath
     math_spotPrice(Bi, Wi, Bo, Wo) returns (P, err);
