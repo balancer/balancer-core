@@ -54,11 +54,12 @@ module.exports.deploy = async function(web3, from, typeName, args) {
 
 // accts[0] will be the admin
 // any remaining accounts will get an initial balance and approve the bpool
-// if accts is empty or undefined, getAccounts() will be used
+// if accts is empty or undefined, getAccounts()[0,1,2] will be used
 module.exports.deployTestScenario = async function(web3, accts) {
     var env = {};
     if (!accts || accts.length == 0) {
         accts = await web3.eth.getAccounts();
+        accts = accts.slice(0, 3);
     }
     let admin = accts[0];
 
@@ -67,4 +68,23 @@ module.exports.deployTestScenario = async function(web3, accts) {
     env.ccoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("C")]);
 
     env.pool = await this.deploy(web3, admin, "BPool");
+
+    let toWei = web3.utils.toWei;
+
+    for (let coin of [env.acoin, env.bcoin, env.ccoin]) {
+        for (let acct of accts) {
+            let amt = toWei('10000');
+            await coin.methods.mint(amt).send({from: admin});
+            await coin.methods.transfer(acct, amt).send({from: admin});
+            await coin.methods.approve(env.pool._address, web3.utils.toTwosComplement('-1'))
+                      .send({from: acct});
+        }
+        await coin.methods.mint(toWei('100'));
+        await env.pool.methods.bind(coin._address, toWei('1'), toWei('1'))
+                      .send({from: admin, gas: 0xffffffff});
+        await env.pool.methods.setParams(coin._address, toWei('10'), toWei('100'))
+                      .send({from: admin, gas: 0xffffffff});
+    }
+    
+    return env;
 }
