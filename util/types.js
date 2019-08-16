@@ -70,7 +70,7 @@ module.exports.deployTestScenario = async function(web3, accts, log) {
     env.admin = admin;
 
     env.factory = await this.deploy(web3, admin, "BFactory");
-    log(`factory ${env.factory} = deploy BFactory`);
+    log(`factory ${env.factory._address} = deploy BFactory`);
 
     let poolAddress = await env.factory.methods.new_BPool().call();
     await env.factory.methods.new_BPool().send({from: env.admin, gas: 0xffffffff});
