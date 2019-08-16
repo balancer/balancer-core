@@ -12,7 +12,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 let buildout = require("../out/combined.json");
+let tmpout = require("../tmp/combined.json");
 let types = buildout.contracts;
+if (tmpout != {}) {
+    console.log("TMP TMP ");
+    types = tmpout.contracts;
+}
 
 function lift(type) {
     types[type] = types[`sol/${type}.sol:${type}`];
