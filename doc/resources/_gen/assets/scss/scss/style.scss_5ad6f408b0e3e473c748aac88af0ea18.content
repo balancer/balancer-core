@@ -7800,6 +7800,14 @@ p {
   padding: 4px 10px 4px 10px;
   float: right; }
 
+.content .header-anchor {
+  text-decoration: none;
+  fill: currentColor;
+  opacity: 0.6; }
+
+.content .header-anchor:hover {
+  opacity: 1; }
+
 .page-home {
   text-align: center; }
   .page-home .title {

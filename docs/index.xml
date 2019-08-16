@@ -41,6 +41,15 @@ Install theme Copy or git clone this theme into the sites themes folder mynewsit
     </item>
     
     <item>
+      <title>swap API</title>
+      <link>/api/swap/</link>
+      <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
+      
+      <guid>/api/swap/</guid>
+      <description>Swapping tokens.</description>
+    </item>
+    
+    <item>
       <title>Specimen</title>
       <link>/docs/specimen/</link>
       <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
