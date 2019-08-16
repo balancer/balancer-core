@@ -11,11 +11,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-var types = {};
+let buildout = require("../out/combined.json");
+var types = buildout.contracts;
 
-module.exports.reloadTypes = function(path) {
-    let buildout = require(path);
-    types = buildout.contracts;
+function liftAll() {
     function lift(type) {
         types[type] = types[`sol/${type}.sol:${type}`];
     }
@@ -32,7 +31,14 @@ module.exports.reloadTypes = function(path) {
     lift("BToken");
 }
 
-module.exports.reloadTypes("../out/combined.json");
+liftAll();
+
+module.exports.reloadTypes = function(path) {
+    let buildout = require(path);
+    types = buildout.contracts;
+    liftAll();
+}
+
 module.exports.types = types;
 
 module.exports.deploy = async function(web3, from, typeName, args) {
@@ -51,7 +57,8 @@ module.exports.deploy = async function(web3, from, typeName, args) {
 // accts[0] will be the admin
 // any remaining accounts will get an initial balance and approve the bpool
 // if accts is empty or undefined, getAccounts()[0,1,2] will be used
-module.exports.deployTestScenario = async function(web3, accts) {
+module.exports.deployTestScenario = async function(web3, accts, log) {
+    if (!log) log = console.log;
     var env = {};
     if (!accts || accts.length == 0) {
         accts = await web3.eth.getAccounts();
@@ -62,15 +69,20 @@ module.exports.deployTestScenario = async function(web3, accts) {
     env.admin = admin;
 
     env.acoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("A")]);
+    log(`deployed acoin: ${env.acoin._address}`);
     env.bcoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("B")]);
+    log(`deployed bcoin: ${env.acoin._address}`);
     env.ccoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("C")]);
+    log(`deployed ccoin: ${env.acoin._address}`);
 
     env.pool = await this.deploy(web3, admin, "BPool");
+    log(`deployed  pool: ${env.acoin._address}`);
 
     let toWei = web3.utils.toWei;
 
     for (let coin of [env.acoin, env.bcoin, env.ccoin]) {
         for (let acct of accts) {
+            log(`minting tokens for ${acct}, xferring them, setting approval on pool...`);
             let amt = toWei('10000');
             await coin.methods.mint(amt).send({from: admin});
             await coin.methods.transfer(acct, amt).send({from: admin});
@@ -78,10 +90,13 @@ module.exports.deployTestScenario = async function(web3, accts) {
                       .send({from: acct});
         }
         await coin.methods.mint(toWei('100'));
+        log(`minting tokens for pool...`);
         await env.pool.methods.bind(coin._address, toWei('1'), toWei('1'))
                       .send({from: admin, gas: 0xffffffff});
+        log(`binding token to pool...`);
         await env.pool.methods.setParams(coin._address, toWei('10'), toWei('100'))
                       .send({from: admin, gas: 0xffffffff});
+        log(`setting params...`);
     }
 
     await env.pool.methods.start().send({from: admin});
