@@ -37,7 +37,7 @@ contract BMath is BNum
                       , uint256 fee
                       )
         public pure
-        returns ( uint256 Ao )
+        returns ( uint Ao )
     {
         bool flag;
         uint256 wRatio               = bdiv(Wi, Wo);
@@ -54,7 +54,7 @@ contract BMath is BNum
         uint256 bar;
         (bar, flag)                  = bsubSign(BONE, foo);
         require( !flag, "BMath.swapImath");
-        Ao                           = bmul(Bo, bar);
+        Ao                                  = bmul(Bo, bar);
 	}
 
     // @swapOmath
@@ -67,7 +67,7 @@ contract BMath is BNum
                       , uint256 fee
                       )
         public pure
-        returns ( uint256 Ai )
+        returns ( uint Ai )
     {
         bool flag;
         uint256 wRatio     = bdiv(Wo, Wi);
@@ -85,16 +85,16 @@ contract BMath is BNum
         // adjust Ai for fee
         (Ai,flag)          = bsubSign(BONE, fee);
         require( !flag, "BMath.swapOmath");
-        Ai                 = bdiv(bmul(Bi, foo), Ai);
+        Ai                                  = bdiv(bmul(Bi, foo), Ai);
     }
 
-    function spotPrice( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo )
+    function spotPrice( uint Bi, uint Wi
+                      , uint Bo, uint Wo )
         public pure
-        returns ( uint256 r ) 
+        returns ( uint r ) 
     {
-        uint256 numer = bdiv(Bo, Wo);
-        uint256 denom = bdiv(Bi, Wi);
+        uint numer = bdiv(Bo, Wo);
+        uint denom = bdiv(Bi, Wi);
         r = bdiv(numer, denom);
         return r;
     }
@@ -109,7 +109,7 @@ contract BMath is BNum
                                   , uint256 SER1
                                   , uint256 fee)
         public pure
-        returns ( uint256 Ai )
+        returns ( uint Ai )
     {
         require( Bi > 0);
         require( Wi > 0);
@@ -122,8 +122,55 @@ contract BMath is BNum
         uint256 exp  = bdiv(Wo, badd(Wo, Wi));
         (Ai,flag)    = bsubSign(bpow(base, exp), BONE);
         require( !flag, "BMath.amountUpToPriceApprox");
-        Ai           = bmul(Ai, Bi);
-        Ai           = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
+        Ai        = bmul(Ai, Bi);
+        Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
+    }
+
+    // @wpow
+    // @params:
+    //      base - WAD
+    //      exp  - WAD
+    // splits b^e.w into b^e*b^0.w
+    function bpow(uint base, uint exp) public pure returns (uint)
+    {
+        uint whole                 = bfloor(exp);   
+        (uint remain, bool flag)   = bsubSign(exp, whole);
+        require( !flag, "BMath.bpow");
+        // make whole agree with wpown def
+        uint wholePow              = bpown(base, btoi(whole));
+
+        if (remain == 0) {
+            return wholePow;
+        }
+
+        // term 0:
+        uint a     = remain;
+        uint numer = BONE;
+        uint denom = BONE;
+        uint sum   = BONE;
+        (uint x, bool xneg)  = bsubSign(base, BONE);
+
+        // term(k) = numer / denom 
+        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
+        // each iteration, multiply previous term by (a-(k-1)) * x / k
+        // since we can't underflow, keep a tally of negative signs in 'select'
+        uint select = 0;
+        for( uint i = 1; i < 20; i++) {
+            uint k = i * BONE;
+            
+            (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
+            numer               = bmul(numer, bmul(c, x));
+            denom               = bmul(denom, k);
+            if (xneg) select += 1;
+            if (cneg) select += 1;
+            if (select % 2 == 1) {
+                sum      = bsub(sum, bdiv(numer, denom));
+            } else {
+                sum      = badd(sum, bdiv(numer, denom));
+            }
+        }
+
+        return bmul(sum, wholePow);
     }
 
 
@@ -142,7 +189,7 @@ contract BMath is BNum
         }
     }
 
-    // wad badd
+    // wad add
     function wadd(uint256 a, uint256 b) public pure returns (uint256) {
         return badd(a, b);
     }
@@ -171,52 +218,4 @@ contract BMath is BNum
         return w / BONE;
     }
 
-    // @wpow
-    // @params:
-    //      base - WAD
-    //      exp  - WAD
-    // splits b^e.w into b^e*b^0.w
-    function wpow(uint256 base, uint256 exp) public pure returns (uint256)
-    {
-        require(base <= BONE + BONE);
-        require(base >= 0);
-        uint256 whole                 = wfloor(exp);   
-        (uint256 remain, bool flag)   = wsub(exp, whole);
-        require( !flag, "BMath.wpow");
-        // make whole agree with wpown def
-        uint256 wholePow              = wpown(base, wtoi(whole));
-
-        if (remain == 0) {
-            return wholePow;
-        }
-
-        // term 0:
-        uint256 a     = remain;
-        uint256 numer = BONE;
-        uint256 denom = BONE;
-        uint256 sum   = BONE;
-        (uint256 x, bool xneg)  = wsub(base, BONE);
-
-
-        // term(k) = numer / denom 
-        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
-        // each iteration, multiply previous term by (a-(k-1)) * x / k
-        // since we can't underflow, keep a tally of negative signs in 'select'
-        uint select = 0;
-        for( uint i = 1; i < 20; i++) {
-            uint256 k = i * BONE;
-            (uint256 c, bool cneg) = wsub(a, bsub(k, BONE)); // * a-(k-1)
-            numer    = bmul(numer, bmul(c, x));            // * x
-            denom    = bmul(denom, k);                     // * k
-            if (xneg) select += 1;
-            if (cneg) select += 1;
-            if (select % 2 == 1) {
-                sum      = bsub(sum, bdiv(numer, denom));
-            } else {
-                sum      = badd(sum, bdiv(numer, denom));
-            }
-        }
-
-        return bmul(sum, wholePow);
-    }
 }

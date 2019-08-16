@@ -32,8 +32,8 @@ contract BPool is BConst
     struct Record {
         bool    bound;
         uint8   index;   // int
-        uint256 weight;  // WAD
-        uint256 balance; // WAD
+        uint256 weight;  // bnum
+        uint256 balance; // bnum
     }
 
     uint256                   public totalWeight;
@@ -166,6 +166,13 @@ contract BPool is BConst
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
+    function setManager(address manager_)
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        manager = manager_;
+    }
 
     function isBound(address token)
         public view
@@ -261,7 +268,7 @@ contract BPool is BConst
         if (_index.length == 0) return 0;
         res = 1;
         for (uint i = 0; i < _index.length; i++) {
-            res *= wpow(records[_index[i]].balance, records[_index[i]].weight);
+            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
 
