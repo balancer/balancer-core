@@ -4,7 +4,8 @@
 ### Developing
 
 ```
-yarn setup     # get clones submodules and installs packages
+yarn setup     # clones submodules and installs packages
+yarn build     # compile the solidity contracts
 yarn test      # yarn build && mocha
 yarn dist      # cp artifacts to out/
 ```
