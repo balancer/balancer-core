@@ -3,47 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>balancer.wtf/docs/</loc>
+    <loc>/docs/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/docs/install-hugo/</loc>
+    <loc>/docs/install-hugo/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/docs/install-theme/</loc>
+    <loc>/docs/install-theme/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/docs/configure/</loc>
+    <loc>/docs/configure/</loc>
     <lastmod>2019-02-11T19:30:08+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/docs/specimen/</loc>
+    <loc>/docs/specimen/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/docs/example/</loc>
+    <loc>/docs/example/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/</loc>
+    <loc>/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
   
   <url>
-    <loc>balancer.wtf/categories/</loc>
+    <loc>/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>balancer.wtf/tags/</loc>
+    <loc>/tags/</loc>
     <priority>0</priority>
   </url>
   

@@ -1,6 +1,6 @@
 publishDir = "../docs"
 
-baseURL = "balancer.wtf"
+baseURL = "/"
 languageCode = "en-us"
 title = "Balancer Documentation"
 themesDir = "themes"
