@@ -54,6 +54,9 @@ describe("BPool", () => {
         }
         await bpool.methods.start().send({from: acct0});
     });
+    it("pkg.deployTestScenario", async () => {
+        let env = await pkg.deployTestScenario(web3);
+    });
     for( pt of testPoints.swapImathPoints ) {
         let Ai  = toWei(pt.Ai.toString());
         let Bi  = toWei(pt.Bi.toString());

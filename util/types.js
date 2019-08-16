@@ -45,3 +45,19 @@ module.exports.deploy = async function(web3, from, typeName, args) {
             .send({from: from, gas: 0xfffffff});
 }
 
+// accts[0] will be the admin
+// any remaining accounts will get an initial balance and approve the bpool
+// if accts is empty or undefined, getAccounts() will be used
+module.exports.deployTestScenario = async function(web3, accts) {
+    var env = {};
+    if (!accts || accts.length == 0) {
+        accts = await web3.eth.getAccounts();
+    }
+    let admin = accts[0];
+
+    env.acoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("A")]);
+    env.bcoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("B")]);
+    env.ccoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("C")]);
+
+    env.pool = await this.deploy(web3, admin, "BPool");
+}
