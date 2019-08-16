@@ -1,6 +1,6 @@
 all: build dist
 dist:
-	cp tmp/combined.json out
+	cp tmp/combined.json out && rm tmp/combined.json
 build:
 	solc \
 	--optimize \

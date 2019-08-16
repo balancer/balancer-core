@@ -15,7 +15,7 @@ let buildout = require("../out/combined.json");
 let tmpout = require("../tmp/combined.json");
 let types = buildout.contracts;
 if (tmpout != {}) {
-    console.log("TMP TMP ");
+    console.warn("Warning: monkey patch for test/prod");
     types = tmpout.contracts;
 }
 
