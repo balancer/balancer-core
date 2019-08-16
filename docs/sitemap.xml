@@ -8,6 +8,10 @@
   </url>
   
   <url>
+    <loc>/api/</loc>
+  </url>
+  
+  <url>
     <loc>/docs/install-hugo/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>

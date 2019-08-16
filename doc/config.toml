@@ -2,7 +2,7 @@ publishDir = "../docs"
 
 baseURL = "/"
 languageCode = "en-us"
-title = "Balancer Documentation"
+title = "Balancer Protocol Documentation"
 themesDir = "themes"
 theme = "hugo-whisper-theme"
 
@@ -15,35 +15,30 @@ pygmentsUseClasses = true
 summaryLength = 30
 
 [[menu.main]]
-    name = "Home"
-    url = "/"
+    name = "API Reference"
+    url = "/api/"
     weight = 1
-
-[[menu.main]]
-    name = "Docs"
-    url = "/docs/"
-    weight = 2
 
 [params]
   google_analytics_id=""
-  homepage_button_link = '/docs'
-  homepage_button_text = 'Read The Docs'
-  homepage_intro = 'Whisper is a documentation theme built with Hugo. The design and functionality is intentionally minimal.'
+  homepage_button_link = '/balancer.pdf'
+  homepage_button_text = 'Read The Whitepaper'
+  homepage_intro = 'Balancer is an automatically rebalancing portfolio and trustless price oracle.'
   #homepage_image = '/images/balancer.png'
 
   ## You can enable to add anchor links to header elements
   enable_anchor_link = true
 
   [params.homepage_meta_tags]
-    meta_description = "Hugo Whisper is a documentation theme built with Hugo."
-    meta_og_title = "Hugo Whisper Theme"
+    meta_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
+    meta_og_title = "Balancer Protocol Documentation"
     meta_og_type = "website"
-    meta_og_url = "https://hugo-whisper.netlify.com"
+    meta_og_url = "https://balancer.finance"
     meta_og_image = "https://raw.githubusercontent.com/JugglerX/hugo-whisper-theme/master/images/tn.png"
-    meta_og_description = "Hugo Whisper is a documentation theme built with Hugo."
+    meta_og_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
     meta_twitter_card = "summary"
-    meta_twitter_site = "@zerostaticio"
-    meta_twitter_creator = "@zerostaticio"
+    meta_twitter_site = "@balancerpro"
+    meta_twitter_creator = "@balancerpro"
 
   [params.logo]
       mobile = "/images/balancer.png"
