@@ -1,11 +1,15 @@
-```
-git submodule update --init --recursive
-yarn install
 
-make # builds the contracts
-yarn test
+<h1 align=center><code>balancer</code></h1>
+
+### Developing
+
 ```
-interface
+yarn setup     # get clones submodules and installs packages
+yarn test      # yarn build && mocha
+yarn dist      # cp artifacts to out/
+```
+
+### etc
 ```
 arguments / state:
     address Ti/To: token (address) in/out
