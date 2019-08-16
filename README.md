@@ -12,6 +12,8 @@ cd lib/balancer-core
 yarn setup
 ```
 
+Now you can `require('lib/balancer-core')`.
+
 ### Developing
 
 ```
