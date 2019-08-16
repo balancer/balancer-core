@@ -29,10 +29,10 @@ summaryLength = 30
   homepage_button_link = '/docs'
   homepage_button_text = 'Read The Docs'
   homepage_intro = 'Whisper is a documentation theme built with Hugo. The design and functionality is intentionally minimal.'
-  homepage_image = '/images/terminal.gif'
+  homepage_image = '/images/balancer.png'
 
   ## You can enable to add anchor links to header elements
-  # enable_anchor_link = true
+  enable_anchor_link = true
 
   [params.homepage_meta_tags]
     meta_description = "Hugo Whisper is a documentation theme built with Hugo."
