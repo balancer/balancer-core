@@ -1,6 +1,17 @@
 
 <h1 align=center><code>balancer</code></h1>
 
+### Installing
+
+Until this package is shipped to a package registry, the best way to use it is as a git submodule.
+
+```
+mkdir lib
+git submodule add https://github.com/balancer-labs/balancer-core lib/balancer-core
+cd lib/balancer-core
+yarn setup
+```
+
 ### Developing
 
 ```
