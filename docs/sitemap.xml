@@ -3,47 +3,47 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>www.example.com/docs/</loc>
+    <loc>balancer.wtf/docs/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/docs/install-hugo/</loc>
+    <loc>balancer.wtf/docs/install-hugo/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/docs/install-theme/</loc>
+    <loc>balancer.wtf/docs/install-theme/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/docs/configure/</loc>
+    <loc>balancer.wtf/docs/configure/</loc>
     <lastmod>2019-02-11T19:30:08+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/docs/specimen/</loc>
+    <loc>balancer.wtf/docs/specimen/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/docs/example/</loc>
+    <loc>balancer.wtf/docs/example/</loc>
     <lastmod>2019-02-11T19:27:37+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/</loc>
+    <loc>balancer.wtf/</loc>
     <lastmod>2018-11-28T15:14:39+10:00</lastmod>
   </url>
   
   <url>
-    <loc>www.example.com/categories/</loc>
+    <loc>balancer.wtf/categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>www.example.com/tags/</loc>
+    <loc>balancer.wtf/tags/</loc>
     <priority>0</priority>
   </url>
   

@@ -1,8 +1,8 @@
 publishDir = "../docs"
 
-baseURL = "www.example.com"
+baseURL = "balancer.wtf"
 languageCode = "en-us"
-title = "Hugo Whisper Theme"
+title = "Balancer Documentation"
 themesDir = "themes"
 theme = "hugo-whisper-theme"
 
