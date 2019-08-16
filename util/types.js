@@ -62,6 +62,8 @@ module.exports.deployTestScenario = async function(web3, accts) {
         accts = accts.slice(0, 3);
     }
     let admin = accts[0];
+    env.accts = accts;
+    env.admin = admin;
 
     env.acoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("A")]);
     env.bcoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("B")]);
@@ -85,6 +87,8 @@ module.exports.deployTestScenario = async function(web3, accts) {
         await env.pool.methods.setParams(coin._address, toWei('10'), toWei('100'))
                       .send({from: admin, gas: 0xffffffff});
     }
+
+    await env.pool.methods.start().send({from: admin});
     
     return env;
 }

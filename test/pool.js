@@ -56,6 +56,20 @@ describe("BPool", () => {
     });
     it("pkg.deployTestScenario", async () => {
         let env = await pkg.deployTestScenario(web3);
+        let bbefore = await env.bcoin.methods.balanceOf(env.admin).call();
+        let result = await env.pool.methods
+                              .viewSwap_ExactInAnyOut( env.acoin._address
+                                                     , web3.utils.toWei('5')
+                                                     , env.bcoin._address)
+                              .call();
+        await env.pool.methods
+                 .doSwap_ExactInAnyOut( env.acoin._address
+                                      , web3.utils.toWei('5')
+                                      , env.bcoin._address)
+                 .send({from: env.admin});
+        let bafter = await env.bcoin.methods.balanceOf(env.admin).call();
+        let diff = toBN(bafter).sub(toBN(bbefore));
+        assert.equal(diff, result[0]);
     });
     for( pt of testPoints.swapImathPoints ) {
         let Ai  = toWei(pt.Ai.toString());
