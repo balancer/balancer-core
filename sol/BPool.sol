@@ -46,6 +46,9 @@ contract BPool is BConst
         paused = true;
     }
 
+    // @viewSwap_ExactInAnyOut
+    //      swap input dryrun
+    //      returns the amount of To outputted when user sends Ai of Ti
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
@@ -66,6 +69,10 @@ contract BPool is BConst
         return (Ao, ERR_NONE);
     }
 
+    // @trySwap_ExactInAnyOut
+    //      swap input
+    //      user sends Ai of Ti, receives some To
+    //      return amount out and error code
     function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao, byte err)
     {
@@ -79,6 +86,8 @@ contract BPool is BConst
         }
     }
 
+    // @doSwap_ExactInAnyOut
+    //      same as trySwap_ExactInAnyOut, but revert on error
     function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao)
     {
@@ -89,7 +98,7 @@ contract BPool is BConst
     }
 
 
-    function swapO(address Ti, address To, uint256 Ao)
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai)
     {
         Ti = Ti; To = To; Ai = Ao; fee = Ao; // hide warnings
@@ -136,6 +145,7 @@ contract BPool is BConst
         setParams(token, newWeight, balance);
         revert("unimplemented");
     }
+
     function setWeightFixRatio(address token, uint256 weight)
         public
         note
@@ -245,6 +255,8 @@ contract BPool is BConst
         paused = false;
     }
 
+    // @getValue
+    //      return
     function getValue() public returns (uint256 res) {
         if (_index.length == 0) return 0;
         res = 1;

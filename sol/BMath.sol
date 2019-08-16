@@ -28,7 +28,7 @@ contract BMath is BNum
     // To := Token Out
 
     // @swapImath
-    //      do swap math on I
+    //      do swap math on input
     //      return output amount from corresponding input amount
     //      Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
     function swapImath( uint256 Bi, uint256 Wi
@@ -58,7 +58,7 @@ contract BMath is BNum
 	}
 
     // @swapOmath
-    //      do swap math on O
+    //      do swap math on output
     //      return input amount from corresponding output amount
     //      Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
     function swapOmath( uint256 Bi, uint256 Wi
@@ -88,7 +88,6 @@ contract BMath is BNum
         Ai                 = bdiv(bmul(Bi, foo), Ai);
     }
 
-    // @spotPrice
     function spotPrice( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo )
         public pure
