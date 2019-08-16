@@ -1,10 +1,14 @@
 {
+  "private": true,
   "name": "balancer-core",
-  "version": "0.0.3",
-  "description": "",
-  "license": "GPL3",
+  "version": "0.0.4",
+  "license": "GPL-3.0-only",
+  "description": "Balancer Core Contracts and ABI",
   "main": "package.js",
   "scripts": {
+    "setup": "git submodule update --init --recursive && yarn install",
+    "build": "make build",
+    "dist": "make dist",
     "test": "make build && mocha"
   },
   "repository": {
@@ -12,7 +16,6 @@
     "url": "git+https://github.com/balancer-labs/balancer-core.git"
   },
   "contributors": [],
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/balancer-labs/balancer-core/issues"
   },
