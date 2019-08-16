@@ -11,32 +11,28 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-let buildout = require("../out/combined.json");
-var types = buildout.contracts;
+var types = {};
 
-if( process ) {
-    let fs = require("fs");
-    if( fs.existsSync("../tmp/combined.json") ) {
-        types = require("../tmp/combined.json").contracts;
+module.exports.reloadTypes = function(path) {
+    let buildout = require(path);
+    types = buildout.contracts;
+    function lift(type) {
+        types[type] = types[`sol/${type}.sol:${type}`];
     }
+
+    lift("BCoin");
+    lift("BConst");
+    lift("BError");
+    lift("BEvent");
+    lift("BFactory");
+    lift("BMath");
+    lift("BNote");
+    lift("BNum");
+    lift("BPool");
+    lift("BToken");
 }
 
-function lift(type) {
-    types[type] = types[`sol/${type}.sol:${type}`];
-    types[`sol/${type}.sol:${type}`] = undefined;
-}
-
-lift("BCoin");
-lift("BConst");
-lift("BError");
-lift("BEvent");
-lift("BFactory");
-lift("BMath");
-lift("BNote");
-lift("BNum");
-lift("BPool");
-lift("BToken");
-
+module.exports.reloadTypes("../out/combined.json");
 module.exports.types = types;
 
 module.exports.deploy = async function(web3, from, typeName, args) {

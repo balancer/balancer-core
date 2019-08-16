@@ -13,7 +13,4 @@
 
 
 module.exports.floatMath = require("./util/floatMath.js");
-let types = require("./util/types.js");
-module.exports.deploy = types.deploy;
-module.exports.deployTestScenario = types.deployTestScenario;
-module.exports.types = types.types;
+module.exports.types = require("./util/types.js");
