@@ -126,7 +126,7 @@ contract BMath is BNum
         Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
 
-    // @wpow
+    // @bpow
     // @params:
     //      base - WAD
     //      exp  - WAD
