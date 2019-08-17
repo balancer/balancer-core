@@ -32,7 +32,7 @@ contract BPool is BConst
     uint256 public totalWeight;
     uint8   public numTokens;
 
-    mapping(address=>Record)  public records;
+    mapping(address=>Record)  private records;
     address[MAX_BOUND_TOKENS] private _index;
 
     struct Record {
@@ -171,6 +171,20 @@ contract BPool is BConst
         returns (bool)
     {
         return records[token].bound;
+    }
+
+    function getWeight(address token)
+        public view
+        returns (uint)
+    {
+        return records[token].weight;
+    }
+
+    function getBalance(address token)
+        public view
+        returns (uint)
+    {
+        return records[token].balance;
     }
 
     function bind(address token, uint256 balance, uint256 weight)
