@@ -175,14 +175,14 @@ contract BPool is BConst
 
     function getWeight(address token)
         public view
-        returns (uint)
+        returns (uint256)
     {
         return records[token].weight;
     }
 
     function getBalance(address token)
         public view
-        returns (uint)
+        returns (uint256)
     {
         return records[token].balance;
     }

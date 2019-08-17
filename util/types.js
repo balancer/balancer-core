@@ -58,7 +58,7 @@ module.exports.deploy = async function(web3, from, typeName, args) {
 // any remaining accounts will get an initial balance and approve the bpool
 // if accts is empty or undefined, getAccounts()[0,1,2] will be used
 module.exports.deployTestScenario = async function(web3, accts, log) {
-    if (!log) log = console.log;
+    if (!log) log = () => {}
     var env = {};
     if (!accts || accts.length == 0) {
         accts = await web3.eth.getAccounts();
