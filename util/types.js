@@ -28,7 +28,7 @@ function liftAll() {
     lift("BNote");
     lift("BNum");
     lift("BPool");
-    lift("BToken");
+    lift("TToken");
 }
 
 liftAll();
@@ -77,12 +77,12 @@ module.exports.deployTestScenario = async function(web3, accts, log) {
     env.pool = new web3.eth.Contract(JSON.parse(this.types.BPool.abi), poolAddress);
     log(`pool ${env.pool._address} = factory.new_BPool()`);
 
-    env.acoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("A")]);
-    log(`${env.acoin._address} = deploy BToken`);
-    env.bcoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("B")]);
-    log(`${env.bcoin._address} = deploy BToken`);
-    env.ccoin = await this.deploy(web3, admin, "BToken", [web3.utils.toHex("C")]);
-    log(`${env.ccoin._address} = deploy BToken`);
+    env.acoin = await this.deploy(web3, admin, "TToken", [web3.utils.toHex("A")]);
+    log(`${env.acoin._address} = deploy TToken`);
+    env.bcoin = await this.deploy(web3, admin, "TToken", [web3.utils.toHex("B")]);
+    log(`${env.bcoin._address} = deploy TToken`);
+    env.ccoin = await this.deploy(web3, admin, "TToken", [web3.utils.toHex("C")]);
+    log(`${env.ccoin._address} = deploy TToken`);
 
     let toWei = web3.utils.toWei;
 
