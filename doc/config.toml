@@ -29,7 +29,7 @@ summaryLength = 30
   homepage_button_link = '/balancer.pdf'
   homepage_button_text = 'Read The Whitepaper'
   homepage_intro = 'Balancer: Trustless Price Sensor and Portfolio Manager'
-  homepage_image = "https://balancer-labs.github.io/bb/bbb.svg"
+  homepage_image = "https://balancer-labs.github.io/bb/bb.svg"
 
   ## You can enable to add anchor links to header elements
   enable_anchor_link = true
@@ -39,12 +39,12 @@ summaryLength = 30
     meta_og_title = "Balancer Protocol Documentation"
     meta_og_type = "website"
     meta_og_url = "https://github.com/balancer-labs"
-    meta_og_image = "https://balancer-labs.github.io/bb/bbb.svg"
+    meta_og_image = "https://balancer-labs.github.io/bb/bb-mini.svg"
     meta_og_description = "Balancer: Trustless Price Sensor and Portfolio Manager"
     meta_twitter_card = "summary"
     meta_twitter_site = "@balancerpro"
     meta_twitter_creator = "@balancerpro"
 
   [params.logo]
-      mobile = "https://balancer-labs.github.io/bb/bbb.svg"
-      standard  = "https://balancer-labs.github.io/bb/bbb.svg"
+      mobile = "https://balancer-labs.github.io/bb/bb-mini.svg"
+      standard  = "https://balancer-labs.github.io/bb/bb-mini.svg"
