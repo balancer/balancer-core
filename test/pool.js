@@ -2,6 +2,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../package.js");
+pkg.types.reloadTypes("../tmp/combined.json");
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true,
@@ -39,11 +40,11 @@ describe("BPool", () => {
         acct1 = accts[1];
         acct2 = accts[2];
 
-        acoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("A")]);
-        bcoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("B")]);
-        ccoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
+        acoin = await pkg.types.deploy(web3, acct0, "BToken", [asciiToHex("A")]);
+        bcoin = await pkg.types.deploy(web3, acct0, "BToken", [asciiToHex("B")]);
+        ccoin = await pkg.types.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
 
-        bpool = await pkg.deploy(web3, acct0, "BPool");
+        bpool = await pkg.types.deploy(web3, acct0, "BPool");
         for (coin of [acoin, bcoin, ccoin]) {
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
@@ -53,6 +54,23 @@ describe("BPool", () => {
                               .send({from: acct0});
         }
         await bpool.methods.start().send({from: acct0});
+    });
+    it("pkg.deployTestScenario", async () => {
+        let env = await pkg.types.deployTestScenario(web3);
+        let bbefore = await env.bcoin.methods.balanceOf(env.admin).call();
+        let result = await env.pool.methods
+                              .viewSwap_ExactInAnyOut( env.acoin._address
+                                                     , web3.utils.toWei('5')
+                                                     , env.bcoin._address)
+                              .call();
+        await env.pool.methods
+                 .doSwap_ExactInAnyOut( env.acoin._address
+                                      , web3.utils.toWei('5')
+                                      , env.bcoin._address)
+                 .send({from: env.admin});
+        let bafter = await env.bcoin.methods.balanceOf(env.admin).call();
+        let diff = toBN(bafter).sub(toBN(bbefore));
+        assert.equal(diff, result[0]);
     });
     for( pt of testPoints.swapImathPoints ) {
         let Ai  = toWei(pt.Ai.toString());

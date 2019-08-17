@@ -9,10 +9,13 @@
 	url = https://github.com/dapphub/erc20
 [submodule "lib/ds-math"]
 	path = lib/ds-math
-	url = https://github.com/balancer-labs/ds-math
+	url = https://github.com/dapphub/ds-math
 [submodule "lib/ds-stop"]
 	path = lib/ds-stop
 	url = https://github.com/dapphub/ds-stop
 [submodule "lib/ds-auth"]
 	path = lib/ds-auth
 	url = https://github.com/dapphub/ds-auth
+[submodule "doc/themes/hugo-whisper-theme"]
+	path = doc/themes/hugo-whisper-theme
+	url = https://github.com/balancer-labs/hugo-whisper-theme

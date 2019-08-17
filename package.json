@@ -9,7 +9,8 @@
     "setup": "git submodule update --init --recursive && yarn install",
     "build": "make build",
     "dist": "make dist",
-    "test": "make build && mocha"
+    "test": "make build && mocha",
+    "docs": "cd doc && hugo"
   },
   "repository": {
     "type": "git",

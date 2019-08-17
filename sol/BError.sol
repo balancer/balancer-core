@@ -40,7 +40,7 @@ contract BError
     
     byte constant ERR_UNREACHABLE        = 0xff;
 
-    function serr(byte berr)
+    function errs(byte berr)
         pure internal
         returns (string memory)
     {
@@ -64,17 +64,19 @@ contract BError
             return "ERR_MATH_MUL_OVERFLOW";
         if( berr == ERR_MATH_DIV_INTERFLOW )
             return "ERR_MATH_DIV_INTERFLOW";
-
         revert("ERR_PANIC_UNKNOWN");
     }
-  
+
     function check(byte berr)
-        pure internal {
+      pure internal {
         check(berr == ERR_NONE, berr);
     } 
+
     function check(bool cond, byte berr)
-        pure internal {
-        if(!cond)
-            revert(serr(berr));
+      pure internal {
+        if(!cond) {
+            revert(errs(berr));
+        }
     }
+
 }

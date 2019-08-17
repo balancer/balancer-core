@@ -1,0 +1,45 @@
+publishDir = "../docs"
+
+baseURL = "/"
+languageCode = "en-us"
+title = "Balancer Protocol Documentation"
+themesDir = "themes"
+theme = "hugo-whisper-theme"
+
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+pygmentsUseClasses = true
+
+# Controls how many words are printed in the content summary on the docs homepage.
+# See https://gohugo.io/content-management/summaries/
+summaryLength = 30
+
+[[menu.main]]
+    name = "API Reference"
+    url = "/api/"
+    weight = 1
+
+[params]
+  google_analytics_id=""
+  homepage_button_link = '/balancer.pdf'
+  homepage_button_text = 'Read The Whitepaper'
+  homepage_intro = 'Balancer is an automatically rebalancing portfolio and trustless price oracle.'
+  #homepage_image = '/images/balancer.png'
+
+  ## You can enable to add anchor links to header elements
+  enable_anchor_link = true
+
+  [params.homepage_meta_tags]
+    meta_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
+    meta_og_title = "Balancer Protocol Documentation"
+    meta_og_type = "website"
+    meta_og_url = "https://balancer.finance"
+    meta_og_image = "https://raw.githubusercontent.com/JugglerX/hugo-whisper-theme/master/images/tn.png"
+    meta_og_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
+    meta_twitter_card = "summary"
+    meta_twitter_site = "@balancerpro"
+    meta_twitter_creator = "@balancerpro"
+
+  [params.logo]
+      mobile = "/images/balancer.png"
+      standard  = "/images/balancer.png"
