@@ -3,28 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/swap/func/</loc>
-    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
+    <loc>/api/</loc>
   </url>
   
   <url>
-    <loc>/pool/</loc>
-    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
+    <loc>/api/pool/</loc>
   </url>
   
   <url>
-    <loc>/swap/</loc>
-    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/pool/func2/</loc>
-    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
+    <loc>/api/swap/</loc>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
   </url>
   
   <url>

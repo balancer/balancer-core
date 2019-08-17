@@ -15,27 +15,27 @@ pygmentsUseClasses = true
 summaryLength = 30
 
 [[menu.main]]
-    name = "Trader API"
-    url = "/swap/"
+    name = "API Reference"
+    url = "/api/"
     weight = 1
 
 [[menu.main]]
-    name = "Manager API"
-    url = "/pool/"
+    name = "App"
+    url = "https://app.balancer.finance"
     weight = 1
 
 [params]
   google_analytics_id=""
   homepage_button_link = '/balancer.pdf'
   homepage_button_text = 'Read The Whitepaper'
-  homepage_intro = 'Balancer is an automatically rebalancing portfolio and trustless price oracle.'
+  homepage_intro = 'Balancer: Autonomous Price Sensor and Portfolio Manager'
   #homepage_image = '/images/balancer.png'
 
   ## You can enable to add anchor links to header elements
   enable_anchor_link = true
 
   [params.homepage_meta_tags]
-    meta_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
+    meta_description = "Balancer: Autonomous Price Sensor and Portfolio Manager"
     meta_og_title = "Balancer Protocol Documentation"
     meta_og_type = "website"
     meta_og_url = "https://docs.balancer.finance"
