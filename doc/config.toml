@@ -24,7 +24,6 @@ summaryLength = 30
     url = "/pool/"
     weight = 1
 
-
 [params]
   google_analytics_id=""
   homepage_button_link = '/balancer.pdf'
@@ -39,8 +38,8 @@ summaryLength = 30
     meta_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
     meta_og_title = "Balancer Protocol Documentation"
     meta_og_type = "website"
-    meta_og_url = "https://balancer.finance"
-    meta_og_image = "https://raw.githubusercontent.com/JugglerX/hugo-whisper-theme/master/images/tn.png"
+    meta_og_url = "https://docs.balancer.finance"
+    meta_og_image = "https://docs.balancer.finance/images/balancer.png"
     meta_og_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
     meta_twitter_card = "summary"
     meta_twitter_site = "@balancerpro"
