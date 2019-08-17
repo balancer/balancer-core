@@ -18,7 +18,7 @@ Now you can `require('./lib/balancer-core')`
 
 ## Developing
 
-To develop you need `yarn`, `node`, `solc`. To build the docs you need `hugo`.
+To develop you need `yarn`, `node`, and `solc`. To build the docs you need `hugo`.
 
 ```
 git clone https://github.com/balancer-labs/balancer-core
@@ -38,17 +38,17 @@ yarn docs serve    # serve docsite from doc/
 ### Project structure
 
 ```
-doc/          documentation sources
-docs/         docs build output (GH static site hard coded)
-lib/          solidity dependencies
-out/          solidity build artifacts
-sol/          solidity source files (the contracts)
-test/         tests for util/ and sol/
-tmp/          .gitignore'd transient build out
-util/         javascript support code
-LICENSE       GPL3
-Makefile      solidity build command defined here
-package.js    package entrypoint (module.exports)
+doc/            documentation sources
+docs/           docs build output (GH static site fixed path)
+lib/            solidity dependencies
+out/            solidity build artifacts
+sol/            solidity source files (the contracts)
+test/           tests for util/ and sol/
+tmp/            .gitignore'd transient build out
+util/           javascript support code
+LICENSE         GPL3
+Makefile        solidity build command defined here
+package.js      package entrypoint (module.exports)
 package.json
 yarn.lock
 ```

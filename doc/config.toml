@@ -15,9 +15,15 @@ pygmentsUseClasses = true
 summaryLength = 30
 
 [[menu.main]]
-    name = "API Reference"
-    url = "/api/"
+    name = "Trader API"
+    url = "/swap/"
     weight = 1
+
+[[menu.main]]
+    name = "Manager API"
+    url = "/pool/"
+    weight = 1
+
 
 [params]
   google_analytics_id=""

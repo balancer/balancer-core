@@ -3,16 +3,22 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/api/</loc>
-  </url>
-  
-  <url>
-    <loc>/api/swap/func/</loc>
+    <loc>/swap/func/</loc>
     <lastmod>2019-02-11T19:30:08+10:00</lastmod>
   </url>
   
   <url>
-    <loc>/api/swap/</loc>
+    <loc>/pool/</loc>
+    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/swap/</loc>
+    <lastmod>2019-02-11T19:30:08+10:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/pool/func2/</loc>
     <lastmod>2019-02-11T19:30:08+10:00</lastmod>
   </url>
   

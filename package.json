@@ -15,8 +15,7 @@
     "build": "make build",
     "dist": "make dist",
     "test": "make build && mocha",
-    "docs build": "cd doc && hugo",
-    "docs serve": "cd doc && hugo serve"
+    "docs": "cd doc && hugo"
   },
   "repository": {
     "type": "git",

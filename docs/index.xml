@@ -13,11 +13,20 @@
     
     <item>
       <title>FUNC</title>
-      <link>/api/swap/func/</link>
+      <link>/swap/func/</link>
       <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
       
-      <guid>/api/swap/func/</guid>
+      <guid>/swap/func/</guid>
       <description>FUNC</description>
+    </item>
+    
+    <item>
+      <title>pool func</title>
+      <link>/pool/func2/</link>
+      <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
+      
+      <guid>/pool/func2/</guid>
+      <description>pool func</description>
     </item>
     
   </channel>
