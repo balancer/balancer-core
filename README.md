@@ -90,9 +90,9 @@ BPool
     viewSwap_MinPriceExactOut(Ti, To, Ao, P) returns (Ai, err)
 
     swapMMTP(Ti, Li, To, Lo, P) returns (Ai, Ao)
-    doSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
-    trySwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
-    viewSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    doSwap_MaxInMinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)
+    trySwap_MaxInMinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
+    viewSwap_MaxInMinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao, err)
 
 BMath
     math_spotPrice(Bi, Wi, Bo, Wo) returns (P, err);
