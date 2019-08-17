@@ -20,7 +20,7 @@ module.exports.calc_OutGivenInPoints = [
     {res: (1 - Math.pow((235/(235+32*0.9)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0.1},
 ]
 
-module.exports.swapOmathPoints = [
+module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0},//2
     {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0},//20
     {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0},
@@ -51,19 +51,32 @@ module.exports.powPoints = [
     {res: 0.95 ** 0,     base: 0.95, exp: 0},
     {res: 0.91 ** 0.2,   base: 0.91, exp: 0.2},
     {res: 0.9 ** 0.2,    base: 0.9, exp: 0.2},
-    {res: 2 ** 2,        base: 2, exp: 2},
     {res: 1.5 ** 1.5,    base: 1.5, exp: 1.5},
 ];
 
 module.exports.valuePoints = [
     {res: 0, tokens: []},
-    {res: Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1), 
-        tokens: [{b: 300, w: 0.399},
-                 {b: 874, w: 0.2},
-                 {b: 375, w: 0.001},
-                 {b: 282, w: 0.3},
-                 {b: 2,   w: 0.1}]},
+    {res: Math.pow(300, 0.399)*Math.pow(875, 0.2)*Math.pow(372, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1), 
+        tokens: [[300, 0.399],
+                 [875, 0.2],
+                 [372, 0.001],
+                 [282, 0.3],
+                 [2,   0.1]]},
 ];
+
+module.exports.refSpotPricePoints = [
+    {res: (526/0.32)/(Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1)), 
+        Bo: 526,
+        Wo: 0.32,
+
+        tokens: [[300, 0.399],
+                 [874, 0.2],
+                 [375, 0.001],
+                 [282, 0.3],
+                 [2,   0.1]],}
+];
+
+
 
 
 

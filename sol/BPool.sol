@@ -47,37 +47,108 @@ contract BPool is BConst
         paused = true;
     }
 
-    function start()
-        public
-        note
+    //  swap input dryrun
+    //  returns the amount of To outputted when user sends Ai of Ti
+    function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
+        public view returns (uint256 Ao, byte err)
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        paused = false;
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
+
+        if( paused ) return (Ao, ERR_PAUSED);
+
+        return (Ao, ERR_NONE);
     }
 
-    function pause()
-        public
-        note
+    //  swap input
+    //  user sends Ai of Ti, receives some To
+    //  return amount out and error code
+    function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
+        public returns (uint256 Ao, byte err)
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        paused = true;
+        (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
+        if (err != ERR_NONE) {
+            return (Ao, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            return (Ao, ERR_NONE);
+        }
     }
 
-    function setFee(uint256 fee_)
-        public
-        note
+    //  same as trySwap_ExactInAnyOut, but revert on error
+    function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
+        public returns (uint256 Ao)
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(fee_ <= MAX_FEE, ERR_MAX_FEE);
-        fee = fee_;
+        byte err;
+        (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
+        check(err);
+        return Ao;
     }
 
-    function setManager(address newManager)
-        public
-        note
+
+
+    //  swap input dryrun
+    //  returns the amount of To outputted when user sends Ai of Ti
+    function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
+        public view returns (uint256 Ai, byte err)
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        manager = newManager;
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        Ai = calc_InGivenOut( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ao, fee );
+
+        if( paused ) return (Ai, ERR_PAUSED);
+
+        return (Ai, ERR_NONE);
+    }
+
+
+
+    //  swap output
+    //  user sends Ai of Ti, receives some To
+    //  return amount out and error code
+    function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
+        public returns (uint256 Ai, byte err)
+    {
+        (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            return (Ai, ERR_NONE);
+        }
+    }
+
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
+        public returns (uint256 Ai)
+    {
+        byte err;
+        
+        (Ai, err) = trySwap_ExactOutAnyIn(Ti, To, Ao);
+        check(err);
+        return Ai;
     }
 
     function setParams(address token, uint256 weight, uint256 balance)
@@ -100,7 +171,6 @@ contract BPool is BConst
         } else {
             totalWeight = bsub(totalWeight, oldWeight - weight);
         }        
-
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
             check(ok, ERR_ERC20_FALSE);
@@ -109,6 +179,68 @@ contract BPool is BConst
             check(ok, ERR_ERC20_FALSE);
         }
     }
+
+    function setBalanceFixRatio(address token, uint256 balance)
+        public
+        note
+    {
+        uint256 oldBalance = records[token].balance;
+        uint256 oldWeight = records[token].weight;
+        uint256 oldRatio = 0;
+        uint256 newWeight = 0;
+        setParams(token, newWeight, balance);
+        revert("unimplemented");
+    }
+
+    function setWeightFixRatio(address token, uint256 weight)
+        public
+        note
+    {
+        uint256 oldBalance = records[token].balance;
+        uint256 oldWeight = records[token].weight;
+        uint256 oldRatio = 0;
+        uint256 newBalance = 0;
+        setParams(token, weight, newBalance);
+        revert("unimplemented");
+    }
+
+    function setFee(uint256 fee_)
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(fee_ <= MAX_FEE, ERR_MAX_FEE);
+        fee = fee_;
+    }
+    function setManager(address manager_)
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        manager = manager_;
+    }
+
+    function isBound(address token)
+        public view
+        returns (bool)
+    {
+        return records[token].bound;
+    }
+
+    function getWeight(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].weight;
+    }
+
+    function getBalance(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].balance;
+    }
+
     function bind(address token, uint256 balance, uint256 weight)
         public
         note
@@ -146,33 +278,6 @@ contract BPool is BConst
         numTokens--;
     }
 
-    // Collect any excess token that may have been transferred in
-    function sweep(address token)
-        public
-        note
-    {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(isBound(token), ERR_NOT_BOUND);
-        uint256 selfBalance = records[token].balance;
-        uint256 trueBalance = ERC20(token).balanceOf(address(this));
-        bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
-        check(ok, ERR_ERC20_FALSE);
-    }
-
-    function isBound(address token)
-        public view
-        returns (bool)
-    {
-        return records[token].bound;
-    }
-
-    function getWeight(address token)
-        public view
-        returns (uint256)
-    {
-        return records[token].weight;
-    }
-
     function getWeightedValue()
         public view 
         returns (uint256 Wt)
@@ -190,55 +295,39 @@ contract BPool is BConst
         return Wt;
     }
 
-    function getBalance(address token)
-        public view
-        returns (uint256)
+    // Collect any excess token that may have been transferred in
+    function sweep(address token)
+        public
+        note
     {
-        return records[token].balance;
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
+        uint256 selfBalance = records[token].balance;
+        uint256 trueBalance = ERC20(token).balanceOf(address(this));
+        bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
+        check(ok, ERR_ERC20_FALSE);
+    }
+    function pause()
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        paused = true;
+    }
+    function start()
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        paused = false;
     }
 
-    function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public view returns (uint256 Ao, byte err)
-    {
-        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
-        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
-
-        Record storage I = records[address(Ti)];
-        Record storage O = records[address(To)];
-
-        Ao = calc_OutGivenIn( I.balance, I.weight
-                            , O.balance, O.weight
-                            , Ai, fee );
-
-        if( paused ) return (Ao, ERR_PAUSED);
-
-        return (Ao, ERR_NONE);
-    }
-
-    function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao, byte err)
-    {
-        (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
-        if (err != ERR_NONE) {
-            return (Ao, err);
-        } else {
-            // We must revert if a token transfer fails.
-            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
-            bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
-
-            return (Ao, ERR_NONE);
+    function getValue() public returns (uint256 res) {
+        if (_index.length == 0) return 0;
+        res = 1;
+        for (uint i = 0; i < _index.length; i++) {
+            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
-    }
-
-    function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao)
-    {
-        byte err;
-        (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
-        check(err);
-        return Ao;
     }
 
 }

@@ -27,6 +27,7 @@ contract BMath is BNum
     // Ti := Token In
     // To := Token Out
 
+    //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
     function calc_OutGivenIn( uint Bi, uint Wi
                             , uint Bo, uint Wo
                             , uint Ai
@@ -36,38 +37,51 @@ contract BMath is BNum
         returns ( uint Ao )
     {
         bool flag;
-        uint wRatio                         = bdiv(Wi, Wo);
-        uint adjustedIn;
-        (adjustedIn, flag)                  = bsubSign(BONE, fee);
+        uint256 wRatio               = bdiv(Wi, Wo);
+
+        // adjustedIn = Ai * (1 - fee)
+        uint256 adjustedIn;
+        (adjustedIn, flag)           = bsubSign(BONE, fee);
         require( !flag, "BMath.swapImath");
-        adjustedIn                          = bmul(Ai, adjustedIn);
-        uint y                              = bdiv(Bi, badd(Bi, adjustedIn));
-        uint foo                            = bpow(y, wRatio);
-        uint bar;
-        (bar, flag)                         = bsubSign(BONE, foo);
+        adjustedIn                   = bmul(Ai, adjustedIn);
+
+        // y = Bi / (Bi + Ai * (1 - fee))
+        uint256 y                    = bdiv(Bi, badd(Bi, adjustedIn));
+        uint256 foo                  = bpow(y, wRatio);
+        uint256 bar;
+        (bar, flag)                  = bsubSign(BONE, foo);
         require( !flag, "BMath.swapImath");
         Ao                                  = bmul(Bo, bar);
 	}
 
-    function swapOmath( uint Bi, uint Wi
-                      , uint Bo, uint Wo
-                      , uint Ao
-                      , uint fee
+    // @calc_InGivenOut
+    //      do swap math on output
+    //      return input amount from corresponding output amount
+    //      Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
+    function calc_InGivenOut( uint256 Bi, uint256 Wi
+                      , uint256 Bo, uint256 Wo
+                      , uint256 Ao
+                      , uint256 fee
                       )
         public pure
         returns ( uint Ai )
     {
         bool flag;
-        uint wRatio                         = bdiv(Wo, Wi);
-        uint diff;
-        (diff, flag)                        = bsubSign(Bo, Ao);
-        require( !flag, "BMath.swapOmath");
-        uint y                              = bdiv(Bo, diff);
-        uint foo                            = bpow(y, wRatio);
-        (foo,flag)                          = bsubSign(foo, BONE);
-        require( !flag, "BMath.swapOmath");
-        (Ai,flag)                           = bsubSign(BONE, fee);
-        require( !flag, "BMath.swapOmath");
+        uint256 wRatio     = bdiv(Wo, Wi);
+
+        // y = Bo / (Bo - Ao)
+        uint256 diff;
+        (diff, flag)       = bsubSign(Bo, Ao);
+        require( !flag, "BMath.calc_InGivenOut");
+        uint256 y          = bdiv(Bo, diff);
+
+        uint256 foo        = bpow(y, wRatio);
+        (foo,flag)         = bsubSign(foo, BONE);
+        require( !flag, "BMath.calc_InGivenOut");
+
+        // adjust Ai for fee
+        (Ai,flag)          = bsubSign(BONE, fee);
+        require( !flag, "BMath.calc_InGivenOut");
         Ai                                  = bdiv(bmul(Bi, foo), Ai);
     }
 
@@ -82,30 +96,44 @@ contract BMath is BNum
         return r;
     }
 
-    function amountUpToPriceApprox( uint Bi
-                                  , uint Wi
-                                  , uint Bo
-                                  , uint Wo
-                                  , uint SER1
-                                  , uint fee)
+    // @amountUpToPriceApprox
+    //      returns how much TokenIn is needed to lower
+    //      the exchange rate to SER1
+    function amountUpToPriceApprox( uint256 Bi
+                                  , uint256 Wi
+                                  , uint256 Bo
+                                  , uint256 Wo
+                                  , uint256 SER1
+                                  , uint256 fee)
         public pure
         returns ( uint Ai )
     {
+        require( Bi > 0);
+        require( Wi > 0);
+        require( Bo > 0);
+        require( Wo > 0);
         bool flag;
-        uint SER0 = spotPrice(Bi, Wi, Bo, Wo);
-        uint base = bdiv(SER0, SER1);
-        uint exp  = bdiv(Wo, badd(Wo, Wi));
-        (Ai,flag) = bsubSign(bpow(base, exp), BONE);
+        uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
+        require( SER1 <= SER0);
+        uint256 base = bdiv(SER0, SER1);
+        uint256 exp  = bdiv(Wo, badd(Wo, Wi));
+        (Ai,flag)    = bsubSign(bpow(base, exp), BONE);
         require( !flag, "BMath.amountUpToPriceApprox");
         Ai        = bmul(Ai, Bi);
         Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
 
+    // @bpow
+    // @params:
+    //      base - WAD
+    //      exp  - WAD
+    // splits b^e.w into b^e*b^0.w
     function bpow(uint base, uint exp) public pure returns (uint)
     {
         uint whole                 = bfloor(exp);   
         (uint remain, bool flag)   = bsubSign(exp, whole);
         require( !flag, "BMath.bpow");
+        // make whole agree with wpown def
         uint wholePow              = bpown(base, btoi(whole));
 
         if (remain == 0) {
@@ -119,6 +147,10 @@ contract BMath is BNum
         uint sum   = BONE;
         (uint x, bool xneg)  = bsubSign(base, BONE);
 
+        // term(k) = numer / denom 
+        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
+        // each iteration, multiply previous term by (a-(k-1)) * x / k
+        // since we can't underflow, keep a tally of negative signs in 'select'
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
             uint k = i * BONE;
@@ -137,4 +169,50 @@ contract BMath is BNum
 
         return bmul(sum, wholePow);
     }
+
+
+    // wad floor
+    function wfloor(uint x) internal pure returns (uint z) {
+        z = x / BONE * BONE;
+    }
+
+    // wad sub
+    // return result and overflow flag
+    function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
+        if (a >= b) {
+            return (bsub(a, b), false);
+        } else {
+            return (bsub(b, a), true);
+        }
+    }
+
+    // wad add
+    function wadd(uint256 a, uint256 b) public pure returns (uint256) {
+        return badd(a, b);
+    }
+
+    // @wpown
+    // @params
+    //      x - WAD, base
+    //      n - int, exp
+    function wpown(uint x, uint n) internal pure returns (uint z) {
+        z = n % 2 != 0 ? x : BONE;
+
+        for (n /= 2; n != 0; n /= 2) {
+            x = bmul(x, x);
+
+            if (n % 2 != 0) {
+                z = bmul(z, x);
+            }
+        }
+    }
+
+    // @wtoi
+    // @params
+    //      @w - WAD
+    // convert wad to int
+    function wtoi(uint w) internal pure returns (uint) {
+        return w / BONE;
+    }
+
 }
