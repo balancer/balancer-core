@@ -2,4 +2,4 @@
 title: 'Balancer'
 ---
 
-Autonomous Price Sensor and Portfolio Manager
+Trustless Price Sensor and Portfolio Manager
