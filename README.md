@@ -3,6 +3,8 @@
 
 ## Installing
 
+Most users will be interested in consuming the ABI definitions for various Balancer contracts.
+
 Until this package is shipped to a package registry, the best way to use it is as a git submodule.
 
 ```
@@ -10,7 +12,15 @@ mkdir lib
 git submodule add https://github.com/balancer-labs/balancer-core lib/balancer-core
 ```
 
-Now you can `require('./lib/balancer-core')`
+Now you can require the package:
+
+```
+let bcore = require('./lib/balancer-core');
+let types = bcore.types;  # A combined.json object with type names lifted
+let BPool = bcore.types.BPool;
+let pool = new web3.eth.Contract(BPool.abi);
+```
+ 
 
 ## Usage
 
@@ -27,12 +37,12 @@ yarn setup
 ```
 
 ```
-yarn setup         # clones submodules and installs packages
-yarn build         # compile the solidity contracts
-yarn test          # yarn build && mocha
-yarn dist          # cp artifacts to out/
-yarn docs build    # build doc/ to docs/
-yarn docs serve    # serve docsite from doc/
+yarn setup       # clones submodules and installs packages
+yarn build       # compile the solidity contracts
+yarn test        # yarn build && mocha
+yarn dist        # cp artifacts to out/
+yarn docs        # build doc/ to docs/
+yarn docs serve  # serve docsite from doc/
 ```
 
 ### Project structure
