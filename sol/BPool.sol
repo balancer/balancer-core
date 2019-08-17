@@ -100,8 +100,10 @@ contract BPool is BConst
     function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai)
     {
-        Ti = Ti; To = To; Ai = Ao; fee = Ao; // hide warnings
-        revert("unimplemented");
+        byte err;
+        (Ai, err) = trySwap_ExactInAnyOut(Ti, Ao, To);
+        check(err);
+        return Ao;
     }
 
     function setParams(address token, uint256 weight, uint256 balance)
