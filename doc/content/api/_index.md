@@ -1,7 +1,8 @@
 ---
-title: 'Balancer API Reference'
-weight: 1
+title: 'Index'
+draft: false
+weight: 4
+summary: 'List of functions'
 ---
 
-## Overview
-
+`getSpotPrice`

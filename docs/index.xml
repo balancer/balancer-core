@@ -1,70 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Balancer Protocol on Balancer Protocol Documentation</title>
+    <title>Balancer on Balancer Protocol Documentation</title>
     <link>/</link>
-    <description>Recent content in Balancer Protocol on Balancer Protocol Documentation</description>
+    <description>Recent content in Balancer on Balancer Protocol Documentation</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 28 Nov 2018 15:14:39 +1000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Install Hugo</title>
-      <link>/docs/install-hugo/</link>
-      <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
+      <title>Manager API</title>
+      <link>/api/pool/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/docs/install-hugo/</guid>
-      <description>To use this theme you will need to have Hugo installed. If you don&amp;rsquo;t already have Hugo installed please follow the official installation guide
-Check Hugo Version This theme uses Hugo Pipes to compile SCSS and minify assets.</description>
+      <guid>/api/pool/</guid>
+      <description>Functions for pool managers</description>
     </item>
     
     <item>
-      <title>Install Theme</title>
-      <link>/docs/install-theme/</link>
-      <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
-      
-      <guid>/docs/install-theme/</guid>
-      <description>Create a new Hugo site hugo new site mynewsite This will create a fresh Hugo site in the folder mynewsite.
-Install theme Copy or git clone this theme into the sites themes folder mynewsite/themes</description>
-    </item>
-    
-    <item>
-      <title>Configuration</title>
-      <link>/docs/configure/</link>
-      <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
-      
-      <guid>/docs/configure/</guid>
-      <description>Syntax highlighting and menus can be configured via &lt;code&gt;config.toml&lt;/code&gt;.</description>
-    </item>
-    
-    <item>
-      <title>swap API</title>
+      <title>Trader API</title>
       <link>/api/swap/</link>
-      <pubDate>Mon, 11 Feb 2019 19:30:08 +1000</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/api/swap/</guid>
-      <description>Swapping tokens.</description>
-    </item>
-    
-    <item>
-      <title>Specimen</title>
-      <link>/docs/specimen/</link>
-      <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
-      
-      <guid>/docs/specimen/</guid>
-      <description>Markdown Test Page  Headings Paragraphs Blockquotes Lists Horizontal rule Table Code Inline elements  Headings Heading one Sint sit cillum pariatur eiusmod nulla pariatur ipsum. Sit laborum anim qui mollit tempor pariatur nisi minim dolor.</description>
-    </item>
-    
-    <item>
-      <title>Hugo Whisper</title>
-      <link>/docs/example/</link>
-      <pubDate>Mon, 11 Feb 2019 19:27:37 +1000</pubDate>
-      
-      <guid>/docs/example/</guid>
-      <description>&lt;p&gt;Whisper is a minimal documentation theme built for Hugo. The design &amp;amp; functionality is intentionally minimal.&lt;/p&gt;</description>
+      <description>Functions for traders</description>
     </item>
     
   </channel>

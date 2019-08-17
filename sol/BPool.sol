@@ -25,9 +25,15 @@ contract BPool is BConst
                 , BEvent
                 , BMath
 {
-    bool                      public paused;
-    address                   public manager;
-    uint256                   public fee;
+    bool    public paused;
+    address public manager;
+    uint256 public fee;
+
+    uint256 public totalWeight;
+    uint8   public numTokens;
+
+    mapping(address=>Record)  private records;
+    address[MAX_BOUND_TOKENS] private _index;
 
     struct Record {
         bool    bound;
@@ -35,11 +41,6 @@ contract BPool is BConst
         uint256 weight;  // bnum
         uint256 balance; // bnum
     }
-
-    uint256                   public totalWeight;
-    uint8                     public numTokens;
-    mapping(address=>Record)  public records;
-    address[MAX_BOUND_TOKENS] private _index;
 
     constructor() public {
         manager = msg.sender;
@@ -51,8 +52,8 @@ contract BPool is BConst
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
-        check(isBound(Ti), ERR_NOT_BOUND);
-        check(isBound(To), ERR_NOT_BOUND);
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
 
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
@@ -61,9 +62,7 @@ contract BPool is BConst
                       , O.balance, O.weight
                       , Ai, fee );
 
-        if( paused ) {
-            return (Ao, ERR_PAUSED);
-        }
+        if( paused ) return (Ao, ERR_PAUSED);
 
         return (Ao, ERR_NONE);
     }
@@ -78,8 +77,12 @@ contract BPool is BConst
         if (err != ERR_NONE) {
             return (Ao, err);
         } else {
-            require( ERC20(Ti).transferFrom(msg.sender, address(this), Ai), "xfer" );
-            require( ERC20(To).transfer(msg.sender, Ao), "xfer" );
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
             return (Ao, ERR_NONE);
         }
     }
@@ -93,7 +96,6 @@ contract BPool is BConst
         check(err);
         return Ao;
     }
-
 
     function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai)
@@ -176,6 +178,20 @@ contract BPool is BConst
         returns (bool)
     {
         return records[token].bound;
+    }
+
+    function getWeight(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].weight;
+    }
+
+    function getBalance(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].balance;
     }
 
     function bind(address token, uint256 balance, uint256 weight)

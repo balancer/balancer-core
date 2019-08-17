@@ -1,9 +1,10 @@
 ---
-title: 'swap API'
-date: 2019-02-11T19:30:08+10:00
+title: 'Trader API'
 draft: false
 weight: 4
-summary: Swapping tokens.
+summary: 'Functions for traders'
 ---
 
-`doSwap_ExactInMinOut`
+[`doSwap_ExactInAnyOut`](#ExactInAnyOut)
+
+#### ExactInAnyOut

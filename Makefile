@@ -24,5 +24,5 @@ build:
 	sol/BNote.sol \
 	sol/BNum.sol \
 	sol/BPool.sol \
-	sol/BToken.sol \
+	sol/TToken.sol \
 
