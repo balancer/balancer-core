@@ -84,10 +84,10 @@ BPool
     trySwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
     viewSwap_ExactInMaxPrice(Ti, To, Ai, P) returns (Ao, err)
 
-    swapEOMP(Ti, To, Ao, P) returns (Ai)
-    doSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai)
-    trySwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
-    viewSwap_ExactOutMinPrice(Ti, To, Ao, P) returns (Ai, err)
+    swapMPEO(Ti, To, Ao, P) returns (Ai)
+    doSwap_MinPriceExactOut(Ti, To, Ao, P) returns (Ai)
+    trySwap_MinPriceExactOut(Ti, To, Ao, P) returns (Ai, err)
+    viewSwap_MinPriceExactOut(Ti, To, Ao, P) returns (Ai, err)
 
     swapMMTP(Ti, Li, To, Lo, P) returns (Ai, Ao)
     doSwap_MaxIn_MinOutToPrice(Ti, Li, To, Lo, P) returns (Ai, Ao)

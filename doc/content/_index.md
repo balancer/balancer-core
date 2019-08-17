@@ -1,6 +1,6 @@
 ---
-title: 'Balancer Protocol'
+title: 'Balancer'
 date: 2018-11-28T15:14:39+10:00
 ---
 
-The trustless portfolio manager and price oracle.
+Autonomous Price Sensor and Portfolio Manager
