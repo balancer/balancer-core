@@ -46,9 +46,8 @@ contract BPool is BConst
         paused = true;
     }
 
-    // @viewSwap_ExactInAnyOut
-    //      swap input dryrun
-    //      returns the amount of To outputted when user sends Ai of Ti
+    //  swap input dryrun
+    //  returns the amount of To outputted when user sends Ai of Ti
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
@@ -69,10 +68,9 @@ contract BPool is BConst
         return (Ao, ERR_NONE);
     }
 
-    // @trySwap_ExactInAnyOut
-    //      swap input
-    //      user sends Ai of Ti, receives some To
-    //      return amount out and error code
+    //  swap input
+    //  user sends Ai of Ti, receives some To
+    //  return amount out and error code
     function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao, byte err)
     {
@@ -86,8 +84,7 @@ contract BPool is BConst
         }
     }
 
-    // @doSwap_ExactInAnyOut
-    //      same as trySwap_ExactInAnyOut, but revert on error
+    //  same as trySwap_ExactInAnyOut, but revert on error
     function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao)
     {
@@ -262,8 +259,6 @@ contract BPool is BConst
         paused = false;
     }
 
-    // @getValue
-    //      return
     function getValue() public returns (uint256 res) {
         if (_index.length == 0) return 0;
         res = 1;
