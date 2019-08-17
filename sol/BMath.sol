@@ -54,11 +54,11 @@ contract BMath is BNum
         Ao                                  = bmul(Bo, bar);
 	}
 
-    // @swapOmath
+    // @calc_InGivenOut
     //      do swap math on output
     //      return input amount from corresponding output amount
     //      Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
-    function swapOmath( uint256 Bi, uint256 Wi
+    function calc_InGivenOut( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ao
                       , uint256 fee
@@ -72,16 +72,16 @@ contract BMath is BNum
         // y = Bo / (Bo - Ao)
         uint256 diff;
         (diff, flag)       = bsubSign(Bo, Ao);
-        require( !flag, "BMath.swapOmath");
+        require( !flag, "BMath.calc_InGivenOut");
         uint256 y          = bdiv(Bo, diff);
 
         uint256 foo        = bpow(y, wRatio);
         (foo,flag)         = bsubSign(foo, BONE);
-        require( !flag, "BMath.swapOmath");
+        require( !flag, "BMath.calc_InGivenOut");
 
         // adjust Ai for fee
         (Ai,flag)          = bsubSign(BONE, fee);
-        require( !flag, "BMath.swapOmath");
+        require( !flag, "BMath.calc_InGivenOut");
         Ai                                  = bdiv(bmul(Bi, foo), Ai);
     }
 

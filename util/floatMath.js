@@ -70,7 +70,7 @@ module.exports.floatMath = {
 
     },
     
-    swapOmathExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
+    calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
         assert(Bo > 0, "Bo must be positive");
@@ -87,7 +87,7 @@ module.exports.floatMath = {
         return Bi * (bar - 1) / (1 - fee);
     },
 
-    swapOmathApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
+    calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
         assert(Bo > 0, "Bo must be positive");
