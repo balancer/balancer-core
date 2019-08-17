@@ -27,15 +27,12 @@ contract BMath is BNum
     // Ti := Token In
     // To := Token Out
 
-    // @swapImath
-    //      do swap math on input
-    //      return output amount from corresponding input amount
-    //      Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
-    function swapImath( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo
-                      , uint256 Ai
-                      , uint256 fee
-                      )
+    //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
+    function calc_OutGivenIn( uint Bi, uint Wi
+                            , uint Bo, uint Wo
+                            , uint Ai
+                            , uint fee
+                            )
         public pure
         returns ( uint Ao )
     {

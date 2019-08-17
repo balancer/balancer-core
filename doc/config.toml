@@ -2,7 +2,7 @@ publishDir = "../docs"
 
 baseURL = "/"
 languageCode = "en-us"
-title = "Balancer Protocol Documentation"
+title = "Balancer: Trustless Price Sensor and Portfolio Manager"
 themesDir = "themes"
 theme = "hugo-whisper-theme"
 
@@ -28,23 +28,23 @@ summaryLength = 30
   google_analytics_id=""
   homepage_button_link = '/balancer.pdf'
   homepage_button_text = 'Read The Whitepaper'
-  homepage_intro = 'Balancer: Autonomous Price Sensor and Portfolio Manager'
-  #homepage_image = '/images/balancer.png'
+  homepage_intro = 'Balancer: Trustless Price Sensor and Portfolio Manager'
+  homepage_image = "https://balancer-labs.github.io/bb/bbb.svg"
 
   ## You can enable to add anchor links to header elements
   enable_anchor_link = true
 
   [params.homepage_meta_tags]
-    meta_description = "Balancer: Autonomous Price Sensor and Portfolio Manager"
+    meta_description = "Balancer: Trustless Price Sensor and Portfolio Manager"
     meta_og_title = "Balancer Protocol Documentation"
     meta_og_type = "website"
-    meta_og_url = "https://docs.balancer.finance"
-    meta_og_image = "https://docs.balancer.finance/images/balancer.png"
-    meta_og_description = "Balancer: Auto-Balancing Portfolio and Trustless Price Oracle"
+    meta_og_url = "https://github.com/balancer-labs"
+    meta_og_image = "https://balancer-labs.github.io/bb/bbb.svg"
+    meta_og_description = "Balancer: Trustless Price Sensor and Portfolio Manager"
     meta_twitter_card = "summary"
     meta_twitter_site = "@balancerpro"
     meta_twitter_creator = "@balancerpro"
 
   [params.logo]
-      mobile = "/images/balancer.png"
-      standard  = "/images/balancer.png"
+      mobile = "https://balancer-labs.github.io/bb/bbb.svg"
+      standard  = "https://balancer-labs.github.io/bb/bbb.svg"
