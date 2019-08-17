@@ -21,6 +21,8 @@ yarn setup     # clones submodules and installs packages
 yarn build     # compile the solidity contracts
 yarn test      # yarn build && mocha
 yarn dist      # cp artifacts to out/
+yarn docs      # build doc/ to docs/
+yarn docserv   # serve docsite from doc/
 ```
 
 ### Project structure

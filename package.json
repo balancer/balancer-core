@@ -4,13 +4,19 @@
   "version": "0.0.4",
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
+  "author": {
+    "name": "Nikolai Mushegian",
+    "email": "mail+scrape@nikolai.fyi",
+    "url": "https://nikolai.fyi"
+  },
   "main": "package.js",
   "scripts": {
     "setup": "git submodule update --init --recursive && yarn install",
     "build": "make build",
     "dist": "make dist",
     "test": "make build && mocha",
-    "docs": "cd doc && hugo"
+    "docs": "cd doc && hugo",
+    "docs serve": "cd doc && hugo serve"
   },
   "repository": {
     "type": "git",
