@@ -27,11 +27,11 @@ contract BMath is BNum
     // Ti := Token In
     // To := Token Out
 
-    function swapImath( uint Bi, uint Wi
-                      , uint Bo, uint Wo
-                      , uint Ai
-                      , uint fee
-                      )
+    function calc_OutGivenIn( uint Bi, uint Wi
+                            , uint Bo, uint Wo
+                            , uint Ai
+                            , uint fee
+                            )
         public pure
         returns ( uint Ao )
     {

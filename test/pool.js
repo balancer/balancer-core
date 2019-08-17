@@ -70,7 +70,7 @@ describe("BPool", () => {
         let diff = toBN(bafter).sub(toBN(bbefore));
         assert.equal(diff, result[0]);
     });
-    for( pt of testPoints.swapImathPoints ) {
+    for( pt of testPoints.calc_OutGivenInPoints ) {
         let Ai  = toWei(pt.Ai.toString());
         let Bi  = toWei(pt.Bi.toString());
         let Wi  = toWei(pt.Wi.toString());

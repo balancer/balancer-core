@@ -29,7 +29,7 @@ module.exports.floatMath = {
         return numer/denom;
     },
 
-    swapImathExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
+    calc_OutGivenInExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
         assert(Bo > 0, "Bo must be positive");
@@ -47,7 +47,7 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
     },
 
-    swapImathApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
+    calc_OutGivenInApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
         assert(Bo > 0, "Bo must be positive");

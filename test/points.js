@@ -9,7 +9,7 @@ module.exports.spotPricePoints = [
     {res: 1/1000, Bi: 6000, Wi: 0.3, Bo: 10, Wo: 0.5}
 ];
 
-module.exports.swapImathPoints = [
+module.exports.calc_OutGivenInPoints = [
     {res: (1 - Math.pow((2/(2+1)),(0.1/0.1))) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ai: 1, fee: 0},//2/3
     {res: (1 - Math.pow((20/(20+10)),(0.1/0.1))) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ai: 10, fee: 0},//20/3
     {res: (1 - Math.pow((200/(200+1)),(0.5/0.3))) * 20, Bi: 200, Wi: 0.5, Bo: 20, Wo: 0.3, Ai: 1, fee: 0}, //10/9

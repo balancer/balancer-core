@@ -34,17 +34,17 @@ describe("floatMath.js", function () {
             assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
         });
     }
-    for( let pt of testPoints.swapImathPoints ) {
+    for( let pt of testPoints.calc_OutGivenInPoints ) {
         var desc = `${pt.res} == swapIMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.swapImathExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+            assert.closeTo( pt.res, fMath.calc_OutGivenInExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
                           , floatEqTolerance);
         });
     }
-    for( let pt of testPoints.swapImathPoints ) {
+    for( let pt of testPoints.calc_OutGivenInPoints ) {
         var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, function () {
-            assert.closeTo( pt.res, fMath.swapImathApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
+            assert.closeTo( pt.res, fMath.calc_OutGivenInApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
                           , approxTolerance);
         });
     }
@@ -172,7 +172,7 @@ describe("BMath", () => {
         });
     }
  
-    for( let pt of testPoints.swapImathPoints ) {
+    for( let pt of testPoints.calc_OutGivenInPoints ) {
         let res = toWei(pt.res);
         let Bi = toWei(pt.Bi).toString();
         let Wi = toWei(pt.Wi).toString();
@@ -180,11 +180,11 @@ describe("BMath", () => {
         let Wo = toWei(pt.Wo).toString();
         let Ai = toWei(pt.Ai).toString();
         let fee = toWei(pt.fee).toString();
-        var desc = `${pt.res} ~= bMath.swapImath(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
+        var desc = `${pt.res} ~= bMath.calc_OutGivenIn(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
             let math = await pkg.types.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.swapImath(Bi, Wi, Bo, Wo, Ai, fee).call();
+            var actual = await math.methods.calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee).call();
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });
     }

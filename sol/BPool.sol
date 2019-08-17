@@ -56,9 +56,9 @@ contract BPool is BConst
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        Ao = swapImath( I.balance, I.weight
-                      , O.balance, O.weight
-                      , Ai, fee );
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
 
         if( paused ) return (Ao, ERR_PAUSED);
 
