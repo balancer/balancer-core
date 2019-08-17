@@ -8,8 +8,6 @@ Until this package is shipped to a package registry, the best way to use it is a
 ```
 mkdir lib
 git submodule add https://github.com/balancer-labs/balancer-core lib/balancer-core
-cd lib/balancer-core
-yarn setup
 ```
 
 Now you can `require('./lib/balancer-core')`
@@ -20,13 +18,21 @@ Now you can `require('./lib/balancer-core')`
 
 ## Developing
 
+To develop you need `yarn`, `node`, `solc`. To build the docs you need `hugo`.
+
 ```
-yarn setup     # clones submodules and installs packages
-yarn build     # compile the solidity contracts
-yarn test      # yarn build && mocha
-yarn dist      # cp artifacts to out/
-yarn docs      # build doc/ to docs/
-yarn docserv   # serve docsite from doc/
+git clone https://github.com/balancer-labs/balancer-core
+cd balancer-core
+yarn setup
+```
+
+```
+yarn setup         # clones submodules and installs packages
+yarn build         # compile the solidity contracts
+yarn test          # yarn build && mocha
+yarn dist          # cp artifacts to out/
+yarn docs build    # build doc/ to docs/
+yarn docs serve    # serve docsite from doc/
 ```
 
 ### Project structure
