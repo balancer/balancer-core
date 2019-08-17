@@ -15,6 +15,7 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+// A TToken is a test token with automatic infinite allowance
 contract TToken is ERC20 {
     uint                   supply;
     mapping(address=>uint) balances;
