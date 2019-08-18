@@ -193,6 +193,14 @@ contract BPool is BBronze
 
     function setParams(address token, uint256 weight, uint256 balance)
         public
+        // note by sub-calls
+    {
+        setWeightDirect(token, weight);
+        setBalanceDirect(token, balance);
+    }
+
+    function setWeightDirect(address token, uint256 weight)
+        public
         note
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
@@ -200,10 +208,7 @@ contract BPool is BBronze
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
 
         uint256 oldWeight = records[token].weight;
-        uint256 oldBalance = records[token].balance;
-
         records[token].weight = weight;
-        records[token].balance = balance;
 
         if (weight > oldWeight) {
             totalWeight = badd(totalWeight, weight - oldWeight);
@@ -211,6 +216,19 @@ contract BPool is BBronze
         } else {
             totalWeight = bsub(totalWeight, oldWeight - weight);
         }        
+
+    }
+
+    function setBalanceDirect(address token, uint256 balance)
+        public
+        note
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
+
+        uint256 oldBalance = records[token].balance;
+        records[token].balance = balance;
+
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
             check(ok, ERR_ERC20_FALSE);
@@ -218,6 +236,7 @@ contract BPool is BBronze
             bool ok = ERC20(token).transfer(msg.sender, oldBalance - balance);
             check(ok, ERR_ERC20_FALSE);
         }
+
     }
 
     function setFee(uint256 fee_)
