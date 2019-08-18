@@ -26,6 +26,7 @@ contract TToken is ERC20 {
         return supply;
     }
     function allowance(address who, address cares) public view returns (uint) {
+        who=who; cares=cares; // suppress a compiler warning
         return uint(-1);
     }
     function approve(address who, uint256 cares) public returns (bool) {
