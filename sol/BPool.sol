@@ -32,14 +32,13 @@ contract BPool is BBronze
     uint256 public fee;
 
     uint256 public totalWeight;
-    uint8   public numTokens;
 
     mapping(address=>Record)  private records;
-    address[MAX_BOUND_TOKENS] private _index;
+    address[]                 private _index;
 
     struct Record {
         bool    bound;
-        uint8   index;   // int
+        uint256 index;   // int
         uint256 weight;  // bnum
         uint256 balance; // bnum
     }
@@ -50,10 +49,17 @@ contract BPool is BBronze
     }
 
     function isBound(address token)
-        public view
+      public view
         returns (bool)
     {
         return records[token].bound;
+    }
+
+    function getNumTokens()
+      public view
+        returns (uint256)
+    {
+        return _index.length;
     }
 
     function getWeight(address token)
@@ -71,13 +77,12 @@ contract BPool is BBronze
     }
 
     function getValue()
-        public view
-    returns (uint256 res)
+      public view
+        returns (uint256 res)
     {
         if (_index.length == 0) return 0;
         res = 1;
-        uint len = numTokens;
-        for (uint i = 0; i < len; i++) {
+        for (uint i = 0; i < _index.length; i++) {
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
@@ -86,11 +91,11 @@ contract BPool is BBronze
         public view 
         returns (uint256 Wt)
     {
-        if (numTokens == 0) {
+        if (_index.length == 0) {
             return 0;
         }
         Wt = 1;
-        for( uint8 i = 0; i < numTokens; i++ ) {
+        for( uint8 i = 0; i < _index.length; i++ ) {
             uint256 weight = records[_index[i]].weight;
             check(weight > 0, ERR_UNREACHABLE);
             Wt = bdiv(Wt, weight);
@@ -262,7 +267,7 @@ contract BPool is BBronze
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check( ! isBound(token), ERR_NOT_BOUND);
-        require(numTokens < MAX_BOUND_TOKENS, "numTokens<MAX");
+        require(_index.length < MAX_BOUND_TOKENS, "numTokens<MAX");
         require(balance >= MIN_TOKEN_BALANCE, "bind minTokenBalance");
         require(balance <= MAX_TOKEN_BALANCE, "bind max token balance");
         require(weight >= MIN_TOKEN_WEIGHT, "bind mind token weight");
@@ -270,11 +275,11 @@ contract BPool is BBronze
         require(totalWeight <= MAX_TOTAL_WEIGHT, "bind max total weight");
         records[token] = Record({
             bound: true
-          , index: numTokens
+          , index: _index.length
           , weight: 0
           , balance: 0
         });
-        numTokens++;
+        _index.push(token);
     }
 
     function unbind(address token)
@@ -285,13 +290,12 @@ contract BPool is BBronze
         check(isBound(token), ERR_NOT_BOUND);
         require(ERC20(token).balanceOf(address(this)) == 0);
         uint256 index = records[token].index;
-        uint256 last = numTokens - 0;
+        uint256 last = _index.length-1;
         if( index != last ) {
             _index[index] = _index[last];
         }
-        _index[last] = address(0);
+        _index.pop();
         delete records[token];
-        numTokens--;
     }
 
     // Collect any excess token that may have been transferred in
