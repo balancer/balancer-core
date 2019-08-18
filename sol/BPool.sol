@@ -165,30 +165,6 @@ contract BPool is BConst
         }
     }
 
-    function setBalanceFixRatio(address token, uint256 balance)
-        public
-        note
-    {
-        uint256 oldBalance = records[token].balance;
-        uint256 oldWeight = records[token].weight;
-        uint256 oldRatio = 0;
-        uint256 newWeight = 0;
-        setParams(token, newWeight, balance);
-        revert("unimplemented");
-    }
-
-    function setWeightFixRatio(address token, uint256 weight)
-        public
-        note
-    {
-        uint256 oldBalance = records[token].balance;
-        uint256 oldWeight = records[token].weight;
-        uint256 oldRatio = 0;
-        uint256 newBalance = 0;
-        setParams(token, weight, newBalance);
-        revert("unimplemented");
-    }
-
     function setFee(uint256 fee_)
         public
         note
@@ -292,6 +268,7 @@ contract BPool is BConst
         bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
         check(ok, ERR_ERC20_FALSE);
     }
+
     function pause()
         public
         note
@@ -299,6 +276,7 @@ contract BPool is BConst
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
+
     function start()
         public
         note
@@ -310,7 +288,8 @@ contract BPool is BConst
     function getValue() public returns (uint256 res) {
         if (_index.length == 0) return 0;
         res = 1;
-        for (uint i = 0; i < _index.length; i++) {
+        uint len = numTokens;
+        for (uint i = 0; i < len; i++) {
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
