@@ -54,10 +54,7 @@ contract BMath is BNum
         Ao                                  = bmul(Bo, bar);
 	}
 
-    // @calc_InGivenOut
-    //      do swap math on output
-    //      return input amount from corresponding output amount
-    //      Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
+    // Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
     function calc_InGivenOut( uint256 Bi, uint256 Wi
                       , uint256 Bo, uint256 Wo
                       , uint256 Ao
@@ -96,9 +93,8 @@ contract BMath is BNum
         return r;
     }
 
-    // @amountUpToPriceApprox
-    //      returns how much TokenIn is needed to lower
-    //      the exchange rate to SER1
+    // returns how much TokenIn is needed to lower
+    // the exchange rate to SER1
     function amountUpToPriceApprox( uint256 Bi
                                   , uint256 Wi
                                   , uint256 Bo
@@ -123,11 +119,8 @@ contract BMath is BNum
         Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
 
-    // @bpow
-    // @params:
-    //      base - WAD
-    //      exp  - WAD
-    // splits b^e.w into b^e*b^0.w
+    // Uses an approximation formula to compute b^(e.w)
+    // by splitting it into (b^e)*(b^0.w).
     function bpow(uint base, uint exp) public pure returns (uint)
     {
         uint whole                 = bfloor(exp);   
@@ -168,51 +161,6 @@ contract BMath is BNum
         }
 
         return bmul(sum, wholePow);
-    }
-
-
-    // wad floor
-    function wfloor(uint x) internal pure returns (uint z) {
-        z = x / BONE * BONE;
-    }
-
-    // wad sub
-    // return result and overflow flag
-    function wsub(uint256 a, uint256 b) public pure returns (uint256, bool) {
-        if (a >= b) {
-            return (bsub(a, b), false);
-        } else {
-            return (bsub(b, a), true);
-        }
-    }
-
-    // wad add
-    function wadd(uint256 a, uint256 b) public pure returns (uint256) {
-        return badd(a, b);
-    }
-
-    // @wpown
-    // @params
-    //      x - WAD, base
-    //      n - int, exp
-    function wpown(uint x, uint n) internal pure returns (uint z) {
-        z = n % 2 != 0 ? x : BONE;
-
-        for (n /= 2; n != 0; n /= 2) {
-            x = bmul(x, x);
-
-            if (n % 2 != 0) {
-                z = bmul(z, x);
-            }
-        }
-    }
-
-    // @wtoi
-    // @params
-    //      @w - WAD
-    // convert wad to int
-    function wtoi(uint w) internal pure returns (uint) {
-        return w / BONE;
     }
 
 }
