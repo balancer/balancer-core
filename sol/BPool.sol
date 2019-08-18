@@ -101,7 +101,7 @@ contract BPool is BConst
 
     //  swap input dryrun
     //  returns the amount of To outputted when user sends Ai of Ti
-    function viewSwap_AnyInExactOut(address Ti, address To, uint256 Ao)
+    function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public view returns (uint256 Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
@@ -124,10 +124,10 @@ contract BPool is BConst
     //  swap output
     //  user sends Ai of Ti, receives some To
     //  return amount out and error code
-    function trySwap_AnyInExactOut(address Ti, address To, uint256 Ao)
+    function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai, byte err)
     {
-        (Ai, err) = viewSwap_AnyInExactOut(Ti, To, Ao);
+        (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
         if (err != ERR_NONE) {
             return (Ai, err);
         } else {
@@ -141,12 +141,12 @@ contract BPool is BConst
         }
     }
 
-    function doSwap_AnyInExactOut(address Ti, address To, uint256 Ao)
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai)
     {
         byte err;
         
-        (Ai, err) = trySwap_AnyInExactOut(Ti, To, Ao);
+        (Ai, err) = trySwap_ExactOutAnyIn(Ti, To, Ao);
         check(err);
         return Ai;
     }
