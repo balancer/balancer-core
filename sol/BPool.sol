@@ -47,6 +47,59 @@ contract BPool is BConst
         paused = true;
     }
 
+    function isBound(address token)
+        public view
+        returns (bool)
+    {
+        return records[token].bound;
+    }
+
+    function getWeight(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].weight;
+    }
+
+    function getBalance(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].balance;
+    }
+
+    function getValue()
+        public view
+    returns (uint256 res)
+    {
+        if (_index.length == 0) return 0;
+        res = 1;
+        uint len = numTokens;
+        for (uint i = 0; i < len; i++) {
+            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
+        }
+    }
+
+    function getWeightedValue()
+        public view 
+        returns (uint256 Wt)
+    {
+        if (numTokens == 0) {
+            return 0;
+        }
+        Wt = 1;
+        for( uint8 i = 0; i < numTokens; i++ ) {
+            uint256 weight = records[_index[i]].weight;
+            check(weight > 0, ERR_UNREACHABLE);
+            Wt = bdiv(Wt, weight);
+            revert('getWeightedValue unimplemented');
+        }
+        return Wt;
+    }
+
+
+
+
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
@@ -173,33 +226,13 @@ contract BPool is BConst
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
+
     function setManager(address manager_)
         public
         note
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
-    }
-
-    function isBound(address token)
-        public view
-        returns (bool)
-    {
-        return records[token].bound;
-    }
-
-    function getWeight(address token)
-        public view
-        returns (uint256)
-    {
-        return records[token].weight;
-    }
-
-    function getBalance(address token)
-        public view
-        returns (uint256)
-    {
-        return records[token].balance;
     }
 
     function bind(address token, uint256 balance, uint256 weight)
@@ -222,6 +255,7 @@ contract BPool is BConst
         });
         numTokens++;
     }
+
     function unbind(address token)
         public
         note
@@ -237,23 +271,6 @@ contract BPool is BConst
         _index[last] = address(0);
         delete records[token];
         numTokens--;
-    }
-
-    function getWeightedValue()
-        public view 
-        returns (uint256 Wt)
-    {
-        if (numTokens == 0) {
-            return 0;
-        }
-        Wt = 1;
-        for( uint8 i = 0; i < numTokens; i++ ) {
-            uint256 weight = records[_index[i]].weight;
-            check(weight > 0, ERR_UNREACHABLE);
-            Wt = bdiv(Wt, weight);
-            revert('getWeightedValue unimplemented');
-        }
-        return Wt;
     }
 
     // Collect any excess token that may have been transferred in
@@ -283,15 +300,6 @@ contract BPool is BConst
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
-    }
-
-    function getValue() public returns (uint256 res) {
-        if (_index.length == 0) return 0;
-        res = 1;
-        uint len = numTokens;
-        for (uint i = 0; i < len; i++) {
-            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
-        }
     }
 
 }
