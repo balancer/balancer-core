@@ -200,7 +200,7 @@ contract BPool is BBronze
         return Ai;
     }
 
-    function setParams(address token, uint weight, uint256 balance)
+    function setParams(address token, uint weight, uint balance)
       public {
     //  note by sub-calls
         setWeightDirect(token, weight);
@@ -260,7 +260,7 @@ contract BPool is BBronze
         manager = manager_;
     }
 
-    function bind(address token, uint balance, uint256 weight)
+    function bind(address token, uint balance, uint weight)
       public
         note {
         check(msg.sender == manager, ERR_BAD_CALLER);

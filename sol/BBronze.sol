@@ -16,55 +16,54 @@ pragma solidity ^0.5.10;
 contract BBronze {
     //bool    public paused;
     //address public manager;
-    //uint256 public fee;
+    //uint public fee;
 
-    //uint256 public totalWeight;
-    //uint8   public numTokens;
-
-    //bytes8 constant public COLOR = "BRONZE";
+    //uint public totalWeight;
 
     function getColor()
         public view returns (bytes32);
     function isBound(address token)
         public view returns (bool);
+    function getNumTokens()
+        public view returns (uint);
     function getWeight(address token)
-        public view returns (uint256);
+        public view returns (uint);
     function getBalance(address token)
-        public view returns (uint256);
+        public view returns (uint);
     function getValue()
-        public view returns (uint256 res);
+        public view returns (uint res);
     function getWeightedValue()
-        public view returns (uint256 Wt);
+        public view returns (uint Wt);
 
     function start()
         public;
     function pause()
         public;
-    function bind(address token, uint256 balance, uint256 weight)
+    function bind(address token, uint balance, uint weight)
         public;
     function unbind(address token)
         public;
-    function setParams(address token, uint256 weight, uint256 balance)
+    function setParams(address token, uint weight, uint balance)
         public;
     function setManager(address manager)
         public;
-    function setFee(uint256 fee)
+    function setFee(uint fee)
         public;
     function sweep(address token)
         public;
 
-    function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public view returns (uint256 Ao, byte err);
-    function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao, byte err);
-    function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao);
+    function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public view returns (uint Ao, byte err);
+    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao, byte err);
+    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao);
 
-    function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public view returns (uint256 Ai, byte err);
-    function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai, byte err);
-    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai);
+    function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public view returns (uint Ai, byte err);
+    function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public returns (uint Ai, byte err);
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public returns (uint Ai);
 
 }
