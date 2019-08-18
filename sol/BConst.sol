@@ -20,6 +20,7 @@ contract BConst
     uint256 constant BONE              = 10**18;
     uint256 constant MAX_FEE           = BONE / 10;
     uint256 constant MIN_TOKEN_WEIGHT  = BONE / 100;
+    uint256 constant MAX_TOKEN_WEIGHT  = BONE * 10;
     uint256 constant MAX_TOTAL_WEIGHT  = BONE * 100; // total
     uint256 constant MIN_TOKEN_BALANCE = BONE / 100;
     uint256 constant MAX_TOKEN_BALANCE = BONE * BONE;

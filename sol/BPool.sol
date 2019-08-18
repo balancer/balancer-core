@@ -277,15 +277,21 @@ contract BPool is BBronze
 
     function bind(address token, uint balance, uint weight)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check( ! isBound(token), ERR_NOT_BOUND);
-        require(_index.length < MAX_BOUND_TOKENS, "numTokens<MAX");
-        require(balance >= MIN_TOKEN_BALANCE, "bind minTokenBalance");
-        require(balance <= MAX_TOKEN_BALANCE, "bind max token balance");
-        require(weight >= MIN_TOKEN_WEIGHT, "bind mind token weight");
+        check(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
+        check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
+        check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
+
+        bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
+        check(ok, ERR_ERC20_FALSE);
+
         totalWeight += weight;
-        require(totalWeight <= MAX_TOTAL_WEIGHT, "bind max total weight");
         records[token] = Record({
             bound: true
           , index: _index.length
@@ -300,7 +306,11 @@ contract BPool is BBronze
         note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
-        require(ERC20(token).balanceOf(address(this)) == 0);
+
+        uint balance = ERC20(token).balanceOf(address(this));
+        bool ok = ERC20(token).transfer(msg.sender, balance);
+        check(ok, ERR_ERC20_FALSE);
+
         uint index = records[token].index;
         uint last = _index.length-1;
         if( index != last ) {

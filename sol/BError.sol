@@ -29,7 +29,10 @@ contract BError
 
     byte constant ERR_MIN_WEIGHT         = 0x30;
     byte constant ERR_MAX_WEIGHT         = 0x31;
+    byte constant ERR_MAX_TOTAL_WEIGHT   = 0x31;
     byte constant ERR_MAX_FEE            = 0x32;
+    byte constant ERR_MIN_BALANCE        = 0x33;
+    byte constant ERR_MAX_BALANCE        = 0x34;
 
     byte constant ERR_MATH_ADD_OVERFLOW  = 0x40;
     byte constant ERR_MATH_SUB_UNDERFLOW = 0x41;
@@ -41,7 +44,7 @@ contract BError
     byte constant ERR_UNREACHABLE        = 0xff;
 
     function errs(byte berr)
-        pure internal
+      public pure
         returns (string memory)
     {
         if( berr == ERR_NONE )
