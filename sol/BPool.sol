@@ -27,14 +27,12 @@ contract BPool is BBronze
                 , BEvent
                 , BMath
 {
-    bool           paused;
-    address        manager;
-    uint           fee;
-
-    uint  totalWeight;
-
+    bool                      paused;
+    address                   manager;
+    uint                      fee;
+    uint                      totalWeight;
     mapping(address=>Record)  records;
-    address[]                 _index;
+    address[]                 _index; // private index for iteration
 
     struct Record {
         bool    bound;
@@ -74,8 +72,7 @@ contract BPool is BBronze
 
     function getNumTokens()
       public view
-        returns (uint)
-    {
+        returns (uint) {
         return _index.length;
     }
 
@@ -86,16 +83,14 @@ contract BPool is BBronze
     }
 
     function getWeight(address token)
-        public view
-        returns (uint)
-    {
+      public view
+        returns (uint) {
         return records[token].weight;
     }
 
     function getBalance(address token)
-        public view
-        returns (uint)
-    {
+      public view
+        returns (uint) {
         return records[token].balance;
     }
 
@@ -111,7 +106,7 @@ contract BPool is BBronze
     }
 
     function getWeightedValue()
-        public view 
+      public view 
         returns (uint Wt)
     {
         if (_index.length == 0) {
@@ -131,7 +126,8 @@ contract BPool is BBronze
 
 
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
-        public view returns (uint Ao, byte err)
+      public view 
+        returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -149,7 +145,7 @@ contract BPool is BBronze
     }
 
     function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
-        public returns (uint Ao, byte err)
+      public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
         if (err != ERR_NONE) {
@@ -166,7 +162,7 @@ contract BPool is BBronze
     }
 
     function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
-        public returns (uint Ao)
+      public returns (uint Ao)
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
@@ -175,7 +171,8 @@ contract BPool is BBronze
     }
 
     function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
-        public view returns (uint Ai, byte err)
+      public view
+        returns (uint Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -193,7 +190,7 @@ contract BPool is BBronze
     }
 
     function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
-        public returns (uint Ai, byte err)
+      public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
         if (err != ERR_NONE) {
@@ -205,12 +202,13 @@ contract BPool is BBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ai, ERR_NONE);
         }
     }
 
     function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
-        public returns (uint Ai)
+      public returns (uint Ai)
     {
         byte err;
         
@@ -227,8 +225,7 @@ contract BPool is BBronze
     }
 
     function setWeightDirect(address token, uint weight)
-      public
-        note {
+      public note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
