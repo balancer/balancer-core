@@ -15,12 +15,14 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import "./BBronze.sol";
 import "./BConst.sol";
 import "./BMath.sol";
 import "./BError.sol";
 import "./BEvent.sol";
 
-contract BPool is BConst
+contract BPool is BBronze
+                , BConst
                 , BError
                 , BEvent
                 , BMath
