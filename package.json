@@ -6,8 +6,13 @@
   "description": "Balancer Core Contracts and ABI",
   "author": {
     "name": "Nikolai Mushegian",
-    "email": "mail+scrape@nikolai.fyi",
+    "email": "mail+bcorepkg@nikolai.fyi",
     "url": "https://nikolai.fyi"
+  },
+  "contributors": {
+    "name": "Kevin Bravo",
+    "email": "kbravo@pm.me"
+    }
   },
   "main": "package.js",
   "scripts": {
