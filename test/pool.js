@@ -132,7 +132,7 @@ describe("BPool", () => {
 
     
     it("setup sanity checks", async () => {
-        let paused = await bpool.methods.paused().call();
+        let paused = await bpool.methods.isPaused().call();
         assert( ! paused, "pool not started (unpaused)");
         var bound = await bpool.methods.isBound(acoin._address).call();
         assert(bound, "acoin not bound");

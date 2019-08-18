@@ -27,14 +27,14 @@ contract BPool is BBronze
                 , BEvent
                 , BMath
 {
-    bool    public paused;
-    address public manager;
-    uint    public fee;
+    bool           paused;
+    address        manager;
+    uint           fee;
 
-    uint public totalWeight;
+    uint  totalWeight;
 
-    mapping(address=>Record)  private records;
-    address[]                 private _index;
+    mapping(address=>Record)  records;
+    address[]                 _index;
 
     struct Record {
         bool    bound;
@@ -48,14 +48,27 @@ contract BPool is BBronze
         paused = true;
     }
 
-    function getColor() public view returns (bytes32) {
+    function getColor()
+      public view
+        returns (bytes32) {
         return "BRONZE";
+    }
+
+    function getManager()
+      public view
+        returns (address) {
+        return manager;
+    }
+
+    function isPaused()
+      public view
+        returns (bool) {
+        return paused;
     }
 
     function isBound(address token)
       public view
-        returns (bool)
-    {
+        returns (bool) {
         return records[token].bound;
     }
 
@@ -64,6 +77,12 @@ contract BPool is BBronze
         returns (uint)
     {
         return _index.length;
+    }
+
+    function getFee()
+      public view
+        returns (uint) {
+        return fee;
     }
 
     function getWeight(address token)

@@ -14,12 +14,6 @@
 pragma solidity ^0.5.10;
 
 contract BBronze {
-    //bool    public paused;
-    //address public manager;
-    //uint public fee;
-
-    //uint public totalWeight;
-
     function getColor()
         public view returns (bytes32);
     function isBound(address token)
