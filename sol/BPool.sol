@@ -48,6 +48,10 @@ contract BPool is BBronze
         paused = true;
     }
 
+    function getColor() public view returns (bytes32) {
+        return "BRONZE";
+    }
+
     function isBound(address token)
       public view
         returns (bool)

@@ -21,6 +21,10 @@ contract BBronze {
     //uint256 public totalWeight;
     //uint8   public numTokens;
 
+    //bytes8 constant public COLOR = "BRONZE";
+
+    function getColor()
+        public view returns (bytes32);
     function isBound(address token)
         public view returns (bool);
     function getWeight(address token)
@@ -62,4 +66,5 @@ contract BBronze {
         public returns (uint256 Ai, byte err);
     function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai);
+
 }
