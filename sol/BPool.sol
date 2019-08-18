@@ -211,7 +211,6 @@ contract BPool is BBronze
       public returns (uint Ai)
     {
         byte err;
-        
         (Ai, err) = trySwap_ExactOutAnyIn(Ti, To, Ao);
         check(err);
         return Ai;

@@ -33,53 +33,48 @@ contract BMath is BNum
                             , uint Ai
                             , uint fee
                             )
-        public pure
+      public pure
         returns ( uint Ao )
     {
         bool flag;
-        uint256 wRatio               = bdiv(Wi, Wo);
+        uint wRatio               = bdiv(Wi, Wo);
 
         // adjustedIn = Ai * (1 - fee)
-        uint256 adjustedIn;
+        uint adjustedIn;
         (adjustedIn, flag)           = bsubSign(BONE, fee);
         require( !flag, "BMath.swapImath");
         adjustedIn                   = bmul(Ai, adjustedIn);
 
         // y = Bi / (Bi + Ai * (1 - fee))
-        uint256 y                    = bdiv(Bi, badd(Bi, adjustedIn));
-        uint256 foo                  = bpow(y, wRatio);
-        uint256 bar;
+        uint y                    = bdiv(Bi, badd(Bi, adjustedIn));
+        uint foo                  = bpow(y, wRatio);
+        uint bar;
         (bar, flag)                  = bsubSign(BONE, foo);
         require( !flag, "BMath.swapImath");
         Ao                                  = bmul(Bo, bar);
 	}
 
     // Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
-    function calc_InGivenOut( uint256 Bi, uint256 Wi
-                      , uint256 Bo, uint256 Wo
-                      , uint256 Ao
-                      , uint256 fee
-                      )
-        public pure
+    function calc_InGivenOut( uint Bi, uint Wi
+                            , uint Bo, uint Wo
+                            , uint Ao
+                            , uint fee
+                            )
+      public pure
         returns ( uint Ai )
     {
         bool flag;
-        uint256 wRatio     = bdiv(Wo, Wi);
-
-        // y = Bo / (Bo - Ao)
-        uint256 diff;
-        (diff, flag)       = bsubSign(Bo, Ao);
-        require( !flag, "BMath.calc_InGivenOut");
-        uint256 y          = bdiv(Bo, diff);
-
-        uint256 foo        = bpow(y, wRatio);
-        (foo,flag)         = bsubSign(foo, BONE);
-        require( !flag, "BMath.calc_InGivenOut");
-
-        // adjust Ai for fee
-        (Ai,flag)          = bsubSign(BONE, fee);
-        require( !flag, "BMath.calc_InGivenOut");
-        Ai                                  = bdiv(bmul(Bi, foo), Ai);
+        uint wRatio  = bdiv(Wo, Wi);
+        uint diff;
+        (diff, flag) = bsubSign(Bo, Ao);
+      require( !flag, "FAIL: diff must be positive here" );
+        uint y       = bdiv(Bo, diff);
+        uint foo     = bpow(y, wRatio);
+        (foo,flag)   = bsubSign(foo, BONE);
+      require( !flag, "FAIL: foo must be positive here" );
+        (Ai,flag)    = bsubSign(BONE, fee);
+      require( !flag, "FAIL: Ai must be positive here" );
+        Ai           = bdiv(bmul(Bi, foo), Ai);
     }
 
     function spotPrice( uint Bi, uint Wi
@@ -95,12 +90,12 @@ contract BMath is BNum
 
     // returns how much TokenIn is needed to lower
     // the exchange rate to SER1
-    function amountUpToPriceApprox( uint256 Bi
-                                  , uint256 Wi
-                                  , uint256 Bo
-                                  , uint256 Wo
-                                  , uint256 SER1
-                                  , uint256 fee)
+    function amountUpToPriceApprox( uint Bi
+                                  , uint Wi
+                                  , uint Bo
+                                  , uint Wo
+                                  , uint SER1
+                                  , uint fee)
         public pure
         returns ( uint Ai )
     {
@@ -109,14 +104,14 @@ contract BMath is BNum
         require( Bo > 0);
         require( Wo > 0);
         bool flag;
-        uint256 SER0 = spotPrice(Bi, Wi, Bo, Wo);
-        require( SER1 <= SER0);
-        uint256 base = bdiv(SER0, SER1);
-        uint256 exp  = bdiv(Wo, badd(Wo, Wi));
+        uint SER0    = spotPrice(Bi, Wi, Bo, Wo);
+      require( SER1 <= SER0);
+        uint base    = bdiv(SER0, SER1);
+        uint exp     = bdiv(Wo, badd(Wo, Wi));
         (Ai,flag)    = bsubSign(bpow(base, exp), BONE);
-        require( !flag, "BMath.amountUpToPriceApprox");
-        Ai        = bmul(Ai, Bi);
-        Ai        = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
+      require( !flag, "FAIL: Ai must be positive here");
+        Ai           = bmul(Ai, Bi);
+        Ai           = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
 
     // Uses an approximation formula to compute b^(e.w)
@@ -125,7 +120,8 @@ contract BMath is BNum
     {
         uint whole                 = bfloor(exp);   
         (uint remain, bool flag)   = bsubSign(exp, whole);
-        require( !flag, "BMath.bpow");
+        require( !flag, "FAIL: remain must be positive here");
+
         // make whole agree with wpown def
         uint wholePow              = bpown(base, btoi(whole));
 
