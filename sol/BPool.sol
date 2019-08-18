@@ -15,12 +15,14 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import "./BBronze.sol";
 import "./BConst.sol";
 import "./BMath.sol";
 import "./BError.sol";
 import "./BEvent.sol";
 
-contract BPool is BConst
+contract BPool is BBronze
+                , BConst
                 , BError
                 , BEvent
                 , BMath
@@ -47,8 +49,59 @@ contract BPool is BConst
         paused = true;
     }
 
-    //  swap input dryrun
-    //  returns the amount of To outputted when user sends Ai of Ti
+    function isBound(address token)
+        public view
+        returns (bool)
+    {
+        return records[token].bound;
+    }
+
+    function getWeight(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].weight;
+    }
+
+    function getBalance(address token)
+        public view
+        returns (uint256)
+    {
+        return records[token].balance;
+    }
+
+    function getValue()
+        public view
+    returns (uint256 res)
+    {
+        if (_index.length == 0) return 0;
+        res = 1;
+        uint len = numTokens;
+        for (uint i = 0; i < len; i++) {
+            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
+        }
+    }
+
+    function getWeightedValue()
+        public view 
+        returns (uint256 Wt)
+    {
+        if (numTokens == 0) {
+            return 0;
+        }
+        Wt = 1;
+        for( uint8 i = 0; i < numTokens; i++ ) {
+            uint256 weight = records[_index[i]].weight;
+            check(weight > 0, ERR_UNREACHABLE);
+            Wt = bdiv(Wt, weight);
+            revert('getWeightedValue unimplemented');
+        }
+        return Wt;
+    }
+
+
+
+
     function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public view returns (uint256 Ao, byte err)
     {
@@ -67,9 +120,6 @@ contract BPool is BConst
         return (Ao, ERR_NONE);
     }
 
-    //  swap input
-    //  user sends Ai of Ti, receives some To
-    //  return amount out and error code
     function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao, byte err)
     {
@@ -87,7 +137,6 @@ contract BPool is BConst
         }
     }
 
-    //  same as trySwap_ExactInAnyOut, but revert on error
     function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
         public returns (uint256 Ao)
     {
@@ -97,10 +146,6 @@ contract BPool is BConst
         return Ao;
     }
 
-
-
-    //  swap input dryrun
-    //  returns the amount of To outputted when user sends Ai of Ti
     function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public view returns (uint256 Ai, byte err)
     {
@@ -119,11 +164,6 @@ contract BPool is BConst
         return (Ai, ERR_NONE);
     }
 
-
-
-    //  swap output
-    //  user sends Ai of Ti, receives some To
-    //  return amount out and error code
     function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
         public returns (uint256 Ai, byte err)
     {
@@ -228,30 +268,6 @@ contract BPool is BConst
         }
     }
 
-    function setBalanceFixRatio(address token, uint256 balance)
-        public
-        note
-    {
-        uint256 oldBalance = records[token].balance;
-        uint256 oldWeight = records[token].weight;
-        uint256 oldRatio = 0;
-        uint256 newWeight = 0;
-        setParams(token, newWeight, balance);
-        revert("unimplemented");
-    }
-
-    function setWeightFixRatio(address token, uint256 weight)
-        public
-        note
-    {
-        uint256 oldBalance = records[token].balance;
-        uint256 oldWeight = records[token].weight;
-        uint256 oldRatio = 0;
-        uint256 newBalance = 0;
-        setParams(token, weight, newBalance);
-        revert("unimplemented");
-    }
-
     function setFee(uint256 fee_)
         public
         note
@@ -260,33 +276,13 @@ contract BPool is BConst
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
+
     function setManager(address manager_)
         public
         note
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
-    }
-
-    function isBound(address token)
-        public view
-        returns (bool)
-    {
-        return records[token].bound;
-    }
-
-    function getWeight(address token)
-        public view
-        returns (uint256)
-    {
-        return records[token].weight;
-    }
-
-    function getBalance(address token)
-        public view
-        returns (uint256)
-    {
-        return records[token].balance;
     }
 
     function bind(address token, uint256 balance, uint256 weight)
@@ -309,6 +305,7 @@ contract BPool is BConst
         });
         numTokens++;
     }
+
     function unbind(address token)
         public
         note
@@ -326,23 +323,6 @@ contract BPool is BConst
         numTokens--;
     }
 
-    function getWeightedValue()
-        public view 
-        returns (uint256 Wt)
-    {
-        if (numTokens == 0) {
-            return 0;
-        }
-        Wt = 1;
-        for( uint8 i = 0; i < numTokens; i++ ) {
-            uint256 weight = records[_index[i]].weight;
-            check(weight > 0, ERR_UNREACHABLE);
-            Wt = bdiv(Wt, weight);
-            revert('getWeightedValue unimplemented');
-        }
-        return Wt;
-    }
-
     // Collect any excess token that may have been transferred in
     function sweep(address token)
         public
@@ -355,6 +335,7 @@ contract BPool is BConst
         bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
         check(ok, ERR_ERC20_FALSE);
     }
+
     function pause()
         public
         note
@@ -362,20 +343,13 @@ contract BPool is BConst
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
+
     function start()
         public
         note
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
-    }
-
-    function getValue() public returns (uint256 res) {
-        if (_index.length == 0) return 0;
-        res = 1;
-        for (uint i = 0; i < _index.length; i++) {
-            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
-        }
     }
 
 }
