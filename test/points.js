@@ -20,6 +20,18 @@ module.exports.calc_OutGivenInPoints = [
     {res: (1 - Math.pow((235/(235+32*0.9)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0.1},
 ]
 
+module.exports.StopOutGivenInPoints = [
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+        Lo: 0},
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1},
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150},
+    //    NO REVERT TESTING YET
+//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+//        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1},
+]
+
 module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0},//2
     {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0},//20
@@ -30,6 +42,7 @@ module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523 / 0.97, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0.03},
     {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / 0.9, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0.1},
 ]
+
 
 module.exports.amountUpToPricePoints = [
     {res: 1.06008957447, Bi: 10, Wi: 0.3, Bo: 5260, Wo: 0.3, SER1: 430, fee: 0},
