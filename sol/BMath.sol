@@ -79,7 +79,7 @@ contract BMath is BNum
 
     function spotPrice( uint Bi, uint Wi
                       , uint Bo, uint Wo )
-        public pure
+      public pure
         returns ( uint r ) 
     {
         uint numer = bdiv(Bo, Wo);
@@ -96,7 +96,7 @@ contract BMath is BNum
                                   , uint Wo
                                   , uint SER1
                                   , uint fee)
-        public pure
+      public pure
         returns ( uint Ai )
     {
         require( Bi > 0);
@@ -116,7 +116,9 @@ contract BMath is BNum
 
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
-    function bpow(uint base, uint exp) public pure returns (uint)
+    function bpow(uint base, uint exp)
+      public pure
+        returns (uint)
     {
         uint whole                 = bfloor(exp);   
         (uint remain, bool flag)   = bsubSign(exp, whole);
