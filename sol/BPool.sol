@@ -29,18 +29,18 @@ contract BPool is BBronze
 {
     bool    public paused;
     address public manager;
-    uint256 public fee;
+    uint    public fee;
 
-    uint256 public totalWeight;
+    uint public totalWeight;
 
     mapping(address=>Record)  private records;
     address[]                 private _index;
 
     struct Record {
         bool    bound;
-        uint256 index;   // int
-        uint256 weight;  // bnum
-        uint256 balance; // bnum
+        uint    index;   // int
+        uint    weight;  // bnum
+        uint    balance; // bnum
     }
 
     constructor() public {
@@ -61,28 +61,28 @@ contract BPool is BBronze
 
     function getNumTokens()
       public view
-        returns (uint256)
+        returns (uint)
     {
         return _index.length;
     }
 
     function getWeight(address token)
         public view
-        returns (uint256)
+        returns (uint)
     {
         return records[token].weight;
     }
 
     function getBalance(address token)
         public view
-        returns (uint256)
+        returns (uint)
     {
         return records[token].balance;
     }
 
     function getValue()
       public view
-        returns (uint256 res)
+        returns (uint res)
     {
         if (_index.length == 0) return 0;
         res = 1;
@@ -93,14 +93,14 @@ contract BPool is BBronze
 
     function getWeightedValue()
         public view 
-        returns (uint256 Wt)
+        returns (uint Wt)
     {
         if (_index.length == 0) {
             return 0;
         }
         Wt = 1;
         for( uint8 i = 0; i < _index.length; i++ ) {
-            uint256 weight = records[_index[i]].weight;
+            uint weight = records[_index[i]].weight;
             check(weight > 0, ERR_UNREACHABLE);
             Wt = bdiv(Wt, weight);
             revert('getWeightedValue unimplemented');
@@ -111,8 +111,8 @@ contract BPool is BBronze
 
 
 
-    function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public view returns (uint256 Ao, byte err)
+    function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public view returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -129,8 +129,8 @@ contract BPool is BBronze
         return (Ao, ERR_NONE);
     }
 
-    function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao, byte err)
+    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
         if (err != ERR_NONE) {
@@ -146,8 +146,8 @@ contract BPool is BBronze
         }
     }
 
-    function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao)
+    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao)
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
@@ -155,8 +155,8 @@ contract BPool is BBronze
         return Ao;
     }
 
-    function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public view returns (uint256 Ai, byte err)
+    function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public view returns (uint Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -173,8 +173,8 @@ contract BPool is BBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai, byte err)
+    function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
         if (err != ERR_NONE) {
@@ -190,8 +190,8 @@ contract BPool is BBronze
         }
     }
 
-    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai)
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+        public returns (uint Ai)
     {
         byte err;
         
@@ -200,23 +200,21 @@ contract BPool is BBronze
         return Ai;
     }
 
-    function setParams(address token, uint256 weight, uint256 balance)
-        public
-        // note by sub-calls
-    {
+    function setParams(address token, uint weight, uint256 balance)
+      public {
+    //  note by sub-calls
         setWeightDirect(token, weight);
         setBalanceDirect(token, balance);
     }
 
-    function setWeightDirect(address token, uint256 weight)
-        public
-        note
-    {
+    function setWeightDirect(address token, uint weight)
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
 
-        uint256 oldWeight = records[token].weight;
+        uint oldWeight = records[token].weight;
         records[token].weight = weight;
 
         if (weight > oldWeight) {
@@ -228,14 +226,13 @@ contract BPool is BBronze
 
     }
 
-    function setBalanceDirect(address token, uint256 balance)
-        public
-        note
-    {
+    function setBalanceDirect(address token, uint balance)
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
 
-        uint256 oldBalance = records[token].balance;
+        uint oldBalance = records[token].balance;
         records[token].balance = balance;
 
         if (balance > oldBalance) {
@@ -248,27 +245,24 @@ contract BPool is BBronze
 
     }
 
-    function setFee(uint256 fee_)
-        public
-        note
-    {
+    function setFee(uint fee_)
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
 
     function setManager(address manager_)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
 
-    function bind(address token, uint256 balance, uint256 weight)
-        public
-        note
-    {
+    function bind(address token, uint balance, uint256 weight)
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check( ! isBound(token), ERR_NOT_BOUND);
         require(_index.length < MAX_BOUND_TOKENS, "numTokens<MAX");
@@ -287,14 +281,13 @@ contract BPool is BBronze
     }
 
     function unbind(address token)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         require(ERC20(token).balanceOf(address(this)) == 0);
-        uint256 index = records[token].index;
-        uint256 last = _index.length-1;
+        uint index = records[token].index;
+        uint last = _index.length-1;
         if( index != last ) {
             _index[index] = _index[last];
         }
@@ -304,29 +297,26 @@ contract BPool is BBronze
 
     // Collect any excess token that may have been transferred in
     function sweep(address token)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
-        uint256 selfBalance = records[token].balance;
-        uint256 trueBalance = ERC20(token).balanceOf(address(this));
+        uint selfBalance = records[token].balance;
+        uint trueBalance = ERC20(token).balanceOf(address(this));
         bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
         check(ok, ERR_ERC20_FALSE);
     }
 
     function pause()
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
     function start()
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
