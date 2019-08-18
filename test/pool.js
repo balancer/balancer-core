@@ -46,8 +46,8 @@ describe("BPool", () => {
 
         bpool = await pkg.types.deploy(web3, acct0, "BPool");
         for (coin of [acoin, bcoin, ccoin]) {
-            await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
+            await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
 
             let maxApproval = web3.utils.toTwosComplement('-1');
         }
