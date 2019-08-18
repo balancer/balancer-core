@@ -27,21 +27,18 @@ contract BPool is BBronze
                 , BEvent
                 , BMath
 {
-    bool    public paused;
-    address public manager;
-    uint256 public fee;
-
-    uint256 public totalWeight;
-    uint8   public numTokens;
-
-    mapping(address=>Record)  private records;
-    address[MAX_BOUND_TOKENS] private _index;
+    bool                      paused;
+    address                   manager;
+    uint                      fee;
+    uint                      totalWeight;
+    mapping(address=>Record)  records;
+    address[]                 _index; // private index for iteration
 
     struct Record {
         bool    bound;
-        uint8   index;   // int
-        uint256 weight;  // bnum
-        uint256 balance; // bnum
+        uint    index;   // int
+        uint    weight;  // bnum
+        uint    balance; // bnum
     }
 
     constructor() public {
@@ -49,49 +46,75 @@ contract BPool is BBronze
         paused = true;
     }
 
+    function getColor()
+      public view
+        returns (bytes32) {
+        return "BRONZE";
+    }
+
+    function getManager()
+      public view
+        returns (address) {
+        return manager;
+    }
+
+    function isPaused()
+      public view
+        returns (bool) {
+        return paused;
+    }
+
     function isBound(address token)
-        public view
-        returns (bool)
-    {
+      public view
+        returns (bool) {
         return records[token].bound;
     }
 
+    function getNumTokens()
+      public view
+        returns (uint) {
+        return _index.length;
+    }
+
+    function getFee()
+      public view
+        returns (uint) {
+        return fee;
+    }
+
     function getWeight(address token)
-        public view
-        returns (uint256)
-    {
+      public view
+        returns (uint) {
         return records[token].weight;
     }
 
     function getBalance(address token)
-        public view
-        returns (uint256)
-    {
+      public view
+        returns (uint) {
         return records[token].balance;
     }
 
     function getValue()
-        public view
-    returns (uint256 res)
+      public view
+        returns (uint res)
     {
         if (_index.length == 0) return 0;
         res = 1;
-        uint len = numTokens;
-        for (uint i = 0; i < len; i++) {
+        for (uint i = 0; i < _index.length; i++) {
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
 
     function getWeightedValue()
-        public view 
-        returns (uint256 Wt)
+      public view 
+        returns (uint Wt)
     {
-        if (numTokens == 0) {
+        if (_index.length == 0) {
             return 0;
         }
         Wt = 1;
-        for( uint8 i = 0; i < numTokens; i++ ) {
-            uint256 weight = records[_index[i]].weight;
+        for( uint8 i = 0; i < _index.length; i++ ) {
+            uint weight = records[_index[i]].weight;
             check(weight > 0, ERR_UNREACHABLE);
             Wt = bdiv(Wt, weight);
             revert('getWeightedValue unimplemented');
@@ -102,8 +125,9 @@ contract BPool is BBronze
 
 
 
-    function viewSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public view returns (uint256 Ao, byte err)
+    function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+      public view 
+        returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -120,8 +144,8 @@ contract BPool is BBronze
         return (Ao, ERR_NONE);
     }
 
-    function trySwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao, byte err)
+    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
+      public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
         if (err != ERR_NONE) {
@@ -137,8 +161,8 @@ contract BPool is BBronze
         }
     }
 
-    function doSwap_ExactInAnyOut(address Ti, uint256 Ai, address To)
-        public returns (uint256 Ao)
+    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+      public returns (uint Ao)
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
@@ -146,8 +170,9 @@ contract BPool is BBronze
         return Ao;
     }
 
-    function viewSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public view returns (uint256 Ai, byte err)
+    function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+      public view
+        returns (uint Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -164,8 +189,8 @@ contract BPool is BBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai, byte err)
+    function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+      public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
         if (err != ERR_NONE) {
@@ -177,15 +202,15 @@ contract BPool is BBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ai, ERR_NONE);
         }
     }
 
-    function doSwap_ExactOutAnyIn(address Ti, address To, uint256 Ao)
-        public returns (uint256 Ai)
+    function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+      public returns (uint Ai)
     {
         byte err;
-        
         (Ai, err) = trySwap_ExactOutAnyIn(Ti, To, Ao);
         check(err);
         return Ai;
@@ -239,19 +264,21 @@ contract BPool is BBronze
         return Ai;
     }
 
-    function setParams(address token, uint256 weight, uint256 balance)
-        public
-        note
-    {
+    function setParams(address token, uint weight, uint balance)
+      public {
+    //  note by sub-calls
+        setWeightDirect(token, weight);
+        setBalanceDirect(token, balance);
+    }
+
+    function setWeightDirect(address token, uint weight)
+      public note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
 
-        uint256 oldWeight = records[token].weight;
-        uint256 oldBalance = records[token].balance;
-
+        uint oldWeight = records[token].weight;
         records[token].weight = weight;
-        records[token].balance = balance;
 
         if (weight > oldWeight) {
             totalWeight = badd(totalWeight, weight - oldWeight);
@@ -259,6 +286,18 @@ contract BPool is BBronze
         } else {
             totalWeight = bsub(totalWeight, oldWeight - weight);
         }        
+
+    }
+
+    function setBalanceDirect(address token, uint balance)
+      public
+        note {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        check(isBound(token), ERR_NOT_BOUND);
+
+        uint oldBalance = records[token].balance;
+        records[token].balance = balance;
+
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
             check(ok, ERR_ERC20_FALSE);
@@ -266,88 +305,91 @@ contract BPool is BBronze
             bool ok = ERC20(token).transfer(msg.sender, oldBalance - balance);
             check(ok, ERR_ERC20_FALSE);
         }
+
     }
 
-    function setFee(uint256 fee_)
-        public
-        note
-    {
+    function setFee(uint fee_)
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
     }
 
     function setManager(address manager_)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
 
-    function bind(address token, uint256 balance, uint256 weight)
-        public
+    function bind(address token, uint balance, uint weight)
+      public
         note
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check( ! isBound(token), ERR_NOT_BOUND);
-        require(numTokens < MAX_BOUND_TOKENS, "numTokens<MAX");
-        require(balance >= MIN_TOKEN_BALANCE, "bind minTokenBalance");
-        require(balance <= MAX_TOKEN_BALANCE, "bind max token balance");
-        require(weight >= MIN_TOKEN_WEIGHT, "bind mind token weight");
+        check(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
+        check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
+        check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
+
+        bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
+        check(ok, ERR_ERC20_FALSE);
+
         totalWeight += weight;
-        require(totalWeight <= MAX_TOTAL_WEIGHT, "bind max total weight");
         records[token] = Record({
             bound: true
-          , index: numTokens
+          , index: _index.length
           , weight: 0
           , balance: 0
         });
-        numTokens++;
+        _index.push(token);
     }
 
     function unbind(address token)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
-        require(ERC20(token).balanceOf(address(this)) == 0);
-        uint256 index = records[token].index;
-        uint256 last = numTokens - 0;
+
+        uint balance = ERC20(token).balanceOf(address(this));
+        bool ok = ERC20(token).transfer(msg.sender, balance);
+        check(ok, ERR_ERC20_FALSE);
+
+        uint index = records[token].index;
+        uint last = _index.length-1;
         if( index != last ) {
             _index[index] = _index[last];
         }
-        _index[last] = address(0);
+        _index.pop();
         delete records[token];
-        numTokens--;
     }
 
     // Collect any excess token that may have been transferred in
     function sweep(address token)
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
-        uint256 selfBalance = records[token].balance;
-        uint256 trueBalance = ERC20(token).balanceOf(address(this));
+        uint selfBalance = records[token].balance;
+        uint trueBalance = ERC20(token).balanceOf(address(this));
         bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
         check(ok, ERR_ERC20_FALSE);
     }
 
     function pause()
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
     function start()
-        public
-        note
-    {
+      public
+        note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }

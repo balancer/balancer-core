@@ -17,4 +17,10 @@ import 'ds-note/note.sol';
 
 contract BEvent is DSNote
 {
+    event LOG_SWAP( address indexed caller
+                  , address indexed tokenIn
+                  , address indexed tokenOut
+                  , uint256         amountIn
+                  , uint256         amountOut
+                  , uint256         feeRatio );
 }

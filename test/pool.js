@@ -46,8 +46,8 @@ describe("BPool", () => {
 
         bpool = await pkg.types.deploy(web3, acct0, "BPool");
         for (coin of [acoin, bcoin, ccoin]) {
-            await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
             await coin.methods.mint(initBalance).send({from: acct0});
+            await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
 
             let maxApproval = web3.utils.toTwosComplement('-1');
         }
@@ -162,7 +162,7 @@ describe("BPool", () => {
     }
 
     it("setup sanity checks", async () => {
-        let paused = await bpool.methods.paused().call();
+        let paused = await bpool.methods.isPaused().call();
         assert( ! paused, "pool not started (unpaused)");
         var bound = await bpool.methods.isBound(acoin._address).call();
         assert(bound, "acoin not bound");
@@ -171,10 +171,10 @@ describe("BPool", () => {
         assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()), "ccoin wrong init balance");
     });
     it("bind/unbind no-revert cases", async() => {
-        numBound = await bpool.methods.numTokens().call();
+        numBound = await bpool.methods.getNumTokens().call();
         assert.equal(3, numBound);
         await bpool.methods.unbind(acoin._address).send({from: acct0});
-        numBound = await bpool.methods.numTokens().call();
+        numBound = await bpool.methods.getNumTokens().call();
         assert.equal(2, numBound);
     });
     it("can transfer tokens", async () => {
