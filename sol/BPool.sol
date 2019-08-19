@@ -34,6 +34,8 @@ contract BPool is BPoolBronze
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
 
+    address                   ptoken;
+
     struct Record {
         bool    bound;
         uint    index;   // int
@@ -41,15 +43,16 @@ contract BPool is BPoolBronze
         uint    balance; // bnum
     }
 
-    constructor() public {
+    constructor(address poolToken) public {
         manager = msg.sender;
         paused = true;
+        ptoken = poolToken;
     }
 
-    function getColor()
+    function getPoolToken()
       public view
-        returns (bytes32) {
-        return "BRONZE";
+        returns (address) {
+        return ptoken;
     }
 
     function getManager()

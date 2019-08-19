@@ -26,6 +26,7 @@ let assertCloseBN = (a, b, tolerance) => {
 }
 
 describe("BPool", () => {
+    var factory;
     var accts;
     var acct0; var acct1; var acct2;
     var bpool;
@@ -44,7 +45,17 @@ describe("BPool", () => {
         bcoin = await pkg.types.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
         ccoin = await pkg.types.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
 
-        bpool = await pkg.types.deploy(web3, acct0, "BPool");
+        factory = await pkg.types.deploy(web3, acct0, "BFactory");
+
+        //== TODO clean
+        bpool = await factory.methods.new_BPool().call();
+        //console.log(bpool);
+        await factory.methods.new_BPool().send({from: acct0, gas:0xffffffff});
+        //console.log(pkg.types.types.BPool);
+        bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpool);
+        //console.log(bpool);
+        //--
+
         for (coin of [acoin, bcoin, ccoin]) {
             await coin.methods.mint(initBalance).send({from: acct0});
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
