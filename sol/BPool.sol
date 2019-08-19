@@ -225,6 +225,7 @@ contract BPool is BBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
+
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
                             , Ai, fee );
