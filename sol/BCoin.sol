@@ -13,14 +13,16 @@
 
 pragma solidity ^0.5.10;
 
-import "./BNum.sol";
+import "./BBronze.sol";
 import "./BNote.sol";
+import "./BNum.sol";
 
-contract BCoin is BNote
+contract BCoin is BBronze
+                , BNote
                 , BNum
 {
     address                     public owner;
-    mapping(address=>uint256)   public balanceOf;
+    mapping(address=>uint)   public balanceOf;
     mapping(address=>
         mapping(address=>bool)) public trusts;
 
@@ -28,7 +30,22 @@ contract BCoin is BNote
         owner = msg.sender;
     }
 
-    function move(address src, address dst, uint256 amt)
+    //== Redundant ERC20-compatible event and functions
+
+    // `move` still `note`s, because `Transfer` event does not record caller
+    event Transfer(address indexed from, address indexed to, uint amount);
+
+    function transfer(address to, uint amt) public returns (bool) {
+        move(address(this), to, amt);
+        return true; // hmm
+    }
+    function transferFrom(address src, address dst, uint amt) public returns (bool) {
+        move(src, dst, amt);
+        return true; // Ethereum Standard Request For Comment Number 20
+    }
+    //--
+
+    function move(address src, address dst, uint amt)
       public note {
         require( msg.sender == src
               || trusts[src][msg.sender]
@@ -38,8 +55,12 @@ contract BCoin is BNote
         balanceOf[dst] = badd(balanceOf[dst], amt);
     }
 
-    function mint(uint256 amt) public { mint(msg.sender, amt); }
-    function mint(address dst, uint256 amt)
+    function mint(uint amt)
+      public {
+        mint(msg.sender, amt);
+    }
+
+    function mint(address dst, uint amt)
       public note {
         check( msg.sender == owner, ERR_BAD_CALLER );
         balanceOf[dst] = badd(balanceOf[dst], amt);
@@ -49,7 +70,8 @@ contract BCoin is BNote
       public note {
         balanceOf[address(this)] = 0;
     }
-    function burn(uint256 amt)
+
+    function burn(uint amt)
       public note {
         balanceOf[msg.sender] = bsub(balanceOf[msg.sender], amt);
     }

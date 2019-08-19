@@ -21,7 +21,7 @@ import "./BMath.sol";
 import "./BError.sol";
 import "./BEvent.sol";
 
-contract BPool is BBronze
+contract BPool is BPoolBronze
                 , BConst
                 , BError
                 , BEvent
@@ -34,6 +34,8 @@ contract BPool is BBronze
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
 
+    address                   ptoken;
+
     struct Record {
         bool    bound;
         uint    index;   // int
@@ -41,15 +43,16 @@ contract BPool is BBronze
         uint    balance; // bnum
     }
 
-    constructor() public {
+    constructor(address poolToken) public {
         manager = msg.sender;
         paused = true;
+        ptoken = poolToken;
     }
 
-    function getColor()
+    function getPoolToken()
       public view
-        returns (bytes32) {
-        return "BRONZE";
+        returns (address) {
+        return ptoken;
     }
 
     function getManager()

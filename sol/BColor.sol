@@ -13,26 +13,8 @@
 
 pragma solidity ^0.5.10;
 
-import 'ds-token/token.sol';
-
-import "./BBronze.sol";
-import "./BConst.sol";
-import "./BEvent.sol";
-import "./BCoin.sol";
-import "./BPool.sol";
-
-contract BFactory is BBronze
-                   , BConst
-                   , BEvent
-{
-    function new_BPool()
-      public
-      note
-        returns (BPool)
-    {
-        BCoin poolcoin = new BCoin();
-        BPool bp = new BPool(address(poolcoin));
-        bp.setManager(msg.sender);
-        return bp;
-    }
+contract BColor {
+    function getColor()
+      public view
+        returns (bytes32);
 }
