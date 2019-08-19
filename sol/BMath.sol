@@ -46,12 +46,12 @@ contract BMath is BNum
         adjustedIn                   = bmul(Ai, adjustedIn);
 
         // y = Bi / (Bi + Ai * (1 - fee))
-        uint y                    = bdiv(Bi, badd(Bi, adjustedIn));
-        uint foo                  = bpow(y, wRatio);
+        uint y                       = bdiv(Bi, badd(Bi, adjustedIn));
+        uint foo                     = bpow(y, wRatio);
         uint bar;
         (bar, flag)                  = bsubSign(BONE, foo);
         require( !flag, "BMath.swapImath");
-        Ao                                  = bmul(Bo, bar);
+        Ao                           = bmul(Bo, bar);
 	}
 
     // Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)

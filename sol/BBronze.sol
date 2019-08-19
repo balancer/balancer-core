@@ -24,11 +24,13 @@ contract BBronze is BColor {
 }
 
 contract BPoolBronze is BBronze {
-    //== Public View
+    //== General View
     function isBound(address token) public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
     function getBalance(address token) public view returns (uint);
+
+    // TODO:  V, denorm, etc
     function getValue() public view returns (uint res);
 
     // == Manager

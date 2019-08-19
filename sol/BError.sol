@@ -39,6 +39,7 @@ contract BError
     byte constant ERR_MATH_MUL_OVERFLOW  = 0x42;
     byte constant ERR_MATH_DIV_INTERFLOW = 0x44; // intermdiate values overflow (we keep precision)
 
+    // TODO: 3 limit types (in, out, price)
     byte constant ERR_LIMIT_FAILED       = 0x50;
 
     byte constant ERR_ERC20_FALSE        = 0xe0;
