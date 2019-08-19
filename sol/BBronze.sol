@@ -33,7 +33,7 @@ contract BPoolBronze is BBronze {
     // TODO:  V, denorm, etc
     function getValue() public view returns (uint res);
 
-    // == Manager
+    //== Manager
     function start() public;
     function pause() public;
     function bind(address token, uint balance, uint weight) public;
@@ -43,21 +43,37 @@ contract BPoolBronze is BBronze {
     function setFee(uint fee) public;
     function sweep(address token) public;
 
-    // == Trader: View
+    //== Trader
+    // swap ExactInAnyOut
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public view returns (uint Ao, byte err);
-    function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
-        public view returns (uint Ai, byte err);
-
-    // == Trader: Try
     function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public returns (uint Ao, byte err);
-    function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
-        public returns (uint Ai, byte err);
-
-    // == Trader: Do
     function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public returns (uint Ao);
+
+    // swap AnyInExactOut
+    function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
+        public view returns (uint Ai, byte err);
+    function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
+        public returns (uint Ai, byte err);
     function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai);
+
+    // swap ExactInMinOut
+    function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err);
+    function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err);
+    function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao);
+
+    // swap MaxInExactOut
+    function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+        public view returns (uint Ai, byte err);
+    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+        public returns (uint Ai, byte err);
+    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+        public returns (uint Ai);
+ 
 }

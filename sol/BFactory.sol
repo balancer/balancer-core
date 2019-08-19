@@ -17,23 +17,28 @@ import 'ds-token/token.sol';
 
 import "./BBronze.sol";
 import "./BConst.sol";
-import "./BNote.sol";
 
 import "./BToken.sol";
 import "./BPool.sol";
 
 contract BFactory is BBronze
                    , BConst
-                   , BNote
 {
-    function new_BPool()
+    mapping(address=>bool) public isBTokenBuiltHere;
+    mapping(address=>bool) public isBPoolBuiltHere;
+    event LOG_newBPool( address indexed caller
+                       , address pool
+                       , address poolcoin );
+    function newBPool()
       public
-      note
         returns (BPool)
     {
         BToken poolcoin = new BToken();
-        BPool bp = new BPool(address(poolcoin));
-        bp.setManager(msg.sender);
-        return bp;
+        BPool bpool = new BPool(address(poolcoin));
+        bpool.setManager(msg.sender);
+        isBPoolBuiltHere[address(bpool)] = true;
+        isBTokenBuiltHere[address(poolcoin)] = true;
+        emit LOG_newBPool(msg.sender, address(bpool), address(poolcoin));
+        return bpool;
     }
 }

@@ -48,9 +48,9 @@ describe("BPool", () => {
         factory = await pkg.types.deploy(web3, acct0, "BFactory");
 
         //== TODO clean
-        bpool = await factory.methods.new_BPool().call();
+        bpool = await factory.methods.newBPool().call();
         //console.log(bpool);
-        await factory.methods.new_BPool().send({from: acct0, gas:0xffffffff});
+        await factory.methods.newBPool().send({from: acct0, gas:0xffffffff});
         //console.log(pkg.types.types.BPool);
         bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpool);
         //console.log(bpool);
