@@ -17,12 +17,12 @@ import "./BBronze.sol";
 import "./BNote.sol";
 import "./BNum.sol";
 
-contract BCoin is BBronze
-                , BNote
-                , BNum
+contract BToken is BBronze
+                 , BNote
+                 , BNum
 {
     address                     public owner;
-    mapping(address=>uint)   public balanceOf;
+    mapping(address=>uint)      public balanceOf;
     mapping(address=>
         mapping(address=>bool)) public trusts;
 

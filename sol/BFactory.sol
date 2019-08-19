@@ -17,20 +17,21 @@ import 'ds-token/token.sol';
 
 import "./BBronze.sol";
 import "./BConst.sol";
-import "./BEvent.sol";
-import "./BCoin.sol";
+import "./BNote.sol";
+
+import "./BToken.sol";
 import "./BPool.sol";
 
 contract BFactory is BBronze
                    , BConst
-                   , BEvent
+                   , BNote
 {
     function new_BPool()
       public
       note
         returns (BPool)
     {
-        BCoin poolcoin = new BCoin();
+        BToken poolcoin = new BToken();
         BPool bp = new BPool(address(poolcoin));
         bp.setManager(msg.sender);
         return bp;
