@@ -44,6 +44,14 @@ contract BPoolBronze is BBronze {
     function sweep(address token) public;
 
     //== Trader
+    // swap event
+    event LOG_SWAP( address indexed caller
+                  , address indexed tokenIn
+                  , address indexed tokenOut
+                  , uint256         amountIn
+                  , uint256         amountOut
+                  , uint256         feeRatio );
+
     // swap ExactInAnyOut
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public view returns (uint Ao, byte err);

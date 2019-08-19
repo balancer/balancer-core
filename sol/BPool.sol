@@ -15,17 +15,18 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import 'ds-note/note.sol';
+
 import "./BBronze.sol";
 import "./BConst.sol";
 import "./BMath.sol";
 import "./BError.sol";
-import "./BEvent.sol";
 
 contract BPool is BPoolBronze
                 , BConst
                 , BError
-                , BEvent
                 , BMath
+                , DSNote
 {
     bool                      paused;
     address                   manager;
@@ -142,7 +143,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ao, ERR_NONE);
         }
     }
@@ -237,7 +238,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ao, ERR_NONE);
         }
     }

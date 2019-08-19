@@ -13,13 +13,14 @@
 
 pragma solidity ^0.5.10;
 
+import 'ds-note/note.sol';
+
 import "./BBronze.sol";
-import "./BNote.sol";
 import "./BNum.sol";
 
 contract BToken is BBronze
-                 , BNote
                  , BNum
+                 , DSNote
 {
     address                     public owner;
     mapping(address=>uint)      public balanceOf;
