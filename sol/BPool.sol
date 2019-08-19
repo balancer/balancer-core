@@ -170,7 +170,7 @@ contract BPool is BBronze
         return Ao;
     }
 
-    function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
       public view
         returns (uint Ai, byte err)
     {
@@ -189,10 +189,10 @@ contract BPool is BBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
       public returns (uint Ai, byte err)
     {
-        (Ai, err) = viewSwap_ExactOutAnyIn(Ti, To, Ao);
+        (Ai, err) = viewSwap_AnyInExactOut(Ti, To, Ao);
         if (err != ERR_NONE) {
             return (Ai, err);
         } else {
@@ -207,14 +207,114 @@ contract BPool is BBronze
         }
     }
 
-    function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
       public returns (uint Ai)
     {
         byte err;
-        (Ai, err) = trySwap_ExactOutAnyIn(Ti, To, Ao);
+        (Ai, err) = trySwap_AnyInExactOut(Ti, To, Ao);
         check(err);
         return Ai;
     }
+
+    function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err)
+    {
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
+
+        if( paused ) return (Ao, ERR_PAUSED);
+
+        if( Ao < Lo ) return (Ao, ERR_LIMIT_FAILED);
+
+        return (Ao, ERR_NONE);
+ 
+    }
+
+    function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err)
+    {
+        (Ao, err) = viewSwap_ExactInMinOut(Ti, Ai, To, Lo);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            return (Ao, ERR_NONE);
+        }
+    }
+
+    function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao)
+    {
+        byte err;
+        
+        (Ai, err) = trySwap_ExactInMinOut(Ti, Ai, To, Lo);
+        check(err);
+        return Ai;
+    }
+
+    function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+      public view
+        returns (uint Ai, byte err)
+    {
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        Ai = calc_InGivenOut( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ao, fee );
+
+        if( paused ) return (Ai, ERR_PAUSED);
+
+        if( Ai > Li ) return (Ai, ERR_LIMIT_FAILED);
+
+        return (Ai, ERR_NONE);
+    }
+
+    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+      public returns (uint Ai, byte err)
+    {
+        (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            return (Ai, ERR_NONE);
+        }
+    }
+
+    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+      public returns (uint Ai)
+    {
+        byte err;
+        (Ai, err) = trySwap_MaxInExactOut(Ti, Li, To, Ao);
+        check(err);
+        return Ai;
+    }
+
+
+
 
     function setParams(address token, uint weight, uint balance)
       public {
