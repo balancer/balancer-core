@@ -36,8 +36,6 @@ contract BPoolBronze is BBronze {
         public view returns (uint);
     function getValue()
         public view returns (uint res);
-    function getWeightedValue()
-        public view returns (uint Wt);
 
     function start()
         public;

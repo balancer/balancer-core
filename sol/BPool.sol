@@ -34,6 +34,7 @@ contract BPool is BPoolBronze
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
 
+    bool                      fixedWeights;
     address                   ptoken;
 
     struct Record {
@@ -47,6 +48,7 @@ contract BPool is BPoolBronze
         manager = msg.sender;
         paused = true;
         ptoken = poolToken;
+        fixedWeights = false; // TODO
     }
 
     function getPoolToken()
@@ -107,26 +109,6 @@ contract BPool is BPoolBronze
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
-
-    function getWeightedValue()
-      public view 
-        returns (uint Wt)
-    {
-        if (_index.length == 0) {
-            return 0;
-        }
-        Wt = 1;
-        for( uint8 i = 0; i < _index.length; i++ ) {
-            uint weight = records[_index[i]].weight;
-            check(weight > 0, ERR_UNREACHABLE);
-            Wt = bdiv(Wt, weight);
-            revert('getWeightedValue unimplemented');
-        }
-        return Wt;
-    }
-
-
-
 
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
       public view 
