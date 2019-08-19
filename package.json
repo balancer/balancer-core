@@ -9,11 +9,10 @@
     "email": "mail+bcorepkg@nikolai.fyi",
     "url": "https://nikolai.fyi"
   },
-  "contributors": {
+  "contributors": [{
     "name": "Kevin Bravo",
     "email": "kbravo@pm.me"
-    }
-  },
+  }],
   "main": "package.js",
   "scripts": {
     "setup": "git submodule update --init --recursive && yarn install",
