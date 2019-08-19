@@ -16,56 +16,46 @@ pragma solidity ^0.5.10;
 import "./BColor.sol";
 
 contract BBronze is BColor {
-    bytes32 constant private COLOR = "BRONZE";
     function getColor()
       public view
-        returns (bytes32)
-    {
-        return COLOR;
+        returns (bytes32) {
+        return "BRONZE";
     }
 }
 
 contract BPoolBronze is BBronze {
-    function isBound(address token)
-        public view returns (bool);
-    function getNumTokens()
-        public view returns (uint);
-    function getWeight(address token)
-        public view returns (uint);
-    function getBalance(address token)
-        public view returns (uint);
-    function getValue()
-        public view returns (uint res);
+    //== Public View
+    function isBound(address token) public view returns (bool);
+    function getNumTokens() public view returns (uint);
+    function getWeight(address token) public view returns (uint);
+    function getBalance(address token) public view returns (uint);
+    function getValue() public view returns (uint res);
 
-    function start()
-        public;
-    function pause()
-        public;
-    function bind(address token, uint balance, uint weight)
-        public;
-    function unbind(address token)
-        public;
-    function setParams(address token, uint weight, uint balance)
-        public;
-    function setManager(address manager)
-        public;
-    function setFee(uint fee)
-        public;
-    function sweep(address token)
-        public;
+    // == Manager
+    function start() public;
+    function pause() public;
+    function bind(address token, uint balance, uint weight) public;
+    function unbind(address token) public;
+    function setParams(address token, uint weight, uint balance) public;
+    function setManager(address manager) public;
+    function setFee(uint fee) public;
+    function sweep(address token) public;
 
+    // == Trader: View
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public view returns (uint Ao, byte err);
-    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
-        public returns (uint Ao, byte err);
-    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
-        public returns (uint Ao);
-
     function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public view returns (uint Ai, byte err);
+
+    // == Trader: Try
+    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao, byte err);
     function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai, byte err);
+
+    // == Trader: Do
+    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+        public returns (uint Ao);
     function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai);
-
 }
