@@ -142,6 +142,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
+            LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ao, ERR_NONE);
         }
     }
@@ -236,6 +237,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
+            LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
             return (Ao, ERR_NONE);
         }
     }
