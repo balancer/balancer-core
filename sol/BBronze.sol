@@ -53,11 +53,11 @@ contract BBronze {
     function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public returns (uint Ao);
 
-    function viewSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public view returns (uint Ai, byte err);
-    function trySwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai, byte err);
-    function doSwap_ExactOutAnyIn(address Ti, address To, uint Ao)
+    function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai);
 
 }
