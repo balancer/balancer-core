@@ -39,6 +39,8 @@ contract BError
     byte constant ERR_MATH_MUL_OVERFLOW  = 0x42;
     byte constant ERR_MATH_DIV_INTERFLOW = 0x44; // intermdiate values overflow (we keep precision)
 
+    byte constant ERR_LIMIT_FAILED       = 0x50;
+
     byte constant ERR_ERC20_FALSE        = 0xe0;
     
     byte constant ERR_UNREACHABLE        = 0xff;
@@ -67,6 +69,8 @@ contract BError
             return "ERR_MATH_MUL_OVERFLOW";
         if( berr == ERR_MATH_DIV_INTERFLOW )
             return "ERR_MATH_DIV_INTERFLOW";
+        if( berr == ERR_LIMIT_FAILED )
+            return "ERR_LIMIT_FAILED";
         revert("ERR_PANIC_UNKNOWN");
     }
 
