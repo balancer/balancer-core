@@ -21,7 +21,7 @@ import "./BMath.sol";
 import "./BError.sol";
 import "./BEvent.sol";
 
-contract BPool is BBronze
+contract BPool is BPoolBronze
                 , BConst
                 , BError
                 , BEvent

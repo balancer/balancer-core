@@ -17,6 +17,7 @@ build:
 	-o tmp \
 	sol/BBronze.sol \
 	sol/BCoin.sol \
+	sol/BColor.sol \
 	sol/BConst.sol \
 	sol/BError.sol \
 	sol/BEvent.sol \

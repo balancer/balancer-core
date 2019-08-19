@@ -13,9 +13,19 @@
 
 pragma solidity ^0.5.10;
 
-contract BBronze {
+import "./BColor.sol";
+
+contract BBronze is BColor {
+    bytes32 constant private COLOR = "BRONZE";
     function getColor()
-        public view returns (bytes32);
+      public view
+        returns (bytes32)
+    {
+        return COLOR;
+    }
+}
+
+contract BPoolBronze is BBronze {
     function isBound(address token)
         public view returns (bool);
     function getNumTokens()

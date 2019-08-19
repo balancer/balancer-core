@@ -13,22 +13,8 @@
 
 pragma solidity ^0.5.10;
 
-import "./BBronze.sol";
-import "./BConst.sol";
-import "./BEvent.sol";
-import "./BPool.sol";
-
-contract BFactory is BBronze
-                   , BConst
-                   , BEvent
-{
-    function new_BPool()
-        public
-        note
-        returns (BPool)
-    {
-        BPool bp = new BPool();
-        bp.setManager(msg.sender);
-        return bp;
-    }
+contract BColor {
+    function getColor()
+      public view
+        returns (bytes32);
 }
