@@ -47,8 +47,8 @@ contract BToken is BBronze
 
     function move(address src, address dst, uint amt)
       public note {
-        require( msg.sender == src
-              || trusts[src][msg.sender]
+        require( trusts[src][msg.sender]
+              || msg.sender == src
               || msg.sender == owner
         , "ERR_BAD_CALLER" );
         balanceOf[src] = bsub(balanceOf[src], amt);
