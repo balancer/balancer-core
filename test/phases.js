@@ -12,18 +12,38 @@ let web3 = new Web3(ganache.provider({
 }));
 
 let scene = require("./scene.js");
-describe("scene 0 tests", async () => {
+describe("scene tests", async () => {
     let accts;
     let admin;
     let env = {};
     beforeEach(async () => {
         accts = await web3.eth.getAccounts();
         admin = accts[0];
-        env = await scene.phase0(web3, admin);
     });
-    it("phase 0 preconditions", async () => {
-        console.log("it");
+    it("phase0 postconditions", async () => {
+        env = await scene.phase0(web3, admin);
+
         assert.exists(env.admin);
         assert.exists(env.factory);
+    });
+    it("phase1 postconditions", async() => {
+        env = await scene.phase1(web3, admin);
+
+        assert.exists(env.bpool, "bpool");
+        let builtHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
+        assert(builtHere, "factory doesn't remember building bpool");
+
+        assert.exists(env.acoin);
+        assert.exists(env.bcoin);
+        assert.exists(env.ccoin);
+
+        let max = web3.utils.toBN(web3.utils.toTwosComplement('-1'));
+        let abal = await env.acoin.methods.balanceOf(admin).call();
+        let bbal = await env.bcoin.methods.balanceOf(admin).call();
+        let cbal = await env.ccoin.methods.balanceOf(admin).call();
+
+        assert.equal(abal, max);
+        assert.equal(bbal, max);
+        assert.equal(cbal, max);
     });
 });
