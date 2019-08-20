@@ -92,5 +92,5 @@ contract BPoolBronze is BBronze, BConst {
         public returns (uint Ai, byte err);
     function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
         public returns (uint Ai);
- 
+
 }

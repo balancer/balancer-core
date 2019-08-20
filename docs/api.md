@@ -2,11 +2,10 @@
 
 ## Trader 
 
-`viewSwap`, `trySwap`, and `doSwap` for each variant
+Each `swap` functions comes in three variations: [`viewSwap*`, `trySwap*`, and `doSwap*`](view-try-do.md)
 
 | Function | Release | Tests? | Docs? |
 |-|-|-|-|
-[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
 [`*Swap_ExactInAnyOut`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
 [`*Swap_ExactInMinOut`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
 [`*Swap_ExactInLimitPrice`]() | Bronze🍂 |  |  |
@@ -14,6 +13,7 @@
 [`*Swap_MaxInExactOut`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
 [`*Swap_LimitPriceExactOut`]() | Bronze🍂 |  |  |
 [`*Swap_MaxInMinOutLimitPrice`]() | Bronze🍂 |  |  |
+[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
 
 ## Pooling
 
