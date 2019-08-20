@@ -8,6 +8,6 @@ Variation | Modifies the state on success | Returns error code on failure
 -|-|-
 `viewSwap_` | False❌ | True✅
 `trySwap_` | True✅ | True✅
-`doSwap_` | True✅ | False❌
+`doSwap_` | True✅ | False❌ (reverts on error)
 
 These variations exist to give developers as much flexibility in writing contracts that interact with Balancer pools autonomously. They are structed this way in part because of the limited revert-oriented control flow that Solidity offers.
