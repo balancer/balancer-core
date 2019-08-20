@@ -1,6 +1,4 @@
-# API Reference Index
-
-## Trader 
+# API Index
 
 Each `swap` functions comes in three variations: [`viewSwap*`, `trySwap*`, and `doSwap*`](view-try-do.md)
 
@@ -14,21 +12,11 @@ Each `swap` functions comes in three variations: [`viewSwap*`, `trySwap*`, and `
 [`*Swap_LimitPriceExactOut`]() | Bronze🍂 |  |  |
 [`*Swap_MaxInMinOutLimitPrice`]() | Bronze🍂 |  |  |
 [`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
-
-## Pooling
-
-Function | Release | Tests? | Docs? |
--|-|-|-
 [`isPoolOpen() returns (bool)`](#isPoolOpen) | Bronze🍂
 [`getJoinPoolAmounts(uint ptoken_amt_out) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | Bronze🍂
 [`getExitPoolAmounts(uint ptoken_amt_in) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | Bronze🍂
 [`joinPool(uint ptoken_amt_in)`](#joinPool) | Bronze🍂
 [`exitPool(uint ptoken_amt_out)`](#exitPool) | Bronze🍂
-
-## Manager 
-
-Function | Release | Tests? | Docs? 
--|-|-|-
 [`start()`](#start) | Bronze🍂
 [`pause()`](#pause) | Bronze🍂
 [`bind(address T, uint B, uint W)`](#bind) | Bronze🍂
@@ -40,7 +28,7 @@ Function | Release | Tests? | Docs?
 [`getWeight(address T) returns (uint)`](#getWeight) | Bronze🍂
 [`getTotalWeight() returns (uint)`](#getTotalWeight) | Bronze🍂
 
-# API
+## Trader API
 
 ### `getSpotPrice(address T) returns (uint)`
 `getSpotPrice(address T) returns (uint)`
@@ -59,6 +47,7 @@ Function | Release | Tests? | Docs?
 ### `*Swap_MaxInMinOutLimitPrice`
 `*Swap_MaxInMinOutLimitPrice(...)`
 
+## Pooling API
 
 ### `isPoolOpen`
 `isPoolOpen() returns (bool)`
@@ -71,6 +60,7 @@ Function | Release | Tests? | Docs?
 ### `exitPool`
 `exitPool(uint ptoken_amt_out)`
 
+## Manager API
 
 ### `start`
 `start()`

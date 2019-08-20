@@ -8,6 +8,6 @@ Variation | Modifies the state | Returns error code
 -|-|-
 `viewSwap_` | False❌ | True✅
 `trySwap_` | True✅ | True✅
-`doSwap*_` | True✅ | False❌
+`doSwap_` | True✅ | False❌
 
-These variations exist largely because of the limited error handling and limited revert-oriented control flow that Solidity offers.
+These variations exist to give developers as much flexibility in writing contracts that interact with Balancer pools autonomously. They are structed this way in part because of the limited revert-oriented control flow that Solidity offers.
