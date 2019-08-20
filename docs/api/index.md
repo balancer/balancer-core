@@ -69,7 +69,7 @@ Starts the pool, enabling `swap` variants. Requires at least 2 bound tokens.
 
 Pauses the pool, disabling `swap` variants.
 
-### `bind
+### `bind`
 #### `bind (address T, uint B, uint W)`
 ### `unbind (address T)`
 ### `sweep (address T)`
