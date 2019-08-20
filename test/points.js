@@ -1,4 +1,5 @@
 module.exports.spotPricePoints = [
+
     {res: 4, Bi: 1, Wi: 0.2, Bo: 10, Wo: 0.5},
     {res: 1/4, Bi: 10, Wi: 0.5, Bo: 1, Wo: 0.2},
 
@@ -53,6 +54,25 @@ module.exports.LimitInGivenOutPoints = [
     {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
         Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 + 1},
 ]
+
+module.exports.LimitPriceOutGivenInPoints = [
+//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+//        Lp: 0},
+    //{res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+    //    Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150) - 0.001},
+ 
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+        Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150)},
+    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+        Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150) + 0.001},
+ 
+    //    NO REVERT TESTING YET
+//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
+//        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1},
+]
+
+//module.exports.errors = { ERR_LIMIT_FAILED: 0x30 };
+
 
 module.exports.amountUpToPricePoints = [
     {res: 1.06008957447, Bi: 10, Wi: 0.3, Bo: 5260, Wo: 0.3, SER1: 430, fee: 0},

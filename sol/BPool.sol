@@ -98,6 +98,7 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
+/*
     function getTotalWeight() public returns (uint256) {
         uint256 res = 0;
         for( uint i = 0; i < _index.length; i++ ) {
@@ -113,6 +114,7 @@ contract BPool is BPoolBronze
         }
         return bdiv(records[token].weight, totalWeight);
     }
+*/
 
     function getBalance(address token)
       public view
@@ -445,6 +447,57 @@ contract BPool is BPoolBronze
         check(err);
         return Ai;
     }
+
+    function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+        public returns (uint256 Ao, byte err)
+    {
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
+
+        if( paused ) return (Ao, ERR_PAUSED);
+
+        if( Ai > bmul(Lp, Ao) ) return (Ao, ERR_LIMIT_FAILED);
+
+        return (Ao, ERR_NONE);
+ 
+    }
+
+    function trySwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+        public returns (uint256 Ao, byte err)
+    {
+        (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, Lp);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            return (Ao, ERR_NONE);
+        }
+    }
+
+    function doSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+        public returns (uint256 Ao)
+    {
+        byte err;
+        
+        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, Lp);
+        check(err);
+        return Ai;
+    }
+
 
     function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
       public view
