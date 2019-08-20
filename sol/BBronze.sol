@@ -30,17 +30,21 @@ contract BPoolBronze is BBronze, BConst {
     function isFlexible() public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
-    function getTotalWeight() public view returns (uint);
     function getBalance(address token) public view returns (uint);
+    function getTotalWeight() public view returns (uint);
+    function getWeightedBalance(address token) public view returns (uint);
+    function getWeightedTotalBalance() public view returns (uint);
 
     //== Pooling
-    function isPoolOpen() public returns (bool);
+    function isPoolOpen() public view returns (bool);
     function getJoinPoolAmounts(uint poolAo)
         public returns (uint[MAX_BOUND_TOKENS] memory);
     function getExitPoolAmounts(uint poolAi)
         public returns (uint[MAX_BOUND_TOKENS] memory);
-    function joinPool(uint poolAo) public;
-    function exitPool(uint poolAi) public;
+    function joinPool(uint poolAo)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut);
+    function exitPool(uint poolAi)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn);
 
     //== Manager
     function start() public;

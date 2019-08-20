@@ -43,10 +43,10 @@ contract BPool is BPoolBronze
         uint    balance; // bnum
     }
 
-    constructor(address poolToken) public {
+    constructor(address newBToken) public {
         manager = msg.sender;
         paused = true;
-        poolcoin = poolToken;
+        poolcoin = newBToken;
         poolable = false;
     }
 
@@ -98,17 +98,27 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
-    function getTotalWeight() public view returns (uint)
-    {
-        revert('unimplemented');
-    }
-
     function getBalance(address token)
       public view
         returns (uint) {
         return records[token].balance;
     }
 
+    function getTotalWeight() public view returns (uint)
+    {
+        revert('unimplemented');
+    }
+
+    function getWeightedBalance(address token) public view returns (uint)
+    {
+        revert('unimplemented');
+    }
+
+    function getWeightedTotalBalance() public view returns (uint)
+    {
+        revert('unimplemented');
+    }
+ 
     function getValue()
       public view
         returns (uint res)
@@ -120,18 +130,26 @@ contract BPool is BPoolBronze
         }
     }
 
-    function isPoolOpen() public returns (bool)
-        {revert('unimplemented');}
+    function isPoolOpen() public view returns (bool) {
+        return poolable;
+    }
+    function joinPool(uint poolAo)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut)
+    {
+        revert('unimplemented');
+    }
+    function exitPool(uint poolAi)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn)
+    {
+        revert('unimplemented');
+    }
     function getJoinPoolAmounts(uint poolAo)
-        public returns (uint[MAX_BOUND_TOKENS] memory)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn)
         {revert('unimplemented');}
     function getExitPoolAmounts(uint poolAi)
-        public returns (uint[MAX_BOUND_TOKENS] memory)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut)
         {revert('unimplemented');}
-    function joinPool(uint poolAo) public
-        {revert('unimplemented');}
-    function exitPool(uint poolAi) public
-        {revert('unimplemented');}
+
 
     function setParams(address token, uint weight, uint balance)
       public {
