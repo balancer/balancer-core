@@ -26,6 +26,7 @@ contract BBronze is BColor {
 contract BPoolBronze is BBronze {
     //== General View
     function isBound(address token) public view returns (bool);
+    function isFlexible() public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
     function getBalance(address token) public view returns (uint);

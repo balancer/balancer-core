@@ -17,7 +17,7 @@
 
 # Pooling
 | Function | Release | Tests? | Docs? |
--|-|-|-
+|-|-|-|-
 | `isPoolOpen` | Bronze🥉
 | `pool` | Bronze🥉
 | `unpool` | Bronze🥉
