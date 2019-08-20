@@ -16,6 +16,7 @@
 | `getSpotPrice` | Bronze🥉 | |
 
 # Pooling
+
 | Function | Release | Tests? | Docs? |
 |-|-|-|-
 | `isPoolOpen` | Bronze🥉
