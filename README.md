@@ -23,7 +23,7 @@ let pool = new web3.eth.Contract(BPool.abi);
 
 ## Usage
 
-[Check out our API coverage page](https://balancer-labs.github.io/balancer-core/API)
+[Check out our work in progress docs](https://github.com/balancer-labs/balancer-core/blob/master/docs/api/index.md))
 
 ## Developing
 
