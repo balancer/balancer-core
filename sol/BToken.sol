@@ -13,16 +13,17 @@
 
 pragma solidity ^0.5.10;
 
+import 'ds-note/note.sol';
+
 import "./BBronze.sol";
-import "./BNote.sol";
 import "./BNum.sol";
 
-contract BCoin is BBronze
-                , BNote
-                , BNum
+contract BToken is BBronze
+                 , BNum
+                 , DSNote
 {
     address                     public owner;
-    mapping(address=>uint)   public balanceOf;
+    mapping(address=>uint)      public balanceOf;
     mapping(address=>
         mapping(address=>bool)) public trusts;
 
@@ -47,8 +48,8 @@ contract BCoin is BBronze
 
     function move(address src, address dst, uint amt)
       public note {
-        require( msg.sender == src
-              || trusts[src][msg.sender]
+        require( trusts[src][msg.sender]
+              || msg.sender == src
               || msg.sender == owner
         , "ERR_BAD_CALLER" );
         balanceOf[src] = bsub(balanceOf[src], amt);

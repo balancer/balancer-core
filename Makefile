@@ -16,15 +16,13 @@ build:
 	/=/ \
 	-o tmp \
 	sol/BBronze.sol \
-	sol/BCoin.sol \
 	sol/BColor.sol \
 	sol/BConst.sol \
 	sol/BError.sol \
-	sol/BEvent.sol \
 	sol/BFactory.sol \
 	sol/BMath.sol \
-	sol/BNote.sol \
 	sol/BNum.sol \
 	sol/BPool.sol \
+	sol/BToken.sol \
 	sol/TToken.sol \
 

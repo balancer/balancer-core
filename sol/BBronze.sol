@@ -14,48 +14,58 @@
 pragma solidity ^0.5.10;
 
 import "./BColor.sol";
+import "./BConst.sol";
 
 contract BBronze is BColor {
-    bytes32 constant private COLOR = "BRONZE";
     function getColor()
       public view
-        returns (bytes32)
-    {
-        return COLOR;
+        returns (bytes32) {
+        return "BRONZE";
     }
 }
 
-contract BPoolBronze is BBronze {
-    function isBound(address token)
-        public view returns (bool);
-    function getNumTokens()
-        public view returns (uint);
-    function getWeight(address token)
-        public view returns (uint);
-    function getBalance(address token)
-        public view returns (uint);
-    function getValue()
-        public view returns (uint res);
-    function getWeightedValue()
-        public view returns (uint Wt);
+contract BPoolBronze is BBronze, BConst {
+    //== General View
+    function isBound(address token) public view returns (bool);
+    function isFlexible() public view returns (bool);
+    function getNumTokens() public view returns (uint);
+    function getWeight(address token) public view returns (uint);
+    function getBalance(address token) public view returns (uint);
+    function getTotalWeight() public view returns (uint);
+    function getWeightedBalance(address token) public view returns (uint);
+    function getWeightedTotalBalance() public view returns (uint);
 
-    function start()
-        public;
-    function pause()
-        public;
-    function bind(address token, uint balance, uint weight)
-        public;
-    function unbind(address token)
-        public;
-    function setParams(address token, uint weight, uint balance)
-        public;
-    function setManager(address manager)
-        public;
-    function setFee(uint fee)
-        public;
-    function sweep(address token)
-        public;
+    //== Pooling
+    function isPoolOpen() public view returns (bool);
+    function getJoinPoolAmounts(uint poolAo)
+        public returns (uint[MAX_BOUND_TOKENS] memory);
+    function getExitPoolAmounts(uint poolAi)
+        public returns (uint[MAX_BOUND_TOKENS] memory);
+    function joinPool(uint poolAo)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut);
+    function exitPool(uint poolAi)
+        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn);
 
+    //== Manager
+    function start() public;
+    function pause() public;
+    function bind(address token, uint balance, uint weight) public;
+    function unbind(address token) public;
+    function setParams(address token, uint weight, uint balance) public;
+    function setManager(address manager) public;
+    function setFee(uint fee) public;
+    function sweep(address token) public;
+
+    //== Trader
+    // swap event
+    event LOG_SWAP( address indexed caller
+                  , address indexed tokenIn
+                  , address indexed tokenOut
+                  , uint256         amountIn
+                  , uint256         amountOut
+                  , uint256         feeRatio );
+
+    // swap ExactInAnyOut
     function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public view returns (uint Ao, byte err);
     function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
@@ -63,11 +73,28 @@ contract BPoolBronze is BBronze {
     function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
         public returns (uint Ao);
 
+    // swap AnyInExactOut
     function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
         public view returns (uint Ai, byte err);
     function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
         public returns (uint Ai, byte err);
     function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
+        public returns (uint Ai);
+
+    // swap ExactInMinOut
+    function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err);
+    function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao, byte err);
+    function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
+        public returns (uint256 Ao);
+
+    // swap MaxInExactOut
+    function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+        public view returns (uint Ai, byte err);
+    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+        public returns (uint Ai, byte err);
+    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
         public returns (uint Ai);
 
 }
