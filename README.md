@@ -20,11 +20,10 @@ let types = bcore.types;  # A combined.json object with type names lifted
 let BPool = bcore.types.BPool;
 let pool = new web3.eth.Contract(BPool.abi);
 ```
- 
 
 ## Usage
 
-[Check out our API coverage issue](https://github.com/balancer-labs/balancer-core/issues/24)
+[Check out our API coverage page](https://balancer-labs.github.io/balancer-core/API)
 
 ## Developing
 
@@ -41,15 +40,12 @@ yarn setup       # clones submodules and installs packages
 yarn build       # compile the solidity contracts
 yarn test        # yarn build && mocha
 yarn dist        # cp artifacts to out/
-yarn docs        # build doc/ to docs/
-yarn docs serve  # serve docsite from doc/
 ```
 
 ### Project structure
 
 ```
-doc/            documentation sources
-docs/           docs build output (GH static site fixed path)
+docs/           markdown docs
 lib/            solidity dependencies
 out/            solidity build artifacts
 sol/            solidity source files (the contracts)
