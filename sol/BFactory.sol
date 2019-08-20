@@ -24,10 +24,8 @@ import "./BPool.sol";
 contract BFactory is BBronze
                    , BConst
 {
-    mapping(address=>bool) public _wasBTokenBuiltHere;
+    mapping(address=>bool) public wasBTokenBuiltHere;
     mapping(address=>bool) public wasBPoolBuiltHere;
-
-//    function wasBPoolBuiltHere(address bp) public returns (bool) { return _wasBPoolBuiltHere[bp]; }
 
     event LOG_newBPool( address indexed caller
                        , address pool
@@ -40,7 +38,7 @@ contract BFactory is BBronze
         BPool bpool = new BPool(address(poolcoin));
         bpool.setManager(msg.sender);
         wasBPoolBuiltHere[address(bpool)] = true;
-        _wasBTokenBuiltHere[address(poolcoin)] = true;
+        wasBTokenBuiltHere[address(poolcoin)] = true;
         emit LOG_newBPool(msg.sender, address(bpool), address(poolcoin));
         return bpool;
     }

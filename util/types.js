@@ -19,7 +19,6 @@ function liftAll() {
         types[type] = types[`sol/${type}.sol:${type}`];
     }
 
-    lift("BCoin");
     lift("BConst");
     lift("BError");
     lift("BEvent");
@@ -28,6 +27,7 @@ function liftAll() {
     lift("BNote");
     lift("BNum");
     lift("BPool");
+    lift("BToken");
     lift("TToken");
 }
 

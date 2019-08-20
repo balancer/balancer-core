@@ -26,12 +26,14 @@ describe("scene tests", async () => {
         assert.exists(env.admin);
         assert.exists(env.factory);
     });
-    it("phase1 postconditions", async() => {
+    it("phase1 postconditions", async () => {
         env = await scene.phase1(web3, admin);
 
         assert.exists(env.bpool, "bpool");
-        let builtHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
-        assert(builtHere, "factory doesn't remember building bpool");
+        let poolBuiltHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
+        assert(poolBuiltHere, "factory doesn't remember building bpool");
+        let tokenBuiltHere = await env.factory.methods.wasBTokenBuiltHere(env.poolcoin._address).call();
+        assert(tokenBuiltHere, "factory doesn't remember building poolcoin");
 
         assert.exists(env.acoin);
         assert.exists(env.bcoin);
@@ -46,4 +48,13 @@ describe("scene tests", async () => {
         assert.equal(bbal, max);
         assert.equal(cbal, max);
     });
+    it("phase2 postconditions", async () => {
+        env = await scene.phase2(web3, admin);
+        for( let coin of [env.acoin, env.bcoin, env.ccoin] ) {
+            let bal = await env.bpool.methods.getBalance(coin._address).call();
+            let truebal = await coin.methods.balanceOf(env.bpool._address).call();
+            assert.equal(bal, env.initBalance, "wrong bpool.getBalance(coin)");
+            assert.equal(truebal, env.initBalance, "wrong coin.balanceOf(bpool)");
+        }
+    })
 });
