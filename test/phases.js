@@ -50,6 +50,8 @@ describe("scene tests", async () => {
     });
     it("phase2 postconditions", async () => {
         env = await scene.phase2(web3, admin);
+        let paused = await env.bpool.methods.isPaused().call();
+        assert.isFalse(paused);
         for( let coin of [env.acoin, env.bcoin, env.ccoin] ) {
             let bal = await env.bpool.methods.getBalance(coin._address).call();
             let truebal = await coin.methods.balanceOf(env.bpool._address).call();

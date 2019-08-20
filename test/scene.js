@@ -44,13 +44,19 @@ module.exports.phase1 = async (web3, admin) => {
 //  bpool.bind(*coin, initWeight, initBalance)
 module.exports.phase2 = async (web3, admin) => {
     let env = await module.exports.phase1(web3, admin);
+
     env.initWeight = web3.utils.toWei('10');
     env.initBalance = web3.utils.toWei('10');
+
     await env.bpool.methods.bind(env.acoin._address, env.initBalance, env.initWeight)
                            .send({from: admin, gas:0xffffffff});
     await env.bpool.methods.bind(env.bcoin._address, env.initBalance, env.initWeight)
                            .send({from: admin, gas:0xffffffff});
     await env.bpool.methods.bind(env.ccoin._address, env.initBalance, env.initWeight)
                            .send({from: admin, gas:0xffffffff});
+
+    await env.bpool.methods.start()
+                           .send({from: admin, gas:0xffffffff});
+
     return env;
 }
