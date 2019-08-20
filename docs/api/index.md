@@ -1,6 +1,6 @@
 # Trader 
 
-### swap variants
+## swap variants
 
 `viewSwap`, `trySwap`, and `doSwap` for each variant
 
@@ -13,9 +13,9 @@
 | `*_ExactInLimitPrice` | Silver👽 |  |  |
 | `*_LimitPriceExactOut` | Silver🐦 |  |  |
 | `*_MaxInMinOutLimitPrice` | Silver💿|  |  |
-| `getSpotPrice` | Bronze🐻 | |
+| `getSpotPrice(address T) returns (uint)` | Bronze🐻 | |
 
-# Pooling
+## Pooling
 
 Function | Release | Tests? | Docs? |
 -|-|-|-
@@ -25,22 +25,26 @@ Function | Release | Tests? | Docs? |
 `joinPool(uint ptoken_amt_in)` | Bronze🥉
 `exitPool(uint ptoken_amt_out)` | Bronze🥉
 
-# Manager 
+## Manager 
 
 Function | Release | Tests? | Docs? 
 -|-|-|-
-`start` | Bronze🥉
-`pause` | Bronze🥉
-`bind` | Bronze🥉
-`unbind` | Bronze🥉
-`sweep` | Bronze🥉
-`setParams` | Bronze🥉
-`setFee` | Bronze🥉
-`getBalance` | Bronze🥉
-`getWeight` | Bronze🥉
-`getTotalWeight` | Bronze🥉
-`getNormalizedWeight` | Bronze🥉
+[`start()`](#`start`) | Bronze🥉
+`pause()` | Bronze🥉
+`bind(address T, uint B, uint W)` | Bronze🥉
+`unbind(address T)` | Bronze🥉
+`sweep(address T)` | Bronze🥉
+`setParams(address T, uint B, uint W)` | Bronze🥉
+`setFee(uint f)` | Bronze🥉
+`getBalance(address T) returns (uint)` | Bronze🥉
+`getWeight(address T) returns (uint)` | Bronze🥉
+`getTotalWeight(address T) returns (uint)` | Bronze🥉
+`getNormalizedWeight(address T) returns (uint)` | Bronze🥉
 `setWeightAdjustBalance` | Silver🔗
 `setBalanceAdjustWeight` | Silver🕊
 
+### `start`
 
+Starts the pool. Requires at least 2 bound tokens.
+
+### `pause`
