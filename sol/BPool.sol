@@ -91,6 +91,22 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
+    function getTotalWeight() public returns (uint256) {
+        uint256 res = 0;
+        for( uint i = 0; i < _index.length; i++ ) {
+            res = badd(res, records[_index[i]].weight);
+        }
+        return res;
+    }
+
+    function getNormalizedWeight(address token) public returns (uint256) {
+        uint256 totalWeight = getTotalWeight();
+        if (totalWeight == 0) {
+            return 0;
+        }
+        return bdiv(records[token].weight, totalWeight);
+    }
+
     function getBalance(address token)
       public view
         returns (uint) {
