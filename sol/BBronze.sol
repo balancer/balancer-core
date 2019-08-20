@@ -35,12 +35,12 @@ contract BPoolBronze is BBronze, BConst {
 
     //== Pooling
     function isPoolOpen() public returns (bool);
-    function getJoinPoolAmounts(uint ptoken_amt_out)
+    function getJoinPoolAmounts(uint poolAo)
         public returns (uint[MAX_BOUND_TOKENS] memory);
-    function getExitPoolAmounts(uint ptoken_amt_in)
+    function getExitPoolAmounts(uint poolAi)
         public returns (uint[MAX_BOUND_TOKENS] memory);
-    function joinPool(uint ptoken_amt_in) public;
-    function exitPool(uint ptoken_amt_out) public;
+    function joinPool(uint poolAo) public;
+    function exitPool(uint poolAi) public;
 
     //== Manager
     function start() public;

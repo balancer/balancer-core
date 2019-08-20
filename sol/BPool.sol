@@ -33,8 +33,8 @@ contract BPool is BPoolBronze
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
 
-    bool                      flexible;
-    address                   ptoken;
+    bool                      poolable;
+    address                   poolcoin;
 
     struct Record {
         bool    bound;
@@ -46,14 +46,14 @@ contract BPool is BPoolBronze
     constructor(address poolToken) public {
         manager = msg.sender;
         paused = true;
-        ptoken = poolToken;
-        flexible = false;
+        poolcoin = poolToken;
+        poolable = false;
     }
 
     function getPoolToken()
       public view
         returns (address) {
-        return ptoken;
+        return poolcoin;
     }
 
     function getManager()
@@ -71,7 +71,7 @@ contract BPool is BPoolBronze
     function isFlexible()
       public view
         returns (bool) {
-        return flexible;
+        return poolable;
     }
 
     function isBound(address token)
@@ -122,15 +122,15 @@ contract BPool is BPoolBronze
 
     function isPoolOpen() public returns (bool)
         {revert('unimplemented');}
-    function getJoinPoolAmounts(uint ptoken_amt_out)
+    function getJoinPoolAmounts(uint poolAo)
         public returns (uint[MAX_BOUND_TOKENS] memory)
         {revert('unimplemented');}
-    function getExitPoolAmounts(uint ptoken_amt_in)
+    function getExitPoolAmounts(uint poolAi)
         public returns (uint[MAX_BOUND_TOKENS] memory)
         {revert('unimplemented');}
-    function joinPool(uint ptoken_amt_in) public
+    function joinPool(uint poolAo) public
         {revert('unimplemented');}
-    function exitPool(uint ptoken_amt_out) public
+    function exitPool(uint poolAi) public
         {revert('unimplemented');}
 
 
