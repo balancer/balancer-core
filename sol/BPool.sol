@@ -133,8 +133,6 @@ contract BPool is BPoolBronze
     function exitPool(uint poolAi) public
         {revert('unimplemented');}
 
-
-
     function setParams(address token, uint weight, uint balance)
       public {
     //  note by sub-calls
@@ -157,7 +155,6 @@ contract BPool is BPoolBronze
         } else {
             totalWeight = bsub(totalWeight, oldWeight - weight);
         }        
-
     }
 
     function setBalanceDirect(address token, uint balance)
@@ -172,7 +169,7 @@ contract BPool is BPoolBronze
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
             check(ok, ERR_ERC20_FALSE);
-        } else {
+        } else if( balance < oldBalance) {
             bool ok = ERC20(token).transfer(msg.sender, oldBalance - balance);
             check(ok, ERR_ERC20_FALSE);
         }
