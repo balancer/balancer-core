@@ -33,6 +33,7 @@ describe("BPool", () => {
     var acoin; var bcoin; var ccoin;
 
     // balance of acct0 (for each coin) at start of each test
+    let preBindBalance = toWei("1001"); // +1 for initial bind
     let initBalance = toWei("1000");
 
     beforeEach(async () => {
@@ -57,7 +58,7 @@ describe("BPool", () => {
         //--
 
         for (coin of [acoin, bcoin, ccoin]) {
-            await coin.methods.mint(initBalance).send({from: acct0});
+            await coin.methods.mint(preBindBalance).send({from: acct0});
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
 
             let maxApproval = web3.utils.toTwosComplement('-1');
@@ -233,14 +234,16 @@ describe("BPool", () => {
         let ABalance = toWei("100");
         let BWeight = toWei("2.5");
         let BBalance = toWei("50");
+        let aBalBefore = await bpool.methods.getBalance(acoin._address).call();
+        assert.equal(aBalBefore, toWei('1'));
         await bpool.methods.setParams(acoin._address, AWeight, ABalance)
                            .send({from: acct0, gas: 0xffffffff});
         let aweight = await bpool.methods.getWeight(acoin._address).call();
         let abalance = await bpool.methods.getBalance(acoin._address).call();
-        assert.equal(AWeight, aweight);
-        assert.equal(ABalance, abalance);
-        assert.equal(ABalance, (await acoin.methods.balanceOf(bpool._address).call()));
-        assert.equal(initBalance - ABalance,
-                    (await acoin.methods.balanceOf(acct0).call()));
+        assert.equal(AWeight, aweight, 'wrong weight after setting');
+        assert.equal(ABalance, abalance, 'wrong balance after setting');
+        assert.equal(ABalance, (await acoin.methods.balanceOf(bpool._address).call()), 'wrong bpool acoin balance');
+        assert.equal(preBindBalance - ABalance,
+                    (await acoin.methods.balanceOf(acct0).call()), 'wrong initBalance - ABalanceBound');
     });
 });

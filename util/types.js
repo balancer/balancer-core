@@ -72,8 +72,8 @@ module.exports.deployTestScenario = async function(web3, accts, log) {
     env.factory = await this.deploy(web3, admin, "BFactory");
     log(`factory ${env.factory._address} = deploy BFactory`);
 
-    let poolAddress = await env.factory.methods.new_BPool().call();
-    await env.factory.methods.new_BPool().send({from: env.admin, gas: 0xffffffff});
+    let poolAddress = await env.factory.methods.newBPool().call();
+    await env.factory.methods.newBPool().send({from: env.admin, gas: 0xffffffff});
     env.pool = new web3.eth.Contract(JSON.parse(this.types.BPool.abi), poolAddress);
     log(`pool ${env.pool._address} = factory.new_BPool()`);
 

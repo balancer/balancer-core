@@ -383,8 +383,8 @@ contract BPool is BPoolBronze
         records[token] = Record({
             bound: true
           , index: _index.length
-          , weight: 0
-          , balance: 0
+          , weight: weight
+          , balance: balance
         });
         _index.push(token);
     }
