@@ -18,31 +18,31 @@ P  := Price (always "how Ti does one To cost") TODO or the opposite
 F  := Fee (as a percent, as a `bnum`)
 ```
 
-| Function | Release | Tests? 
+| Function
 |-|-|-|
-[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ |
-[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |
-[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ | 
-[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | Bronze🍂 |  |  
-[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  
-[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  
-[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`]() | Bronze🍂 |  |  
-[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`]() | Bronze🍂 |  |  
-[`isPoolOpen() returns (bool)`](#isPoolOpen) | Bronze🍂
-[`joinPool(uint Ai)`](#joinPool) | Bronze🍂
-[`exitPool(uint Ao)`](#exitPool) | Bronze🍂
-[`getJoinPoolAmounts(uint Ai) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | Bronze🍂
-[`getExitPoolAmounts(uint Ao) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | Bronze🍂
-[`start()`](#start) | Bronze🍂
-[`pause()`](#pause) | Bronze🍂
-[`bind(address T, uint B, uint W)`](#bind) | Bronze🍂
-[`unbind(address T)`](#unbind) | Bronze🍂
-[`sweep(address T)`](#sweep) | Bronze🍂
-[`setParams(address T, uint B, uint W)`](#setParams) | Bronze🍂
-[`setFee(uint F)`](#setFee) | Bronze🍂
-[`getBalance(address T) returns (uint)`](#getBalance) | Bronze🍂
-[`getWeight(address T) returns (uint)`](#getWeight) | Bronze🍂
-[`getTotalWeight() returns (uint)`](#getTotalWeight) | Bronze🍂
+[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) 
+[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut)  |
+[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | 
+[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | 
+[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) |
+[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | 
+[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`]() | 
+[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`]() | 
+[`isPoolOpen() returns (bool)`](#isPoolOpen) | 
+[`joinPool(uint Ai)`](#joinPool) | 
+[`exitPool(uint Ao)`](#exitPool) | 
+[`getJoinPoolAmounts(uint Ai) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | 
+[`getExitPoolAmounts(uint Ao) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | 
+[`start()`](#start) | 
+[`pause()`](#pause) | 
+[`bind(address T, uint B, uint W)`](#bind) | 
+[`unbind(address T)`](#unbind) | 
+[`sweep(address T)`](#sweep) | 
+[`setParams(address T, uint B, uint W)`](#setParams) | 
+[`setFee(uint F)`](#setFee) | 
+[`getBalance(address T) returns (uint)`](#getBalance) | 
+[`getWeight(address T) returns (uint)`](#getWeight) | 
+[`getTotalWeight() returns (uint)`](#getTotalWeight) | 
 
 ## Trader API
 
