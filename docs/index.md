@@ -18,9 +18,9 @@
 # Pooling
 | Function | Release | Tests? | Docs? |
 -|-|-|-
-`isPoolOpen` | Bronze🥉
-`pool` | Bronze🥉
-`unpool` | Bronze🥉
+| `isPoolOpen` | Bronze🥉
+| `pool` | Bronze🥉
+| `unpool` | Bronze🥉
 | `getRefPrice` | Bronze🥉 | |
 | `getAmountsForRefValue` | Bronze🥉
 
