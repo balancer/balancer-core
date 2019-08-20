@@ -14,6 +14,7 @@
 pragma solidity ^0.5.10;
 
 import "./BColor.sol";
+import "./BConst.sol";
 
 contract BBronze is BColor {
     function getColor()
@@ -23,16 +24,23 @@ contract BBronze is BColor {
     }
 }
 
-contract BPoolBronze is BBronze {
+contract BPoolBronze is BBronze, BConst {
     //== General View
     function isBound(address token) public view returns (bool);
     function isFlexible() public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
+    function getTotalWeight() public view returns (uint);
     function getBalance(address token) public view returns (uint);
 
-    // TODO:  V, denorm, etc
-    function getValue() public view returns (uint res);
+    //== Pooling
+    function isPoolOpen() public returns (bool);
+    function getJoinPoolAmounts(uint ptoken_amt_out)
+        public returns (uint[MAX_BOUND_TOKENS] memory);
+    function getExitPoolAmounts(uint ptoken_amt_in)
+        public returns (uint[MAX_BOUND_TOKENS] memory);
+    function joinPool(uint ptoken_amt_in) public;
+    function exitPool(uint ptoken_amt_out) public;
 
     //== Manager
     function start() public;

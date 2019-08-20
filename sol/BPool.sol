@@ -18,12 +18,10 @@ import 'erc20/erc20.sol';
 import 'ds-note/note.sol';
 
 import "./BBronze.sol";
-import "./BConst.sol";
 import "./BMath.sol";
 import "./BError.sol";
 
 contract BPool is BPoolBronze
-                , BConst
                 , BError
                 , BMath
                 , DSNote
@@ -100,6 +98,11 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
+    function getTotalWeight() public view returns (uint)
+    {
+        revert('unimplemented');
+    }
+
     function getBalance(address token)
       public view
         returns (uint) {
@@ -116,6 +119,21 @@ contract BPool is BPoolBronze
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
     }
+
+    function isPoolOpen() public returns (bool)
+        {revert('unimplemented');}
+    function getJoinPoolAmounts(uint ptoken_amt_out)
+        public returns (uint[MAX_BOUND_TOKENS] memory)
+        {revert('unimplemented');}
+    function getExitPoolAmounts(uint ptoken_amt_in)
+        public returns (uint[MAX_BOUND_TOKENS] memory)
+        {revert('unimplemented');}
+    function joinPool(uint ptoken_amt_in) public
+        {revert('unimplemented');}
+    function exitPool(uint ptoken_amt_out) public
+        {revert('unimplemented');}
+
+
 
     function setParams(address token, uint weight, uint balance)
       public {
