@@ -4,7 +4,7 @@ Each of the `Swap` base functions comes in 3 variants:
 * `trySwap_*(...) returns (uint256, bytes32 errcode)`
 * `doSwap_*(...) returns (uint256)`
 
-Variation | Modifies the state | Returns error code
+Variation | Modifies the state on success | Returns error code on failure
 -|-|-
 `viewSwap_` | False❌ | True✅
 `trySwap_` | True✅ | True✅
