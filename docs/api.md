@@ -18,16 +18,16 @@ P  := Price (always "how Ti does one To cost") TODO or the opposite
 F  := Fee (as a percent, as a `bnum`)
 ```
 
-| Function | Release | Tests? | Docs? |
-|-|-|-|-|
-[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
-[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | Bronze🍂 |  |  |
-[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`] | Bronze🍂 |  |  |
-[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`] | Bronze🍂 |  |  |
+| Function | Release | Tests? 
+|-|-|-|
+[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ |
+[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |
+[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ | 
+[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | Bronze🍂 |  |  
+[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  
+[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  
+[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`]() | Bronze🍂 |  |  
+[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`]() | Bronze🍂 |  |  
 [`isPoolOpen() returns (bool)`](#isPoolOpen) | Bronze🍂
 [`joinPool(uint Ai)`](#joinPool) | Bronze🍂
 [`exitPool(uint Ao)`](#exitPool) | Bronze🍂
