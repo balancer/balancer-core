@@ -2,7 +2,7 @@
 
 Each `swap` functions comes in three variations: [`viewSwap*`, `trySwap*`, and `doSwap*`](view-try-do.md)
 
-All `uint256` arguments are considered [`bnum`s].
+All `uint` (`uint256`) arguments are considered [`bnum`s].
 
 Argument shorthand:
 ```
@@ -10,34 +10,36 @@ Ti := Token In
 To := Token Out
 Ai := Amount In
 Ao := Amount Out
-B := Balance
-W := Weight
-P := Price (always "how Ti does one To cost") TODO or the opposite
-F := Fee (as a percent, as a `bnum`)
+Li := Limit In
+Lo := Limit Out
+B  := Balance
+W  := Weight
+P  := Price (always "how Ti does one To cost") TODO or the opposite
+F  := Fee (as a percent, as a `bnum`)
 ```
 
 | Function | Release | Tests? | Docs? |
 |-|-|-|-|
 [`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
-[`*Swap_ExactInAnyOut(address Ti, address To, uint Ai)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*Swap_ExactInMinOut(address Ti, address To, uint Ai, uint Lo)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*Swap_ExactInLimitPrice(address To, address To, uint Ai, uint P)`]() | Bronze🍂 |  |  |
-[`*Swap_AnyInExactOut`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*Swap_MaxInExactOut`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*Swap_LimitPriceExactOut`]() | Bronze🍂 |  |  |
-[`*Swap_MaxInMinOutLimitPrice`]() | Bronze🍂 |  |  |
+[`*Swap_ExactInAnyOut(address Ti, address To, uint Ai) returns (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*Swap_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) returns (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*Swap_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) returns (uint Ao)`]() | Bronze🍂 |  |  |
+[`*Swap_AnyInExactOut(address Ti, address To, uint Ao) returns (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*Swap_MaxInExactOut(address Ti, address To, uint Li, uint Ao returns (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*Swap_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) returns (uint Ao)`] | Bronze🍂 |  |  |
+[`*Swap_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) returns (uint Ai, uint Ao)`] | Bronze🍂 |  |  |
 [`isPoolOpen() returns (bool)`](#isPoolOpen) | Bronze🍂
-[`joinPool(uint ptoken_amt_in)`](#joinPool) | Bronze🍂
-[`exitPool(uint ptoken_amt_out)`](#exitPool) | Bronze🍂
-[`getJoinPoolAmounts(uint ptoken_amt_out) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | Bronze🍂
-[`getExitPoolAmounts(uint ptoken_amt_in) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | Bronze🍂
+[`joinPool(uint Ai)`](#joinPool) | Bronze🍂
+[`exitPool(uint Ao)`](#exitPool) | Bronze🍂
+[`getJoinPoolAmounts(uint Ai) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | Bronze🍂
+[`getExitPoolAmounts(uint Ao) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | Bronze🍂
 [`start()`](#start) | Bronze🍂
 [`pause()`](#pause) | Bronze🍂
 [`bind(address T, uint B, uint W)`](#bind) | Bronze🍂
 [`unbind(address T)`](#unbind) | Bronze🍂
 [`sweep(address T)`](#sweep) | Bronze🍂
 [`setParams(address T, uint B, uint W)`](#setParams) | Bronze🍂
-[`setFee(uint f)`](#setFee) | Bronze🍂
+[`setFee(uint F)`](#setFee) | Bronze🍂
 [`getBalance(address T) returns (uint)`](#getBalance) | Bronze🍂
 [`getWeight(address T) returns (uint)`](#getWeight) | Bronze🍂
 [`getTotalWeight() returns (uint)`](#getTotalWeight) | Bronze🍂
