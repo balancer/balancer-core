@@ -10,9 +10,9 @@
 | `*_ExactInMinOut` | Bronze🍁| ✅ |  |
 | `*_AnyInExactOut` | ❌| ✅ |  |
 | `*_MaxInExactOut` | Bronze🍂|  |  |
-| `*_ExactInLimitPrice` | Silver🥈 |  |  |
-| `*_LimitPriceExactOut` | Silver🥈 |  |  |
-| `*_MaxInMinOutLimitPrice` | Silver🥈|  |  |
+| `*_ExactInLimitPrice` | Silver👽 |  |  |
+| `*_LimitPriceExactOut` | Silver🐦 |  |  |
+| `*_MaxInMinOutLimitPrice` | Silver💿|  |  |
 | `getSpotPrice` | Bronze🐻 | |
 
 # Pooling
@@ -20,11 +20,10 @@
 Function | Release | Tests? | Docs? |
 -|-|-|-
 `isPoolOpen() returns (bool)` | Bronze🐂
-`getPoolTokenPrice(of_token)` or view\* ? | Bronze🦁 | |
-`getJoinPoolAmounts(ptoken_amt_out) returns (uint[MAX_TOKENS])` | Bronze🥉
-`getExitPoolAmounts(ptoken_amt_in) returns (uint[MAX_TOKENS])` | Bronze🥉
-`joinPool` | Bronze🥉
-`exitPool` | Bronze🥉
+`getJoinPoolAmounts(uint ptoken_amt_out) returns (uint[MAX_TOKENS])` | Bronze🥉
+`getExitPoolAmounts(uint ptoken_amt_in) returns (uint[MAX_TOKENS])` | Bronze🥉
+`joinPool(uint ptoken_amt_in)` | Bronze🥉
+`exitPool(uint ptoken_amt_out)` | Bronze🥉
 
 # Manager 
 
@@ -39,8 +38,9 @@ Function | Release | Tests? | Docs?
 `setFee` | Bronze🥉
 `getBalance` | Bronze🥉
 `getWeight` | Bronze🥉
-`getPercent` | Bronze🥉
-`setWeightAdjustBalance` | Silver🥈
-`setBalanceAdjustWeight` | Silver🥈
+`getTotalWeight` | Bronze🥉
+`getNormalizedWeight` | Bronze🥉
+`setWeightAdjustBalance` | Silver🔗
+`setBalanceAdjustWeight` | Silver🕊
 
 
