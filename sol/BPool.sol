@@ -163,6 +163,9 @@ contract BPool is BPoolBronze
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
+        check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        check(weight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
+        check( ! poolable, ERR_IMMUTABLE_POOL);
 
         uint oldWeight = records[token].weight;
         records[token].weight = weight;
@@ -180,6 +183,9 @@ contract BPool is BPoolBronze
         note {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
+        check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        check( ! poolable, ERR_IMMUTABLE_POOL);
 
         uint oldBalance = records[token].balance;
         records[token].balance = balance;
