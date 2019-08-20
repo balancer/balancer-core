@@ -23,7 +23,7 @@ Function | Release | Tests? | Docs? |
 `pool` | Bronze🥉
 `unpool` | Bronze🥉
 `getRefPrice` | Bronze🥉 | |
-`getAmountsForRefValue` | Bronze🥉
+`getAmountsForRefToken` | Bronze🥉
 
 # Manager 
 
