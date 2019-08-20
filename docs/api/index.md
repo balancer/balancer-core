@@ -10,9 +10,9 @@
 `*_ExactInMinOut` | Bronze🍁| ✅ |  |
 `*_AnyInExactOut` | ❌| ✅ |  |
 `*_MaxInExactOut` | Bronze🍂|  |  |
-`*_ExactInLimitPrice` | Silver👽 |  |  |
-`*_LimitPriceExactOut` | Silver🐦 |  |  |
-`*_MaxInMinOutLimitPrice` | Silver💿|  |  |
+`*_ExactInLimitPrice` | Silver👽? |  |  |
+`*_LimitPriceExactOut` | Silver🐦? |  |  |
+`*_MaxInMinOutLimitPrice` | Silver💿? |  |  |
 `getSpotPrice(address T) returns (uint)` | Bronze🐻 | |
 
 ## Pooling
@@ -39,9 +39,6 @@ Function | Release | Tests? | Docs?
 `getBalance(address T) returns (uint)` | Bronze🥉
 `getWeight(address T) returns (uint)` | Bronze🥉
 `getTotalWeight() returns (uint)` | Bronze🥉
-`getNormalizedWeight(address T) returns (uint)` | Bronze🥉
-`setWeightAdjustBalance` | Silver🔗
-`setBalanceAdjustWeight` | Silver🕊
 
 # API
 
@@ -52,34 +49,39 @@ Function | Release | Tests? | Docs?
 ### `*_ExactInLimitPrice`
 ### `*_LimitPriceExactOut`
 ### `*_MaxInMinOutLimitPrice`
-### `getSpotPrice (address T) returns (uint)`
+### `getSpotPrice(address T) returns (uint)`
 
-### `isPoolOpen () returns (bool)`
-### `getJoinPoolAmounts (uint ptoken_amt_out) returns (uint[MAX_TOKENS])`
-### `getExitPoolAmounts (uint ptoken_amt_in) returns (uint[MAX_TOKENS])`
-### `joinPool (uint ptoken_amt_in)`
-### `exitPool (uint ptoken_amt_out)`
+
+### `isPoolOpen() returns (bool)`
+### `getJoinPoolAmounts(uint ptoken_amt_out) returns (uint[MAX_TOKENS])`
+### `getExitPoolAmounts(uint ptoken_amt_in) returns (uint[MAX_TOKENS])`
+### `joinPool(uint ptoken_amt_in)`
+### `exitPool(uint ptoken_amt_out)`
 
 
 ### `start`
 
 Starts the pool, enabling `swap` variants. Requires at least 2 bound tokens.
 
-### `pause ()`
+### `pause()`
 
 Pauses the pool, disabling `swap` variants.
 
 ### `bind`
-#### `bind (address T, uint B, uint W)`
-### `unbind (address T)`
-### `sweep (address T)`
-### `setParams (address T, uint B, uint W)`
-### `setFee (uint f)`
-### `getBalance (address T) returns (uint)`
-### `getWeight (address T) returns (uint)`
-### `getTotalWeight (address T) returns (uint)`
-### `getNormalizedWeight (address T) returns (uint)`
-### `setWeightAdjustBalance`
-### `setBalanceAdjustWeight`
+`bind(address T, uint B, uint W)`
+### `unbind`
+`unbind(address T)`
+### `sweep`
+`sweep(address T)`
+### `setParams`
+`setParams(address T, uint B, uint W)`
+### `setFee`
+`setFee(uint f)`
+### `getBalance`
+`getBalance(address T) returns (uint)`
+### `getWeight`
+`getWeight(address T) returns (uint)`
+### `getTotalWeight`
+`getTotalWeight(address T) returns (uint)`
 
 
