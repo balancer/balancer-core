@@ -6,12 +6,14 @@
 
 | Function | Release | Tests? | Docs? |
 |-|-|-|-|
-`getSpotPrice(address T) returns (uint)` | Bronze🍂 | ✅ | |
-`*Swap_ExactInMinOut` | Bronze🍂| ✅ |  |
-`*Swap_MaxInExactOut` | Bronze🍂| ✅ |  |
-`*Swap_ExactInLimitPrice` | Bronze🍂 |  |  |
-`*Swap_LimitPriceExactOut` | Bronze🍂 |  |  |
-`*Swap_MaxInMinOutLimitPrice` | Bronze🍂 |  |  |
+[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
+[`*Swap_ExactInAnyOut`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*Swap_ExactInMinOut`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*Swap_ExactInLimitPrice`]() | Bronze🍂 |  |  |
+[`*Swap_AnyInExactOut`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*Swap_MaxInExactOut`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*Swap_LimitPriceExactOut`]() | Bronze🍂 |  |  |
+[`*Swap_MaxInMinOutLimitPrice`]() | Bronze🍂 |  |  |
 
 ## Pooling
 
@@ -42,12 +44,16 @@ Function | Release | Tests? | Docs?
 
 ### `getSpotPrice(address T) returns (uint)`
 `getSpotPrice(address T) returns (uint)`
+### `*Swap_ExactInAnyOut`
+`*Swap_ExactInAnyOut(...)`
 ### `*Swap_ExactInMinOut`
 `*Swap_ExactInMinOut(...)`
-### `*Swap_MaxInExactOut`
-`*Swap_MaxInExactOut(...)`
 ### `*Swap_ExactInLimitPrice`
 `*Swap_ExactInLimitPrice(...)`
+### `*Swap_MaxInAnyOut`
+`*Swap_MaxInAnyOut(...)`
+### `*Swap_MaxInExactOut`
+`*Swap_MaxInExactOut(...)`
 ### `*Swap_LimitPriceExactOut`
 `*Swap_LimitPriceExactOut(...)`
 ### `*Swap_MaxInMinOutLimitPrice`
