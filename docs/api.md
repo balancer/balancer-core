@@ -2,7 +2,7 @@
 
 Each `swap` functions comes in three variations: [`viewSwap*`, `trySwap*`, and `doSwap*`](view-try-do.md)
 
-All `uint` (`uint256`) arguments are considered [`bnum`s].
+All `uint` (`uint256`) arguments are considered [`bnum`s](bnum.md).
 
 Argument shorthand:
 ```
@@ -19,7 +19,7 @@ F  := Fee (as a percent, as a `bnum`)
 ```
 
 | Function
-|-|-|-|
+|-
 [`getSpotPrice(address T) returns (uint)`](#getSpotPrice) 
 [`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut)  |
 [`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | 
