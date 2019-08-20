@@ -21,13 +21,13 @@ F  := Fee (as a percent, as a `bnum`)
 | Function | Release | Tests? | Docs? |
 |-|-|-|-|
 [`getSpotPrice(address T) returns (uint)`](#getSpotPrice) | Bronze🍂 | ✅ | |
-[`*Swap_ExactInAnyOut(address Ti, address To, uint Ai) returns (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*Swap_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) returns (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
-[`*Swap_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) returns (uint Ao)`]() | Bronze🍂 |  |  |
-[`*Swap_AnyInExactOut(address Ti, address To, uint Ao) returns (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*Swap_MaxInExactOut(address Ti, address To, uint Li, uint Ao returns (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
-[`*Swap_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) returns (uint Ao)`] | Bronze🍂 |  |  |
-[`*Swap_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) returns (uint Ai, uint Ao)`] | Bronze🍂 |  |  |
+[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | Bronze🍂| ✅ |  |
+[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | Bronze🍂 |  |  |
+[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | Bronze🍂| ✅ |  |
+[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`] | Bronze🍂 |  |  |
+[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`] | Bronze🍂 |  |  |
 [`isPoolOpen() returns (bool)`](#isPoolOpen) | Bronze🍂
 [`joinPool(uint Ai)`](#joinPool) | Bronze🍂
 [`exitPool(uint Ao)`](#exitPool) | Bronze🍂
