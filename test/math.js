@@ -29,9 +29,9 @@ let assertCloseBN = (a, b, tolerance) => {
 
 describe("floatMath.js", function () {
     for( let pt of testPoints.spotPricePoints ) {
-        var desc = `${pt.res} ~= spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
+        var desc = `${pt.res} ~= calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, function () {
-            assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
+            assert.closeTo(pt.res, fMath.calc_SpotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
         });
     }
 
@@ -157,11 +157,11 @@ describe("BMath", () => {
         let Wi = toWei(pt.Wi).toString();
         let Bo = toWei(pt.Bo).toString();
         let Wo = toWei(pt.Wo).toString();
-        let desc = `${pt.res} ~= bMath.spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
+        let desc = `${pt.res} ~= bMath.calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
             let math = await pkg.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
+            var actual = await math.methods.calc_SpotPrice(Bi, Wi, Bo, Wo).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
@@ -174,11 +174,11 @@ describe("BMath", () => {
         let Bo   = toWei(pt.Bo).toString();
         let Wo   = toWei(pt.Wo).toString();
         let fee  = toWei(pt.fee).toString();
-        let desc = `${pt.res} ~= bMath.amountUpToPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
+        let desc = `${pt.res} ~= bMath.calc_InGivenPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
             let math = await pkg.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.amountUpToPrice(Bi, Wi, Bo, Wo, SER1, fee).call()
+            var actual = await math.methods.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }

@@ -589,8 +589,8 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint SER0 = spotPrice( I.balance, I.weight
-                             , O.balance, O.weight );
+        uint SER0 = calc_SpotPrice( I.balance, I.weight
+                                  , O.balance, O.weight );
 
         uint AiMax = calc_InGivenPrice( I.balance, I.weight
                                       , O.balance, O.weight
@@ -643,8 +643,8 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint SER0 = spotPrice( I.balance, I.weight
-                             , O.balance, O.weight );
+        uint SER0 = calc_SpotPrice( I.balance, I.weight
+                                  , O.balance, O.weight );
 
         Ai = calc_InGivenPrice( I.balance, I.weight
                               , O.balance, O.weight
