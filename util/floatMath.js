@@ -167,6 +167,20 @@ module.exports.floatMath = {
 
     getRefSpotPrice: function(Bo, Wo, tokens) {
         return (Bo/Wo) / this.getValue(tokens);
-    }
+    },
+
+    getTotalWeight: function(tokens) {
+        let res = 0;
+        for (let token of tokens) {
+            res += token[1];
+        }
+        return res;
+    },
+
+    getNormalizedWeight: function(W, tokens) {
+        let totalWeight = this.getTotalWeight(tokens);
+        if (totalWeight == 0) return 0;
+        return W/totalWeight;
+    },
 
 }

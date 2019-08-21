@@ -84,13 +84,24 @@ describe("floatMath.js", function () {
     }
 
     for( let pt of testPoints.refSpotPricePoints) {
-        let Bo     = pt.Bo;
-        let Wo     = pt.Wo;
         let tokens = pt.tokens;
+        let Bo     = tokens[0][0];
+        let Wo     = tokens[0][1];
         let res    = pt.res;
         var desc = `${res} ~= getRefSpotPrice(Bo, Wo, ${tokens})`;
         it(desc, function () {
             assert.closeTo( res, fMath.getRefSpotPrice(Bo, Wo, tokens)
+                          , approxTolerance);
+        });
+    }
+
+    for( let pt of testPoints.normalizedWeightPoints) {
+        let tokens = pt.tokens;
+        let W     = tokens.length > 0 ? tokens[0][1] : 0;
+        let res    = pt.res;
+        var desc = `${res} ~= getNormalizedWeight(W, ${tokens})`;
+        it(desc, function () {
+            assert.closeTo( res, fMath.getNormalizedWeight(W, tokens)
                           , approxTolerance);
         });
     }

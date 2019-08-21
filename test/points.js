@@ -34,6 +34,7 @@ module.exports.math = {
 
 
 module.exports.spotPricePoints = [
+
     {res: 4, Bi: 1, Wi: 0.2, Bo: 10, Wo: 0.5},
     {res: 1/4, Bi: 10, Wi: 0.5, Bo: 1, Wo: 0.2},
 
@@ -67,16 +68,59 @@ module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / 0.9, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0.1},
 ]
 
-module.exports.LimitInGivenOutPoints = [
+module.exports.MaxInExactOutPoints = [
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
 //        Li: 0},
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-//        Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 - 1},
-    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-        Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600},
+//        Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600},
     {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
         Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 + 1},
+    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
+        Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 + 100},
 ]
+
+let priceRatio   = 0.95
+let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
+module.exports.ExactInLimitPricePoints = [
+    {res: (1 - Math.pow((235/(235+Ai_fromPrice)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio},
+    //lower Ai
+    {res: (1 - Math.pow((235/(235+(Ai_fromPrice - 0.001))),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice - 0.001, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio},
+    //lower Lp
+    {res: (1 - Math.pow((235/(235+(Ai_fromPrice - 0.001))),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice - 0.001, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio * 0.95},
+]
+
+Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
+let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
+module.exports.LimitPriceInExactOutPoints = [
+    {res: Ai_fromPrice, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: Ao_fromPrice, fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+    //continuity
+    {res: (Math.pow(523/(523-(Ao_fromPrice)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+    //lower Lp
+    {res: (Math.pow(523/(523-(Ao_fromPrice)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio * 0.95},
+    //lower Ao
+    {res: (Math.pow(523/(523-(Ao_fromPrice-0.001)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice - 0.001), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+]
+
+/*
+module.exports.MaxInMinOutLimitPricePoints = [
+    {res: [Ai_fromPrice, Ao_fromPrice], 
+}
+*/
+
+
+
+
+
+
+//module.exports.errors = { ERR_LIMIT_FAILED: 0x30 };
+
 
 module.exports.amountUpToPricePoints = [
     {res: 1.06008957447, Bi: 10, Wi: 0.3, Bo: 5260, Wo: 0.3, SER1: 430, fee: 0},
@@ -112,16 +156,35 @@ module.exports.valuePoints = [
 ];
 
 module.exports.refSpotPricePoints = [
-    {res: (526/0.32)/(Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1)), 
-        Bo: 526,
-        Wo: 0.32,
-
-        tokens: [[300, 0.399],
+    {res: (526/0.32)/(Math.pow(526, 0.32)*Math.pow(300, 0.399)*Math.pow(874, 0.2)*Math.pow(375, 0.001)*Math.pow(282, 0.3)*Math.pow(2, 0.1)), 
+        tokens: [[526, 0.32],
+                 [300, 0.399],
                  [874, 0.2],
                  [375, 0.001],
                  [282, 0.3],
                  [2,   0.1]],}
 ];
+
+module.exports.normalizedWeightPoints = [
+    {res: 0, tokens: []},
+    {res: 0,
+        tokens: [[0, 0],
+                 [526, 0.32],
+                 [300, 0.399],
+                 [874, 0.2],
+                 [375, 0.001],
+                 [282, 0.3],
+                 [2,   0.1]],},
+    {res: 0.32/(0.32+0.399+0.2+0.001+0.3+0.1),
+        tokens: [[526, 0.32],
+                 [300, 0.399],
+                 [874, 0.2],
+                 [375, 0.001],
+                 [282, 0.3],
+                 [2,   0.1]],},
+];
+
+
 
 
 
