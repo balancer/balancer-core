@@ -27,10 +27,21 @@ describe("manager and pooling", async () => {
     it("join/exit", async () => {
         let ABalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
-        let PBalBefore = await env.bpool.methods.getPoolTokenSupply().call();
+        let PSupplyBefore = await env.bpool.methods.getPoolTokenSupply().call();
 
         await env.bpool.methods.joinPool(web3.utils.toWei('1.0'))
                        .send({from: env.admin});
+
+        let ABalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
+        let BBalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
+        let PSupplyMiddle = await env.bpool.methods.getPoolTokenSupply().call();
+
+        await env.bpool.methods.exitPool(web3.utils.toWei('1.0'))
+                       .send({from: env.admin});
+
+        let ABalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
+        let BBalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
+        let PSupplyAfter = await env.bpool.methods.getPoolTokenSupply().call();
     });
 });
 
