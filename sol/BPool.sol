@@ -134,22 +134,39 @@ contract BPool is BPoolBronze
         return poolable;
     }
     function joinPool(uint poolAo)
-        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut)
+        public
     {
-        revert('unimplemented');
+        require(poolable, "not poolable");
+        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint ratio = bdiv(poolAo, poolTotal);
+        for( uint i = 0; i < _index.length; i++ ) {
+            address t = _index[i];
+            uint bal = records[t].balance;
+            uint tAi = bmul(ratio, bal);
+            bool ok = ERC20(t).transferFrom(msg.sender, address(this), tAi);
+            check(ok, ERR_ERC20_FALSE);
+        }
+        bool ok = ERC20(poolcoin).transfer(msg.sender, poolAo);
+        check(ok, ERR_ERC20_FALSE);
     }
     function exitPool(uint poolAi)
-        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn)
+        public
     {
-        revert('unimplemented');
-    }
-    function getJoinPoolAmounts(uint poolAo)
-        public returns (uint[MAX_BOUND_TOKENS] memory amountsIn)
-        {revert('unimplemented');}
-    function getExitPoolAmounts(uint poolAi)
-        public returns (uint[MAX_BOUND_TOKENS] memory amountsOut)
-        {revert('unimplemented');}
+        require(poolable, "not poolable");
+        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint ratio = bdiv(poolAi, poolTotal);
 
+        bool ok = ERC20(poolcoin).transferFrom(msg.sender, address(this), poolAi);
+        check(ok, ERR_ERC20_FALSE);
+
+        for( uint i = 0; i < _index.length; i++ ) {
+            address t = _index[i];
+            uint bal = records[t].balance;
+            uint tAo = bmul(ratio, bal);
+            bool ok = ERC20(t).transfer(msg.sender, tAo);
+            check(ok, ERR_ERC20_FALSE);
+        }
+    }
 
     function setParams(address token, uint weight, uint balance)
       public {
