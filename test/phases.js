@@ -16,14 +16,12 @@ describe("scene tests", async () => {
     let accts;
     let admin;
     let env = {};
-    beforeEach(async () => {
-        accts = await web3.eth.getAccounts();
-        admin = accts[0];
-    });
     it("phase0 postconditions", async () => {
         env = await scene.phase0(web3, admin);
 
         assert.exists(env.admin);
+        assert.exists(env.user1);
+        assert.exists(env.user2);
         assert.exists(env.factory);
     });
     it("phase1 postconditions", async () => {
@@ -40,9 +38,9 @@ describe("scene tests", async () => {
         assert.exists(env.ccoin);
 
         let max = web3.utils.toBN(web3.utils.toTwosComplement('-1'));
-        let abal = await env.acoin.methods.balanceOf(admin).call();
-        let bbal = await env.bcoin.methods.balanceOf(admin).call();
-        let cbal = await env.ccoin.methods.balanceOf(admin).call();
+        let abal = await env.acoin.methods.balanceOf(env.admin).call();
+        let bbal = await env.bcoin.methods.balanceOf(env.admin).call();
+        let cbal = await env.ccoin.methods.balanceOf(env.admin).call();
 
         assert.equal(abal, max);
         assert.equal(bbal, max);
@@ -59,4 +57,16 @@ describe("scene tests", async () => {
             assert.equal(truebal, env.initBalance, "wrong coin.balanceOf(bpool)");
         }
     })
+    it("phase3 postconditions", async () => {
+        env = await scene.phase3(web3, admin);
+        for( user of [env.user1, env.user2] ) {
+            for( coin of [env.acoin, env.bcoin, env.ccoin] ) {
+                let bal = await coin.methods.balanceOf(user).call();
+                assert.equal(bal, env.initBalance);
+                // TToken mock allowance
+                //let trusts = await coin.methods.trusts(user, bpool._address).call();
+                //assert(trusts);
+            }
+        }
+    });
 });
