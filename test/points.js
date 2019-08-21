@@ -121,6 +121,15 @@ module.exports.MaxInMinOutLimitPricePoints = [
         Lo: Ao_fromPrice*tokenRatio, 
         fee: 0,
         Lp: (523/0.2)/(600/0.5) * priceRatio},
+    {res: [ (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600, 
+            (1 - (600/(600 + (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600))**(0.5/0.2)) * 523], 
+        Bi: 600, Wi: 0.5, 
+        Li: Ai_fromPrice/(tokenRatio*tokenRatio), 
+        Bo: 523, Wo: 0.2, 
+        Lo: Ao_fromPrice*(tokenRatio*tokenRatio), 
+        fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+ 
     // Lp fails on low Li
     {res: [ (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600 * tokenRatio, 
             (1 - (600/(600 + (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600 * tokenRatio))**(0.5/0.2)) * 523], 
@@ -130,6 +139,15 @@ module.exports.MaxInMinOutLimitPricePoints = [
         Lo: Ao_fromPrice*tokenRatio, 
         fee: 0,
         Lp: (523/0.2)/(600/0.5) * priceRatio},
+    {res: [ (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600 * tokenRatio, 
+            (1 - (600/(600 + (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600 * tokenRatio))**(0.5/0.2)) * 523], 
+        Bi: 600, Wi: 0.5, 
+        Li: Ai_fromPrice * tokenRatio, 
+        Bo: 523, Wo: 0.2, 
+        Lo: Ao_fromPrice*tokenRatio*tokenRatio, 
+        fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+ 
  
 ]
 
