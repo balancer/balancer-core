@@ -1,7 +1,6 @@
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 let assert = require("chai").assert;
-
 let pkg = require("../package.js");
 pkg.types.loadTypes("../tmp/combined.json");
 
@@ -12,10 +11,12 @@ let web3 = new Web3(ganache.provider({
 }));
 
 let scene = require("./scene.js");
+
 describe("scene tests", async () => {
     let accts;
     let admin;
     let env = {};
+
     it("phase0 postconditions", async () => {
         env = await scene.phase0(web3, admin);
 
@@ -24,6 +25,7 @@ describe("scene tests", async () => {
         assert.exists(env.user2);
         assert.exists(env.factory);
     });
+
     it("phase1 postconditions", async () => {
         env = await scene.phase1(web3, admin);
 
@@ -46,6 +48,7 @@ describe("scene tests", async () => {
         assert.equal(bbal, max);
         assert.equal(cbal, max);
     });
+
     it("phase2 postconditions", async () => {
         env = await scene.phase2(web3, admin);
         let paused = await env.bpool.methods.isPaused().call();
@@ -57,6 +60,7 @@ describe("scene tests", async () => {
             assert.equal(truebal, env.initBalance, "wrong coin.balanceOf(bpool)");
         }
     })
+
     it("phase3 postconditions", async () => {
         env = await scene.phase3(web3, admin);
         for( user of [env.user1, env.user2] ) {
