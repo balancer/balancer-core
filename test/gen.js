@@ -1,6 +1,7 @@
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 let assert = require("chai").assert;
+let fmath = require("../util/floatMath.js").floatMath;
 let pkg = require("../package.js");
 pkg.types.reloadTypes("../tmp/combined.json");
 
@@ -32,15 +33,12 @@ assert.closeBN = (actual, expected) => {
         expectedBN = web3.utils.toBN(expected);
     }
     let diff = actualBN.sub(expectedBN).abs();
-    console.log(`diff: ${diff}`)
-    console.log(`toleranceBN: ${toleranceBN}`)
-    console.log(diff.lt(toleranceBN));
     assert(diff.lt(toleranceBN),
         `assert.closeBN( ${actual}, ${expected}, ${toleranceBN} )`
     );
 }
 
-describe("generated tests: BMath", () => {
+describe("generated math tests", () => {
     let env;
     let bmath;
     beforeEach(async () => {
@@ -51,16 +49,26 @@ describe("generated tests: BMath", () => {
         pairs = mathTests[funcname]
         for( let pair of pairs ) {
             let expected = pair[0];
-            let expectedBN = web3.utils.toWei(expected.toString());
             let args = pair[1]
+            desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
+            let actual;
+            it(desc_fmath, async () => {
+                actual = fmath[funcname](...args);
+                assert.closeTo(expected, actual, tolerance);
+            });
+            let expectedBN = web3.utils.toWei(expected.toString());
             let argsBN = [];
             for( arg of args ) {
                 argsBN.push(web3.utils.toWei(arg.toString()))
             }
-            let desc = `${expected} ?= ${funcname}(${args})`;
-            it(desc, async () => {
-                let actualBN = await bmath.methods[funcname](...argsBN).call();
+            desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
+            let actualBN;
+            it(desc_bmath, async () => {
+                actualBN = await bmath.methods[funcname](...argsBN).call();
                 assert.closeBN(actualBN, expectedBN);
+            });
+            it(`fmath.${funcname}(${args}) ~= bmath.${funcname}(...)`, () => {
+                assert.closeBN(actualBN, toBNum(actual));
             });
         }
     }
