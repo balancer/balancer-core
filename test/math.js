@@ -34,20 +34,6 @@ describe("floatMath.js", function () {
             assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
         });
     }
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        var desc = `${pt.res} == swapIMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, function () {
-            assert.closeTo( pt.res, fMath.calc_OutGivenInExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
-                          , floatEqTolerance);
-        });
-    }
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, function () {
-            assert.closeTo( pt.res, fMath.calc_OutGivenInApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
-                          , approxTolerance);
-        });
-    }
 
     for( let pt of testPoints.calc_InGivenOutPoints ) {
         var desc = `${pt.res} == calc_InGivenOutExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
@@ -186,23 +172,6 @@ describe("BMath", () => {
         });
     }
  
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        let res = toWei(pt.res);
-        let Bi = toWei(pt.Bi).toString();
-        let Wi = toWei(pt.Wi).toString();
-        let Bo = toWei(pt.Bo).toString();
-        let Wo = toWei(pt.Wo).toString();
-        let Ai = toWei(pt.Ai).toString();
-        let fee = toWei(pt.fee).toString();
-        var desc = `${pt.res} ~= bMath.calc_OutGivenIn(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, async () => {
-            let accts = await web3.eth.getAccounts();
-            let math = await pkg.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee).call();
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
-        });
-    }
-
     for( let pt of testPoints.calc_InGivenOutPoints ) {
         let res = toWei(pt.res);
         let Bi = toWei(pt.Bi).toString();
