@@ -75,8 +75,11 @@ module.exports.phase3 = async (web3) => {
 
     for( user of [env.user1, env.user2] ) {
         for( coin of [env.acoin, env.bcoin, env.ccoin] ) {
-            await coin.methods.transfer(user, env.initBalance).send({from: env.admin});
-            //await coin.methods.trust(env.bpool._address, true).send({from: user});
+            await coin.methods.transfer(user, env.initBalance)
+                      .send({from: env.admin});
+            // DSToken MAX_U256 means infinite allowance
+            await coin.methods.approve(env.bpool._address, web3.utils.toTwosComplement("-1"))
+                      .send({from: user});
         }
     }
     return env;

@@ -15,6 +15,7 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import 'ds-token/token.sol';
 import 'ds-note/note.sol';
 
 import "./BBronze.sol";
@@ -28,10 +29,13 @@ contract BPool is BPoolBronze
 {
     bool                      paused;
     address                   manager;
-    uint                      fee;
-    uint                      totalWeight;
+
+    uint                      tradeFee;
+    uint                      exitFee;
+
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
+    uint                      totalWeight;
 
     bool                      poolable;
     address                   poolcoin;
@@ -43,11 +47,11 @@ contract BPool is BPoolBronze
         uint    balance; // bnum
     }
 
-    constructor(address newBToken) public {
+    constructor(bool enableToken) public {
         manager = msg.sender;
         paused = true;
-        poolcoin = newBToken;
-        poolable = false;
+        poolcoin = address(new DSToken("Balancer Pool Token (Bronze)"));
+        poolable = enableToken;
     }
 
     function getPoolToken()
@@ -89,7 +93,7 @@ contract BPool is BPoolBronze
     function getFee()
       public view
         returns (uint) {
-        return fee;
+        return tradeFee;
     }
 
     function getWeight(address token)
@@ -114,25 +118,20 @@ contract BPool is BPoolBronze
         revert('unimplemented');
     }
 
-    function getWeightedTotalBalance() public view returns (uint)
-    {
-        revert('unimplemented');
-    }
- 
-    function getValue()
-      public view
-        returns (uint res)
+    function getWeightedTotalBalance() public view returns (uint res)
     {
         if (_index.length == 0) return 0;
-        res = 1;
+        res = BONE;
         for (uint i = 0; i < _index.length; i++) {
             res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
         }
+        return res;
     }
-
+ 
     function isPoolOpen() public view returns (bool) {
         return poolable;
     }
+
     function joinPool(uint poolAo)
         public
     {
@@ -149,6 +148,7 @@ contract BPool is BPoolBronze
         bool ok = ERC20(poolcoin).transfer(msg.sender, poolAo);
         check(ok, ERR_ERC20_FALSE);
     }
+
     function exitPool(uint poolAi)
         public
     {
@@ -217,12 +217,12 @@ contract BPool is BPoolBronze
 
     }
 
-    function setFee(uint fee_)
+    function setFee(uint tradeFee_)
       public
         note {
         check(msg.sender == manager, ERR_BAD_CALLER);
-        check(fee_ <= MAX_FEE, ERR_MAX_FEE);
-        fee = fee_;
+        check(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
+        tradeFee = tradeFee_;
     }
 
     function setManager(address manager_)
@@ -317,7 +317,7 @@ contract BPool is BPoolBronze
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
-                            , Ai, fee );
+                            , Ai, tradeFee );
 
         if( paused ) return (Ao, ERR_PAUSED);
 
@@ -337,7 +337,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             return (Ao, ERR_NONE);
         }
     }
@@ -363,7 +363,7 @@ contract BPool is BPoolBronze
 
         Ai = calc_InGivenOut( I.balance, I.weight
                             , O.balance, O.weight
-                            , Ao, fee );
+                            , Ao, tradeFee );
 
         if( paused ) return (Ai, ERR_PAUSED);
 
@@ -383,7 +383,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             return (Ai, ERR_NONE);
         }
     }
@@ -409,7 +409,7 @@ contract BPool is BPoolBronze
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
-                            , Ai, fee );
+                            , Ai, tradeFee );
 
         if( paused ) return (Ao, ERR_PAUSED);
 
@@ -432,7 +432,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             return (Ao, ERR_NONE);
         }
     }
@@ -459,7 +459,7 @@ contract BPool is BPoolBronze
 
         Ai = calc_InGivenOut( I.balance, I.weight
                             , O.balance, O.weight
-                            , Ao, fee );
+                            , Ao, tradeFee );
 
         if( paused ) return (Ai, ERR_PAUSED);
 
@@ -481,7 +481,7 @@ contract BPool is BPoolBronze
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
             check(okOut, ERR_ERC20_FALSE);
 
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             return (Ai, ERR_NONE);
         }
     }

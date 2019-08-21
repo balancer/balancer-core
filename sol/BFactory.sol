@@ -18,28 +18,24 @@ import 'ds-token/token.sol';
 import "./BBronze.sol";
 import "./BConst.sol";
 
-import "./BToken.sol";
 import "./BPool.sol";
 
 contract BFactory is BBronze
                    , BConst
 {
-    mapping(address=>bool) public wasBTokenBuiltHere;
     mapping(address=>bool) public wasBPoolBuiltHere;
 
     event LOG_newBPool( address indexed caller
-                       , address pool
-                       , address poolcoin );
+                       , address pool );
+
     function newBPool()
       public
         returns (BPool)
     {
-        BToken poolcoin = new BToken();
-        BPool bpool = new BPool(address(poolcoin));
+        BPool bpool = new BPool(false);
         bpool.setManager(msg.sender);
         wasBPoolBuiltHere[address(bpool)] = true;
-        wasBTokenBuiltHere[address(poolcoin)] = true;
-        emit LOG_newBPool(msg.sender, address(bpool), address(poolcoin));
+        emit LOG_newBPool(msg.sender, address(bpool));
         return bpool;
     }
 }

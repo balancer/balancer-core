@@ -32,8 +32,6 @@ describe("scene tests", async () => {
         assert.exists(env.bpool, "bpool");
         let poolBuiltHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
         assert(poolBuiltHere, "factory doesn't remember building bpool");
-        let tokenBuiltHere = await env.factory.methods.wasBTokenBuiltHere(env.poolcoin._address).call();
-        assert(tokenBuiltHere, "factory doesn't remember building poolcoin");
 
         assert.exists(env.acoin);
         assert.exists(env.bcoin);
@@ -67,9 +65,10 @@ describe("scene tests", async () => {
             for( coin of [env.acoin, env.bcoin, env.ccoin] ) {
                 let bal = await coin.methods.balanceOf(user).call();
                 assert.equal(bal, env.initBalance);
-                // TToken mock allowance
-                //let trusts = await coin.methods.trusts(user, bpool._address).call();
-                //assert(trusts);
+                // DSToken MAX_U256 means infinite allowance
+                let allowance = await coin.methods.allowance(user, env.bpool._address).call();
+                let max = web3.utils.toBN(web3.utils.toTwosComplement("-1"));
+                assert.equal(allowance, max);
             }
         }
     });

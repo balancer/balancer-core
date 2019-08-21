@@ -128,6 +128,8 @@ describe("BPool", () => {
         }
         await bpool.methods.start().send({from: acct0});
     });
+    it("pool in and out", async () => {
+    });
     it("deployTestScenario", async () => {
         let env = await deployTestScenario(web3);
         let bbefore = await env.bcoin.methods.balanceOf(env.admin).call();
