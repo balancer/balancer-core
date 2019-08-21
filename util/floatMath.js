@@ -92,6 +92,9 @@ module.exports.floatMath = {
         return Bi * (bar - 1) / (1 - fee);
     },
 
+    calc_InGivenOut: function() {
+        return module.exports.floatMath.calc_InGivenOutApprox(...arguments);
+    },
     calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
