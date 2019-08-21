@@ -60,6 +60,12 @@ contract BPool is BPoolBronze
         return poolcoin;
     }
 
+    function getPoolTokenSupply()
+      public view
+        returns (uint) {
+        return ERC20(poolcoin).totalSupply();
+    }
+
     function getManager()
       public view
         returns (address) {
