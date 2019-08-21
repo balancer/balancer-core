@@ -1,5 +1,5 @@
 let pkg = require("../package.js");
-pkg.types.reloadTypes("../tmp/combined.json");
+pkg.types.loadTypes("../tmp/combined.json");
 
 // phase0: 
 //  env.admin = accts[0]

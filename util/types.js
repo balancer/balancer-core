@@ -11,10 +11,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-let buildout = require("../out/combined.json");
-var types = buildout.contracts;
+module.exports.loadTypes = function(path) {
+    let buildout = require(path);
+    let types = buildout.contracts;
 
-function liftAll() {
     function lift(type) {
         types[type] = types[`sol/${type}.sol:${type}`];
     }
@@ -29,14 +29,8 @@ function liftAll() {
     lift("BPool");
     lift("BToken");
     lift("TToken");
+
+    module.exports.types = types;
 }
 
-liftAll();
-
-module.exports.reloadTypes = function(path) {
-    let buildout = require(path);
-    types = buildout.contracts;
-    liftAll();
-}
-
-module.exports.types = types;
+module.exports.loadTypes("../out/combined.json");

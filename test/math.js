@@ -3,7 +3,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../package.js");
-pkg.types.reloadTypes("../tmp/combined.json");
+pkg.types.loadTypes("../tmp/combined.json");
 let math = require("../util/floatMath.js")
 let fMath = math.floatMath;
 
