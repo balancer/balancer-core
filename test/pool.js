@@ -173,7 +173,7 @@ describe("BPool", () => {
         });
     }
 
-    for( pt of testPoints.LimitPriceOutGivenInPoints ) {
+    for( pt of testPoints.ExactInLimitPricePoints ) {
         let Ai  = toWei(pt.Ai.toString());
         let Bi  = toWei(pt.Bi.toString());
         let Wi  = toWei(pt.Wi.toString());
@@ -205,7 +205,7 @@ describe("BPool", () => {
     }
 
 
-    for( pt of testPoints.LimitInGivenOutPoints ) {
+    for( pt of testPoints.MaxInExactOutPoints ) {
         let Ao  = toWei(pt.Ao.toString());
         let Bi  = toWei(pt.Bi.toString());
         let Li  = toWei(pt.Li.toString());
@@ -236,7 +236,7 @@ describe("BPool", () => {
         });
     }
 
-    for( pt of testPoints.LimitPriceInGivenOutPoints ) {
+    for( pt of testPoints.LimitPriceInExactOutPoints ) {
         let Ao  = toWei(pt.Ao.toString());
         let Bi  = toWei(pt.Bi.toString());
         let Lp  = toWei(pt.Lp.toString());

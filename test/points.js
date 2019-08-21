@@ -44,7 +44,7 @@ module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / 0.9, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0.1},
 ]
 
-module.exports.LimitInGivenOutPoints = [
+module.exports.MaxInExactOutPoints = [
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
 //        Li: 0},
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
@@ -55,36 +55,43 @@ module.exports.LimitInGivenOutPoints = [
         Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 + 100},
 ]
 
-module.exports.LimitPriceOutGivenInPoints = [
-//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-//        Lp: 0},
-    //{res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-    //    Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150) - 0.001},
- 
-    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-        Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150)},
-    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-        Lp: 32/((1 - Math.pow((235/(235+32)),(0.5/0.2)))*150) + 0.001},
- 
-    //    NO REVERT TESTING YET
-//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-//        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1},
+let priceRatio   = 0.95
+let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
+module.exports.ExactInLimitPricePoints = [
+    {res: (1 - Math.pow((235/(235+Ai_fromPrice)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio},
+    //lower Ai
+    {res: (1 - Math.pow((235/(235+(Ai_fromPrice - 0.001))),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice - 0.001, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio},
+    //lower Lp
+    {res: (1 - Math.pow((235/(235+(Ai_fromPrice - 0.001))),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice - 0.001, fee: 0, 
+        Lp: (150/0.2)/(235/0.5) * priceRatio * 0.95},
 ]
 
-module.exports.LimitPriceInGivenOutPoints = [
-//    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-//        Lp: 0},
-//    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-//        Lp: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 - 1},
-//    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-//        Lp: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600/70 - 0.001},
-//    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-//        Lp: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600/70},
-    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-        Lp: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600/70 + 0.001},
-    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
-        Lp: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600/70 + 0.002},
+Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
+let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
+module.exports.LimitPriceInExactOutPoints = [
+    {res: Ai_fromPrice, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: Ao_fromPrice, fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+    //continuity
+    {res: (Math.pow(523/(523-(Ao_fromPrice)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
+    //lower Lp
+    {res: (Math.pow(523/(523-(Ao_fromPrice)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio * 0.95},
+    //lower Ao
+    {res: (Math.pow(523/(523-(Ao_fromPrice-0.001)),0.2/0.5) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: (Ao_fromPrice - 0.001), fee: 0,
+        Lp: (523/0.2)/(600/0.5) * priceRatio},
 ]
+
+/*
+module.exports.MaxInMinOutLimitPricePoints = [
+    {res: [Ai_fromPrice, Ao_fromPrice], 
+}
+*/
+
+
+
 
 
 

@@ -448,7 +448,7 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
-    function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+    function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
         public returns (uint256 Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
@@ -458,22 +458,27 @@ contract BPool is BPoolBronze
         Record storage O = records[address(To)];
 
 
-        Ao = calc_OutGivenIn( I.balance, I.weight
-                            , O.balance, O.weight
-                            , Ai, fee );
+
+        uint maxAi = calc_InGivenPrice( I.balance, I.weight
+                                      , O.balance, O.weight
+                                      , SER1, fee );
 
         if( paused ) return (Ao, ERR_PAUSED);
 
-        if( Ai > bmul(Lp, Ao) ) return (Ao, ERR_LIMIT_FAILED);
+        if( Ai > maxAi ) return (Ao, ERR_LIMIT_FAILED);
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
 
         return (Ao, ERR_NONE);
  
     }
 
-    function trySwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+    function trySwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
         public returns (uint256 Ao, byte err)
     {
-        (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, Lp);
+        (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         if (err != ERR_NONE) {
             return (Ai, err);
         } else {
@@ -488,12 +493,12 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 Lp)
+    function doSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
         public returns (uint256 Ao)
     {
         byte err;
         
-        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, Lp);
+        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         check(err);
         return Ai;
     }
@@ -547,7 +552,7 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
-    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 Lp)
+    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 SER1)
       public view
         returns (uint Ai, byte err)
     {
@@ -557,13 +562,20 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        Ai = calc_InGivenOut( I.balance, I.weight
-                            , O.balance, O.weight
-                            , Ao, fee );
+        uint SER0 = spotPrice( I.balance, I.weight
+                             , O.balance, O.weight );
+
+        uint AiMax = calc_InGivenPrice( I.balance, I.weight
+                                      , O.balance, O.weight
+                                      , SER1, fee );
+                
+        Ai    = calc_InGivenOut( I.balance, I.weight
+                               , O.balance, O.weight
+                               , Ao, fee );
 
         if( paused ) return (Ai, ERR_PAUSED);
 
-        if( Ai > bmul(Ao, Lp) ) return (Ai, ERR_LIMIT_FAILED);
+        if( Ai > AiMax ) return (Ai, ERR_LIMIT_FAILED);
 
         return (Ai, ERR_NONE);
     }
@@ -595,6 +607,59 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
+    function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao, byte err)
+    {
+        if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
 
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
 
+        uint SER0 = spotPrice( I.balance, I.weight
+                             , O.balance, O.weight );
+
+        Ai = calc_InGivenPrice( I.balance, I.weight
+                              , O.balance, O.weight
+                              , SER1, fee );
+
+        if( Ai > Li ) return (Ai, Ao, ERR_LIMIT_FAILED);
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, fee );
+
+        if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
+
+        if( paused ) return (Ai, Ao, ERR_PAUSED);
+
+        return (Ai, Ao, ERR_NONE);
+    }
+
+    function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao, byte err)
+    {
+        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
+        if (err != ERR_NONE) {
+            return (Ai, Ao, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+            return (Ai, Ao, ERR_NONE);
+        }
+    }
+
+    function doSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao)
+    {
+        byte err;
+        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
+        check(err);
+        return (Ai, Ao);
+    }
 }
