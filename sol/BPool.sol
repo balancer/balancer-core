@@ -623,7 +623,7 @@ contract BPool is BPoolBronze
                               , O.balance, O.weight
                               , SER1, fee );
 
-        if( Ai > Li ) return (Ai, Ao, ERR_LIMIT_FAILED);
+        if( Ai > Li ) Ai = Li;
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
@@ -639,7 +639,7 @@ contract BPool is BPoolBronze
     function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
       public returns (uint Ai, uint Ao, byte err)
     {
-        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
+        (Ai, Ao, err) = viewSwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
         if (err != ERR_NONE) {
             return (Ai, Ao, err);
         } else {

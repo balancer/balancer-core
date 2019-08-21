@@ -77,6 +77,7 @@ contract BMath is BNum
         Ai           = bdiv(bmul(Bi, foo), Ai);
     }
 
+    // exchange rate of Ti:To pair
     function spotPrice( uint Bi, uint Wi
                       , uint Bo, uint Wo )
       public pure

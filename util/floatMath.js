@@ -11,6 +11,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+let assert = require('chai').assert;
+
 // Bi := Balance of token In
 // Bo := Balance of token Out
 // Wi := Weight of token In
@@ -47,6 +49,9 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
     },
 
+    calc_OutGivenIn: function() {
+        return module.exports.floatMath.calc_OutGivenInApprox(...arguments);
+    },
     calc_OutGivenInApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
@@ -87,6 +92,9 @@ module.exports.floatMath = {
         return Bi * (bar - 1) / (1 - fee);
     },
 
+    calc_InGivenOut: function() {
+        return module.exports.floatMath.calc_InGivenOutApprox(...arguments);
+    },
     calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");

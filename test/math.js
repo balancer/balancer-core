@@ -3,7 +3,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../package.js");
-pkg.types.reloadTypes("../tmp/combined.json");
+pkg.types.loadTypes("../tmp/combined.json");
 let math = require("../util/floatMath.js")
 let fMath = math.floatMath;
 
@@ -32,20 +32,6 @@ describe("floatMath.js", function () {
         var desc = `${pt.res} ~= spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, function () {
             assert.closeTo(pt.res, fMath.spotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance);
-        });
-    }
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        var desc = `${pt.res} == swapIMathExact(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, function () {
-            assert.closeTo( pt.res, fMath.calc_OutGivenInExact(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
-                          , floatEqTolerance);
-        });
-    }
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        var desc = `${pt.res} ~= swapIMathApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, function () {
-            assert.closeTo( pt.res, fMath.calc_OutGivenInApprox(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.Ai, pt.fee)
-                          , approxTolerance);
         });
     }
 
@@ -158,7 +144,7 @@ describe("BMath", () => {
         let desc = `${pt.res} ~= math.bpow(${pt.base}, ${pt.exp})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
-            let math = await pkg.types.deploy(web3, accts[0], "BMath");
+            let math = await pkg.deploy(web3, accts[0], "BMath");
             let base = toWei(pt.base).toString();
             let exp  = toWei(pt.exp).toString();
             var actual = await math.methods.bpow(base, exp).call()
@@ -174,7 +160,7 @@ describe("BMath", () => {
         let desc = `${pt.res} ~= bMath.spotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
-            let math = await pkg.types.deploy(web3, accts[0], "BMath");
+            let math = await pkg.deploy(web3, accts[0], "BMath");
             var actual = await math.methods.spotPrice(Bi, Wi, Bo, Wo).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
@@ -191,29 +177,12 @@ describe("BMath", () => {
         let desc = `${pt.res} ~= bMath.amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
-            let math = await pkg.types.deploy(web3, accts[0], "BMath");
+            let math = await pkg.deploy(web3, accts[0], "BMath");
             var actual = await math.methods.amountUpToPriceApprox(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
  
-    for( let pt of testPoints.calc_OutGivenInPoints ) {
-        let res = toWei(pt.res);
-        let Bi = toWei(pt.Bi).toString();
-        let Wi = toWei(pt.Wi).toString();
-        let Bo = toWei(pt.Bo).toString();
-        let Wo = toWei(pt.Wo).toString();
-        let Ai = toWei(pt.Ai).toString();
-        let fee = toWei(pt.fee).toString();
-        var desc = `${pt.res} ~= bMath.calc_OutGivenIn(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ai}, ${pt.fee})`;
-        it(desc, async () => {
-            let accts = await web3.eth.getAccounts();
-            let math = await pkg.types.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee).call();
-            assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
-        });
-    }
-
     for( let pt of testPoints.calc_InGivenOutPoints ) {
         let res = toWei(pt.res);
         let Bi = toWei(pt.Bi).toString();
@@ -225,7 +194,7 @@ describe("BMath", () => {
         var desc = `${pt.res} ~= bMath.calc_InGivenOutPoints(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`;
         it(desc, async () => {
             accts = await web3.eth.getAccounts();
-            math = await pkg.types.deploy(web3, accts[0], "BMath");
+            math = await pkg.deploy(web3, accts[0], "BMath");
             var actual = await math.methods.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee).call();
             assertCloseBN(res, web3.utils.toBN(actual), approxTolerance);
         });

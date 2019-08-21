@@ -2,7 +2,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../package.js");
-pkg.types.reloadTypes("../tmp/combined.json");
+pkg.types.loadTypes("../tmp/combined.json");
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true,
@@ -25,6 +25,69 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
+// accts[0] will be the admin
+// any remaining accounts will get an initial balance and approve the bpool
+// if accts is empty or undefined, getAccounts()[0,1,2] will be used
+deployTestScenario = async function(web3, accts, log) {
+    if (!log) log = () => {}
+    var env = {};
+    if (!accts || accts.length == 0) {
+        accts = await web3.eth.getAccounts();
+        accts = accts.slice(0, 3);
+    }
+    let admin = accts[0];
+
+    env.accts = accts;
+    env.admin = admin;
+
+    env.factory = await pkg.deploy(web3, admin, "BFactory");
+    log(`factory ${env.factory._address} = deploy BFactory`);
+
+    let poolAddress = await env.factory.methods.newBPool().call();
+    await env.factory.methods.newBPool().send({from: env.admin, gas: 0xffffffff});
+    env.pool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), poolAddress);
+    log(`pool ${env.pool._address} = factory.new_BPool()`);
+
+    env.acoin = await pkg.deploy(web3, admin, "TToken", [web3.utils.toHex("A")]);
+    log(`${env.acoin._address} = deploy TToken`);
+    env.bcoin = await pkg.deploy(web3, admin, "TToken", [web3.utils.toHex("B")]);
+    log(`${env.bcoin._address} = deploy TToken`);
+    env.ccoin = await pkg.deploy(web3, admin, "TToken", [web3.utils.toHex("C")]);
+    log(`${env.ccoin._address} = deploy TToken`);
+
+    let toWei = web3.utils.toWei;
+
+    for (let coin of [env.acoin, env.bcoin, env.ccoin]) {
+        log(`for coin: ${coin._address}`);
+        for (let acct of accts) {
+            log(`  for acct: ${acct}`);
+            let amt = toWei('10000');
+            await coin.methods.mint(amt).send({from: admin});
+            log(`    mint ${amt}`);
+            await coin.methods.transfer(acct, amt).send({from: admin});
+            log(`    xfer to ${acct}`);
+            await coin.methods.approve(env.pool._address, web3.utils.toTwosComplement('-1'))
+                      .send({from: acct});
+            log(`    approve pool by ${acct}`);
+        }
+        await coin.methods.mint(toWei('100'));
+        log(`  mint token for pool`);
+        await env.pool.methods.bind(coin._address, toWei('1'), toWei('1'))
+                      .send({from: admin, gas: 0xffffffff});
+        log(`  bind token to pool...`);
+        let balance = toWei('10');
+        let weight = toWei('10');
+        await env.pool.methods.setParams(coin._address, weight, balance)
+                      .send({from: admin, gas: 0xffffffff});
+        log(`  setting params: weight: ${weight} , balance: ${balance}`); 
+    }
+
+    await env.pool.methods.start().send({from: admin});
+    log(`pool.start()`);
+    
+    return env;
+}
+
 describe("BPool", () => {
     var factory;
     var accts;
@@ -42,11 +105,11 @@ describe("BPool", () => {
         acct1 = accts[1];
         acct2 = accts[2];
 
-        acoin = await pkg.types.deploy(web3, acct0, "TToken", [asciiToHex("A")]);
-        bcoin = await pkg.types.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
-        ccoin = await pkg.types.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
+        acoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("A")]);
+        bcoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
+        ccoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
 
-        factory = await pkg.types.deploy(web3, acct0, "BFactory");
+        factory = await pkg.deploy(web3, acct0, "BFactory");
 
         //== TODO clean
         bpool = await factory.methods.newBPool().call();
@@ -65,8 +128,8 @@ describe("BPool", () => {
         }
         await bpool.methods.start().send({from: acct0});
     });
-    it("pkg.deployTestScenario", async () => {
-        let env = await pkg.types.deployTestScenario(web3);
+    it("deployTestScenario", async () => {
+        let env = await deployTestScenario(web3);
         let bbefore = await env.bcoin.methods.balanceOf(env.admin).call();
         let result = await env.pool.methods
                               .viewSwap_ExactInAnyOut( env.acoin._address
@@ -82,35 +145,6 @@ describe("BPool", () => {
         let diff = toBN(bafter).sub(toBN(bbefore));
         assert.equal(diff, result[0]);
     });
-    for( pt of testPoints.calc_OutGivenInPoints ) {
-        let Ai  = toWei(pt.Ai.toString());
-        let Bi  = toWei(pt.Bi.toString());
-        let Wi  = toWei(pt.Wi.toString());
-        let Bo  = toWei(pt.Bo.toString());
-        let Wo  = toWei(pt.Wo.toString());
-        let fee = toWei(pt.fee.toString());
-        let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_ExactInAnyOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.fee}>`, async () => {
-            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
-                               .send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
-            var abefore = await acoin.methods.balanceOf(acct0).call();
-            var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_ExactInAnyOut(acoin._address, Ai, bcoin._address)
-                                                  .call();
-            var result = await bpool.methods.doSwap_ExactInAnyOut(acoin._address, Ai, bcoin._address)
-                                            .send({from: acct0, gas: 0xffffffff});
-            var aafter = await acoin.methods.balanceOf(acct0).call();
-            var bafter = await bcoin.methods.balanceOf(acct0).call();
-            var adiff = toBN(abefore).sub(toBN(aafter));
-            var bdiff = toBN(bafter).sub(toBN(bbefore));
-            assert.equal(bdiff, resultStatic);
-            assert.equal(adiff, Ai);
-            assertCloseBN(expected, resultStatic, approxTolerance.toString());
-        });
-    }
 
     for( pt of testPoints.calc_InGivenOutPoints ) {
         let expected  = toWei(pt.res.toString());
@@ -266,6 +300,40 @@ describe("BPool", () => {
             assertCloseBN(expected, resultStatic, approxTolerance.toString());
         });
     }
+
+    for( pt of testPoints.MaxInMinOutLimitPricePoints ) {
+        let Bi  = toWei(pt.Bi.toString());
+        let Lp  = toWei(pt.Lp.toString());
+        let Li  = toWei(pt.Li.toString());
+        let Lo  = toWei(pt.Lo.toString());
+        let Wi  = toWei(pt.Wi.toString());
+        let Bo  = toWei(pt.Bo.toString());
+        let Wo  = toWei(pt.Wo.toString());
+        let fee = toWei(pt.fee.toString());
+        let expected = [toWei(pt.res[0].toString()), toWei(pt.res[1].toString())];
+        it(`${pt.res} ~= bpool.doSwap_MaxInMinOutLimitPricePoints(${pt.Bi},${pt.Wi},${Li},${pt.Bo},${pt.Wo},${pt.Ao},${Lo},${pt.Lp},${pt.fee}>`, async () => {
+            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
+                               .send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
+            var abefore = await acoin.methods.balanceOf(acct0).call();
+            var bbefore = await bcoin.methods.balanceOf(acct0).call();
+            var resultStatic = await bpool.methods.doSwap_MaxInMinOutLimitPrice(acoin._address, Li, bcoin._address, Lo, Lp)
+                                                  .call();
+            var result = await bpool.methods.doSwap_MaxInMinOutLimitPrice(acoin._address, Li, bcoin._address, Lo, Lp)
+                                            .send({from: acct0, gas: 0xffffffff});
+            var aafter = await acoin.methods.balanceOf(acct0).call();
+            var bafter = await bcoin.methods.balanceOf(acct0).call();
+            var adiff = toBN(abefore).sub(toBN(aafter));
+            var bdiff = toBN(bafter).sub(toBN(bbefore));
+            assert.equal(adiff, resultStatic["0"]);
+            assert.equal(bdiff, resultStatic["1"]);
+            assertCloseBN(expected[0], resultStatic["0"], approxTolerance.toString());
+            assertCloseBN(expected[1], resultStatic["1"], approxTolerance.toString());
+        });
+    }
+
 
 
 
