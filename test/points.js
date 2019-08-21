@@ -34,7 +34,7 @@ module.exports.math = {
 */
 
     // Bi, Wi, Bo, Wo, SER1, fee
-    "amountUpToPriceApprox": [
+    "amountUpToPrice": [
         [ 1.08172405558
         , [ 10, 0.3, 5260, 0.3, 430, 0.02 ] ]
     ]

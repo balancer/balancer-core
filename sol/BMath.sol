@@ -96,21 +96,21 @@ contract BMath is BNum
       public pure
         returns ( uint Ai )
     {
-        Ai = amountUpToPriceApprox( Bi, Wi
-                                  , Bo, Wo
-                                  , SER1, fee );
+        Ai = amountUpToPrice( Bi, Wi
+                            , Bo, Wo
+                            , SER1, fee );
     }
 
 
 
     // returns how much TokenIn is needed to lower
     // the exchange rate to SER1
-    function amountUpToPriceApprox( uint Bi
-                                  , uint Wi
-                                  , uint Bo
-                                  , uint Wo
-                                  , uint SER1
-                                  , uint fee)
+    function amountUpToPrice( uint Bi
+                            , uint Wi
+                            , uint Bo
+                            , uint Wo
+                            , uint SER1
+                            , uint fee)
       public pure
         returns ( uint Ai )
     {

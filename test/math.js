@@ -174,11 +174,11 @@ describe("BMath", () => {
         let Bo   = toWei(pt.Bo).toString();
         let Wo   = toWei(pt.Wo).toString();
         let fee  = toWei(pt.fee).toString();
-        let desc = `${pt.res} ~= bMath.amountUpToPriceApprox(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
+        let desc = `${pt.res} ~= bMath.amountUpToPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`;
         it(desc, async () => {
             let accts = await web3.eth.getAccounts();
             let math = await pkg.deploy(web3, accts[0], "BMath");
-            var actual = await math.methods.amountUpToPriceApprox(Bi, Wi, Bo, Wo, SER1, fee).call()
+            var actual = await math.methods.amountUpToPrice(Bi, Wi, Bo, Wo, SER1, fee).call()
             assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance);
         });
     }
