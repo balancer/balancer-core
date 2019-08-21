@@ -210,7 +210,7 @@ describe("BPool", () => {
         });
     }
 
-    for( pt of testPoints.LimitInGivenOutPoints ) {
+    for( pt of testPoints.MaxInExactOutPoints ) {
         let Ao  = toWei(pt.Ao.toString());
         let Bi  = toWei(pt.Bi.toString());
         let Li  = toWei(pt.Li.toString());

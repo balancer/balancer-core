@@ -108,6 +108,24 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
+/*
+    function getTotalWeight() public returns (uint256) {
+        uint256 res = 0;
+        for( uint i = 0; i < _index.length; i++ ) {
+            res = badd(res, records[_index[i]].weight);
+        }
+        return res;
+    }
+
+    function getNormalizedWeight(address token) public returns (uint256) {
+        uint256 totalWeight = getTotalWeight();
+        if (totalWeight == 0) {
+            return 0;
+        }
+        return bdiv(records[token].weight, totalWeight);
+    }
+*/
+
     function getBalance(address token)
       public view
         returns (uint) {
@@ -453,6 +471,62 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
+    function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
+        public returns (uint256 Ao, byte err)
+    {
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+
+
+        uint maxAi = calc_InGivenPrice( I.balance, I.weight
+                                      , O.balance, O.weight
+                                      , SER1, tradeFee );
+
+        if( paused ) return (Ao, ERR_PAUSED);
+
+        if( Ai > maxAi ) return (Ao, ERR_LIMIT_FAILED);
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, tradeFee );
+
+        return (Ao, ERR_NONE);
+ 
+    }
+
+    function trySwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
+        public returns (uint256 Ao, byte err)
+    {
+        (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            return (Ao, ERR_NONE);
+        }
+    }
+
+    function doSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
+        public returns (uint256 Ao)
+    {
+        byte err;
+        
+        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
+        check(err);
+        return Ai;
+    }
+
+
     function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
       public view
         returns (uint Ai, byte err)
@@ -474,7 +548,7 @@ contract BPool is BPoolBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint256 Ao)
       public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
@@ -492,7 +566,7 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint256 Ao)
       public returns (uint Ai)
     {
         byte err;
@@ -501,4 +575,114 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
+    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 SER1)
+      public view
+        returns (uint Ai, byte err)
+    {
+        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        uint SER0 = spotPrice( I.balance, I.weight
+                             , O.balance, O.weight );
+
+        uint AiMax = calc_InGivenPrice( I.balance, I.weight
+                                      , O.balance, O.weight
+                                      , SER1, tradeFee );
+                
+        Ai    = calc_InGivenOut( I.balance, I.weight
+                               , O.balance, O.weight
+                               , Ao, tradeFee );
+
+        if( paused ) return (Ai, ERR_PAUSED);
+
+        if( Ai > AiMax ) return (Ai, ERR_LIMIT_FAILED);
+
+        return (Ai, ERR_NONE);
+    }
+
+    function trySwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 Lp)
+      public returns (uint Ai, byte err)
+    {
+        (Ai, err) = viewSwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
+        if (err != ERR_NONE) {
+            return (Ai, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            return (Ai, ERR_NONE);
+        }
+    }
+
+    function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint256 Lp)
+      public returns (uint Ai)
+    {
+        byte err;
+        (Ai, err) = trySwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
+        check(err);
+        return Ai;
+    }
+
+    function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao, byte err)
+    {
+        if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        uint SER0 = spotPrice( I.balance, I.weight
+                             , O.balance, O.weight );
+
+        Ai = calc_InGivenPrice( I.balance, I.weight
+                              , O.balance, O.weight
+                              , SER1, tradeFee );
+
+        if( Ai > Li ) return (Ai, Ao, ERR_LIMIT_FAILED);
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, tradeFee );
+
+        if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
+
+        if( paused ) return (Ai, Ao, ERR_PAUSED);
+
+        return (Ai, Ao, ERR_NONE);
+    }
+
+    function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao, byte err)
+    {
+        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
+        if (err != ERR_NONE) {
+            return (Ai, Ao, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            return (Ai, Ao, ERR_NONE);
+        }
+    }
+
+    function doSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
+      public returns (uint Ai, uint Ao)
+    {
+        byte err;
+        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
+        check(err);
+        return (Ai, Ao);
+    }
 }

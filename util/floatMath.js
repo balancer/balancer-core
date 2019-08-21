@@ -74,7 +74,7 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
 
     },
-    
+   
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
@@ -121,6 +121,11 @@ module.exports.floatMath = {
         return (foo ** exponent - 1) * Bi / (1 - fee);
     },
 
+/*
+    amountUpToPrice: function() {
+        return module.exports.floatMath.amountUpToPriceApprox(...arguments);
+    },
+*/
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
@@ -167,6 +172,20 @@ module.exports.floatMath = {
 
     getRefSpotPrice: function(Bo, Wo, tokens) {
         return (Bo/Wo) / this.getValue(tokens);
-    }
+    },
+
+    getTotalWeight: function(tokens) {
+        let res = 0;
+        for (let token of tokens) {
+            res += token[1];
+        }
+        return res;
+    },
+
+    getNormalizedWeight: function(W, tokens) {
+        let totalWeight = this.getTotalWeight(tokens);
+        if (totalWeight == 0) return 0;
+        return W/totalWeight;
+    },
 
 }
