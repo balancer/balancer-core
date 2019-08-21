@@ -3,7 +3,7 @@ let ganache = require("ganache-core");
 let assert = require("chai").assert;
 let fmath = require("../util/floatMath.js").floatMath;
 let pkg = require("../package.js");
-pkg.types.reloadTypes("../tmp/combined.json");
+pkg.types.loadTypes("../tmp/combined.json");
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
