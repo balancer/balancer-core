@@ -88,7 +88,7 @@ contract BMath is BNum
         return r;
     }
 
-    function calc_InGivenPrice( uint Bi, uint Wi
+    function amountUpToPriceApprox( uint Bi, uint Wi
                               , uint Bo, uint Wo
                               , uint SER1
                               , uint fee

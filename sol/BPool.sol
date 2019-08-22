@@ -643,18 +643,18 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint SER0 = cal_spotPrice( I.balance, I.weight
+        uint SER0 = calc_SpotPrice( I.balance, I.weight
                                  , O.balance, O.weight );
 
         Ai = calc_InGivenPrice( I.balance, I.weight
                               , O.balance, O.weight
-                              , SER1, fee );
+                              , SER1, tradeFee );
 
         if( Ai > Li ) Ai = Li;
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
-                            , Ai, fee );
+                            , Ai, tradeFee );
 
         if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
 
