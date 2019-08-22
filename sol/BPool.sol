@@ -108,23 +108,21 @@ contract BPool is BPoolBronze
         return records[token].weight;
     }
 
-/*
-    function getTotalWeight() public returns (uint256) {
-        uint256 res = 0;
+    function getTotalWeight() public view returns (uint) {
+        uint res = 0;
         for( uint i = 0; i < _index.length; i++ ) {
             res = badd(res, records[_index[i]].weight);
         }
         return res;
     }
 
-    function getNormalizedWeight(address token) public returns (uint256) {
-        uint256 totalWeight = getTotalWeight();
-        if (totalWeight == 0) {
+    function getNormalizedWeight(address token) public view returns (uint) {
+        uint total = getTotalWeight();
+        if (total == 0) {
             return 0;
         }
-        return bdiv(records[token].weight, totalWeight);
+        return bdiv(records[token].weight, total);
     }
-*/
 
     function getBalance(address token)
       public view
@@ -132,14 +130,9 @@ contract BPool is BPoolBronze
         return records[token].balance;
     }
 
-    function getTotalWeight() public view returns (uint)
-    {
-        revert('unimplemented');
-    }
-
     function getWeightedBalance(address token) public view returns (uint)
     {
-        revert('unimplemented');
+        token=token; revert('unimplemented');
     }
 
     function getWeightedTotalBalance() public view returns (uint res)
@@ -425,8 +418,8 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
-    function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public view returns (uint256 Ao, byte err)
+    function viewSwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
+        public view returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -447,8 +440,8 @@ contract BPool is BPoolBronze
  
     }
 
-    function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao, byte err)
+    function trySwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
+        public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInMinOut(Ti, Ai, To, Lo);
         if (err != ERR_NONE) {
@@ -465,8 +458,8 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao)
+    function doSwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
+        public returns (uint Ao)
     {
         byte err;
         
@@ -475,8 +468,8 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
-    function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
-        public view returns (uint256 Ao, byte err)
+    function viewSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
+        public view returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -502,8 +495,8 @@ contract BPool is BPoolBronze
  
     }
 
-    function trySwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
-        public returns (uint256 Ao, byte err)
+    function trySwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
+        public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         if (err != ERR_NONE) {
@@ -520,8 +513,8 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
-        public returns (uint256 Ao)
+    function doSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
+        public returns (uint Ao)
     {
         byte err;
         
@@ -531,7 +524,7 @@ contract BPool is BPoolBronze
     }
 
 
-    function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
+    function viewSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public view
         returns (uint Ai, byte err)
     {
@@ -552,7 +545,7 @@ contract BPool is BPoolBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint256 Ao)
+    function trySwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
@@ -570,7 +563,7 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint256 Ao)
+    function doSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public returns (uint Ai)
     {
         byte err;
@@ -579,7 +572,7 @@ contract BPool is BPoolBronze
         return Ai;
     }
 
-    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 SER1)
+    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint SER1)
       public view
         returns (uint Ai, byte err)
     {
@@ -604,7 +597,7 @@ contract BPool is BPoolBronze
         return (Ai, ERR_NONE);
     }
 
-    function trySwap_LimitPriceInExactOut(address Ti, address To, uint256 Ao, uint256 Lp)
+    function trySwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
       public returns (uint Ai, byte err)
     {
         (Ai, err) = viewSwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
@@ -622,7 +615,7 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint256 Lp)
+    function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
       public returns (uint Ai)
     {
         byte err;

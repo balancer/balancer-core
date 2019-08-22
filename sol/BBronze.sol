@@ -30,15 +30,11 @@ contract BPoolBronze is BBronze, BConst {
     function isFlexible() public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
-    function getBalance(address token) public view returns (uint);
+    function getNormalizedWeight(address token) public view returns (uint);
     function getTotalWeight() public view returns (uint);
+    function getBalance(address token) public view returns (uint);
     function getWeightedBalance(address token) public view returns (uint);
     function getWeightedTotalBalance() public view returns (uint);
-
-    struct TokenAmount {
-        address token;
-        uint256 amount;
-    }
 
     //== Pooling
     function isPoolOpen() public view returns (bool);
@@ -82,7 +78,7 @@ contract BPoolBronze is BBronze, BConst {
 
     // swap ExactInMinOut
     function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao, byte err);
+        public view returns (uint256 Ao, byte err);
     function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
         public returns (uint256 Ao, byte err);
     function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
