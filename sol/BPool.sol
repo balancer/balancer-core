@@ -632,7 +632,7 @@ contract BPool is BPoolBronze
     }
 
     function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao, byte err)
+      public view returns (uint Ai, uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
