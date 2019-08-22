@@ -20,6 +20,9 @@ let assert = require('chai').assert;
 // Ai := Amount of token In
 module.exports.floatMath = {
 
+    calc_SpotPrice: function() {
+        return module.exports.floatMath.spotPrice(...arguments);
+    },
     spotPrice: function(Bi, Wi, Bo, Wo) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
@@ -74,7 +77,7 @@ module.exports.floatMath = {
         return Bo * (1 - bar);
 
     },
-    
+   
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
@@ -113,6 +116,10 @@ module.exports.floatMath = {
 
     },
 
+    calc_InGivenPrice: function() {
+        return module.exports.floatMath.amountUpToPrice(...arguments);
+    },
+
     amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
@@ -121,6 +128,9 @@ module.exports.floatMath = {
         return (foo ** exponent - 1) * Bi / (1 - fee);
     },
 
+    amountUpToPrice: function() {
+        return module.exports.floatMath.amountUpToPriceApprox(...arguments);
+    },
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);

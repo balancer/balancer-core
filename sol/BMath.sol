@@ -77,9 +77,8 @@ contract BMath is BNum
         Ai           = bdiv(bmul(Bi, foo), Ai);
     }
 
-    // exchange rate of Ti:To pair
-    function spotPrice( uint Bi, uint Wi
-                      , uint Bo, uint Wo )
+    function calc_SpotPrice( uint Bi, uint Wi
+                           , uint Bo, uint Wo )
       public pure
         returns ( uint r ) 
     {
@@ -97,21 +96,21 @@ contract BMath is BNum
       public pure
         returns ( uint Ai )
     {
-        Ai = amountUpToPriceApprox( Bi, Wi
-                                  , Bo, Wo
-                                  , SER1, fee );
+        Ai = calc_InGivenPrice( Bi, Wi
+                              , Bo, Wo
+                              , SER1, fee );
     }
 
 
 
     // returns how much TokenIn is needed to lower
     // the exchange rate to SER1
-    function amountUpToPriceApprox( uint Bi
-                                  , uint Wi
-                                  , uint Bo
-                                  , uint Wo
-                                  , uint SER1
-                                  , uint fee)
+    function calc_InGivenPrice( uint Bi
+                              , uint Wi
+                              , uint Bo
+                              , uint Wo
+                              , uint SER1
+                              , uint fee)
       public pure
         returns ( uint Ai )
     {
@@ -120,7 +119,7 @@ contract BMath is BNum
         require( Bo > 0);
         require( Wo > 0);
         bool flag;
-        uint SER0    = spotPrice(Bi, Wi, Bo, Wo);
+        uint SER0    = calc_SpotPrice(Bi, Wi, Bo, Wo);
       require( SER1 <= SER0);
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));

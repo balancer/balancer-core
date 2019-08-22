@@ -13,11 +13,16 @@
 
 pragma solidity ^0.5.10;
 
-import 'ds-note/note.sol';
+import 'ds-token/token.sol';
 
 import "./BBronze.sol";
 import "./BNum.sol";
 
+contract BToken is DSToken {
+    constructor(bytes32 symbol) public
+        DSToken(symbol) {}
+}
+/*
 contract BToken is BBronze
                  , BNum
                  , DSNote
@@ -82,3 +87,4 @@ contract BToken is BBronze
         trusts[msg.sender][whom] = t;
     }
 }
+*/

@@ -32,21 +32,19 @@ describe("scene tests", async () => {
         assert.exists(env.bpool, "bpool");
         let poolBuiltHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
         assert(poolBuiltHere, "factory doesn't remember building bpool");
-        let tokenBuiltHere = await env.factory.methods.wasBTokenBuiltHere(env.poolcoin._address).call();
-        assert(tokenBuiltHere, "factory doesn't remember building poolcoin");
 
         assert.exists(env.acoin);
         assert.exists(env.bcoin);
         assert.exists(env.ccoin);
 
         let max = web3.utils.toBN(web3.utils.toTwosComplement('-1'));
-        let abal = await env.acoin.methods.balanceOf(env.admin).call();
-        let bbal = await env.bcoin.methods.balanceOf(env.admin).call();
-        let cbal = await env.ccoin.methods.balanceOf(env.admin).call();
-
-        assert.equal(abal, max);
-        assert.equal(bbal, max);
-        assert.equal(cbal, max);
+        for( let coin of [env.acoin, env.bcoin, env.ccoin] ) {
+            let bal = await coin.methods.balanceOf(env.admin).call();
+            assert.equal(bal, max);
+            // DSToken MAX_U256 means infinite allowance
+            allowance = await coin.methods.allowance(env.admin, env.bpool._address).call();
+            assert.equal(allowance, max);
+        }
     });
 
     it("phase2 postconditions", async () => {
@@ -67,9 +65,10 @@ describe("scene tests", async () => {
             for( coin of [env.acoin, env.bcoin, env.ccoin] ) {
                 let bal = await coin.methods.balanceOf(user).call();
                 assert.equal(bal, env.initBalance);
-                // TToken mock allowance
-                //let trusts = await coin.methods.trusts(user, bpool._address).call();
-                //assert(trusts);
+                let max = web3.utils.toBN(web3.utils.toTwosComplement('-1'));
+                let allowance = await coin.methods.allowance(user, env.bpool._address).call();
+                assert.equal(allowance, max);
+
             }
         }
     });
