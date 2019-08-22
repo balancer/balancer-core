@@ -41,6 +41,8 @@ describe("manager and pooling", async () => {
         let ABalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
         let PSupplyAfter = await env.bpool.methods.getPoolTokenSupply().call();
+
+        console.warn("TODO");
     });
 
 });

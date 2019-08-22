@@ -12,7 +12,7 @@ let web3 = new Web3(ganache.provider({
 }));
 
 let scene = require("./scene.js");
-let tests = require("./points.js");
+let points = require("./points.js");
 
 let toBNum = (n) => web3.utils.toBN(web3.utils.toWei(n.toString()));
 
@@ -33,15 +33,15 @@ assert.closeBN = (actual, expected) => {
     );
 }
 
-describe("generated math tests", () => {
+describe("generated math points", () => {
     let env;
     let bmath;
     beforeEach(async () => {
         env = await scene.phase0(web3);
         bmath = await pkg.deploy(web3, env.admin, "BMath");
     });
-    for(let funcname in tests.math) {
-        pairs = tests.math[funcname]
+    for(let funcname in points.math) {
+        pairs = points.math[funcname]
         for( let pair of pairs ) {
             let expected = pair[0];
             let args = pair[1]

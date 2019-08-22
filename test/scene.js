@@ -22,6 +22,7 @@ module.exports.phase0 = async (web3) => {
 //  acoin,bcoin,ccoin = new btokens
 //  *coin.mint( MAX )
 //    --> *coin.balance == MAX
+//  *coin.approve(bpool)
 module.exports.phase1 = async (web3) => {
     let env = await module.exports.phase0(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
