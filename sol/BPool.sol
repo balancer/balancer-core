@@ -426,7 +426,7 @@ contract BPool is BPoolBronze
     }
 
     function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao, byte err)
+        public view returns (uint256 Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -476,7 +476,7 @@ contract BPool is BPoolBronze
     }
 
     function viewSwap_ExactInLimitPrice(address Ti, uint256 Ai, address To, uint256 SER1)
-        public returns (uint256 Ao, byte err)
+        public view returns (uint256 Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
