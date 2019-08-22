@@ -37,7 +37,7 @@ contract BPool is BPoolBronze
     address[]                 _index; // private index for iteration
     uint                      totalWeight;
 
-    bool                      poolable;
+    bool                      joinable;
     address                   poolcoin;
 
     struct Record {
@@ -51,7 +51,7 @@ contract BPool is BPoolBronze
         manager = msg.sender;
         paused = true;
         poolcoin = address(new DSToken("Balancer Pool Token (Bronze)"));
-        poolable = enableToken;
+        joinable = enableToken;
     }
 
     function getPoolToken()
@@ -81,7 +81,7 @@ contract BPool is BPoolBronze
     function isFlexible()
       public view
         returns (bool) {
-        return poolable;
+        return joinable;
     }
 
     function isBound(address token)
@@ -145,15 +145,15 @@ contract BPool is BPoolBronze
         return res;
     }
  
-    function isPoolOpen() public view returns (bool) {
-        return poolable;
+    function isJoinable() public view returns (bool) {
+        return joinable;
     }
 
     function joinPool(uint poolAo)
         public
     {
 /*
-        //require(poolable, "not poolable");
+        //require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -172,7 +172,7 @@ contract BPool is BPoolBronze
         public
     {
 /*
-        //require(poolable, "not poolable");
+        //require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
 
@@ -203,7 +203,7 @@ contract BPool is BPoolBronze
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
         check(weight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
-        check( ! poolable, ERR_IMMUTABLE_POOL);
+        check( ! joinable, ERR_UNJOINABLE);
 
         uint oldWeight = records[token].weight;
         records[token].weight = weight;
@@ -223,7 +223,7 @@ contract BPool is BPoolBronze
         check(isBound(token), ERR_NOT_BOUND);
         check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
         check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
-        check( ! poolable, ERR_IMMUTABLE_POOL);
+        check( ! joinable, ERR_UNJOINABLE);
 
         uint oldBalance = records[token].balance;
         records[token].balance = balance;

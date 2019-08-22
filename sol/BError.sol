@@ -41,7 +41,7 @@ contract BError
     byte constant ERR_ALREADY_BOUND      = 0xe2;
 
     byte constant ERR_PAUSED             = 0xd0;
-    byte constant ERR_IMMUTABLE_POOL     = 0xd1;
+    byte constant ERR_UNJOINABLE         = 0xd1;
     byte constant ERR_BAD_CALLER         = 0xd2;
 
     byte constant ERR_ERC20_FALSE        = 0xe0;
@@ -74,6 +74,8 @@ contract BError
             return "ERR_MATH_DIV_INTERFLOW";
         if( berr == ERR_LIMIT_FAILED )
             return "ERR_LIMIT_FAILED";
+        if( berr == ERR_UNJOINABLE )
+            return "ERR_UNJOINABLE";
         revert("ERR_PANIC_UNKNOWN");
     }
 

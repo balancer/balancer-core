@@ -27,7 +27,6 @@ contract BBronze is BColor {
 contract BPoolBronze is BBronze, BConst {
     //== General View
     function isBound(address token) public view returns (bool);
-    function isFlexible() public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
     function getNormalizedWeight(address token) public view returns (uint);
@@ -37,7 +36,7 @@ contract BPoolBronze is BBronze, BConst {
     function getWeightedTotalBalance() public view returns (uint);
 
     //== Pooling
-    function isPoolOpen() public view returns (bool);
+    function isJoinable() public view returns (bool);
     function joinPool(uint poolAo) public;
     function exitPool(uint poolAi) public;
 
