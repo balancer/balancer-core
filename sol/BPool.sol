@@ -78,12 +78,6 @@ contract BPool is BPoolBronze
         return paused;
     }
 
-    function isFlexible()
-      public view
-        returns (bool) {
-        return joinable;
-    }
-
     function isBound(address token)
       public view
         returns (bool) {
@@ -149,13 +143,20 @@ contract BPool is BPoolBronze
         return joinable;
     }
 
+    function makeJoinable()
+        public
+    {
+        check(msg.sender == manager, ERR_BAD_CALLER);
+        joinable = true;
+    }
+
     function joinPool(uint poolAo)
         public
     {
-/*
         //require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
+/*
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
             uint bal = records[t].balance;
@@ -171,11 +172,11 @@ contract BPool is BPoolBronze
     function exitPool(uint poolAi)
         public
     {
-/*
         //require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
 
+/*
         bool ok = ERC20(poolcoin).transferFrom(msg.sender, address(this), poolAi);
         check(ok, ERR_ERC20_FALSE);
 

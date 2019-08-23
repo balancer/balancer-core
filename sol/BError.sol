@@ -23,6 +23,7 @@ contract BError
     byte constant ERR_MATH_ADD_OVERFLOW  = 0x10;
     byte constant ERR_MATH_SUB_UNDERFLOW = 0x11;
     byte constant ERR_MATH_MUL_OVERFLOW  = 0x12;
+    byte constant ERR_MATH_DIV_ZERO      = 0x13;
     byte constant ERR_MATH_DIV_INTERFLOW = 0x14; // intermdiate values overflow (we keep precision)
 
     byte constant ERR_MAX_TOKENS         = 0x20;
@@ -70,6 +71,8 @@ contract BError
             return "ERR_MATH_SUB_UNDERFLOW";
         if( berr == ERR_MATH_MUL_OVERFLOW )
             return "ERR_MATH_MUL_OVERFLOW";
+        if( berr == ERR_MATH_DIV_ZERO )
+            return "ERR_MATH_DIV_ZERO";
         if( berr == ERR_MATH_DIV_INTERFLOW )
             return "ERR_MATH_DIV_INTERFLOW";
         if( berr == ERR_LIMIT_FAILED )
