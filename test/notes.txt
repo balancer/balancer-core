@@ -1,0 +1,8 @@
+testing requirements
+    isolate by function --> file system
+        directories for math, swaps, state changes, etc
+        append state tests to state (setup+call)
+        at end of points file, put list of getter names followed by list of (res, values)
+    isolate by fail type --> result
+        should be able to parse through results for error type
+    isolate by state type --> exports

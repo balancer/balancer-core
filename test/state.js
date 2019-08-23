@@ -1,8 +1,47 @@
 // [result
 // , [args...] ]
-module.exports.math = {
-    // Ao = OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee)
-    "calc_OutGivenIn": [
+module.exports.states = {
+    
+    // we want to be able to specify states that have,
+    // for example, at least one low balance/weight
+    "state_one_token": 
+    [
+        "token":
+        [
+            [0, 1, 350],    //Balance0
+            [0, 10]         //Weight0
+        ],
+        "fee":
+        [
+            0, 
+            0.1
+        ],          
+    ],
+    "state_two_token":
+    [
+        "token": 
+        [
+            [
+                [0, 1, 350],   //Balance0
+                [0, 10]        //Weight0
+            ],
+            [
+                [0, 1, 350],   //Balance1
+                [0, 10]        //Weight1
+            ],
+        ],
+        "fee":
+        [
+            0, 0.1
+        ],
+    ],
+}
+
+
+         
+      
+
+    /*
       [(1 - Math.pow((2/(2+1)),(0.1/0.1))) * 2
         , [2, 0.1, 2, 0.1, 1, 0] ]
     , [(1 - Math.pow((20/(20+10)),(0.1/0.1))) * 20
@@ -10,13 +49,15 @@ module.exports.math = {
     , [(1 - Math.pow((200/(200+1)),(0.5/0.3))) * 20
         , [200, 0.5, 20, 0.3, 1, 0] ]
     ],
+    */
+
+
 /*
     {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0},
     {res: (1 - Math.pow((2/(2+1*0.98)),(0.1/0.1))) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ai: 1, fee: 0.02},//2/3
     {res: (1 - Math.pow((20/(20+10*0.99)),(0.1/0.1))) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ai: 10, fee: 0.01},//20/3
     {res: (1 - Math.pow((200/(200+1*0.97)),(0.5/0.3))) * 20, Bi: 200, Wi: 0.5, Bo: 20, Wo: 0.3, Ai: 1, fee: 0.03}, //10/9
     {res: (1 - Math.pow((235/(235+32*0.9)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0.1},
-*/
 
     "calc_InGivenOut": [
         [(Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2,
@@ -62,6 +103,7 @@ module.exports.math = {
         [1/1000, [6000, 0.3, 10, 0.5 ] ]
     ],
 }
+*/
 
 
 module.exports.spotPricePoints = [
