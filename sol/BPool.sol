@@ -360,6 +360,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ao, ERR_NONE);
         }
     }
@@ -406,6 +409,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ai, ERR_NONE);
         }
     }
@@ -455,6 +461,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ao, ERR_NONE);
         }
     }
@@ -510,6 +519,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ao, ERR_NONE);
         }
     }
@@ -560,6 +572,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ai, ERR_NONE);
         }
     }
@@ -612,6 +627,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ai, ERR_NONE);
         }
     }
@@ -665,6 +683,9 @@ contract BPool is BPoolBronze
             check(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
             return (Ai, Ao, ERR_NONE);
         }
     }
