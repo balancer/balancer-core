@@ -12,12 +12,30 @@ let web3 = new Web3(ganache.provider({
 }));
 
 let scene = require("./scene.js");
-let tests = require("./points.js");
+//let tests = require("./points.js");
+
+let state = require("./state.js");
+let math = require("./math/points.js");
 
 let toBNum = (n) => web3.utils.toBN(web3.utils.toWei(n.toString()));
 
 let tolerance = 10 ** -6;
 let toleranceBN = toBNum(tolerance);
+
+function appendArg(bases, args) {
+    let res = [];
+
+    for( b of bases ) {
+        for( a of args ) {
+            res += [b + [a]];
+        }
+    }
+    return res;
+}
+
+
+
+
 assert.closeBN = (actual, expected) => {
     let actualBN = actual;
     let expectedBN = expected;
@@ -40,8 +58,30 @@ describe("generated math tests", () => {
         env = await scene.phase0(web3);
         bmath = await pkg.deploy(web3, env.admin, "BMath");
     });
-    for(let funcname in tests.math) {
-        pairs = tests.math[funcname]
+    let states = state.states;
+
+    function combinations(args) {
+        function combine(base, arg) {
+            for( let b = 0; b < base.length; b++ ) {
+                base[b] = {...base[b], ...arg};
+            }
+        }
+        let res = [{}]
+        for( name in args ) {
+            for( value of args[name] ) {
+                res = combine(res, {name: value});
+            }
+        }
+    }
+    for( let testName in state.states ) {
+        let s = state.states[testName];
+        let states = combinations(s)
+        console.log(states);
+        assert.closeTo(0, 1, 0.1);
+    }
+    for(let funcname in math.tests) {
+        pairs = math.tests[funcname]
+        let argLists = genArgLists([], states);
         for( let pair of pairs ) {
             let expected = pair[0];
             let args = pair[1]

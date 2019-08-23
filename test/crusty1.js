@@ -1,3 +1,4 @@
+/*
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 
@@ -204,3 +205,4 @@ describe("crusty bpool tests", () => {
                     (await acoin.methods.balanceOf(acct0).call()), 'wrong initBalance - ABalanceBound');
     });
 });
+*/

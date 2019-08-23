@@ -1,8 +1,10 @@
 // [result
 // , [args...] ]
+
+let tolerance = require('../tolerance.js')
+let floatEqTolerance = tolerance.floatEqTolerance;
+let approxTolerance  = tolerance.approxTolerance;
 module.exports.points = {
-    
-    // Ao = OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee)
     "amount": 
     [
         0,
@@ -21,48 +23,38 @@ module.exports.points = {
         310,
         340,
     ],
+}
 
+module.exports.tests = {
     "calc_spotPrice": 
         [
-            function (Bi, Wi, Bo, Wo) => {
-                return fMath.calc_spotPrice(Bi, Wi, Bo, Wo) == 0;
+            function (Bi, Wi, Bo, Wo) {
+                let expected = fMath.calc_spotPrice(Bi, Wi, Bo, Wo);
+                let actual   = (Bo/Wo)/(Bi/Wi);
+                return assert.closeTo(expected, actual, tolerance.floatEqTolerance);
             },
             "token", "token"
         ],
     "calc_OutGivenInApprox": 
         [
-            function(Bi, Wi, Ai, Bo, Wo, fee) => {
+            function(Bi, Wi, Ai, Bo, Wo, fee) {
                 let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
                 let actual   = fMath.calc_OutGivenInApprox(Bi, Wi, Ai, Bo, Wo, fee);
-                return expected == actual;
+                return assert.closeTo(expected, actual, tolerance.floatEqTolerance);
             }, 
-            "token", "amount", "token", "fee"
+            "token", "amount", "token", "fee",
         ],
     "calc_InGivenOutApprox":
         [
-            function(Bi, Wi, Ai, Bo, Wo, fee) => {
+            function(Bi, Wi, Ai, Bo, Wo, fee) {
                 let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
                 let actual   = fMath.calc_OutGivenInApprox(Bi, Wi, Ai, Bo, Wo, fee);
-                return expected == actual;
+                return assert.closeTo(expected, actual, tolerance.floatEqTolerance);
             }, 
-            "token", "token", "amount", "fee"
+            "token", "token", "amount", "fee",
         ],
- 
-    /*
-    "calc_InGivenPrice":
-        ["token", "token", "ser", "fee"],
-        */
-
-        
- 
-        
-
-
 }
 
-
-         
-      
 
     /*
       [(1 - Math.pow((2/(2+1)),(0.1/0.1))) * 2
