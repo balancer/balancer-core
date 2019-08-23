@@ -4,20 +4,23 @@ module.exports.states = {
     
     // we want to be able to specify states that have,
     // for example, at least one low balance/weight
+    /*
     "state_one_token": 
     {
         "token":
         [
-            [0, 0],   [0, 10],
-            [1, 0],   [1, 10],
-            [350, 0], [350, 10],
+            [ 
+                [0, 0],   [0, 10],
+                [1, 0],   [1, 10],
+                [350, 0], [350, 10],
+            ]
         ],
         "fee":
         [
-            0, 
-            0.1
+            0, 0.1,
         ],          
     },
+    */
     "state_two_token":
     {
         "token": 
@@ -35,7 +38,7 @@ module.exports.states = {
         ],
         "fee":
         [
-            0, 0.1
+            0, 0.1,
         ],
     },
 }

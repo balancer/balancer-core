@@ -75,6 +75,7 @@ module.exports.tests = {
     {res: (1 - Math.pow((235/(235+32*0.9)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0.1},
 */
 
+            /*
     "calc_InGivenOut": [
         [(Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2,
             [2, 0.1, 2, 0.1, 1, 0 ] ],
@@ -308,3 +309,4 @@ module.exports.normalizedWeightPoints = [
                  [282, 0.3],
                  [2,   0.1]],},
 ];
+*/
