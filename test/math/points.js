@@ -68,13 +68,13 @@ module.exports.tests = {
             res:
                 function(args) {
                     let tokens = args["token"]
-                    let Ai     = args["Ai"]
+                    let Ao     = args["Ao"]
                     let fee    = args["fee"]
                     for( let Ti in tokens ) {
                         for( let To in tokens ) {
                             let Bi = Ti[0]; let Wi = Ti[1]; let Bo = To[0]; let Wo = To[1];
-                            let expected = fMath.calc_InGivenOutExact(Bi, Wi, Ai, Bo, Wo, fee);
-                            let actual   = fMath.calc_InGivenOutApprox(Bi, Wi, Ai, Bo, Wo, fee);
+                            let expected = fMath.calc_InGivenOutExact(Bi, Wi, Bo, Wo, Ao, fee);
+                            let actual   = fMath.calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
                             assert.closeTo(expected, actual, tolerance.floatEqTolerance);
                         }
 
@@ -83,6 +83,27 @@ module.exports.tests = {
             args:
                 ["token", "Ai", "fee",],
     },
+    "calc_AmountUpToPriceApprox":
+    { 
+            res:
+                function(args) {
+                    let tokens = args["token"]
+                    let ser    = args["ser"]
+                    let fee    = args["fee"]
+                    for( let Ti in tokens ) {
+                        for( let To in tokens ) {
+                            let Bi = Ti[0]; let Wi = Ti[1]; let Bo = To[0]; let Wo = To[1];
+                            let expected = fMath.calc_AmountUpToPriceExact(Bi, Wi, Bo, Wo, ser, fee);
+                            let actual   = fMath.calc_AmountUpToPriceApprox(Bi, Wi, Bo, Wo, ser, fee);
+                            assert.closeTo(expected, actual, tolerance.floatEqTolerance);
+                        }
+
+                    }
+                }, 
+            args:
+                ["token", "ser", "fee",],
+    },
+
 }
 
 
