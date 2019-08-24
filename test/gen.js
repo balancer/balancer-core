@@ -80,6 +80,9 @@ describe("generated math tests", () => {
         return res;
     }
 
+    // tokens are a special case 
+    // there can be many tokens
+    // and we specify a range of values *per token*
     function combinations(args) {
         let res = [{}];
         for( name in args ) {
@@ -101,33 +104,55 @@ describe("generated math tests", () => {
         tests[testName] = states;
     }
 
-    assert.fail();
-    for(let funcname in math.tests) {
-        pairs = math.tests[funcname]
-        let argLists = genArgLists([], states);
-        for( let pair of pairs ) {
-            let expected = pair[0];
-            let args = pair[1]
-            desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
-            let actual;
-            it(desc_fmath, async () => {
-                actual = fmath[funcname](...args);
-                assert.closeTo(expected, actual, tolerance);
-            });
-            let expectedBN = web3.utils.toWei(expected.toString());
-            let argsBN = [];
-            for( arg of args ) {
-                argsBN.push(web3.utils.toWei(arg.toString()))
+
+    for( testName in tests ) {
+        for( let argName in math.points ) {
+            let argList = math.points[argName];
+            tests[testName] = combine(tests[testName], argName, argList);
+        }
+    }
+
+    let argTypes = ["token", "fee", "ser", "amount"];
+    for( let argGroupName in tests ) {
+        console.log("testing " + argGroupName + "...");
+        let argGroup = tests[argGroupName]
+        for( let funcname in math.tests ) {
+            let filteredArgGroup = argGroup;
+            let desc = math.tests[funcname]
+            let unusedArgs = argTypes.filter(x => !desc.args.includes(x));
+            for( argName of unusedArgs ) {
+                filteredArgGroup = filteredArgGroup.filter(g => g[argName] == argGroup[0][argName]);
             }
-            desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
-            let actualBN;
-            it(desc_bmath, async () => {
-                actualBN = await bmath.methods[funcname](...argsBN).call();
-                assert.closeBN(actualBN, expectedBN);
-            });
-            it(`  -> fmath.${funcname}(${args}) ~= bmath.${funcname}(...)`, () => {
-                assert.closeBN(actualBN, toBNum(actual));
-            });
+
+            it( argGroupName + funcname , async () => {
+                desc.res.apply(filteredArgGroup.values()); 
+            }); 
+            /*
+            for( let pair of desc ) {
+                let expected = pair[0];
+                let args = pair[1]
+                desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
+                let actual;
+                it(desc_fmath, async () => {
+                    actual = fmath[funcname](...args);
+                    assert.closeTo(expected, actual, tolerance);
+                });
+                let expectedBN = web3.utils.toWei(expected.toString());
+                let argsBN = [];
+                for( arg of args ) {
+                    argsBN.push(web3.utils.toWei(arg.toString()))
+                }
+                desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
+                let actualBN;
+                it(desc_bmath, async () => {
+                    actualBN = await bmath.methods[funcname](...argsBN).call();
+                    assert.closeBN(actualBN, expectedBN);
+                });
+                it(`  -> fmath.${funcname}(${args}) ~= bmath.${funcname}(...)`, () => {
+                    assert.closeBN(actualBN, toBNum(actual));
+                });
+            }
+            */
         }
     }
 });
