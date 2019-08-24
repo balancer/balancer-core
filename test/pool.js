@@ -19,24 +19,26 @@ describe("manager and pooling", async () => {
     beforeEach(async () => {
         accts = await web3.eth.getAccounts();
         admin = accts[0];
-        env = await scene.phase2(web3, admin);
+        env = await scene.phase3(web3);
         env.accts = accts;
         env.admin = admin;
     });
 
     it("join/exit", async () => {
+        await env.bpool.methods.makeJoinable()
+                       .send({from: env.admin, gas:0xffffffff});
         let ABalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
         let PSupplyBefore = await env.bpool.methods.getPoolTokenSupply().call();
 
         await env.bpool.methods.joinPool(web3.utils.toWei('1.0'))
-                       .send({from: env.admin});
+                       .send({from: env.admin, gas:0xffffffff});
         let ABalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
         let PSupplyMiddle = await env.bpool.methods.getPoolTokenSupply().call();
 
         await env.bpool.methods.exitPool(web3.utils.toWei('1.0'))
-                       .send({from: env.admin});
+                       .send({from: env.admin, gas:0xffffffff});
 
         let ABalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();

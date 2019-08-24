@@ -76,13 +76,14 @@ module.exports.phase2 = async (web3) => {
     return env;
 }
 
-//  *coin.move(admin, user*, initBalance)
-//  *coin.trusts(bpool, true)
+//  admin: *coin.move(admin, user*, initBalance)
+//  user: *coin.trusts(bpool, true)
+//  user: poolcoin.trusts(bpool)
 module.exports.phase3 = async (web3) => {
     let env = await module.exports.phase2(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
 
-    for( user of [env.user1, env.user2] ) {
+    for( user of [env.admin, env.user1, env.user2] ) {
         for( coin of [env.acoin, env.bcoin, env.ccoin] ) {
             await coin.methods.transfer(user, env.initBalance)
                       .send({from: env.admin});
@@ -90,6 +91,9 @@ module.exports.phase3 = async (web3) => {
             await coin.methods.approve(env.bpool._address, web3.utils.toTwosComplement("-1"))
                       .send({from: user});
         }
+        await env.poolcoin.methods.approve(env.bpool._address, web3.utils.toTwosComplement("-1"))
+                          .send({from: user});
+
     }
     return env;
 }

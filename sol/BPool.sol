@@ -148,15 +148,17 @@ contract BPool is BPoolBronze
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         joinable = true;
+        uint WTB = getWeightedTotalBalance();
+        DSToken(poolcoin).mint(WTB);
+        DSToken(poolcoin).transfer(msg.sender, WTB);
     }
 
     function joinPool(uint poolAo)
         public
     {
-        //require(joinable, "not joinable");
+        require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
-/*
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
             uint bal = records[t].balance;
@@ -164,21 +166,19 @@ contract BPool is BPoolBronze
             bool ok = ERC20(t).transferFrom(msg.sender, address(this), tAi);
             check(ok, ERR_ERC20_FALSE);
         }
-        bool ok = ERC20(poolcoin).transfer(msg.sender, poolAo);
-        check(ok, ERR_ERC20_FALSE);
-*/
+        DSToken(poolcoin).mint(poolAo);
+        DSToken(poolcoin).transfer(msg.sender, poolAo);
     }
 
     function exitPool(uint poolAi)
         public
     {
-        //require(joinable, "not joinable");
+        require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
-
-/*
-        bool ok = ERC20(poolcoin).transferFrom(msg.sender, address(this), poolAi);
-        check(ok, ERR_ERC20_FALSE);
+        
+        DSToken(poolcoin).transferFrom(msg.sender, address(this), poolAi);
+        DSToken(poolcoin).burn(poolAi);
 
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
@@ -187,7 +187,6 @@ contract BPool is BPoolBronze
             bool ok = ERC20(t).transfer(msg.sender, tAo);
             check(ok, ERR_ERC20_FALSE);
         }
-*/
     }
 
     function setParams(address token, uint weight, uint balance)
