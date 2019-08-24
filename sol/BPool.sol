@@ -451,7 +451,7 @@ contract BPool is BPoolBronze
     {
         (Ao, err) = viewSwap_ExactInMinOut(Ti, Ai, To, Lo);
         if (err != ERR_NONE) {
-            return (Ai, err);
+            return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
@@ -509,7 +509,7 @@ contract BPool is BPoolBronze
     {
         (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         if (err != ERR_NONE) {
-            return (Ai, err);
+            return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
