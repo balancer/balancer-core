@@ -1,6 +1,3 @@
-
-<h1 align=center><code align=center>balancer</code></h1>
-
 <p align=center>
 <img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
