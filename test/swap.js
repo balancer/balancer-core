@@ -36,7 +36,6 @@ describe("swaps", () => {
     for( let pt of points.math.calc_OutGivenIn ) {
 
        it(`test pt ${pt}`, async () => {
-            console.log(pt)
             let expected = pt[0];
             let args = pt[1];
             let Bi = args[0]; let Wi = args[1];
