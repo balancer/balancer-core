@@ -2,7 +2,7 @@
 <img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.064w.png" alt="balancer pebbles logo"/>
 </p>
 
-<h2 align=center><code>🍂 Balancer: Bronze Release 🍂</code></h2>
+<h2 align=center><code>balancer</code><br/><code>🍂 bronze release 🍂</code></h2>
 
 ## Installing
 
