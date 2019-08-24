@@ -1,4 +1,7 @@
-#### silver
+#### 🍂 bronze
+
+
+#### ❄️  silver
 
 * gas optimizations
 * enhanced swapping / pooling
@@ -8,10 +11,10 @@
 * dynamic public pools
     - setWeightControlled
     - setBalanceControlled
-* 'free' internal arbitrage (local flash lending)
+* batch trading / 'free' internal arbitrage (local flash lending)
 * automatic approval (single 'approve' call per token, per release)
 
-#### gold
+#### ☀️  gold
 
 * central price+depth reporter
 * zero term loans (general flash lending)
