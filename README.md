@@ -1,7 +1,7 @@
 <p align=center>
-<img src="https://balancer-labs.github.io/png/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
+<img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
-<h1 align=center><code>🍂balancer🍂</code></h1>
+<h1 align=center>🍂 <code>balancer</code> 🍂</h1>
 
 ## Installing
 
