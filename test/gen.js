@@ -60,26 +60,27 @@ describe("generated math tests", () => {
     });
     let states = state.states;
 
-    function combinations(args) {
-        function combine(base, name, argList) {
-            let res = []
-            for( let b of base ) {
-                for( let arg of argList ) {
+    function combine(base, name, argList) {
+        let res = []
+        for( let b of base ) {
+            for( let arg of argList ) {
 
-                    let newArg = {};
-                    newArg[name] = name == "token" ? [arg] : arg;
+                let newArg = {};
+                newArg[name] = name == "token" ? [arg] : arg;
 
-                    if( b[name] == undefined ) {
-                        res = res.concat([{...b, ...newArg}]);
-                    } else {
-                        newArg[name] = b[name].concat(newArg[name]);
-                        res = res.concat(newArg);
-                    }
-
+                if( b[name] == undefined ) {
+                    res = res.concat([{...b, ...newArg}]);
+                } else {
+                    newArg[name] = b[name].concat(newArg[name]);
+                    res = res.concat(newArg);
                 }
+
             }
-            return res;
         }
+        return res;
+    }
+
+    function combinations(args) {
         let res = [{}];
         for( name in args ) {
             if( name == "token" ) {
@@ -92,10 +93,14 @@ describe("generated math tests", () => {
         }
         return res;
     }
+
+    let tests = {}
     for( let testName in state.states ) {
         let s = state.states[testName];
         let states = combinations(s)
+        tests[testName] = states;
     }
+
     assert.fail();
     for(let funcname in math.tests) {
         pairs = math.tests[funcname]
