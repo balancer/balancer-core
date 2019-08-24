@@ -75,6 +75,12 @@ contract BError
             return "ERR_MATH_DIV_ZERO";
         if( berr == ERR_MATH_DIV_INTERFLOW )
             return "ERR_MATH_DIV_INTERFLOW";
+        if( berr == ERR_MIN_WEIGHT )
+            return "ERR_MIN_WEIGHT";
+        if( berr == ERR_MAX_WEIGHT )
+            return "ERR_MAX_WEIGHT";
+        if( berr == ERR_MAX_TOTAL_WEIGHT )
+            return "ERR_MAX_TOTAL_WEIGHT";
         if( berr == ERR_LIMIT_FAILED )
             return "ERR_LIMIT_FAILED";
         if( berr == ERR_UNJOINABLE )
