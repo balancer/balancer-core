@@ -5,7 +5,7 @@ let tolerance = require('../tolerance.js')
 let floatEqTolerance = tolerance.floatEqTolerance;
 let approxTolerance  = tolerance.approxTolerance;
 module.exports.points = {
-    "amount": 
+    "Ai": 
     [
         0,
         1,
@@ -29,17 +29,13 @@ module.exports.tests = {
     "calc_spotPrice": 
     {
             res:
-                function (tokens, amount) {
+                function (args) {
+                    let tokens = args["token"]
                     for( let Ti in tokens ) {
                         for( let To in tokens ) {
-                            let Bi = Ti[0];
-                            let Wi = Ti[1];
-                            let Bo = To[0];
-                            let Wo = To[1];
+                            let Bi = Ti[0]; let Wi = Ti[1]; let Bo = To[0]; let Wo = To[1];
                             let expected = fMath.calc_spotPrice(Bi, Wi, Bo, Wo);
                             let actual   = (Bo/Wo)/(Bi/Wi);
-                            //console.log(expected);
-                            //console.log(actual);
                             assert.closeTo(expected, actual, tolerance.floatEqTolerance);
                         }
                     }
@@ -50,24 +46,42 @@ module.exports.tests = {
     "calc_OutGivenInApprox": 
     {
             res:
-                function(Bi, Wi, Ai, Bo, Wo, fee) {
-                    let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
-                    let actual   = fMath.calc_OutGivenInApprox(Bi, Wi, Ai, Bo, Wo, fee);
-                    return assert.closeTo(expected, actual, tolerance.floatEqTolerance);
+                function(args) {
+                    let tokens = args["token"]
+                    let Ai     = args["Ai"]
+                    let fee    = args["fee"]
+                    for( let Ti in tokens ) {
+                        for( let To in tokens ) {
+                            let Bi = Ti[0]; let Wi = Ti[1]; let Bo = To[0]; let Wo = To[1];
+                            let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
+                            let actual   = fMath.calc_OutGivenInApprox(Bi, Wi, Ai, Bo, Wo, fee);
+                            assert.closeTo(expected, actual, tolerance.floatEqTolerance);
+                        }
+
+                    }
                 }, 
             args:
-                ["token", "amount", "fee",],
+                ["token", "Ai", "fee",],
     },
     "calc_InGivenOutApprox":
     { 
             res:
-                function(Bi, Wi, Ai, Bo, Wo, fee) {
-                    let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
-                    let actual   = fMath.calc_OutGivenInApprox(Bi, Wi, Ai, Bo, Wo, fee);
-                    return assert.closeTo(expected, actual, tolerance.floatEqTolerance);
+                function(args) {
+                    let tokens = args["token"]
+                    let Ai     = args["Ai"]
+                    let fee    = args["fee"]
+                    for( let Ti in tokens ) {
+                        for( let To in tokens ) {
+                            let Bi = Ti[0]; let Wi = Ti[1]; let Bo = To[0]; let Wo = To[1];
+                            let expected = fMath.calc_InGivenOutExact(Bi, Wi, Ai, Bo, Wo, fee);
+                            let actual   = fMath.calc_InGivenOutApprox(Bi, Wi, Ai, Bo, Wo, fee);
+                            assert.closeTo(expected, actual, tolerance.floatEqTolerance);
+                        }
+
+                    }
                 }, 
             args:
-                ["token", "amount", "fee",],
+                ["token", "Ai", "fee",],
     },
 }
 

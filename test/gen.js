@@ -112,7 +112,7 @@ describe("generated math tests", () => {
         }
     }
 
-    let argTypes = ["token", "fee", "ser", "amount"];
+    let argTypes = ["token", "fee", "ser", "Ai"];
     for( let argGroupName in tests ) {
         console.log("testing " + argGroupName + "...");
         let argGroup = tests[argGroupName]
@@ -125,7 +125,7 @@ describe("generated math tests", () => {
             }
 
             it( argGroupName + funcname , async () => {
-                desc.res.apply(filteredArgGroup.values()); 
+                desc.res(filteredArgGroup); 
             }); 
             /*
             for( let pair of desc ) {
