@@ -1,7 +1,8 @@
 <p align=center>
 <img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
-<h1 align=center>🍂 <code>balancer</code> 🍂</h1>
+<h1 align=center><code align=center>balancer</code></h1>
+<h2 align=center><code>🍂 bronze release 🍂</code></h2>
 
 ## Installing
 
