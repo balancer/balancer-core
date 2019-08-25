@@ -333,7 +333,8 @@ contract BPool is BPoolBronze
 
 
     function viewSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public view          returns (uint Ao, byte err)
+      public view 
+        returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -351,7 +352,7 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public              returns (uint Ao, byte err)
+      public returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, To, Ai);
         if (err != ERR_NONE) {
@@ -372,7 +373,7 @@ contract BPool is BPoolBronze
     }
 
     function doSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public             returns (uint Ao)
+      public returns (uint Ao)
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, To, Ai);
@@ -381,7 +382,8 @@ contract BPool is BPoolBronze
     }
 
     function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
-      public view          returns (uint Ai, byte err)
+      public view
+        returns (uint Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
