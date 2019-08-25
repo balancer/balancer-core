@@ -24,70 +24,41 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
+// Single-swap basic tests
 describe("swaps", () => {
-    // `env.bpool` has `env.admin` as its manager.
-    // `env.{a,b,c}coin` are 3 tokens that are bound to the bpool
-    // OutGivenIn points are good for testing these swap functions:
-    //   getSpotPrice
-    //   *swap_ExactInAnyOut
-    //   *swap_ExactInMinOut
-    //   *swap_ExactInLimitPrice
-    //   *swap_MaxInMinOutLimitPrice
+    let env;
+    beforeEach(async () => {
+        env = await scene.phase3(web3);
+        assert.exists(env.initWeight);
+        assert.exists(env.initBalance);
+        assert.exists(env.bpool);
+    });
     for( let pt of points.math.calc_OutGivenIn ) {
-        describe(`with weights / balances / amt: ${pt}`, () => {
 
-            let env;
-            let setup = async () => {
-                env = await scene.phase3(web3);
-                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
-                               .send({from: env.admin, gas:0xffffffff});
-                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
-                               .send({from: env.admin, gas:0xffffffff});
-                await env.bpool.methods.setFee(toWei(fee))
-                               .send({from: env.admin, gas:0xffffffff});
-            }
-
-            before(setup);
-            afterEach(setup);
-
+       it(`test pt ${pt}`, async () => {
             let expected = pt[0];
             let args = pt[1];
             let Bi = args[0]; let Wi = args[1];
             let Bo = args[2]; let Wo = args[3];
             let Ai = args[4];
             let fee = args[5];
+            await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                           .send({from: env.admin, gas:0xffffffff});
+            await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                           .send({from: env.admin, gas:0xffffffff});
+            await env.bpool.methods.setFee(toWei(fee))
+                           .send({from: env.admin, gas:0xffffffff});
 
-            it(`spot price`, () => {});
+            let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
+                                      .call();
 
-            it(`before/after balances:  doSwap_ExactInAnyOut(${args})`, async () => {
+            // [res, err]
+            let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
+                                                .call();
+            let res = reserr[0];
+            let err = reserr[1];
+            assertCloseBN(res, toWei(expected), toWei("0.0000001"));
 
-                let Abefore = await env.bpool.methods.getBalance(env.acoin._address).call();
-                let Bbefore = await env.bpool.methods.getBalance(env.bcoin._address).call();
-                await env.pool.doSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address);
-                let Aafter = await env.bpool.methods.getBalance(env.acoin._address).call();
-                let Bafter = await env.bpool.methods.getBalance(env.bcoin._address).call();
-                // TODO assert bignum(Abefore).sub(bignum(Aafter)) == Ai  etc
-            });
-
-            it(`${expected} ?= *swap_ExactInAnyOut(${args})`, async () => {
-                let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
-                                          .call();
-
-                // [res, err]
-                let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
-                                                    .call();
-                let res = reserr[0];
-                let err = reserr[1];
-
-                assert.equal(view, res);
-                assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-
-            });
-
-        }); // describe pt
-    } // for
-
-    // InGivenOut points are good for testing these swap functions:
-    for( let pt of points.math.calc_InGivenOut) {
+        });
     }
 });
