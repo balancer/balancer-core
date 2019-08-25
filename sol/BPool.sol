@@ -326,7 +326,7 @@ contract BPool is BPoolBronze
     }
 
 
-    function viewSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+    function viewSwap_ExactInAnyOut(address Ti, address To, uint Ai)
       public view 
         returns (uint Ao, byte err)
     {
@@ -345,10 +345,10 @@ contract BPool is BPoolBronze
         return (Ao, ERR_NONE);
     }
 
-    function trySwap_ExactInAnyOut(address Ti, uint Ai, address To)
+    function trySwap_ExactInAnyOut(address Ti, address To, uint Ai)
       public returns (uint Ao, byte err)
     {
-        (Ao, err) = viewSwap_ExactInAnyOut(Ti, Ai, To);
+        (Ao, err) = viewSwap_ExactInAnyOut(Ti, To, Ai);
         if (err != ERR_NONE) {
             return (Ao, err);
         } else {
@@ -366,11 +366,11 @@ contract BPool is BPoolBronze
         }
     }
 
-    function doSwap_ExactInAnyOut(address Ti, uint Ai, address To)
+    function doSwap_ExactInAnyOut(address Ti, address To, uint Ai)
       public returns (uint Ao)
     {
         byte err;
-        (Ao, err) = trySwap_ExactInAnyOut(Ti, Ai, To);
+        (Ao, err) = trySwap_ExactInAnyOut(Ti, To, Ai);
         check(err);
         return Ao;
     }
