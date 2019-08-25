@@ -26,13 +26,12 @@ contract BFactory is BBronze
     mapping(address=>bool) public wasBPoolBuiltHere;
 
     event LOG_newBPool( address indexed caller
-                       , address pool );
+                      , address indexed pool );
 
     function newBPool()
-      public
-        returns (BPool)
+      public returns (BPool)
     {
-        BPool bpool = new BPool(false);
+        BPool bpool = new BPool();
         bpool.setManager(msg.sender);
         wasBPoolBuiltHere[address(bpool)] = true;
         emit LOG_newBPool(msg.sender, address(bpool));

@@ -47,62 +47,56 @@ contract BPool is BPoolBronze
         uint    balance; // bnum
     }
 
-    constructor(bool enableToken) public {
+    constructor() public {
         manager = msg.sender;
         paused = true;
         poolcoin = address(new DSToken("Balancer Pool Token (Bronze)"));
-        joinable = enableToken;
+        joinable = false;
     }
 
     function getPoolToken()
-      public view
-        returns (address) {
+      public view returns (address) {
         return poolcoin;
     }
 
     function getPoolTokenSupply()
-      public view
-        returns (uint) {
+      public view returns (uint) {
         return ERC20(poolcoin).totalSupply();
     }
 
     function getManager()
-      public view
-        returns (address) {
+      public view returns (address) {
         return manager;
     }
 
     function isPaused()
-      public view
-        returns (bool) {
+      public view returns (bool) {
         return paused;
     }
 
     function isBound(address token)
-      public view
-        returns (bool) {
+      public view returns (bool) {
         return records[token].bound;
     }
 
     function getNumTokens()
-      public view
-        returns (uint) {
+      public view returns (uint) {
         return _index.length;
     }
 
     function getFee()
-      public view
-        returns (uint) {
+      public view returns (uint) {
         return tradeFee;
     }
 
     function getWeight(address token)
-      public view
-        returns (uint) {
+      public view returns (uint) {
         return records[token].weight;
     }
 
-    function getTotalWeight() public view returns (uint) {
+    function getTotalWeight()
+      public view returns (uint)
+    {
         uint res = 0;
         for( uint i = 0; i < _index.length; i++ ) {
             res = badd(res, records[_index[i]].weight);
@@ -110,7 +104,9 @@ contract BPool is BPoolBronze
         return res;
     }
 
-    function getNormalizedWeight(address token) public view returns (uint) {
+    function getNormalizedWeight(address token)
+      public view returns (uint)
+    {
         uint total = getTotalWeight();
         if (total == 0) {
             return 0;
@@ -119,17 +115,17 @@ contract BPool is BPoolBronze
     }
 
     function getBalance(address token)
-      public view
-        returns (uint) {
+      public view returns (uint) {
         return records[token].balance;
     }
 
-    function getWeightedBalance(address token) public view returns (uint)
-    {
+    function getWeightedBalance(address token)
+      public view returns (uint) {
         token=token; revert('unimplemented');
     }
 
-    function getWeightedTotalBalance() public view returns (uint res)
+    function getWeightedTotalBalance()
+      public view returns (uint res)
     {
         if (_index.length == 0) return 0;
         res = BONE;
@@ -139,12 +135,13 @@ contract BPool is BPoolBronze
         return res;
     }
  
-    function isJoinable() public view returns (bool) {
+    function isJoinable()
+      public view returns (bool) {
         return joinable;
     }
 
     function makeJoinable()
-        public
+      public
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         joinable = true;
@@ -154,7 +151,7 @@ contract BPool is BPoolBronze
     }
 
     function joinPool(uint poolAo)
-        public
+      public
     {
         require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
@@ -171,7 +168,7 @@ contract BPool is BPoolBronze
     }
 
     function exitPool(uint poolAi)
-        public
+      public
     {
         require(joinable, "not joinable");
         uint poolTotal = ERC20(poolcoin).totalSupply();
@@ -197,7 +194,9 @@ contract BPool is BPoolBronze
     }
 
     function setWeightDirect(address token, uint weight)
-      public note {
+      public
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
@@ -218,7 +217,8 @@ contract BPool is BPoolBronze
 
     function setBalanceDirect(address token, uint balance)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
@@ -240,7 +240,8 @@ contract BPool is BPoolBronze
 
     function setFee(uint tradeFee_)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
         tradeFee = tradeFee_;
@@ -248,7 +249,8 @@ contract BPool is BPoolBronze
 
     function setManager(address manager_)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
@@ -282,7 +284,8 @@ contract BPool is BPoolBronze
 
     function unbind(address token)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
 
@@ -302,7 +305,8 @@ contract BPool is BPoolBronze
     // Collect any excess token that may have been transferred in
     function sweep(address token)
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         check(isBound(token), ERR_NOT_BOUND);
         uint selfBalance = records[token].balance;
@@ -313,22 +317,23 @@ contract BPool is BPoolBronze
 
     function pause()
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
     function start()
       public
-        note {
+        note
+    {
         check(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
 
 
     function viewSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public view 
-        returns (uint Ao, byte err)
+      public view          returns (uint Ao, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -346,7 +351,7 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public returns (uint Ao, byte err)
+      public              returns (uint Ao, byte err)
     {
         (Ao, err) = viewSwap_ExactInAnyOut(Ti, To, Ai);
         if (err != ERR_NONE) {
@@ -367,7 +372,7 @@ contract BPool is BPoolBronze
     }
 
     function doSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-      public returns (uint Ao)
+      public             returns (uint Ao)
     {
         byte err;
         (Ao, err) = trySwap_ExactInAnyOut(Ti, To, Ai);
@@ -376,8 +381,7 @@ contract BPool is BPoolBronze
     }
 
     function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
-      public view
-        returns (uint Ai, byte err)
+      public view          returns (uint Ai, byte err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
