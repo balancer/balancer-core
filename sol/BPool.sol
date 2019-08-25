@@ -153,7 +153,7 @@ contract BPool is BPoolBronze
     function joinPool(uint poolAo)
       public
     {
-        require(joinable, "not joinable");
+      check(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -170,7 +170,7 @@ contract BPool is BPoolBronze
     function exitPool(uint poolAi)
       public
     {
-        require(joinable, "not joinable");
+      check(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
         

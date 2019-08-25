@@ -14,6 +14,7 @@
 pragma solidity ^0.5.10;
 
 import "./BNum.sol";
+import "./BError.sol";
 
 contract BMath is BNum
 {
@@ -42,7 +43,7 @@ contract BMath is BNum
         // adjustedIn = Ai * (1 - fee)
         uint adjustedIn;
         (adjustedIn, flag)           = bsubSign(BONE, fee);
-        require( !flag, "BMath.swapImath");
+      check( !flag, ERR_MAX_FEE );
         adjustedIn                   = bmul(Ai, adjustedIn);
 
         // y = Bi / (Bi + Ai * (1 - fee))
@@ -50,7 +51,7 @@ contract BMath is BNum
         uint foo                     = bpow(y, wRatio);
         uint bar;
         (bar, flag)                  = bsubSign(BONE, foo);
-        require( !flag, "BMath.swapImath");
+      check( !flag, ERR_MATH_SUB_UNDERFLOW ); //TODO: MAX_SLIP
         Ao                           = bmul(Bo, bar);
 	}
 
@@ -67,13 +68,13 @@ contract BMath is BNum
         uint wRatio  = bdiv(Wo, Wi);
         uint diff;
         (diff, flag) = bsubSign(Bo, Ao);
-      require( !flag, "FAIL: diff must be positive here" );
+      check( !flag, ERR_MATH_SUB_UNDERFLOW ); //TODO: replace with MAX_SLIP or something
         uint y       = bdiv(Bo, diff);
         uint foo     = bpow(y, wRatio);
         (foo,flag)   = bsubSign(foo, BONE);
-      require( !flag, "FAIL: foo must be positive here" );
+      check( !flag, ERR_MATH_SUB_UNDERFLOW ); //TODO: Ao > Bo (MAX_SLIP)
         (Ai,flag)    = bsubSign(BONE, fee);
-      require( !flag, "FAIL: Ai must be positive here" );
+      check( !flag, ERR_MATH_SUB_UNDERFLOW ); //TODO: MAX_SLIP
         Ai           = bdiv(bmul(Bi, foo), Ai);
     }
 
@@ -114,17 +115,17 @@ contract BMath is BNum
       public pure
         returns ( uint Ai )
     {
-        require( Bi > 0);
-        require( Wi > 0);
-        require( Bo > 0);
-        require( Wo > 0);
+      check( Bi > 0, ERR_MIN_BALANCE);
+      check( Wi > 0, ERR_MIN_WEIGHT);
+      check( Bo > 0, ERR_MIN_BALANCE);
+      check( Wo > 0, ERR_MIN_WEIGHT);
         bool flag;
         uint SER0    = calc_SpotPrice(Bi, Wi, Bo, Wo);
-      require( SER1 <= SER0);
+      check( SER1 <= SER0, ERR_MATH_SUB_UNDERFLOW ); // target spot price too high
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
         (Ai,flag)    = bsubSign(bpow(base, exp), BONE);
-      require( !flag, "FAIL: Ai must be positive here");
+      check( !flag, ERR_MATH_SUB_UNDERFLOW );
         Ai           = bmul(Ai, Bi);
         Ai           = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
     }
@@ -137,7 +138,7 @@ contract BMath is BNum
     {
         uint whole                 = bfloor(exp);   
         (uint remain, bool flag)   = bsubSign(exp, whole);
-        require( !flag, "FAIL: remain must be positive here");
+      check( !flag, ERR_MATH_SUB_UNDERFLOW );
 
         // make whole agree with wpown def
         uint wholePow              = bpown(base, btoi(whole));

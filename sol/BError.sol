@@ -81,6 +81,8 @@ contract BError
             return "ERR_MAX_WEIGHT";
         if( berr == ERR_MAX_TOTAL_WEIGHT )
             return "ERR_MAX_TOTAL_WEIGHT";
+        if( berr == ERR_MAX_FEE )
+            return "ERR_MAX_FEE";
         if( berr == ERR_LIMIT_FAILED )
             return "ERR_LIMIT_FAILED";
         if( berr == ERR_UNJOINABLE )
