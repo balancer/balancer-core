@@ -70,13 +70,6 @@ describe("swaps", () => {
             });
 
             it(`${expected} ?= *swap_ExactInAnyOut(${args})`, async () => {
-                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
-                               .send({from: env.admin, gas:0xffffffff});
-                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
-                               .send({from: env.admin, gas:0xffffffff});
-                await env.bpool.methods.setFee(toWei(fee))
-                               .send({from: env.admin, gas:0xffffffff});
-
                 let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
                                           .call();
 
