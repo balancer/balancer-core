@@ -24,41 +24,77 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
-// Single-swap basic tests
 describe("swaps", () => {
-    let env;
-    beforeEach(async () => {
-        env = await scene.phase3(web3);
-        assert.exists(env.initWeight);
-        assert.exists(env.initBalance);
-        assert.exists(env.bpool);
-    });
+    // `env.bpool` has `env.admin` as its manager.
+    // `env.{a,b,c}coin` are 3 tokens that are bound to the bpool
+    // OutGivenIn points are good for testing these swap functions:
+    //   getSpotPrice
+    //   *swap_ExactInAnyOut
+    //   *swap_ExactInMinOut
+    //   *swap_ExactInLimitPrice
+    //   *swap_MaxInMinOutLimitPrice
     for( let pt of points.math.calc_OutGivenIn ) {
+        describe(`with weights / balances / amt: ${pt}`, () => {
 
-       it(`test pt ${pt}`, async () => {
+            let env;
+            let setup = async () => {
+                env = await scene.phase3(web3);
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+            }
+
+            before(setup);
+            afterEach(setup);
+
             let expected = pt[0];
             let args = pt[1];
             let Bi = args[0]; let Wi = args[1];
             let Bo = args[2]; let Wo = args[3];
             let Ai = args[4];
             let fee = args[5];
-            await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setFee(toWei(fee))
-                           .send({from: env.admin, gas:0xffffffff});
 
-            let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
-                                      .call();
+            it(`spot price`, () => {});
 
-            // [res, err]
-            let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
-                                                .call();
-            let res = reserr[0];
-            let err = reserr[1];
-            assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+            it(`before/after balances:  doSwap_ExactInAnyOut(${args})`, async () => {
 
-        });
+                let Abefore = await env.bpool.methods.getBalance(env.acoin._address).call();
+                let Bbefore = await env.bpool.methods.getBalance(env.bcoin._address).call();
+                await env.pool.doSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address);
+                let Aafter = await env.bpool.methods.getBalance(env.acoin._address).call();
+                let Bafter = await env.bpool.methods.getBalance(env.bcoin._address).call();
+                // TODO assert bignum(Abefore).sub(bignum(Aafter)) == Ai  etc
+            });
+
+            it(`${expected} ?= *swap_ExactInAnyOut(${args})`, async () => {
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+
+                let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
+                                          .call();
+
+                // [res, err]
+                let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, toWei(Ai), env.bcoin._address)
+                                                    .call();
+                let res = reserr[0];
+                let err = reserr[1];
+
+                assert.equal(view, res);
+                assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+
+            });
+
+        }); // describe pt
+    } // for
+
+    // InGivenOut points are good for testing these swap functions:
+    for( let pt of points.math.calc_InGivenOut) {
     }
 });
