@@ -1,5 +1,14 @@
 // [result
 // , [args...] ]
+
+module.exports.state = {
+    numTokens: 2,
+    balance: [[0, 350], 35],
+    weight: [[0, 10], 1],
+    fee: [0, 0.02, 0.01],
+}
+
+/*
 module.exports.states = {
     
     // we want to be able to specify states that have,
@@ -40,6 +49,7 @@ module.exports.states = {
         ],
     },
 }
+*/
 
 
          

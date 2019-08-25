@@ -58,62 +58,25 @@ describe("generated math tests", () => {
         env = await scene.phase0(web3);
         bmath = await pkg.deploy(web3, env.admin, "BMath");
     });
-    let states = state.states;
+    let state = state.state;
 
-    function combine(base, name, argList) {
-        let res = []
-        for( let b of base ) {
-            for( let arg of argList ) {
-
-                let newArg = {};
-                newArg[name] = name == "token" ? [arg] : arg;
-
-                if( b[name] == undefined ) {
-                    res = res.concat([{...b, ...newArg}]);
-                } else {
-                    newArg[name] = b[name].concat(newArg[name]);
-                    res = res.concat(newArg);
-                }
-
-            }
-        }
-        return res;
+    let argRanges = state.states[testName];
+    
+    let numTokens = argRanges[numTokens];
+    let done = false;
+    let prev = [];
+    for( let argName in argRanges ) {
     }
+    for( int i = 0; i < numTokens; i++ ) {
+        let token = [];
+        
+        prev = prev.concat(token);
 
-    // tokens are a special case 
-    // there can be many tokens
-    // and we specify a range of values *per token*
-    function combinations(args) {
-        let res = [{}];
-        for( name in args ) {
-            if( name == "token" ) {
-                for( let pairs of args[name] ) {
-                    res = combine(res, name ,pairs);
-                }
-            } else {
-                res = combine(res, name, args[name]);
-            }
-        }
-        return res;
     }
-
-    let tests = {}
-    for( let testName in state.states ) {
-        let s = state.states[testName];
-        let states = combinations(s)
-        tests[testName] = states;
+    while( !done ) {
     }
+    
 
-
-    for( testName in tests ) {
-        for( let argName in math.points ) {
-            let argList = math.points[argName];
-            tests[testName] = combine(tests[testName], argName, argList);
-        }
-    }
-
-    let argTypes = ["token", "fee", "ser", "Ai"];
-    console.log(tests);
     for( let argGroupName in tests ) {
         //console.log("testing " + argGroupName + "...");
         let argGroup = tests[argGroupName]
