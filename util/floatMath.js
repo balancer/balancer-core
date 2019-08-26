@@ -123,7 +123,7 @@ module.exports.floatMath = {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
         if (err != bconst.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bi, "Ao must be less than Bi" );
+        assert(Ao < Bo, "Ao must be less than Bo" );
 
         let exponent = (Wo / Wi);
         let foo = Bo / (Bo - Ao);
@@ -140,7 +140,7 @@ module.exports.floatMath = {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
         if (err != bconst.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bi, "Ao must be less than Bi" );
+        assert(Ao < Bo, "Ao must be less than Bo" );
 
         if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
 
