@@ -1,7 +1,7 @@
 let Web3 = require("web3");
 let ganache = require("ganache-core");
 let assert = require("chai").assert;
-let fmath = require("../util/floatMath.js").floatMath;
+let fMath = require("../util/floatMath.js").floatMath;
 let pkg = require("../package.js");
 pkg.types.loadTypes("../tmp/combined.json");
 
@@ -24,6 +24,21 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
+
+// return true if at end of all ranges
+function incArgList(args, ranges) {
+    for( let i = 0; i < args.length; i++ ) {
+        args[i] += ranges[i][2];
+        if( args[i] > ranges[i][1] ) {
+            for( let j = 0; j <= i; j++ ) {
+                args[j] = ranges[j][0];
+            }
+        } else {
+            return false;
+        }
+    }
+    return true;
+}
 // Single-swap basic tests
 describe("swaps", () => {
     let env;
@@ -35,30 +50,41 @@ describe("swaps", () => {
     });
     for( let pt of points.math.calc_OutGivenIn ) {
 
-       it(`test pt ${pt}`, async () => {
-            let expected = pt[0];
-            let args = pt[1];
+        let args = pt.map(x => x[0]);
+
+        let done = false;
+        while( !done ) {
+
             let Bi = args[0]; let Wi = args[1];
             let Bo = args[2]; let Wo = args[3];
             let Ai = args[4];
             let fee = args[5];
-            await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setFee(toWei(fee))
-                           .send({from: env.admin, gas:0xffffffff});
+ 
+            it(`ExactInAnyOut test pt ${args}`, async () => {
+                //let expected = pt[0];
+                //let args = pt[1];
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+                let expected = fMath.calc_OutGivenInExact(Bi, Wi, Bo, Wo, Ai, fee);
+                let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
+                                          .call();
 
-            let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
-                                      .call();
+                // [res, err]
+                let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
+                                                    .call();
+                let res = reserr[0];
+                let err = reserr[1];
+                if( err == 0 ) {
+                    assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+                }
+                assertCloseBN(view[0], toWei(expected), toWei("0.0000001"));
+            });
 
-            // [res, err]
-            let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
-                                                .call();
-            let res = reserr[0];
-            let err = reserr[1];
-            assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-
-        });
+            done = incArgList(args, pt);
+        }
     }
 });

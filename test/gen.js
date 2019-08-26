@@ -33,6 +33,7 @@ assert.closeBN = (actual, expected) => {
     );
 }
 
+/*
 describe("generated math points", () => {
     let env;
     let bmath;
@@ -68,3 +69,4 @@ describe("generated math points", () => {
         }
     }
 });
+*/
