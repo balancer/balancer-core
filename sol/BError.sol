@@ -33,6 +33,7 @@ contract BError
     byte constant ERR_MAX_FEE            = 0x22;
     byte constant ERR_MIN_BALANCE        = 0x23;
     byte constant ERR_MAX_BALANCE        = 0x24;
+    byte constant ERR_MAX_TRADE          = 0x24;
 
     // TODO: 3 limit types (in, out, price)
     byte constant ERR_LIMIT_FAILED       = 0x30;
@@ -83,6 +84,8 @@ contract BError
             return "ERR_MAX_TOTAL_WEIGHT";
         if( berr == ERR_MAX_FEE )
             return "ERR_MAX_FEE";
+        if( berr == ERR_MAX_TRADE )
+            return "ERR_MAX_TRADE";
         if( berr == ERR_LIMIT_FAILED )
             return "ERR_LIMIT_FAILED";
         if( berr == ERR_UNJOINABLE )
@@ -101,5 +104,6 @@ contract BError
             revert(errs(berr));
         }
     }
+
 
 }

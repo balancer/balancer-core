@@ -23,4 +23,5 @@ contract BConst
     uint256 constant MAX_TOTAL_WEIGHT  = BONE * 100; // total
     uint256 constant MIN_TOKEN_BALANCE = BONE / 100;
     uint256 constant MAX_TOKEN_BALANCE = BONE * BONE;
+    uint256 constant MAX_TRADE_FRAC    = BONE / 10;
 }

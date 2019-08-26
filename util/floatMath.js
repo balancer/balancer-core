@@ -16,99 +16,139 @@
 // Wi := Weight of token In
 // Wo := Weight of token Out
 // Ai := Amount of token In
+let bconst = require("./constant.js").constants;
+let berr   = require("./error.js").errors;
 module.exports.floatMath = {
-
-    calc_SpotPrice: function() {
-        return module.exports.floatMath.spotPrice(...arguments);
-    },
-    spotPrice: function(Bi, Wi, Bo, Wo) {
+    mathCheck: function(Bi, Wi, Bo, Wo, fee) {
         assert(Bi > 0, "Bi must be positive");
         assert(Wi > 0, "Wi must be positive");
         assert(Bo > 0, "Bo must be positive");
         assert(Wo > 0, "Wo must be positive");
+        //assert(Ai > 0, "Ai must be positive");
+        //assert(Ai < Bi, "Ai must be less than Bi" );
+        assert(fee => 0, "fee must be nonnegative");
+        assert(fee < 1, "fee must be less than one");
+        return bconst.ERR_NONE;
+    },
+    poolCheck: function(Bi, Wi, Bo, Wo, fee) {
+        if( Bi < bconst.MIN_TOKEN_BALANCE ) return bconst.ERR_MIN_BALANCE;
+        if( Wi < bconst.MIN_TOKEN_WEIGHT  ) return bconst.ERR_MIN_WEIGHT;
+        if( Bo < bconst.MIN_TOKEN_BALANCE ) return bconst.ERR_MIN_BALANCE;
+        if( Wo < bconst.MIN_TOKEN_WEIGHT  ) return bconst.ERR_MIN_WEIGHT;
 
+        if( Bi  > bconst.MAX_TOKEN_BALANCE ) return bconst.ERR_MAX_BALANCE;
+        if( Wi  > bconst.MAX_TOKEN_WEIGHT  ) return bconst.ERR_MAX_WEIGHT;
+        if( Bo  > bconst.MAX_TOKEN_BALANCE ) return bconst.ERR_MAX_BALANCE;
+        if( Wo  > bconst.MAX_TOKEN_WEIGHT  ) return bconst.ERR_MAX_WEIGHT;
+        if( fee > bconst.MAX_FEE  )          return bconst.ERR_MAX_FEE;
+        return bconst.ERR_NONE;
+ 
+    },
+
+
+
+    pool_getSpotPrice: function(Bi, Wi, Bo, Wo) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, 0);
+        if( err != bconst.ERR_NONE ) return err;
+        return module.exports.floatMath.calc_SpotPrice(...arguments);
+    },
+
+    calc_SpotPrice: function(Bi, Wi, Bo, Wo) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, 0);
+        if (err != bconst.ERR_NONE) return err;
+ 
         var numer = Bo/Wo;
         var denom = Bi/Wi;
         return numer/denom;
     },
 
-    calc_OutGivenInExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
+    pool_viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != bconst.ERR_NONE ) return err;
         assert(Ai > 0, "Ai must be positive");
         assert(Ai < Bi, "Ai must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+ 
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+ 
+        let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
 
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
-        var bar = foo**exponent;
-        
-        return Bo * (1 - bar);
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
+        return Ao;
+
+    },
+    calc_OutGivenInExact: function (Bi, Wi, Ai, Bo, Wo, fee) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
+        assert(Ai > 0, "Ai must be positive");
+        assert(Ai < Bi, "Ai must be less than Bi" );
+
+        let exponent = (Wi / Wo);
+        let adjustedIn = Ai * (1-fee);
+        let foo = Bi / (Bi + adjustedIn);
+        let bar = foo**exponent;
+        let Ao  = Bo * (1 - bar)        
+
+        return Ao;
     },
 
     calc_OutGivenIn: function() {
         return module.exports.floatMath.calc_OutGivenInApprox(...arguments);
     },
-    calc_OutGivenInApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
+    calc_OutGivenInApprox: function(Bi, Wi, Ai, Bo, Wo, fee) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
         assert(Ai > 0, "Ai must be positive");
         assert(Ai < Bi, "Ai must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
-
-        assert( Ai < Bi, "Ai must be less than Bi" );
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
-        var bar = this.powApprox(foo, exponent);
+ 
+        let exponent = (Wi / Wo);
+        let adjustedIn = Ai * (1-fee);
+        let foo = Bi / (Bi + adjustedIn);
+        let bar = this.powApprox(foo, exponent);
+        let Ao  = Bo * (1 - bar);
         
-        return Bo * (1 - bar);
-
+        return Ao;
     },
    
-    calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
-        assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bo, "Ao must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+    pool_viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != bconst.ERR_NONE ) return err;
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
 
-        var exponent = (Wo / Wi);
-        var foo = Bo / (Bo - Ao);
-        var bar = foo**exponent;
-        
-        return Bi * (bar - 1) / (1 - fee);
+        let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
+
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        return Ai;
+    },
+    calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
+        assert(Ao > 0, "Ao must be positive");
+        assert(Ao < Bi, "Ao must be less than Bi" );
+
+        let exponent = (Wo / Wi);
+        let foo = Bo / (Bo - Ao);
+        let bar = foo**exponent;
+        let Ai  = Bi * (bar - 1) / (1 - fee);
+
+        return Ai;
     },
 
     calc_InGivenOut: function() {
         return module.exports.floatMath.calc_InGivenOutApprox(...arguments);
     },
     calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bo, "Ao must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+        assert(Ao < Bi, "Ao must be less than Bi" );
+
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
 
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
+
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
         
         return Bi * (bar - 1) / (1 - fee);
 
@@ -118,23 +158,37 @@ module.exports.floatMath = {
         return module.exports.floatMath.amountUpToPrice(...arguments);
     },
 
+
     amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
+
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
+        let Ai = (foo ** exponent - 1) * Bi / (1 - fee);
 
-        return (foo ** exponent - 1) * Bi / (1 - fee);
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+
+        return Ai;
     },
 
     amountUpToPrice: function() {
         return module.exports.floatMath.amountUpToPriceApprox(...arguments);
     },
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
+        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
+        if (err != bconst.ERR_NONE) return err;
+
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
-        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi
-        return Ai / (1 - fee);
+        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
+        Ai      = Ai / (1 - fee);
+
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+
+        return Ai;
     },
 
     powApprox: function(base, exponent) {

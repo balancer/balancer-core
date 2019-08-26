@@ -37,6 +37,13 @@ contract BMath is BNum
       public pure
         returns ( uint Ao )
     {
+       
+      check( Bi > 0,  ERR_MIN_BALANCE);
+      check( Wi > 0,  ERR_MIN_WEIGHT);
+      check( Bo > 0,  ERR_MIN_BALANCE);
+      check( Wo > 0,  ERR_MIN_WEIGHT);
+      check( fee < BONE, ERR_MAX_FEE );
+
         bool flag;
         uint wRatio               = bdiv(Wi, Wo);
 
@@ -64,6 +71,12 @@ contract BMath is BNum
       public pure
         returns ( uint Ai )
     {
+      check( Bi > 0,  ERR_MIN_BALANCE);
+      check( Wi > 0,  ERR_MIN_WEIGHT);
+      check( Bo > 0,  ERR_MIN_BALANCE);
+      check( Wo > 0,  ERR_MIN_WEIGHT);
+      check( fee < BONE, ERR_MAX_FEE );
+ 
         bool flag;
         uint wRatio  = bdiv(Wo, Wi);
         uint diff;
@@ -83,8 +96,14 @@ contract BMath is BNum
       public pure
         returns ( uint r ) 
     {
+      check( Bi > 0, ERR_MIN_BALANCE);
+      check( Wi > 0, ERR_MIN_WEIGHT);
+      check( Bo > 0, ERR_MIN_BALANCE);
+      check( Wo > 0, ERR_MIN_WEIGHT);
+
         uint numer = bdiv(Bo, Wo);
         uint denom = bdiv(Bi, Wi);
+      check( denom > 0, ERR_MATH_DIV_ZERO );
         r = bdiv(numer, denom);
         return r;
     }
@@ -115,10 +134,12 @@ contract BMath is BNum
       public pure
         returns ( uint Ai )
     {
-      check( Bi > 0, ERR_MIN_BALANCE);
-      check( Wi > 0, ERR_MIN_WEIGHT);
-      check( Bo > 0, ERR_MIN_BALANCE);
-      check( Wo > 0, ERR_MIN_WEIGHT);
+      check( Bi > 0,  ERR_MIN_BALANCE);
+      check( Wi > 0,  ERR_MIN_WEIGHT);
+      check( Bo > 0,  ERR_MIN_BALANCE);
+      check( Wo > 0,  ERR_MIN_WEIGHT);
+      check( fee < BONE, ERR_MAX_FEE );
+
         bool flag;
         uint SER0    = calc_SpotPrice(Bi, Wi, Bo, Wo);
       check( SER1 <= SER0, ERR_MATH_SUB_UNDERFLOW ); // target spot price too high

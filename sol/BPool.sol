@@ -342,11 +342,16 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
+        if( Ai > bmul(I.balance, MAX_TRADE_FRAC) ) return (Ao, ERR_MAX_TRADE);
+
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
                             , Ai, tradeFee );
 
         if( paused ) return (Ao, ERR_PAUSED);
+
+        if( Ao > bmul(O.balance, MAX_TRADE_FRAC) ) return (Ao, ERR_MAX_TRADE);
+
 
         return (Ao, ERR_NONE);
     }

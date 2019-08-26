@@ -27,6 +27,7 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
+/*
 describe("floatMath.js", function () {
     for( let pt of testPoints.spotPricePoints ) {
         var desc = `${pt.res} ~= calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`;
@@ -137,6 +138,7 @@ describe("floatMath.js", function () {
     });
 
 });
+*/
 
 describe("BMath", () => {
     for( let pt of testPoints.powPoints ) {
