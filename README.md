@@ -6,9 +6,9 @@
 
 ## Installing
 
-Most users will be interested in consuming the ABI definitions for various Balancer contracts.
+Most users will be interested in consuming ABI definitions for various Balancer contracts.
 
-Until this package is shipped to a package registry, the best way to use it is as a git submodule.
+At the moment, the best way to use it is as a git submodule.
 
 ```
 mkdir lib
@@ -17,32 +17,34 @@ git submodule add https://github.com/balancer-labs/balancer-core lib/balancer-co
 
 Now you can require the package:
 
-```
+```javascript
 let bcore = require('./lib/balancer-core');
 let types = bcore.types;  # A combined.json object with type names lifted
 let BPool = bcore.types.BPool;
-let pool = new web3.eth.Contract(BPool.abi);
+let bpool = new web3.eth.Contract(BPool.abi);
 ```
 
-## Usage
+## API Docs
 
-[Check out our work in progress docs](https://github.com/balancer-labs/balancer-core/blob/master/docs/api.md)
+[Check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/index.md)
 
-## Developing
-
-To develop you need `yarn`, `node`, and `solc`. To build the docs you need `hugo`.
+## Developing (working on `balancer-core`)
 
 ```
+# To develop you need `yarn`, `node`, and `solc`
+brew install node yarn ethereum
+
+# Clone the repo
 git clone https://github.com/balancer-labs/balancer-core
 cd balancer-core
-yarn setup
-```
 
-```
-yarn setup       # clones submodules and installs packages
-yarn build       # compile the solidity contracts
-yarn test        # yarn build && mocha
-yarn dist        # cp artifacts to out/
+# Get the dependencies
+yarn setup       # clone submodules and install packages
+
+# Dev loop
+# yarn build       # compile the solidity contracts to tmp/  (`make build`)
+yarn test        # build contracts and run the tests (`yarn build && mocha`)
+yarn dist        # cp artifacts to out/ for commit (`make dist`)
 ```
 
 ### Project structure
