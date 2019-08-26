@@ -16,8 +16,8 @@
 // Wi := Weight of token In
 // Wo := Weight of token Out
 // Ai := Amount of token In
-let bconst = require("./constant.js").constants;
-let berr   = require("./error.js").errors;
+let bconst = require("./constant.js");
+let berr   = require("./error.js");
 module.exports.floatMath = {
     mathCheck: function(Bi, Wi, Bo, Wo, fee) {
         assert(Bi > 0, "Bi must be positive");
@@ -28,20 +28,20 @@ module.exports.floatMath = {
         //assert(Ai < Bi, "Ai must be less than Bi" );
         assert(fee => 0, "fee must be nonnegative");
         assert(fee < 1, "fee must be less than one");
-        return bconst.ERR_NONE;
+        return berr.ERR_NONE;
     },
     poolCheck: function(Bi, Wi, Bo, Wo, fee) {
-        if( Bi < bconst.MIN_TOKEN_BALANCE ) return bconst.ERR_MIN_BALANCE;
-        if( Wi < bconst.MIN_TOKEN_WEIGHT  ) return bconst.ERR_MIN_WEIGHT;
-        if( Bo < bconst.MIN_TOKEN_BALANCE ) return bconst.ERR_MIN_BALANCE;
-        if( Wo < bconst.MIN_TOKEN_WEIGHT  ) return bconst.ERR_MIN_WEIGHT;
+        if( Bi < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
+        if( Wi < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
+        if( Bo < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
+        if( Wo < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
 
-        if( Bi  > bconst.MAX_TOKEN_BALANCE ) return bconst.ERR_MAX_BALANCE;
-        if( Wi  > bconst.MAX_TOKEN_WEIGHT  ) return bconst.ERR_MAX_WEIGHT;
-        if( Bo  > bconst.MAX_TOKEN_BALANCE ) return bconst.ERR_MAX_BALANCE;
-        if( Wo  > bconst.MAX_TOKEN_WEIGHT  ) return bconst.ERR_MAX_WEIGHT;
-        if( fee > bconst.MAX_FEE  )          return bconst.ERR_MAX_FEE;
-        return bconst.ERR_NONE;
+        if( Bi  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
+        if( Wi  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
+        if( Bo  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
+        if( Wo  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
+        if( fee > bconst.MAX_FEE  )          return berr.ERR_MAX_FEE;
+        return berr.ERR_NONE;
  
     },
 
@@ -49,13 +49,13 @@ module.exports.floatMath = {
 
     pool_getSpotPrice: function(Bi, Wi, Bo, Wo) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, 0);
-        if( err != bconst.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return err;
         return module.exports.floatMath.calc_SpotPrice(...arguments);
     },
 
     calc_SpotPrice: function(Bi, Wi, Bo, Wo) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, 0);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
  
         var numer = Bo/Wo;
         var denom = Bi/Wi;
@@ -64,21 +64,22 @@ module.exports.floatMath = {
 
     pool_viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != bconst.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return err;
         assert(Ai > 0, "Ai must be positive");
-        assert(Ai < Bi, "Ai must be less than Bi" );
+
  
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+
+
  
         let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
-
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
         return Ao;
 
     },
     calc_OutGivenInExact: function (Bi, Wi, Ai, Bo, Wo, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
         assert(Ai > 0, "Ai must be positive");
         assert(Ai < Bi, "Ai must be less than Bi" );
 
@@ -96,7 +97,7 @@ module.exports.floatMath = {
     },
     calc_OutGivenInApprox: function(Bi, Wi, Ai, Bo, Wo, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
         assert(Ai > 0, "Ai must be positive");
         assert(Ai < Bi, "Ai must be less than Bi" );
  
@@ -111,17 +112,17 @@ module.exports.floatMath = {
    
     pool_viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != bconst.ERR_NONE ) return err;
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
+        if( err != berr.ERR_NONE ) return err;
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
 
         let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         return Ai;
     },
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
         assert(Ao < Bo, "Ao must be less than Bo" );
 
@@ -138,17 +139,17 @@ module.exports.floatMath = {
     },
     calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
         assert(Ao < Bo, "Ao must be less than Bo" );
 
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return bconst.ERR_MAX_TRADE;
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
 
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         
         return Bi * (bar - 1) / (1 - fee);
 
@@ -161,14 +162,14 @@ module.exports.floatMath = {
 
     amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
 
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
         let Ai = (foo ** exponent - 1) * Bi / (1 - fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
 
         return Ai;
     },
@@ -178,7 +179,7 @@ module.exports.floatMath = {
     },
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != bconst.ERR_NONE) return err;
+        if (err != berr.ERR_NONE) return err;
 
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
@@ -186,7 +187,7 @@ module.exports.floatMath = {
         var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
         Ai      = Ai / (1 - fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return bconst.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
 
         return Ai;
     },

@@ -70,7 +70,7 @@ describe("swaps", () => {
                                .send({from: env.admin, gas:0xffffffff});
                 await env.bpool.methods.setFee(toWei(fee))
                                .send({from: env.admin, gas:0xffffffff});
-                let expected = fMath.calc_OutGivenInExact(Bi, Wi, Ai, Bo, Wo, fee);
+                let expected = fMath.pool_viewSwap_ExactInAnyOut(Bi, Wi, Ai, Bo, Wo, fee);
                 let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
                                           .call();
 
@@ -89,6 +89,7 @@ describe("swaps", () => {
             done = incArgList(args, pt);
         }
     }
+    /*
     for( let pt of points.math.calc_InGivenOut ) {
 
         let args = pt.map(x => x[0]);
@@ -130,5 +131,6 @@ describe("swaps", () => {
             done = incArgList(args, pt);
         }
     }
+    */
 
 });
