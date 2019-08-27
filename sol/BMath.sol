@@ -75,6 +75,7 @@ contract BMath is BNum
       check( Wi > 0,  ERR_MIN_WEIGHT);
       check( Bo > 0,  ERR_MIN_BALANCE);
       check( Wo > 0,  ERR_MIN_WEIGHT);
+      check( Ao < Bo, ERR_MAX_TRADE );
       check( fee < BONE, ERR_MAX_FEE );
  
         bool flag;

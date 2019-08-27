@@ -73,7 +73,7 @@ module.exports.floatMath = {
 
  
         let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
+        //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
         return Ao;
 
     },
@@ -117,14 +117,14 @@ module.exports.floatMath = {
 
         let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         return Ai;
     },
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
         if (err != berr.ERR_NONE) return err;
         assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bo, "Ao must be less than Bo" );
+        if( Ao >= Bo, "Ao must be less than Bo" );
 
         let exponent = (Wo / Wi);
         let foo = Bo / (Bo - Ao);
@@ -149,7 +149,7 @@ module.exports.floatMath = {
         var foo = Bo / (Bo - Ao);
         var bar = this.powApprox(foo, exponent);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         
         return Bi * (bar - 1) / (1 - fee);
 
@@ -169,7 +169,7 @@ module.exports.floatMath = {
         var foo = SER0/SER1;
         let Ai = (foo ** exponent - 1) * Bi / (1 - fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
 
         return Ai;
     },
@@ -187,7 +187,7 @@ module.exports.floatMath = {
         var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
         Ai      = Ai / (1 - fee);
 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
 
         return Ai;
     },

@@ -1,5 +1,6 @@
 // [result
 // , [args...] ]
+let berr = require("../util/error.js");
 module.exports.math = {
     // Ao = OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee)
     "calc_OutGivenIn": [
@@ -19,7 +20,7 @@ module.exports.math = {
     //],
 
     "calc_InGivenOut": [
-      [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 1], [0, 0.02, 0.01]]
+      [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [0, 0.02, 0.01]]
     ],
         
         /*

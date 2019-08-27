@@ -13,6 +13,7 @@ let web3 = new Web3(ganache.provider({
 
 let scene = require("./scene.js");
 let points = require("./points.js");
+let berr = require("../util/error.js");
 
 let toBN = web3.utils.toBN;
 let toWei = (n) => web3.utils.toWei(n.toString());
@@ -79,7 +80,7 @@ describe("swaps", () => {
                                                     .call();
                 let res = reserr[0];
                 let err = reserr[1];
-                if( err == 0 ) {
+                if( err == berr.ERR_NONE ) {
                     assertCloseBN(res, toWei(expected), toWei("0.0000001"));
                 } else {
                     assert(expected == -err);
@@ -89,7 +90,7 @@ describe("swaps", () => {
             done = incArgList(args, pt);
         }
     }
-    /*
+
     for( let pt of points.math.calc_InGivenOut ) {
 
         let args = pt.map(x => x[0]);
@@ -112,7 +113,7 @@ describe("swaps", () => {
                                .send({from: env.admin, gas:0xffffffff});
                 await env.bpool.methods.setFee(toWei(fee))
                                .send({from: env.admin, gas:0xffffffff});
-                let expected = fMath.calc_InGivenOutExact(Bi, Wi, Bo, Wo, Ao, fee);
+                let expected = fMath.pool_viewSwap_AnyInExactOut(Bi, Wi, Bo, Wo, Ao, fee);
                 let view = await env.bpool.methods.viewSwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao))
                                           .call();
 
@@ -131,6 +132,5 @@ describe("swaps", () => {
             done = incArgList(args, pt);
         }
     }
-    */
 
 });
