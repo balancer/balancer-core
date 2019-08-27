@@ -61,6 +61,43 @@ module.exports.spotPricePoints = [
     {res: 1/1000, Bi: 6000, Wi: 0.3, Bo: 10, Wo: 0.5}
 ];
 
+module.exports.AnyInExactOutPoints = [
+    [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [0, 0.02, 0.01]]
+]
+
+module.exports.ExactInAnyOutPoints = [
+    [[1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [1, 100, 50], [0.1, 0.2, 0.1], [0, 0.02, 0.01]]
+]
+
+let priceRatio   = 0.95
+let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
+Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
+let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
+let Lo = Ao_fromPrice - 1;
+let Li = (Math.pow(1/0.95, 0.2/(0.2 + 0.5)) - 1) * 600
+let tokenRatio = 0.95
+
+module.exports.ExactInLimitPricePoints = [
+    [ [235, 235, 1], [0.5, 0.5, 1], 
+      [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
+      [150, 150, 1], [0.2, 0.2, 1],
+      [(150/0.2)/(235/0.5) * priceRatio, (150/0.2)/(235/0.5) / priceRatio, (150/0.2)/(235/0.5) * (1-priceRatio)],
+      [0, 0.03, 0.01] ]
+];
+
+
+module.exports.LimitPriceInExactOutPoints = [
+    [ [600, 600, 1], [0.5, 0.5, 1], [523, 523, 1], [0.2, 0.2, 1],
+      [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
+      [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
+      [0, 0.03, 0.01] 
+    ]
+];
+
+
+
+
+
 module.exports.LimitOutGivenInPoints = [
     [ [235, 235, 1], [0.5, 0.5, 1], [150, 150, 1], [0.2, 0.2, 1], [32, 32, 1], [0, 0.02, 0.01], [0, 0, 1] ],
     [ 
@@ -69,14 +106,7 @@ module.exports.LimitOutGivenInPoints = [
     ]
 ]
 
-module.exports.AnyInExactOutPoints = [
-    [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [0, 0.02, 0.01]]
-]
 
-module.exports.ExactInAnyOutPoints = [
-    [[1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [1, 100, 50], [0.1, 0.2, 0.1], [0, 0.02, 0.01]]
-
-]
 module.exports.MaxInExactOutPoints = [
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
 //        Li: 0},
@@ -88,6 +118,7 @@ module.exports.MaxInExactOutPoints = [
         Li: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 + 100},
 ]
 
+/*
 let priceRatio   = 0.95
 let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
 module.exports.ExactInLimitPricePoints = [
@@ -100,9 +131,10 @@ module.exports.ExactInLimitPricePoints = [
     {res: (1 - Math.pow((235/(235+(Ai_fromPrice - 0.001))),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: Ai_fromPrice - 0.001, fee: 0, 
         Lp: (150/0.2)/(235/0.5) * priceRatio * 0.95},
 ]
+*/
 
-Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
-let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
+//Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
+//let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
 /*
 module.exports.LimitPriceInExactOutPoints = [
     {res: Ai_fromPrice, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: Ao_fromPrice, fee: 0,
@@ -119,17 +151,6 @@ module.exports.LimitPriceInExactOutPoints = [
 ]
 */
 
-module.exports.LimitPriceInExactOutPoints = [
-    [ [600, 600, 1], [0.5, 0.5, 1], [523, 523, 1], [0.2, 0.2, 1],
-      [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
-      [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
-      [0, 0.03, 0.01] 
-    ]
-];
-
-let Lo = Ao_fromPrice - 1;
-let Li = (Math.pow(1/0.95, 0.2/(0.2 + 0.5)) - 1) * 600
-let tokenRatio = 0.95
 module.exports.MaxInMinOutLimitPricePoints = [
     // Lp success
     {res: [ (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600, 

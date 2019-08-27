@@ -85,7 +85,7 @@ module.exports.phase3 = async (web3) => {
     let env = await module.exports.phase2(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
     let c = await deploy(web3, env.admin, "BStub");
-    berr.ERR_NONE = await c.methods.TEST_ERR_NONE();
+    berr.ERR_NONE = await c.methods.TEST_ERR_NONE().call();
 
     berr.ERR_MATH_ADD_OVERFLOW  = await c.methods.TEST_ERR_MATH_ADD_OVERFLOW().call();
     berr.ERR_MATH_SUB_UNDERFLOW = await c.methods.TEST_ERR_MATH_SUB_UNDERFLOW().call();

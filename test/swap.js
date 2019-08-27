@@ -132,20 +132,18 @@ describe("swaps", function(done) {
         }
     }
 
-    /*
-    for( let pt of points.OutGivenInPoints ) {
+    for( let pt of points.ExactInLimitPricePoints) {
 
         let args = pt.map(x => x[0]);
-
         let done = false;
         while( !done ) {
 
-
-            it(`AnyInExactOut test pt ${args}`, async () => {
+            it(`ExactInLimitPrice test pt ${args}`, async () => {
                 let Bi = args[0]; let Wi = args[1];
-                let Bo = args[2]; let Wo = args[3];
-                let Ao = args[4];
-                let fee = args[5];
+                let Ai = args[2];
+                let Bo = args[3]; let Wo = args[4];
+                let SER1 = args[5];
+                let fee = args[6];
  
                 //let expected = pt[0];
                 //let args = pt[1];
@@ -155,25 +153,27 @@ describe("swaps", function(done) {
                                .send({from: env.admin, gas:0xffffffff});
                 await env.bpool.methods.setFee(toWei(fee))
                                .send({from: env.admin, gas:0xffffffff});
-                let expected = fMath.pool_viewSwap_AnyInExactOut(Bi, Wi, Bo, Wo, Ao, fee);
-                let view = await env.bpool.methods.viewSwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao))
+                let expected = fMath.pool_viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee);
+                let view = await env.bpool.methods.viewSwap_ExactInLimitPrice(env.acoin._address, toWei(Ai), env.bcoin._address, toWei(SER1))
                                           .call();
 
                 // [res, err]
-                let reserr = await env.bpool.methods.trySwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao))
+                let reserr = await env.bpool.methods.trySwap_ExactInLimitPrice(env.acoin._address, toWei(Ai), env.bcoin._address, toWei(SER1))
                                                     .call();
-                let res = reserr[0];
+
+                let resi = reserr[0];
                 let err = reserr[1];
                 assert( expected[1] == err, "errorcode mismatch" + expected[1] + " " + err);
                 if( err == berr.ERR_NONE ) {
-                    assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
+                    assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
                 }
             });
 
             done = incArgList(args, pt);
         }
     }
-    */
+
+
 
 
     for( let pt of points.LimitPriceInExactOutPoints) {
@@ -183,7 +183,51 @@ describe("swaps", function(done) {
         let done = false;
         while( !done ) {
 
-            it(`InGivenPrice test pt ${args}`, async () => {
+            it(`LimitPriceInExactOut test pt ${args}`, async () => {
+                let Bi = args[0]; let Wi = args[1];
+                let Bo = args[2]; let Wo = args[3];
+                let Ao = args[4];
+                let SER1 = args[5];
+                let fee = args[6];
+ 
+                //let expected = pt[0];
+                //let args = pt[1];
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+                let expected = fMath.pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee);
+                let view = await env.bpool.methods.viewSwap_LimitPriceInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao), toWei(SER1))
+                                          .call();
+
+                // [res, err]
+                let reserr = await env.bpool.methods.trySwap_LimitPriceInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao), toWei(SER1))
+                                                    .call();
+
+                let resi = reserr[0];
+                let err = reserr[1];
+                assert( expected[1] == err, "errorcode mismatch" + expected[1] + " " + err);
+                if( err == berr.ERR_NONE ) {
+                    assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
+                }
+            });
+
+            done = incArgList(args, pt);
+        }
+    }
+
+
+    /*
+    for( let pt of points.LimitPriceInExactOutPoints) {
+
+        let args = pt.map(x => x[0]);
+
+        let done = false;
+        while( !done ) {
+
+            it(`LimitPriceInExactOut test pt ${args}`, async () => {
                 let Bi = args[0]; let Wi = args[1];
                 let Bo = args[2]; let Wo = args[3];
                 let Ao = args[4];
@@ -218,5 +262,6 @@ describe("swaps", function(done) {
             done = incArgList(args, pt);
         }
     }
+    */
 
 });
