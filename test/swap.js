@@ -218,6 +218,54 @@ describe("swaps", function(done) {
         }
     }
 
+    for( let pt of points.MaxInMinOutLimitPricePoints) {
+
+        let args = pt.map(x => x[0]);
+
+        let done = false;
+        while( !done ) {
+
+            it(`MaxInMinOutLimitPrice test pt ${args}`, async () => {
+                let Bi = args[0]; let Wi = args[1];
+                let Li = args[2];
+                let Bo = args[3]; let Wo = args[4];
+                let Lo = args[5];
+                let Lp = args[6];
+                let fee = args[7];
+ 
+                //let expected = pt[0];
+                //let args = pt[1];
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+                let expected = fMath.pool_viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, Lp, fee);
+                let view = await env.bpool.methods.viewSwap_MaxInMinOutLimitPrice(env.acoin._address, toWei(Li), env.bcoin._address, toWei(Lo), toWei(Lp))
+                                          .call();
+
+                // [res, err]
+                let reserr = await env.bpool.methods.trySwap_MaxInMinOutLimitPrice(env.acoin._address, toWei(Li), env.bcoin._address, toWei(Lo), toWei(Lp))
+                                                    .call();
+
+                let resi = reserr[0];
+                let reso = reserr[1];
+                let err = reserr[2];
+                assert( expected[2] == err, "errorcode mismatch" + expected[2] + " " + err);
+                if( err == berr.ERR_NONE ) {
+                    assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
+                    assertCloseBN(reso, toWei(expected[1]), toWei("0.0000001"));
+                }
+            });
+
+            done = incArgList(args, pt);
+        }
+    }
+
+
+
+
 
     /*
     for( let pt of points.LimitPriceInExactOutPoints) {

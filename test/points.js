@@ -94,6 +94,21 @@ module.exports.LimitPriceInExactOutPoints = [
     ]
 ];
 
+let price = (523/0.2)/(600/0.5);
+module.exports.MaxInMinOutLimitPricePoints = [
+    // Lp success
+    [
+        [600, 600, 1], [0.5, 0.5, 1],
+        [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
+        [523, 523, 1], [0.2, 0.2, 1],
+        [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio)],
+        [price * priceRatio, price / priceRatio, price * (1 - priceRatio)],
+        [0, 0.03, 0.01]
+    ]
+ 
+]
+
+
 
 
 
@@ -151,6 +166,7 @@ module.exports.LimitPriceInExactOutPoints = [
 ]
 */
 
+/*
 module.exports.MaxInMinOutLimitPricePoints = [
     // Lp success
     {res: [ (Math.pow(1/(priceRatio), 0.2/(0.2+0.5)) - 1) * 600, 
@@ -190,6 +206,7 @@ module.exports.MaxInMinOutLimitPricePoints = [
  
  
 ]
+*/
 
 
 

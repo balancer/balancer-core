@@ -188,7 +188,7 @@ module.exports.floatMath = {
         if( Ai > Li ) {
             Ai = Li;
         }
-        let Ao = this.calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee);
+        let Ao = this.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
         if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
 
         return [Ai, Ao, berr.ERR_NONE];
