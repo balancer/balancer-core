@@ -50,7 +50,7 @@ describe("swaps", function(done) {
         assert.exists(env.initBalance);
         assert.exists(env.bpool);
     });
-    for( let pt of points.math.calc_OutGivenIn ) {
+    for( let pt of points.ExactInAnyOutPoints ) {
 
         let args = pt.map(x => x[0]);
 
@@ -91,7 +91,7 @@ describe("swaps", function(done) {
         }
     }
 
-    for( let pt of points.math.calc_InGivenOut ) {
+    for( let pt of points.AnyInExactOutPoints ) {
 
         let args = pt.map(x => x[0]);
 
@@ -131,6 +131,50 @@ describe("swaps", function(done) {
             done = incArgList(args, pt);
         }
     }
+
+    /*
+    for( let pt of points.OutGivenInPoints ) {
+
+        let args = pt.map(x => x[0]);
+
+        let done = false;
+        while( !done ) {
+
+
+            it(`AnyInExactOut test pt ${args}`, async () => {
+                let Bi = args[0]; let Wi = args[1];
+                let Bo = args[2]; let Wo = args[3];
+                let Ao = args[4];
+                let fee = args[5];
+ 
+                //let expected = pt[0];
+                //let args = pt[1];
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+                let expected = fMath.pool_viewSwap_AnyInExactOut(Bi, Wi, Bo, Wo, Ao, fee);
+                let view = await env.bpool.methods.viewSwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao))
+                                          .call();
+
+                // [res, err]
+                let reserr = await env.bpool.methods.trySwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao))
+                                                    .call();
+                let res = reserr[0];
+                let err = reserr[1];
+                assert( expected[1] == err, "errorcode mismatch" + expected[1] + " " + err);
+                if( err == berr.ERR_NONE ) {
+                    assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
+                }
+            });
+
+            done = incArgList(args, pt);
+        }
+    }
+    */
+
 
     for( let pt of points.LimitPriceInExactOutPoints) {
 

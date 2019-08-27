@@ -3,13 +3,17 @@
 let berr = require("../util/error.js");
 module.exports.math = {
     // Ao = OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee)
+    /*
     "calc_OutGivenIn": [
       [[1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [1, 100, 50], [0.1, 0.2, 0.1], [0, 0.02, 0.01]]
     ],
+    */
 
+    /*
     "calc_InGivenOut": [
       [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [0, 0.02, 0.01]]
     ],
+    */
 
     /*
     "calc_InGivenPrice": [
@@ -40,6 +44,8 @@ module.exports.math = {
         [1/1000, [6000, 0.3, 10, 0.5 ] ]
     ],
 }
+module.exports.calc_InGivenOutPoints = [];
+module.exports.StopOutGivenInPoints = [];
 
 
 
@@ -55,29 +61,22 @@ module.exports.spotPricePoints = [
     {res: 1/1000, Bi: 6000, Wi: 0.3, Bo: 10, Wo: 0.5}
 ];
 
-module.exports.StopOutGivenInPoints = [
-    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-        Lo: 0},
-    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1},
-    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150},
-    //    NO REVERT TESTING YET
-//    {res: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150, Bi: 235, Wi: 0.5, Bo: 150, Wo: 0.2, Ai: 32, fee: 0, 
-//        Lo: (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1},
+module.exports.LimitOutGivenInPoints = [
+    [ [235, 235, 1], [0.5, 0.5, 1], [150, 150, 1], [0.2, 0.2, 1], [32, 32, 1], [0, 0.02, 0.01], [0, 0, 1] ],
+    [ 
+      [235, 235, 1], [0.5, 0.5, 1], [150, 150, 1], [0.2, 0.2, 1], [32, 32, 1], [0, 0.02, 0.01], 
+      [ (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1, (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1, 1]
+    ]
 ]
 
-module.exports.calc_InGivenOutPoints = [
-    {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0},//2
-    {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0},//20
-    {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0},
-    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0},
-    {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2 / 0.98, Bi: 2, Wi: 0.1, Bo: 2, Wo: 0.1, Ao: 1, fee: 0.02},//2
-    {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20 / 0.99, Bi: 20, Wi: 0.1, Bo: 20, Wo: 0.1, Ao: 10, fee: 0.01},//20
-    {res: (Math.pow((600/(600 - 4)), (0.3/0.5)) - 1) * 523 / 0.97, Bi: 523, Wi: 0.5, Bo: 600, Wo: 0.3, Ao: 4, fee: 0.03},
-    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / 0.9, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0.1},
+module.exports.AnyInExactOutPoints = [
+    [[1, 100, 50], [0.1, 0.2, 0.1], [1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [0, 0.02, 0.01]]
 ]
 
+module.exports.ExactInAnyOutPoints = [
+    [[1, 100, 50], [0.1, 0.2, 0.1], [5, 10, 5], [1, 100, 50], [0.1, 0.2, 0.1], [0, 0.02, 0.01]]
+
+]
 module.exports.MaxInExactOutPoints = [
 //    {res: (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600, Bi: 600, Wi: 0.5, Bo: 523, Wo: 0.2, Ao: 70, fee: 0,
 //        Li: 0},
