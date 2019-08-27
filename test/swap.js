@@ -41,8 +41,9 @@ function incArgList(args, ranges) {
     return true;
 }
 // Single-swap basic tests
-describe("swaps", () => {
+describe("swaps", function(done) {
     let env;
+    this.timeout(5000);
     before(async () => {
         env = await scene.phase3(web3);
         assert.exists(env.initWeight);
@@ -80,10 +81,9 @@ describe("swaps", () => {
                                                     .call();
                 let res = reserr[0];
                 let err = reserr[1];
+                assert( expected[1] == web3.utils.hexToNumber(err), "errorcode mismatch" + expected[1] + " " + web3.utils.hexToNumber(err));
                 if( err == berr.ERR_NONE ) {
-                    assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-                } else {
-                    assert(expected == -err);
+                    assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
                 }
             });
 
@@ -122,10 +122,9 @@ describe("swaps", () => {
                                                     .call();
                 let res = reserr[0];
                 let err = reserr[1];
-                if( err == 0 ) {
-                    assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-                } else {
-                    assert(expected == -err);
+                assert( expected[1] == err, "errorcode mismatch" + expected[1] + " " + err);
+                if( err == berr.ERR_NONE ) {
+                    assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
                 }
             });
 
@@ -133,7 +132,7 @@ describe("swaps", () => {
         }
     }
 
-    for( let pt of points.math.calc_InGivenPrice ) {
+    for( let pt of points.LimitPriceInExactOutPoints) {
 
         let args = pt.map(x => x[0]);
 
@@ -143,8 +142,9 @@ describe("swaps", () => {
             it(`InGivenPrice test pt ${args}`, async () => {
                 let Bi = args[0]; let Wi = args[1];
                 let Bo = args[2]; let Wo = args[3];
-                let SER1 = args[4];
-                let fee = args[5];
+                let Ao = args[4];
+                let SER1 = args[5];
+                let fee = args[6];
  
                 //let expected = pt[0];
                 //let args = pt[1];
@@ -154,26 +154,25 @@ describe("swaps", () => {
                                .send({from: env.admin, gas:0xffffffff});
                 await env.bpool.methods.setFee(toWei(fee))
                                .send({from: env.admin, gas:0xffffffff});
-                let expected = fMath.pool_viewSwap_AnyInExactOut(Bi, Wi, Bo, Wo, SER1, fee);
-                let view = await env.bpool.methods.viewSwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(SER1))
+                let expected = fMath.pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee);
+                let view = await env.bpool.methods.viewSwap_LimitPriceInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao), toWei(SER1))
                                           .call();
 
                 // [res, err]
-                let reserr = await env.bpool.methods.trySwap_AnyInExactOut(env.acoin._address, env.bcoin._address, toWei(SER1))
+                let reserr = await env.bpool.methods.trySwap_LimitPriceInExactOut(env.acoin._address, env.bcoin._address, toWei(Ao), toWei(SER1))
                                                     .call();
-                let res = reserr[0];
-                let err = reserr[1];
-                if( err == 0 ) {
-                    assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-                } else {
-                    assert(expected == -err);
+
+                let resi = reserr[0];
+                let reso = reserr[1];
+                let err = reserr[2];
+                assert( expected[2] == err, "errorcode mismatch" + expected[2] + " " + err);
+                if( err == berr.ERR_NONE ) {
+                    assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
                 }
             });
 
             done = incArgList(args, pt);
         }
     }
-
-
 
 });

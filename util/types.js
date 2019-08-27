@@ -19,6 +19,7 @@ module.exports.liftTypes = function(types) {
 
     lift("BConst");
     lift("BError");
+    lift("BStub");
     lift("BEvent");
     lift("BFactory");
     lift("BMath");

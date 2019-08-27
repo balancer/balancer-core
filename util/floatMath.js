@@ -28,7 +28,6 @@ module.exports.floatMath = {
         //assert(Ai < Bi, "Ai must be less than Bi" );
         assert(fee => 0, "fee must be nonnegative");
         assert(fee < 1, "fee must be less than one");
-        return berr.ERR_NONE;
     },
     poolCheck: function(Bi, Wi, Bo, Wo, fee) {
         if( Bi < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
@@ -49,13 +48,13 @@ module.exports.floatMath = {
 
     pool_getSpotPrice: function(Bi, Wi, Bo, Wo) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, 0);
-        if( err != berr.ERR_NONE ) return err;
-        return module.exports.floatMath.calc_SpotPrice(...arguments);
+        if( err != berr.ERR_NONE ) return [0, err];
+        let SER = module.exports.floatMath.calc_SpotPrice(...arguments);
+        return (SER, berr.ERR_NONE);
     },
 
     calc_SpotPrice: function(Bi, Wi, Bo, Wo) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, 0);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, 0);
  
         var numer = Bo/Wo;
         var denom = Bi/Wi;
@@ -64,22 +63,20 @@ module.exports.floatMath = {
 
     pool_viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return [0, err];
         assert(Ai > 0, "Ai must be positive");
 
  
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return [0, berr.ERR_MAX_TRADE];
  
         let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
         //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
-        return Ao;
+        return [Ao, berr.ERR_NONE];
 
     },
     calc_OutGivenInExact: function (Bi, Wi, Ai, Bo, Wo, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(Ai > 0, "Ai must be positive");
-        assert(Ai < Bi, "Ai must be less than Bi" );
 
         let exponent = (Wi / Wo);
         let adjustedIn = Ai * (1-fee);
@@ -94,10 +91,8 @@ module.exports.floatMath = {
         return module.exports.floatMath.calc_OutGivenInApprox(...arguments);
     },
     calc_OutGivenInApprox: function(Bi, Wi, Ai, Bo, Wo, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(Ai > 0, "Ai must be positive");
-        assert(Ai < Bi, "Ai must be less than Bi" );
  
         let exponent = (Wi / Wo);
         let adjustedIn = Ai * (1-fee);
@@ -110,19 +105,18 @@ module.exports.floatMath = {
    
     pool_viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return err;
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
+        if( err != berr.ERR_NONE ) return [0, err];
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return [0, berr.ERR_MAX_TRADE];
 
         let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
-        return Ai;
+        return [Ai, berr.ERR_NONE];
     },
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(Ao > 0, "Ao must be positive");
-        if( Ao >= Bo, "Ao must be less than Bo" );
+        assert( Ao < Bo, "Ao must be less than Bo" );
 
         let exponent = (Wo / Wi);
         let foo = Bo / (Bo - Ao);
@@ -136,8 +130,7 @@ module.exports.floatMath = {
         return module.exports.floatMath.calc_InGivenOutApprox(...arguments);
     },
     calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(Ao > 0, "Ao must be positive");
         assert(Ao < Bo, "Ao must be less than Bo" );
 
@@ -155,40 +148,40 @@ module.exports.floatMath = {
 
     pool_viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return [0, err];
         assert(Ai > 0, "Ai must be positive");
-        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return berr.ERR_LIMIT_FAILED;
+        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
 
         let Ao = calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
 
-        return Ao;
+        return [Ao, berr.ERR_NONE];
     },
 
     pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return [0, err];
         assert(Ao > 0, "Ao must be positive");
-        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let Ai = this.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
         let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return berr.ERR_LIMIT_FAILED;
+        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
 
-        return Ai;
+        return [Ai, berr.ERR_NONE];
     },
 
     pool_viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return err;
+        if( err != berr.ERR_NONE ) return [0, 0, err];
         assert(Lo > 0, "Lo must be positive");
         assert(Li > 0, "Li must be positive");
         assert(Lo < Bo, "Lo must be less than Bo");
-        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let Ai = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
@@ -202,11 +195,10 @@ module.exports.floatMath = {
     },
 
     calc_InGivenPrice: function(Bi, Wi, Bo, Wo, SER1, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
-        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
+        var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
         let Ai = (foo ** exponent - 1) * Bi / (1 - fee);
@@ -220,10 +212,9 @@ module.exports.floatMath = {
         return module.exports.floatMath.amountUpToPriceApprox(...arguments);
     },
     amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
-        let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
-        if (err != berr.ERR_NONE) return err;
+        this.mathCheck(Bi, Wi, Bo, Wo, fee);
 
-        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
+        var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
         var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;

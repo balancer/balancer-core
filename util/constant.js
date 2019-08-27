@@ -1,5 +1,5 @@
-module.exports.BONE = 1;
 module.exports = {
+    BONE              : 1,
     MAX_BOUND_TOKENS  : 4,
     MAX_FEE           : module.exports.BONE / 10,
     MIN_TOKEN_WEIGHT  : module.exports.BONE / 100,
