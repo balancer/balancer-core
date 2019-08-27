@@ -69,8 +69,6 @@ module.exports.floatMath = {
 
  
         if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
-
-
  
         let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
         //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
@@ -155,14 +153,58 @@ module.exports.floatMath = {
 
     },
 
-    calc_InGivenPrice: function() {
-        return module.exports.floatMath.amountUpToPrice(...arguments);
+    pool_viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return err;
+        assert(Ai > 0, "Ai must be positive");
+        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > maxAi ) return berr.ERR_LIMIT_FAILED;
+
+        let Ao = calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+
+        return Ao;
     },
 
+    pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return err;
+        assert(Ao > 0, "Ao must be positive");
+        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
-    amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
+        let Ai = this.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
+        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > maxAi ) return berr.ERR_LIMIT_FAILED;
+
+        return Ai;
+    },
+
+    pool_viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return err;
+        assert(Lo > 0, "Lo must be positive");
+        assert(Li > 0, "Li must be positive");
+        assert(Lo < Bo, "Lo must be less than Bo");
+        assert(SER1 < this.spotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let Ai = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > Li ) {
+            Ai = Li;
+        }
+        let Ao = this.calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee);
+        if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
+
+        return [Ai, Ao, berr.ERR_NONE];
+    },
+
+    calc_InGivenPrice: function(Bi, Wi, Bo, Wo, SER1, fee) {
         let err = this.mathCheck(Bi, Wi, Bo, Wo, fee);
         if (err != berr.ERR_NONE) return err;
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
