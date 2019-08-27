@@ -208,10 +208,10 @@ contract BPool is BPoolBronze
         records[token].weight = weight;
 
         if (weight > oldWeight) {
-            totalWeight = badd(totalWeight, weight - oldWeight);
+            totalWeight = badd(totalWeight, bsub(weight, oldWeight));
             check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_WEIGHT);
         } else {
-            totalWeight = bsub(totalWeight, oldWeight - weight);
+            totalWeight = bsub(totalWeight, bsub(oldWeight, weight));
         }        
     }
 
@@ -229,10 +229,10 @@ contract BPool is BPoolBronze
         records[token].balance = balance;
 
         if (balance > oldBalance) {
-            bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance - oldBalance);
+            bool ok = ERC20(token).transferFrom(msg.sender, address(this), bsub(balance, oldBalance));
             check(ok, ERR_ERC20_FALSE);
         } else if( balance < oldBalance) {
-            bool ok = ERC20(token).transfer(msg.sender, oldBalance - balance);
+            bool ok = ERC20(token).transfer(msg.sender, bsub(oldBalance, balance));
             check(ok, ERR_ERC20_FALSE);
         }
 
@@ -311,7 +311,7 @@ contract BPool is BPoolBronze
         check(isBound(token), ERR_NOT_BOUND);
         uint selfBalance = records[token].balance;
         uint trueBalance = ERC20(token).balanceOf(address(this));
-        bool ok = ERC20(token).transfer(msg.sender, trueBalance - selfBalance);
+        bool ok = ERC20(token).transfer(msg.sender, bsub(trueBalance, selfBalance));
         check(ok, ERR_ERC20_FALSE);
     }
 
