@@ -87,8 +87,6 @@ module.exports.floatMath = {
         assert(Ao > 0, "Ao must be positive");
         assert(Ao < Bo, "Ao must be less than Bo" );
 
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
-
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
         //var bar = this.powApprox(foo, exponent);
