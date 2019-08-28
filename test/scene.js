@@ -1,4 +1,4 @@
-let pkg = require("../package.js");
+let pkg = require("../pkg.js");
 pkg.types.loadTypes("../tmp/combined.json");
 let berr = require("../util/error.js");
 let bconst = require("../util/constant.js");

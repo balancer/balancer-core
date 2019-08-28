@@ -13,7 +13,7 @@
     "name": "Kevin Bravo",
     "email": "kbravo@pm.me"
   }],
-  "main": "package.js",
+  "main": "pkg.js",
   "scripts": {
     "setup": "git submodule update --init --recursive && yarn install",
     "build": "make build",
@@ -25,7 +25,6 @@
     "type": "git",
     "url": "git+https://github.com/balancer-labs/balancer-core.git"
   },
-  "contributors": [],
   "bugs": {
     "url": "https://github.com/balancer-labs/balancer-core/issues"
   },
@@ -34,6 +33,7 @@
     "chai": "^4.2.0",
     "ganache-core": "^2.6.1",
     "mocha": "^6.2.0",
+    "standard": "^14.0.2",
     "web3": "^1.2.0"
   }
 }

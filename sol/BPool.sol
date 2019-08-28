@@ -201,7 +201,6 @@ contract BPool is BPoolBronze
         check(isBound(token), ERR_NOT_BOUND);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
-        check(weight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
         check( ! joinable, ERR_UNJOINABLE);
 
         uint oldWeight = records[token].weight;
@@ -209,7 +208,6 @@ contract BPool is BPoolBronze
 
         if (weight > oldWeight) {
             totalWeight = badd(totalWeight, bsub(weight, oldWeight));
-            check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_WEIGHT);
         } else {
             totalWeight = bsub(totalWeight, bsub(oldWeight, weight));
         }        
@@ -267,7 +265,6 @@ contract BPool is BPoolBronze
         check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
         check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
-        check(totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
 
         bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
         check(ok, ERR_ERC20_FALSE);
