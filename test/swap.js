@@ -40,6 +40,16 @@ let wrappers = {
         await this.setParams(Ti, Bi, Wi, To, Bo, Wo, fee);
         return [Ti, To, Ao];
     },
+    viewSwap_MaxInExactOut: async function(Ti, To, Bi, Wi, Li, Bo, Wo, Ao, fee) {
+        await this.setParams(Ti, Bi, Wi, To, Bo, Wo, fee);
+        return [Ti, Li, To, Ao];
+    },
+
+    viewSwap_ExactInMinOut: async function(Ti, To, Bi, Wi, Ai, Bo, Wo, Lo, fee) {
+        await this.setParams(Ti, Bi, Wi, To, Bo, Wo, fee);
+        return [Ti, Ai, To, Lo];
+    },
+ 
     viewSwap_ExactInAnyOut: async function(Ti, To, Bi, Wi, Ai, Bo, Wo, fee) {
         await this.setParams(Ti, Bi, Wi, To, Bo, Wo, fee);
         return [Ti, To, Ai];

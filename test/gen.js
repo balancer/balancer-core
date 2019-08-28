@@ -42,6 +42,7 @@ describe("generated math points", () => {
     });
     for(let funcname in points.math) {
         pairs = points.math[funcname]
+        console.log(pairs);
         for( let pair of pairs ) {
             let expected = pair[0];
             let args = pair[1]

@@ -213,11 +213,24 @@ module.exports.pool = {
         return (SER, berr.ERR_NONE);
     },
 
-    viewSwap_LimitInExactOut: function(Bi, Wi, Li, Bo, Wo, Ao, fee) {
+    viewSwap_MaxInExactOut: function(Bi, Wi, Li, Bo, Wo, Ao, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
- 
 
+        let Ai = module.exports.floatMath.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
+        if( Ai > Li ) return [Ai, berr.ERR_LIMIT_FAILED];
+
+        return Ai;
+    },
+
+    viewSwap_ExactInMinOut: function(Bi, Wi, Ai, Bo, Wo, Lo, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+
+        let Ao = module.exports.floatMath.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+        if( Ao < Lo ) return [Ao, berr.ERR_LIMIT_FAILED];
+
+        return Ao;
     },
 
     viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
@@ -228,7 +241,7 @@ module.exports.pool = {
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let maxAi = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
+        if( Ai > maxAi ) return [Ai, berr.ERR_LIMIT_FAILED];
 
         let Ao = module.exports.floatMath.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
 

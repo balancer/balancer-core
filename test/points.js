@@ -87,6 +87,29 @@ module.exports.math = {
         [-1, [1, 2, 0, 5 ] ],
         [-1, [1, 2, 10, 0 ] ],
     ],
+    "amountUpToPriceApprox": [
+        [1.06008957447, [10, 0.3,  5260,  0.3,  430,  0]],
+        [0.12011996945, [10,  0.2,  4405,  0.1,  850,  0]],
+        [0,             [10,  0.5,  8810,  0.5,  881,  0]],
+        [0.97653399825, [10,  0.2,  4600,  0.4,  200,  0]],
+        [1.08172405558, [10,  0.3,  5260,  0.3,  430,  0.02]],
+        [0.12133330247, [10,  0.2,  4405,  0.1,  850,  0.01]],
+        [0,             [10,  0.5,  8810,  0.5,  881,  0.03]],
+        [1.08503777583, [10,  0.2,  4600,  0.4,  200,  0.1]],
+    ],
+    "powApprox": [
+        [Math.pow(1.1, 1.5),    [1.1,  1.5]],
+        [Math.pow(0, 0),        [1.0,  0]],
+        [Math.pow(1.05, 0),     [1.05, 0]],
+        [Math.pow(1.01, 0.2),   [1.01, 0.2]],
+        [Math.pow(0.9, 1.5),    [0.9,  1.5]],
+        [Math.pow(0.95, 0),     [0.95, 0]],
+        [Math.pow(0.91, 0.2),   [0.91, 0.2]],
+        [Math.pow(0.9, 0.2),    [0.9,  0.2]],
+        [Math.pow(1.5, 1.5),    [1.5,  1.5]],
+    ],
+
+
 }
 
 module.exports.calc_InGivenOutPoints = [];
@@ -111,63 +134,63 @@ let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
 let Lo = Ao_fromPrice - 1;
 let Li = (Math.pow(1/0.95, 0.2/(0.2 + 0.5)) - 1) * 600
 let tokenRatio = 0.95
-
-module.exports.pool.viewSwap_ExactInLimitPrice = [
-    [ [235, 235, 1], [5, 5, 1], 
-      [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
-      [150, 150, 1], [2, 2, 1],
-      [(150/0.2)/(235/0.5) * priceRatio, (150/0.2)/(235/0.5) / priceRatio, (150/0.2)/(235/0.5) * (1-priceRatio)],
-      [0, 0.03, 0.01] ]
-];
-
-
-module.exports.pool.viewSwap_LimitPriceInExactOut = [
-    [ [600, 600, 1], [5, 5, 1], [523, 523, 1], [2, 2, 1],
-      [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
-      [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
-      [0, 0.03, 0.01] 
-    ]
-];
-
 let price = (523/0.2)/(600/0.5);
-module.exports.pool.viewSwap_MaxInMinOutLimitPrice = [
-    // Lp success
-    [
-        [600, 600, 1], [5, 5, 1],
-        [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
-        [523, 523, 1], [2, 2, 1],
-        [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio)],
-        [price * priceRatio, price / priceRatio, price * (1 - priceRatio)],
-        [0, 0.03, 0.01]
+module.exports.pool = {
+    "viewSwap_ExactInLimitPrice": [
+        [ 
+            [235, 235, 1], [5, 5, 1], 
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
+            [150, 150, 1], [2, 2, 1],
+            [(150/0.2)/(235/0.5) * priceRatio, (150/0.2)/(235/0.5) / priceRatio, (150/0.2)/(235/0.5) * (1-priceRatio)],
+            [0, 0.03, 0.01]
+        ],
     ],
-    /*
-    [
-        [600, 600, 1], [0.5, 0.5, 1],
-        [1, 700, 50],
-        [523, 523, 1], [0.2, 0.2, 1],
-        [1, 700, 50],
-        [price/3, price, price /8],
-        [0, 0.04, 0.01]
-    ]
-    */
- 
- 
-]
+
+    "viewSwap_LimitPriceInExactOut": [
+        [
+            [600, 600, 1], [5, 5, 1], [523, 523, 1], [2, 2, 1],
+            [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
+            [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
+            [0, 0.03, 0.01] 
+        ]
+    ],
+
+    "viewSwap_MaxInMinOutLimitPrice": [
+    // Lp success
+        [
+            [600, 600, 1], [5, 5, 1],
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
+            [523, 523, 1], [2, 2, 1],
+            [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio)],
+            [price * priceRatio, price / priceRatio, price * (1 - priceRatio)],
+            [0, 0.03, 0.01]
+        ],
+        /*
+        [
+            [600, 600, 1], [0.5, 0.5, 1],
+            [1, 700, 50],
+            [523, 523, 1], [0.2, 0.2, 1],
+            [1, 700, 50],
+            [price/3, price, price /8],
+            [0, 0.04, 0.01]
+        ]
+        */
+    ],
+    "viewSwap_ExactInMinOut": [
+        [ 
+            [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], [0, 0, 1], [0, 0.02, 0.01]],
+        [ 
+            [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], 
+            [ (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1, (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1, 1], 
+            [0, 0.02, 0.01], 
+        ]
+    ],
+
+
+}
 
 
 
-
-
-
-/*
-module.exports.pool.viewSwap_ExactInLimitOut = [
-    [ [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], [0, 0.02, 0.01], [0, 0, 1] ],
-    [ 
-      [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], [0, 0.02, 0.01], 
-      [ (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1, (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1, 1]
-    ]
-]
-*/
 module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 1, Bo: 2, Wo: 1, Ao: 1, fee: 0},//2
     {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 1, Bo: 20, Wo: 1, Ao: 10, fee: 0},//20
