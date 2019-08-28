@@ -84,48 +84,49 @@ module.exports.phase2 = async (web3) => {
 module.exports.phase3 = async (web3) => {
     let env = await module.exports.phase2(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
-    let c = await deploy(web3, env.admin, "BStub");
-    berr.ERR_NONE = await c.methods.TEST_ERR_NONE().call();
+    let c = await deploy(web3, env.admin, "BConst");
+    let e = await deploy(web3, env.admin, "BError");
+    berr.ERR_NONE = await e.methods.ERR_NONE().call();
 
-    berr.ERR_MATH_ADD_OVERFLOW  = await c.methods.TEST_ERR_MATH_ADD_OVERFLOW().call();
-    berr.ERR_MATH_SUB_UNDERFLOW = await c.methods.TEST_ERR_MATH_SUB_UNDERFLOW().call();
-    berr.ERR_MATH_MUL_OVERFLOW  = await c.methods.TEST_ERR_MATH_MUL_OVERFLOW().call();
-    berr.ERR_MATH_DIV_ZERO      = await c.methods.TEST_ERR_MATH_DIV_ZERO().call();
-    berr.ERR_MATH_DIV_INTERFLOW = await c.methods.TEST_ERR_MATH_DIV_INTERFLOW().call();
+    berr.ERR_MATH_ADD_OVERFLOW  = await e.methods.ERR_MATH_ADD_OVERFLOW().call();
+    berr.ERR_MATH_SUB_UNDERFLOW = await e.methods.ERR_MATH_SUB_UNDERFLOW().call();
+    berr.ERR_MATH_MUL_OVERFLOW  = await e.methods.ERR_MATH_MUL_OVERFLOW().call();
+    berr.ERR_MATH_DIV_ZERO      = await e.methods.ERR_MATH_DIV_ZERO().call();
+    berr.ERR_MATH_DIV_INTERFLOW = await e.methods.ERR_MATH_DIV_INTERFLOW().call();
 
-    berr.ERR_MAX_TOKENS       = await c.methods.TEST_ERR_MAX_TOKENS().call();
-    berr.ERR_MIN_WEIGHT       = await c.methods.TEST_ERR_MIN_WEIGHT().call();
-    berr.ERR_MAX_WEIGHT       = await c.methods.TEST_ERR_MAX_WEIGHT().call();
-    berr.ERR_MAX_TOTAL_WEIGHT = await c.methods.TEST_ERR_MAX_TOTAL_WEIGHT().call();
-    berr.ERR_MAX_FEE          = await c.methods.TEST_ERR_MAX_FEE().call();
-    berr.ERR_MIN_BALANCE      = await c.methods.TEST_ERR_MIN_BALANCE().call();
-    berr.ERR_MAX_BALANCE      = await c.methods.TEST_ERR_MAX_BALANCE().call();
-    berr.ERR_MAX_TRADE        = await c.methods.TEST_ERR_MAX_TRADE().call();
+    berr.ERR_MAX_TOKENS       = await e.methods.ERR_MAX_TOKENS().call();
+    berr.ERR_MIN_WEIGHT       = await e.methods.ERR_MIN_WEIGHT().call();
+    berr.ERR_MAX_WEIGHT       = await e.methods.ERR_MAX_WEIGHT().call();
+    berr.ERR_MAX_TOTAL_WEIGHT = await e.methods.ERR_MAX_TOTAL_WEIGHT().call();
+    berr.ERR_MAX_FEE          = await e.methods.ERR_MAX_FEE().call();
+    berr.ERR_MIN_BALANCE      = await e.methods.ERR_MIN_BALANCE().call();
+    berr.ERR_MAX_BALANCE      = await e.methods.ERR_MAX_BALANCE().call();
+    berr.ERR_MAX_TRADE        = await e.methods.ERR_MAX_TRADE().call();
 
     // TODO: 3 limit types (in, out, price)
-    berr.ERR_LIMIT_FAILED = await c.methods.TEST_ERR_LIMIT_FAILED().call();
+    berr.ERR_LIMIT_FAILED = await e.methods.ERR_LIMIT_FAILED().call();
 
 
-    berr.ERR_NOT_BOUND     = await c.methods.TEST_ERR_NOT_BOUND().call();
-    berr.ERR_ALREADY_BOUND = await c.methods.TEST_ERR_ALREADY_BOUND().call();
+    berr.ERR_NOT_BOUND     = await e.methods.ERR_NOT_BOUND().call();
+    berr.ERR_ALREADY_BOUND = await e.methods.ERR_ALREADY_BOUND().call();
 
-    berr.ERR_PAUSED     = await c.methods.TEST_ERR_PAUSED().call();
-    berr.ERR_UNJOINABLE = await c.methods.TEST_ERR_UNJOINABLE().call();
-    berr.ERR_BAD_CALLER = await c.methods.TEST_ERR_BAD_CALLER().call();
+    berr.ERR_PAUSED     = await e.methods.ERR_PAUSED().call();
+    berr.ERR_UNJOINABLE = await e.methods.ERR_UNJOINABLE().call();
+    berr.ERR_BAD_CALLER = await e.methods.ERR_BAD_CALLER().call();
 
-    berr.ERR_ERC20_FALSE = await c.methods.TEST_ERR_ERC20_FALSE().call();
+    berr.ERR_ERC20_FALSE = await e.methods.ERR_ERC20_FALSE().call();
     
-    berr.ERR_UNREACHABLE = await c.methods.TEST_ERR_UNREACHABLE().call();
+    berr.ERR_UNREACHABLE = await e.methods.ERR_UNREACHABLE().call();
 
-    bconst.MAX_BOUND_TOKENS      = await c.methods.TEST_MAX_BOUND_TOKENS().call();
-    bconst.BONE                  = await c.methods.TEST_BONE().call();
-    bconst.MAX_FEE               = web3.utils.fromWei(await c.methods.TEST_MAX_FEE().call());
-    bconst.MIN_TOKEN_WEIGHT      = web3.utils.fromWei(await c.methods.TEST_MIN_TOKEN_WEIGHT().call());
-    bconst.MAX_TOKEN_WEIGHT      = web3.utils.fromWei(await c.methods.TEST_MAX_TOKEN_WEIGHT().call());
-    bconst.MAX_TOTAL_WEIGHT      = web3.utils.fromWei(await c.methods.TEST_MAX_TOTAL_WEIGHT().call());
-    bconst.MIN_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.TEST_MIN_TOKEN_BALANCE().call());
-    bconst.MAX_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.TEST_MAX_TOKEN_BALANCE().call());
-    bconst.MAX_TRADE_FRAC        = web3.utils.fromWei(await c.methods.TEST_MAX_TRADE_FRAC().call());
+    bconst.MAX_BOUND_TOKENS      = await c.methods.MAX_BOUND_TOKENS().call();
+    bconst.BONE                  = await c.methods.BONE().call();
+    bconst.MAX_FEE               = web3.utils.fromWei(await c.methods.MAX_FEE().call());
+    bconst.MIN_TOKEN_WEIGHT      = web3.utils.fromWei(await c.methods.MIN_TOKEN_WEIGHT().call());
+    bconst.MAX_TOKEN_WEIGHT      = web3.utils.fromWei(await c.methods.MAX_TOKEN_WEIGHT().call());
+    bconst.MAX_TOTAL_WEIGHT      = web3.utils.fromWei(await c.methods.MAX_TOTAL_WEIGHT().call());
+    bconst.MIN_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.MIN_TOKEN_BALANCE().call());
+    bconst.MAX_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.MAX_TOKEN_BALANCE().call());
+    bconst.MAX_TRADE_FRAC        = web3.utils.fromWei(await c.methods.MAX_TRADE_FRAC().call());
 
 
     for( user of [env.admin, env.user1, env.user2] ) {
