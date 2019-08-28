@@ -13,7 +13,7 @@
     "name": "Kevin Bravo",
     "email": "kbravo@pm.me"
   }],
-  "main": "package.js",
+  "main": "pkg.js",
   "scripts": {
     "setup": "git submodule update --init --recursive && yarn install",
     "build": "make build",

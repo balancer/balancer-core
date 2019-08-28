@@ -2,7 +2,7 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 let assert = require("chai").assert;
 let fmath = require("../util/floatMath.js").floatMath;
-let pkg = require("../package.js");
+let pkg = require("../pkg.js");
 pkg.types.loadTypes("../tmp/combined.json");
 
 let web3 = new Web3(ganache.provider({
