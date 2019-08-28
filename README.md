@@ -2,7 +2,13 @@
 <img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.064w.png" alt="balancer pebbles logo"/>
 </p>
 
-<h2 align=center><code>⚖️ balancer ⚖️</code><br/><code>🍂 bronze release 🍂</code></h2>
+<h2 align=center><code>balancer</code></h2>
+
+<p align=center><i>Balancer is a trustless on-chain price feed, liquidity provider, and portfolio manager.</i></p>
+
+<h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
+
+The *Bronze Release* is the first of 3 planned releases of the Balancer Protocol. Bronze could be described as solid, but heavyweight.
 
 ## Installing
 
