@@ -80,7 +80,7 @@ describe("crusty bpool tests", () => {
         it(`${pt.res} ~= bpool.doSwap_AnyInExactOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.res},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
+            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
                                .send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
@@ -111,7 +111,7 @@ describe("crusty bpool tests", () => {
         it(`${pt.res} ~= bpool.doSwap_ExactInMinOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
+            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
                                .send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
@@ -142,7 +142,7 @@ describe("crusty bpool tests", () => {
         it(`${pt.res} ~= bpool.doSwap_MaxInExactOut(${pt.Bi},${pt.Wi},${pt.Li},${pt.Bo},${pt.Wo},${pt.Ao},${pt.fee}>`, async () => {
             await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('0.5'), toWei('10')) // shouldn't impact calc
+            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
                                .send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
