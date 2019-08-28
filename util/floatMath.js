@@ -44,7 +44,8 @@ module.exports.floatMath = {
         let exponent = (Wi / Wo);
         let adjustedIn = Ai * (1-fee);
         let foo = Bi / (Bi + adjustedIn);
-        let bar = foo**exponent;
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        let bar = Math.pow(foo, exponent);
         let Ao  = Bo * (1 - bar)        
 
         return Ao;
@@ -60,8 +61,8 @@ module.exports.floatMath = {
         let exponent = (Wi / Wo);
         let adjustedIn = Ai * (1-fee);
         let foo = Bi / (Bi + adjustedIn);
-        //let bar = this.powApprox(foo, exponent);
-        let bar = Math.pow(foo, exponent);
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        let bar = this.powApprox(foo, exponent);
         let Ao  = Bo * (1 - bar);
         
         return Ao;
@@ -73,7 +74,8 @@ module.exports.floatMath = {
 
         let exponent = (Wo / Wi);
         let foo = Bo / (Bo - Ao);
-        let bar = foo**exponent;
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        let bar = Math.pow(foo, exponent);
         let Ai  = Bi * (bar - 1) / (1 - fee);
 
         return Ai;
@@ -89,8 +91,8 @@ module.exports.floatMath = {
 
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
-        //var bar = this.powApprox(foo, exponent);
-        var bar = Math.pow(foo, exponent);
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        var bar = this.powApprox(foo, exponent);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         
@@ -105,7 +107,8 @@ module.exports.floatMath = {
         var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
-        let Ai = (foo ** exponent - 1) * Bi / (1 - fee);
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        let Ai = (Math.pow(foo, exponent) - 1) * Bi / (1 - fee);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
 
@@ -121,8 +124,8 @@ module.exports.floatMath = {
         var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
-        //var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
-        var Ai  = (Math.pow(foo, exponent) - 1) * Bi;
+        assert(foo < 2 && foo > 0, "|base - 1| must be less than 1");
+        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
         Ai      = Ai / (1 - fee);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;

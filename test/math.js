@@ -7,7 +7,7 @@ pkg.types.loadTypes("../tmp/combined.json");
 let math = require("../util/floatMath.js")
 let fMath = math.floatMath;
 
-let testPoints = require("./points.js");
+let testPoints = require("./points.js").math;
 
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
@@ -26,6 +26,25 @@ let assertCloseBN = (a, b, tolerance) => {
     let diff = toBN(a).sub(toBN(b)).abs();
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
+
+/*
+describe("floatMath.js", function () {
+    for( let pt of testPoints.calc_SpotPrice ) {
+        let res  = pt[0];
+        let args = pt[1];
+        let Bi = args[0]; let Wi = args[1];
+        let Bo = args[2]; let Wo = args[3];
+        var desc = `${res} ~= calc_SpotPrice(${Bi}, ${Wi}, ${Bo}, ${Wo})`;
+        it(desc, function () {
+            if( res < 0 ) {
+                assert.throw(() => fMath.calc_SpotPrice(Bi, Wi, Bo, Wo));
+            } else {
+                assert.closeTo(res, fMath.calc_SpotPrice(Bi, Wi, Bo, Wo), floatEqTolerance);
+            }
+        });
+    }
+});
+*/
 
 /*
 describe("floatMath.js", function () {
@@ -140,6 +159,7 @@ describe("floatMath.js", function () {
 });
 */
 
+/*
 describe("BMath", () => {
     for( let pt of testPoints.powPoints ) {
         
@@ -202,3 +222,4 @@ describe("BMath", () => {
         });
     }
 });
+*/

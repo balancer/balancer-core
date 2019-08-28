@@ -33,7 +33,6 @@ assert.closeBN = (actual, expected) => {
     );
 }
 
-/*
 describe("generated math points", () => {
     let env;
     let bmath;
@@ -49,8 +48,11 @@ describe("generated math points", () => {
             desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
             let actual;
             it(desc_fmath, async () => {
-                actual = fmath[funcname](...args);
-                assert.closeTo(expected, actual, tolerance);
+                if( expected < 0 ) {
+                    assert.throws(() => fmath[funcname](...args));
+                } else {
+                    assert.closeTo(expected, fmath[funcname](...args), tolerance);
+                }
             });
             let expectedBN = web3.utils.toWei(expected.toString());
             let argsBN = [];
@@ -59,6 +61,7 @@ describe("generated math points", () => {
             }
             desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
             let actualBN;
+            /*
             it(desc_bmath, async () => {
                 actualBN = await bmath.methods[funcname](...argsBN).call();
                 assert.closeBN(actualBN, expectedBN);
@@ -66,7 +69,7 @@ describe("generated math points", () => {
             it(`  -> fmath.${funcname}(${args}) ~= bmath.${funcname}(...)`, () => {
                 assert.closeBN(actualBN, toBNum(actual));
             });
+            */
         }
     }
 });
-*/
