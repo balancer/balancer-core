@@ -256,7 +256,7 @@ describe("swaps", function(done) {
                 if( err == berr.ERR_NONE ) {
                     assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
                     assertCloseBN(reso, toWei(expected[1]), toWei("0.0000001"));
-                }
+                } 
             });
 
             done = incArgList(args, pt);

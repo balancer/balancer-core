@@ -104,7 +104,18 @@ module.exports.MaxInMinOutLimitPricePoints = [
         [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio)],
         [price * priceRatio, price / priceRatio, price * (1 - priceRatio)],
         [0, 0.03, 0.01]
+    ],
+    /*
+    [
+        [600, 600, 1], [0.5, 0.5, 1],
+        [1, 700, 50],
+        [523, 523, 1], [0.2, 0.2, 1],
+        [1, 700, 50],
+        [price/3, price, price /8],
+        [0, 0.04, 0.01]
     ]
+    */
+ 
  
 ]
 

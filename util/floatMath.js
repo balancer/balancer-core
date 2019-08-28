@@ -29,30 +29,6 @@ module.exports.floatMath = {
         assert(fee => 0, "fee must be nonnegative");
         assert(fee < 1, "fee must be less than one");
     },
-    poolCheck: function(Bi, Wi, Bo, Wo, fee) {
-        if( Bi < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
-        if( Wi < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
-        if( Bo < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
-        if( Wo < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
-
-        if( Bi  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
-        if( Wi  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
-        if( Bo  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
-        if( Wo  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
-        if( fee > bconst.MAX_FEE  )          return berr.ERR_MAX_FEE;
-        return berr.ERR_NONE;
- 
-    },
-
-
-
-    pool_getSpotPrice: function(Bi, Wi, Bo, Wo) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, 0);
-        if( err != berr.ERR_NONE ) return [0, err];
-        let SER = module.exports.floatMath.calc_SpotPrice(...arguments);
-        return (SER, berr.ERR_NONE);
-    },
-
     calc_SpotPrice: function(Bi, Wi, Bo, Wo) {
         this.mathCheck(Bi, Wi, Bo, Wo, 0);
  
@@ -61,19 +37,6 @@ module.exports.floatMath = {
         return numer/denom;
     },
 
-    pool_viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ai > 0, "Ai must be positive");
-
- 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return [0, berr.ERR_MAX_TRADE];
- 
-        let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
-        //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
-        return [Ao, berr.ERR_NONE];
-
-    },
     calc_OutGivenInExact: function (Bi, Wi, Ai, Bo, Wo, fee) {
         this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(Ai > 0, "Ai must be positive");
@@ -97,21 +60,11 @@ module.exports.floatMath = {
         let exponent = (Wi / Wo);
         let adjustedIn = Ai * (1-fee);
         let foo = Bi / (Bi + adjustedIn);
-        let bar = this.powApprox(foo, exponent);
+        //let bar = this.powApprox(foo, exponent);
+        let bar = Math.pow(foo, exponent);
         let Ao  = Bo * (1 - bar);
         
         return Ao;
-    },
-   
-    pool_viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return [0, berr.ERR_MAX_TRADE];
-
-        let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
-
-        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
-        return [Ai, berr.ERR_NONE];
     },
     calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
         this.mathCheck(Bi, Wi, Bo, Wo, fee);
@@ -138,60 +91,13 @@ module.exports.floatMath = {
 
         var exponent = (Wo / Wi);
         var foo = Bo / (Bo - Ao);
-        var bar = this.powApprox(foo, exponent);
+        //var bar = this.powApprox(foo, exponent);
+        var bar = Math.pow(foo, exponent);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
         
         return Bi * (bar - 1) / (1 - fee);
 
-    },
-
-    pool_viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ai > 0, "Ai must be positive");
-        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
-
-        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
-
-        let Ao = calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
-
-        return [Ao, berr.ERR_NONE];
-    },
-
-    pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ao > 0, "Ao must be positive");
-        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
-
-        let Ai = this.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
-        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
-
-        return [Ai, berr.ERR_NONE];
-    },
-
-    pool_viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, SER1, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, 0, err];
-        assert(Lo > 0, "Lo must be positive");
-        assert(Li > 0, "Li must be positive");
-        assert(Lo < Bo, "Lo must be less than Bo");
-        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
-
-        let Ai = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > Li ) {
-            Ai = Li;
-        }
-        let Ao = this.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
-        if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
-
-        return [Ai, Ao, berr.ERR_NONE];
     },
 
     calc_InGivenPrice: function(Bi, Wi, Bo, Wo, SER1, fee) {
@@ -217,7 +123,8 @@ module.exports.floatMath = {
         var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
         var foo = SER0/SER1;
-        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
+        //var Ai  = (this.powApprox(foo, exponent) - 1) * Bi;
+        var Ai  = (Math.pow(foo, exponent) - 1) * Bi;
         Ai      = Ai / (1 - fee);
 
         //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
@@ -278,5 +185,110 @@ module.exports.floatMath = {
         if (totalWeight == 0) return 0;
         return W/totalWeight;
     },
+
+    poolCheck: function(Bi, Wi, Bo, Wo, fee) {
+        if( Bi < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
+        if( Wi < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
+        if( Bo < bconst.MIN_TOKEN_BALANCE ) return berr.ERR_MIN_BALANCE;
+        if( Wo < bconst.MIN_TOKEN_WEIGHT  ) return berr.ERR_MIN_WEIGHT;
+
+        if( Bi  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
+        if( Wi  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
+        if( Bo  > bconst.MAX_TOKEN_BALANCE ) return berr.ERR_MAX_BALANCE;
+        if( Wo  > bconst.MAX_TOKEN_WEIGHT  ) return berr.ERR_MAX_WEIGHT;
+        if( fee > bconst.MAX_FEE  )          return berr.ERR_MAX_FEE;
+        return berr.ERR_NONE;
+    },
+
+    pool_getSpotPrice: function(Bi, Wi, Bo, Wo) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, 0);
+        if( err != berr.ERR_NONE ) return [0, err];
+        let SER = module.exports.floatMath.calc_SpotPrice(...arguments);
+        return (SER, berr.ERR_NONE);
+    },
+
+    pool_viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+        assert(Ai > 0, "Ai must be positive");
+
+ 
+        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return [0, berr.ERR_MAX_TRADE];
+ 
+        let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
+        //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
+        return [Ao, berr.ERR_NONE];
+
+    },
+ 
+   
+    pool_viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return [0, berr.ERR_MAX_TRADE];
+
+        let Ai = calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
+
+        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
+        return [Ai, berr.ERR_NONE];
+    },
+
+    pool_viewSwap_LimitInExactOut: function(Bi, Wi, Li, Bo, Wo, Ao, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+ 
+
+    },
+ 
+
+    pool_viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+        assert(Ai > 0, "Ai must be positive");
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
+
+        let Ao = calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+
+        return [Ao, berr.ERR_NONE];
+    },
+
+    pool_viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, err];
+        assert(Ao > 0, "Ao must be positive");
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let Ai = this.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
+        let maxAi = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
+
+        return [Ai, berr.ERR_NONE];
+    },
+
+    pool_viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, 0, err];
+        assert(Lo > 0, "Lo must be positive");
+        assert(Li > 0, "Li must be positive");
+        assert(Lo < Bo, "Lo must be less than Bo");
+        assert(SER1 < this.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let Ai = this.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        if( Ai > Li ) {
+            Ai = Li;
+        }
+        let Ao = this.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+        if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
+
+        return [Ai, Ao, berr.ERR_NONE];
+    },
+
+
 
 }
