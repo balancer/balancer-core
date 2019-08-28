@@ -63,6 +63,7 @@ module.exports.math = {
         [ 0,             [ 10, 0.5, 8810, 0.5, 881, 0.03 ] ],
         [ 1.08503777583, [ 10, 0.2, 4600, 0.4, 200, 0.1 ] ],
 
+        // #50
         [ -1, [ 10, 0.2, 4600, 0.4, 114, 0.1 ] ],
 
         [ -1, [ 0, 0.2, 4600, 0.4, 200, 0.1 ] ],
@@ -90,6 +91,7 @@ module.exports.math = {
 
     ],
 }
+
 module.exports.calc_InGivenOutPoints = [];
 module.exports.StopOutGivenInPoints = [];
 
