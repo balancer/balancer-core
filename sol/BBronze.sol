@@ -59,22 +59,6 @@ contract BPoolBronze is BBronze, BConst {
                   , uint256         amountOut
                   , uint256         feeRatio );
 
-    // swap ExactInAnyOut
-    function viewSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-        public view returns (uint Ao, byte err);
-    function trySwap_ExactInAnyOut(address Ti, address To, uint Ai)
-        public returns (uint Ao, byte err);
-    function doSwap_ExactInAnyOut(address Ti, address To, uint Ai)
-        public returns (uint Ao);
-
-    // swap AnyInExactOut
-    function viewSwap_AnyInExactOut(address Ti, address To, uint Ao)
-        public view returns (uint Ai, byte err);
-    function trySwap_AnyInExactOut(address Ti, address To, uint Ao)
-        public returns (uint Ai, byte err);
-    function doSwap_AnyInExactOut(address Ti, address To, uint Ao)
-        public returns (uint Ai);
-
     // swap ExactInMinOut
     function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
         public view returns (uint256 Ao, byte err);

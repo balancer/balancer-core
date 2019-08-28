@@ -69,36 +69,6 @@ describe("crusty bpool tests", () => {
         await bpool.methods.start().send({from: acct0});
     });
 
-    for( pt of testPoints.calc_InGivenOutPoints ) {
-        let expected  = toWei(pt.res.toString());
-        let Bi  = toWei(pt.Bi.toString());
-        let Wi  = toWei(pt.Wi.toString());
-        let Bo  = toWei(pt.Bo.toString());
-        let Wo  = toWei(pt.Wo.toString());
-        let fee = toWei(pt.fee.toString());
-        let Ao  = toWei(pt.Ao.toString());
-        it(`${pt.res} ~= bpool.doSwap_AnyInExactOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.res},${pt.fee}>`, async () => {
-            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
-                               .send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
-            var abefore = await acoin.methods.balanceOf(acct0).call();
-            var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
-                                                  .call();
-            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
-                                            .send({from: acct0, gas: 0xffffffff});
-            var aafter = await acoin.methods.balanceOf(acct0).call();
-            var bafter = await bcoin.methods.balanceOf(acct0).call();
-            var adiff = toBN(abefore).sub(toBN(aafter));
-            var bdiff = toBN(bafter).sub(toBN(bbefore));
-            assert.equal(adiff, resultStatic);
-            assert.equal(bdiff, Ao);
-            assertCloseBN(expected, resultStatic, approxTolerance.toString());
-        });
-    }
-
     for( pt of testPoints.StopOutGivenInPoints ) {
         let Ai  = toWei(pt.Ai.toString());
         let Bi  = toWei(pt.Bi.toString());
@@ -129,38 +99,6 @@ describe("crusty bpool tests", () => {
             assertCloseBN(expected, resultStatic, approxTolerance.toString());
         });
     }
-
-    for( pt of testPoints.MaxInExactOutPoints ) {
-        let Ao  = toWei(pt.Ao.toString());
-        let Bi  = toWei(pt.Bi.toString());
-        let Li  = toWei(pt.Li.toString());
-        let Wi  = toWei(pt.Wi.toString());
-        let Bo  = toWei(pt.Bo.toString());
-        let Wo  = toWei(pt.Wo.toString());
-        let fee = toWei(pt.fee.toString());
-        let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_MaxInExactOut(${pt.Bi},${pt.Wi},${pt.Li},${pt.Bo},${pt.Wo},${pt.Ao},${pt.fee}>`, async () => {
-            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
-                               .send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
-            var abefore = await acoin.methods.balanceOf(acct0).call();
-            var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
-                                                  .call();
-            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
-                                            .send({from: acct0, gas: 0xffffffff});
-            var aafter = await acoin.methods.balanceOf(acct0).call();
-            var bafter = await bcoin.methods.balanceOf(acct0).call();
-            var adiff = toBN(abefore).sub(toBN(aafter));
-            var bdiff = toBN(bafter).sub(toBN(bbefore));
-            assert.equal(adiff, resultStatic);
-            assert.equal(bdiff, Ao);
-            assertCloseBN(expected, resultStatic, approxTolerance.toString());
-        });
-    }
-
 
     it("setup sanity checks", async () => {
         let paused = await bpool.methods.isPaused().call();

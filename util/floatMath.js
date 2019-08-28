@@ -213,40 +213,12 @@ module.exports.pool = {
         return (SER, berr.ERR_NONE);
     },
 
-
-    viewSwap_ExactInAnyOut: function (Bi, Wi, Ai, Bo, Wo, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ai > 0, "Ai must be positive");
-
- 
-        if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return [0, berr.ERR_MAX_TRADE];
- 
-        let Ao = module.exports.floatMath.calc_OutGivenInApprox(...arguments);
-        //if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return berr.ERR_MAX_TRADE;
-        return [Ao, berr.ERR_NONE];
-
-    },
- 
-   
-    viewSwap_AnyInExactOut: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, err];
-        if( Ao > bconst.MAX_TRADE_FRAC * Bo ) return [0, berr.ERR_MAX_TRADE];
-
-        let Ai = module.exports.floatMath.calc_InGivenOutApprox(Bi, Wi, Bo, Wo, Ao, fee);
-
-        //if( Ai > bconst.MAX_TRADE_FRAC * Bi ) return berr.ERR_MAX_TRADE;
-        return [Ai, berr.ERR_NONE];
-    },
-
     viewSwap_LimitInExactOut: function(Bi, Wi, Li, Bo, Wo, Ao, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
  
 
     },
- 
 
     viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);

@@ -94,6 +94,7 @@ module.exports.StopOutGivenInPoints = [];
 
 // TODO: add test for min weight
 module.exports.pool = {};
+/*
 module.exports.pool.viewSwap_AnyInExactOut = [
     [[1, 100, 50], [1, 2, 1], [1, 100, 50], [1, 2, 1], [5, 10, 5], [0, 0.02, 0.01]]
 ]
@@ -101,6 +102,7 @@ module.exports.pool.viewSwap_AnyInExactOut = [
 module.exports.pool.viewSwap_ExactInAnyOut = [
     [[1, 100, 50], [1, 2, 1], [5, 10, 5], [1, 100, 50], [1, 2, 1], [0, 0.02, 0.01]]
 ]
+*/
 
 let priceRatio   = 0.95
 let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
