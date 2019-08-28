@@ -92,25 +92,13 @@ module.exports.math = {
 module.exports.calc_InGivenOutPoints = [];
 module.exports.StopOutGivenInPoints = [];
 
-
-
-module.exports.spotPricePoints = [
-
-    {res: 4, Bi: 1, Wi: 2, Bo: 10, Wo: 5},
-    {res: 1/4, Bi: 10, Wi: 5, Bo: 1, Wo: 2},
-
-    {res: 0.00025, Bi: 6000, Wi: 3, Bo: 1, Wo: 2},
-    {res: 1/0.00025, Bi: 1, Wi: 2, Bo: 6000, Wo: 3},
-
-    {res: 1000, Bi: 10, Wi: 5, Bo: 6000, Wo: 3},
-    {res: 1/1000, Bi: 6000, Wi: 3, Bo: 10, Wo: 5}
-];
-
-module.exports.AnyInExactOutPoints = [
+// TODO: add test for min weight
+module.exports.pool = {};
+module.exports.pool.viewSwap_AnyInExactOut = [
     [[1, 100, 50], [1, 2, 1], [1, 100, 50], [1, 2, 1], [5, 10, 5], [0, 0.02, 0.01]]
 ]
 
-module.exports.ExactInAnyOutPoints = [
+module.exports.pool.viewSwap_ExactInAnyOut = [
     [[1, 100, 50], [1, 2, 1], [5, 10, 5], [1, 100, 50], [1, 2, 1], [0, 0.02, 0.01]]
 ]
 
@@ -122,7 +110,7 @@ let Lo = Ao_fromPrice - 1;
 let Li = (Math.pow(1/0.95, 0.2/(0.2 + 0.5)) - 1) * 600
 let tokenRatio = 0.95
 
-module.exports.ExactInLimitPricePoints = [
+module.exports.pool.viewSwap_ExactInLimitPrice = [
     [ [235, 235, 1], [5, 5, 1], 
       [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
       [150, 150, 1], [2, 2, 1],
@@ -131,7 +119,7 @@ module.exports.ExactInLimitPricePoints = [
 ];
 
 
-module.exports.LimitPriceInExactOutPoints = [
+module.exports.pool.viewSwap_LimitPriceInExactOut = [
     [ [600, 600, 1], [5, 5, 1], [523, 523, 1], [2, 2, 1],
       [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
       [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
@@ -140,7 +128,7 @@ module.exports.LimitPriceInExactOutPoints = [
 ];
 
 let price = (523/0.2)/(600/0.5);
-module.exports.MaxInMinOutLimitPricePoints = [
+module.exports.pool.viewSwap_MaxInMinOutLimitPrice = [
     // Lp success
     [
         [600, 600, 1], [5, 5, 1],
@@ -169,13 +157,15 @@ module.exports.MaxInMinOutLimitPricePoints = [
 
 
 
-module.exports.LimitOutGivenInPoints = [
+/*
+module.exports.pool.viewSwap_ExactInLimitOut = [
     [ [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], [0, 0.02, 0.01], [0, 0, 1] ],
     [ 
       [235, 235, 1], [5, 5, 1], [150, 150, 1], [2, 2, 1], [32, 32, 1], [0, 0.02, 0.01], 
       [ (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1, (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1, 1]
     ]
 ]
+*/
 module.exports.calc_InGivenOutPoints = [
     {res: (Math.pow((2/(2 - 1)), (0.1/0.1)) - 1) * 2, Bi: 2, Wi: 1, Bo: 2, Wo: 1, Ao: 1, fee: 0},//2
     {res: (Math.pow((20/(20 - 10)), (0.1/0.1)) - 1) * 20, Bi: 20, Wi: 1, Bo: 20, Wo: 1, Ao: 10, fee: 0},//20
