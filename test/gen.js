@@ -47,29 +47,26 @@ describe("generated math points", () => {
             let args = pair[1]
             desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
             let actual;
-            it(desc_fmath, async () => {
-                if( expected < 0 ) {
-                    assert.throws(() => fmath[funcname](...args));
-                } else {
-                    assert.closeTo(expected, fmath[funcname](...args), tolerance);
-                }
-            });
+
             let expectedBN = web3.utils.toWei(expected.toString());
             let argsBN = [];
             for( arg of args ) {
                 argsBN.push(web3.utils.toWei(arg.toString()))
             }
             desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
-            let actualBN;
-            /*
-            it(desc_bmath, async () => {
-                actualBN = await bmath.methods[funcname](...argsBN).call();
-                assert.closeBN(actualBN, expectedBN);
+
+            it(desc_fmath, async () => {
+                if( expected < 0 ) {
+                    // we can't catch revert, so just test the js here
+                    assert.throws(() => fmath[funcname](...args));
+                } else {
+                    assert.closeTo(expected, fmath[funcname](...args), tolerance);
+
+                    // compare js to contract
+                    let actualBN = await bmath.methods[funcname](...argsBN).call();
+                    assert.closeBN(actualBN, expectedBN);
+                }
             });
-            it(`  -> fmath.${funcname}(${args}) ~= bmath.${funcname}(...)`, () => {
-                assert.closeBN(actualBN, toBNum(actual));
-            });
-            */
         }
     }
 });

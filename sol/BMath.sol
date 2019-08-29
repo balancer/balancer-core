@@ -30,8 +30,8 @@ contract BMath is BNum
 
     //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
     function calc_OutGivenIn( uint Bi, uint Wi
-                            , uint Bo, uint Wo
                             , uint Ai
+                            , uint Bo, uint Wo
                             , uint fee
                             )
       public pure
