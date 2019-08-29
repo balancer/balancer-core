@@ -27,6 +27,22 @@ let assertCloseBN = (a, b, tolerance) => {
     assert(diff.lt(tolerance), `assertCloseBN( ${a}, ${b}, ${tolerance} )`);
 }
 
+let assertLessEqBN = (a, b) => {
+    assert(toBN(a).lte(toBN(b)), "error must always favor balancer #27 " + a + " " + b);
+}
+
+let isOutput = (fname) => {
+    switch( fname ) {
+        case "viewSwap_ExactInMinOut":
+        case "viewSwap_ExactInLimitPrice":
+            return true;
+        default:
+            return false;
+    }
+}
+
+
+
 let wrappers = {
     setParams: async function(Ti, Bi, Wi, To, Bo, Wo, fee) {
         await env.bpool.methods.setParams(Ti, Wi, Bi)
@@ -120,8 +136,8 @@ describe("generated swap points", function(done) {
                     argsBN     = await wrappers[funcname](...argsBN);
  
 
-                    let view = await env.bpool.methods[funcname](...argsBN)
-                                              .call();
+                    //let view = await env.bpool.methods[funcname](...argsBN)
+                    //                          .call();
 
 
                     // [res, err]
@@ -138,6 +154,9 @@ describe("generated swap points", function(done) {
                         if( err == berr.ERR_NONE ) {
                             assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
                             assertCloseBN(reso, toWei(expected[1]), toWei("0.0000001"));
+                            // #27 approximation error always favors balancer
+                            assertLessEqBN(resi, toWei(expected[0]));
+                            assertLessEqBN(toWei(expected[1]), reso);
                         }
                     } else if( expected.length == 2 ) {
                         let res = reserr[0];
@@ -146,6 +165,11 @@ describe("generated swap points", function(done) {
                         assert( expected[1] == web3.utils.hexToNumber(err), "errorcode mismatch" + expected[1] + " " + web3.utils.hexToNumber(err));
                         if( err == berr.ERR_NONE ) {
                             assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
+                            if( isOutput(funcname) ) {
+                                assertLessEqBN(toWei(expected[0]), res);
+                            } else {
+                                assertLessEqBN(res, toWei(expected[0]));
+                            }
                         }
                     }
  

@@ -16,6 +16,7 @@ describe("manager and pooling", async () => {
     let env = {};
     let accts;
     let admin;
+    this.timeout(5000);
     beforeEach(async () => {
         accts = await web3.eth.getAccounts();
         admin = accts[0];
