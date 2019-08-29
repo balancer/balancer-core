@@ -12,7 +12,7 @@ let web3 = new Web3(ganache.provider({
 
 let scene = require("./scene.js");
 
-describe("manager and pooling", async () => {
+describe("manager and pooling", async function(done) {
     let env = {};
     let accts;
     let admin;

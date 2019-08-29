@@ -133,6 +133,7 @@ module.exports.floatMath = {
         return Ai;
     },
 
+    bpow: Math.pow,
     powApprox: function(base, exponent) {
         assert(base <= 2, "base must be <= 2 for powApprox");
         let x = base - 1;
@@ -279,5 +280,16 @@ module.exports.pool = {
         if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
 
         return [Ai, Ao, berr.ERR_NONE];
+    },
+
+    viewSwap_AnyInAnyOutExactPrice(Bi, Wi, Bo, Wo, SER1, fee) {
+        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
+        if( err != berr.ERR_NONE ) return [0, 0, err];
+        assert(SER1 < module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
+        assert(SER1 > 0, "spot exchange rate can't slip to 0");
+
+        let Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+
+        return [Ai, berr.ERR_NONE];
     },
 };

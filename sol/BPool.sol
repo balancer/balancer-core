@@ -340,8 +340,9 @@ contract BPool is BPoolBronze
 
 
         Ao = calc_OutGivenIn( I.balance, I.weight
+                            , Ai
                             , O.balance, O.weight
-                            , Ai, tradeFee );
+                            , tradeFee );
 
         if( paused ) return (Ao, ERR_PAUSED);
 
@@ -402,8 +403,9 @@ contract BPool is BPoolBronze
         if( Ai > maxAi ) return (Ao, ERR_LIMIT_FAILED);
 
         Ao = calc_OutGivenIn( I.balance, I.weight
+                            , Ai
                             , O.balance, O.weight
-                            , Ai, tradeFee );
+                            , tradeFee );
 
         return (Ao, ERR_NONE);
  
@@ -564,8 +566,9 @@ contract BPool is BPoolBronze
         if( Ai > Li ) Ai = Li;
 
         Ao = calc_OutGivenIn( I.balance, I.weight
+                            , Ai
                             , O.balance, O.weight
-                            , Ai, tradeFee );
+                            , tradeFee );
 
         if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
 
@@ -603,4 +606,49 @@ contract BPool is BPoolBronze
         check(err);
         return (Ai, Ao);
     }
+
+    function viewSwap_AnyInAnyOutExactPrice(address Ti, address To, uint SER1) 
+      public returns (uint Ai, uint Ao, byte err) {
+        if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
+        if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        Ai = calc_InGivenPrice( I.balance, I.weight
+                              , O.balance, O.weight
+                              , SER1, tradeFee );
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , Ai
+                            , O.balance, O.weight
+                            , tradeFee );
+                            
+
+        if( paused ) return (Ai, Ao, ERR_PAUSED);
+
+        return (Ai, Ao, ERR_NONE);
+    }
+
+    function trySwap_AnyInAnyOutExactPrice(address Ti, address To, uint SER1)
+      public returns (uint Ai, uint Ao, byte err)
+    {
+        (Ai, Ao, err) = viewSwap_AnyInAnyOutExactPrice(Ti, To, SER1);
+        if (err != ERR_NONE) {
+            return (Ai, Ao, err);
+        } else {
+            // We must revert if a token transfer fails.
+            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            check(okIn, ERR_ERC20_FALSE);
+            bool okOut = ERC20(To).transfer(msg.sender, Ao);
+            check(okOut, ERR_ERC20_FALSE);
+
+            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+            records[Ti].balance = badd(records[Ti].balance, Ai);
+            records[To].balance = bsub(records[To].balance, Ao);
+
+            return (Ai, Ao, ERR_NONE);
+        }
+    }
+
+
 }
