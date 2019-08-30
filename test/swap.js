@@ -141,10 +141,12 @@ describe("generated swap points", function(done) {
 
 
                     // [res, err]
-                    let reserr = await env.bpool.methods[funcname](...argsBN)
-                                              .call();
+                    let tryname = funcname.replace("view", "try");
+                    let reserr = await env.bpool.methods[tryname](...argsBN)
+                                                                  .call();
  
                     let expected = pool[funcname](...args);
+
                     if( expected.length == 3 ) {
                         let resi = reserr[0];
                         let reso = reserr[1];
@@ -172,6 +174,19 @@ describe("generated swap points", function(done) {
                             }
                         }
                     }
+                    if( reserr[expected.length - 1] != berr.ERR_NONE ) {
+                        let oldBi = await env.bpool.methods.getBalance(env.acoin._address).call();
+                        let oldBo = await env.bpool.methods.getBalance(env.bcoin._address).call();
+                        await env.bpool.methods[tryname](...argsBN)
+                            .send({from: env.admin, gas: 0xffffffff}, (err) => {
+                                assert(err == null, "send failed");
+                            });
+                        let newBi = await env.bpool.methods.getBalance(env.acoin._address).call();
+                        let newBo = await env.bpool.methods.getBalance(env.bcoin._address).call();
+                        assert(newBi == oldBi, "Ti state change caused by trySwap errorcode #26 " + newBi + " " + oldBi);
+                        assert(newBo == oldBo, "To state change caused by trySwap errorcode #26");
+                    }
+ 
  
                 });
                 done = incArgList(args, rangeList);
@@ -180,3 +195,52 @@ describe("generated swap points", function(done) {
     }
 });
 
+/*
+                    let reserr;
+                    let oldBi = await env.bpool.methods.getBalance(env.acoin._address).call();
+                    let oldBo = await env.bpool.methods.getBalance(env.bcoin._address).call();
+                    let doname = funcname.replace("view", "do");
+                    await env.bpool.methods[doname](...argsBN)
+                        .send({from: env.admin, gas: 0xffffffff}, (e) => {
+                            if( e != null ) {
+                                reserr = berr[e.results[e.hashes[0]].reason];
+                                console.log(reserr);
+                            }
+                        });
+                    let resi = await env.bpool.methods.getBalance(env.acoin._address).call() - oldBi;
+                    let reso = await env.bpool.methods.getBalance(env.bcoin._address).call() - oldBo;
+                    assert(resi >= 0, "input token balance should not decrease");
+                    assert(reso <= 0, "output token balance should not increase");
+ 
+                    let expected = pool[funcname](...args);
+                    if( expected.length == 3 ) {
+                        //let resi = reserr[0];
+                        //let reso = reserr[1];
+                        //let err = reserr[2];
+                        //console.log("expect=" + expected + " actual=" + [reserr[0], reserr[1]]);
+                        assert( expected[2] == web3.utils.hexToNumber(err), "errorcode mismatch" + expected[2] + " " + web3.utils.hexToNumber(err));
+                        if( err == berr.ERR_NONE ) {
+                            assertCloseBN(resi, toWei(expected[0]), toWei("0.0000001"));
+                            assertCloseBN(reso, toWei(expected[1]), toWei("0.0000001"));
+                            // #27 approximation error always favors balancer
+                            assertLessEqBN(resi, toWei(expected[0]));
+                            assertLessEqBN(toWei(expected[1]), reso);
+                        }
+                    } else if( expected.length == 2 ) {
+                        let res = isOutput(funcname) ? reso : resi;
+                        let err = reserr;
+                        //console.log("expect=" + expected + " actual=" + [reserr[0], reserr[1]]);
+                        assert( expected[1] == web3.utils.hexToNumber(err), "errorcode mismatch" + expected[1] + " " + web3.utils.hexToNumber(err));
+                        if( err == berr.ERR_NONE ) {
+                            assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));
+                            if( isOutput(funcname) ) {
+                                assertLessEqBN(toWei(expected[0]), res);
+                            } else {
+                                assertLessEqBN(res, toWei(expected[0]));
+                            }
+                        } else {
+                            assert(resi == 0, "state change in error case");
+                        }
+                    }
+
+*/

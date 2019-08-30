@@ -231,7 +231,7 @@ module.exports.pool = {
         let Ao = module.exports.floatMath.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
         if( Ao < Lo ) return [Ao, berr.ERR_LIMIT_FAILED];
 
-        return Ao;
+        return [Ao, berr.ERR_NONE];
     },
 
     viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
