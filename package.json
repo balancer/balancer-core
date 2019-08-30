@@ -9,10 +9,12 @@
     "email": "mail+bcorepkg@nikolai.fyi",
     "url": "https://nikolai.fyi"
   },
-  "contributors": [{
-    "name": "Kevin Bravo",
-    "email": "kbravo@pm.me"
-  }],
+  "contributors": [
+    {
+      "name": "Kevin Bravo",
+      "email": "kbravo@pm.me"
+    }
+  ],
   "main": "pkg.js",
   "scripts": {
     "setup": "git submodule update --init --recursive && yarn install",
@@ -35,5 +37,6 @@
     "mocha": "^6.2.0",
     "standard": "^14.0.2",
     "web3": "^1.2.0"
-  }
+  },
+  "dependencies": {}
 }

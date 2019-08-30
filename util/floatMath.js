@@ -18,6 +18,7 @@
 // Ai := Amount of token In
 let bconst = require("./constant.js");
 let berr   = require("./error.js");
+assert = require("chai").assert;
 module.exports.floatMath = {
     mathCheck: function(Bi, Wi, Bo, Wo, fee) {
         assert(Bi > 0, "Bi must be positive");
