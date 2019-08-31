@@ -134,7 +134,10 @@ module.exports.floatMath = {
         return Ai;
     },
 
-    bpow: Math.pow,
+    bpow: function() {
+        assert(base <= 2, "base must be <= 2 for powApprox");
+        return Math.pow(...arguments);
+    },
     powApprox: function(base, exponent) {
         assert(base <= 2, "base must be <= 2 for powApprox");
         let x = base - 1;
