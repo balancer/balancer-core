@@ -186,11 +186,20 @@ contract BPool is BPoolBronze
         }
     }
 
-    function setParams(address token, uint weight, uint balance)
+    function setParams(address token, uint balance, uint weight)
       public {
     //  note by sub-calls
         setWeightDirect(token, weight);
         setBalanceDirect(token, balance);
+    }
+
+    function batchSetParams(address[] memory tokens, uint[] memory balances, uint[] memory weights)
+      public {
+        assert(tokens.length == weights.length);
+        assert(tokens.length == balances.length);
+        for( uint i = 0; i < tokens.length; i++ ) {
+            setParams(tokens[i], balances[i], weights[i]);
+        }
     }
 
     function setWeightDirect(address token, uint weight)
@@ -277,6 +286,14 @@ contract BPool is BPoolBronze
           , balance: balance
         });
         _index.push(token);
+    }
+
+    function batchBind(address[] memory tokens, uint[] memory balances, uint[] memory weights) 
+      public 
+    {
+        for( uint i = 0; i < tokens.length; i++ ) {
+            bind(tokens[i], balances[i], weights[i]);
+        }
     }
 
     function unbind(address token)
@@ -628,29 +645,5 @@ contract BPool is BPoolBronze
 
         return (Ai, Ao, ERR_NONE);
     }
-
-/*
-    function trySwap_AnyInAnyOutExactPrice(address Ti, address To, uint SER1)
-      public returns (uint Ai, uint Ao, byte err)
-    {
-        (Ai, Ao, err) = viewSwap_AnyInAnyOutExactPrice(Ti, To, SER1);
-        if (err != ERR_NONE) {
-            return (Ai, Ao, err);
-        } else {
-            // We must revert if a token transfer fails.
-            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
-            bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
-
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-            records[Ti].balance = badd(records[Ti].balance, Ai);
-            records[To].balance = bsub(records[To].balance, Ao);
-
-            return (Ai, Ao, ERR_NONE);
-        }
-    }
-*/
-
 
 }

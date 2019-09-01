@@ -43,12 +43,17 @@ let isOutput = (fname) => {
 
 
 
-let wrappers = {
+let setup = {
     setParams: async function(Ti, Bi, Wi, To, Bo, Wo, fee) {
-        await env.bpool.methods.setParams(Ti, Wi, Bi)
+        let tokens   = [Ti, To];
+        let balances = [Bi, Bo];
+        let weights  = [Wi, Wo];
+        await env.bpool.methods.batchSetParams(tokens, balances, weights)
                        .send({from: env.admin, gas:0xffffffff});
-        await env.bpool.methods.setParams(To, Wo, Bo)
-                       .send({from: env.admin, gas:0xffffffff});
+        //await env.bpool.methods.setParams(Ti, Wi, Bi)
+        //               .send({from: env.admin, gas:0xffffffff});
+        //await env.bpool.methods.setParams(To, Wo, Bo)
+        //               .send({from: env.admin, gas:0xffffffff});
         await env.bpool.methods.setFee(fee)
                        .send({from: env.admin, gas:0xffffffff});
     },
@@ -133,7 +138,7 @@ describe("generated swap points", function(done) {
                     let actual = pool[funcname](...args);
                     let argsBN = args.map(x => web3.utils.toWei(x.toString()));
                     argsBN     = [env.acoin._address, env.bcoin._address].concat(argsBN);
-                    argsBN     = await wrappers[funcname](...argsBN);
+                    argsBN     = await setup[funcname](...argsBN);
  
 
                     //let view = await env.bpool.methods[funcname](...argsBN)
@@ -163,7 +168,6 @@ describe("generated swap points", function(done) {
                     } else if( expected.length == 2 ) {
                         let res = reserr[0];
                         let err = reserr[1];
-                        //console.log("expect=" + expected + " actual=" + [reserr[0], reserr[1]]);
                         assert( expected[1] == web3.utils.hexToNumber(err), "errorcode mismatch" + expected[1] + " " + web3.utils.hexToNumber(err));
                         if( err == berr.ERR_NONE ) {
                             assertCloseBN(res, toWei(expected[0]), toWei("0.0000001"));

@@ -79,9 +79,9 @@ describe("crusty bpool tests", () => {
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
         it(`${pt.res} ~= bpool.doSwap_ExactInMinOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},${pt.fee}>`, async () => {
-            await bpool.methods.setParams(acoin._address, Wi, Bi).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(bcoin._address, Wo, Bo).send({from: acct0, gas: 0xffffffff});
-            await bpool.methods.setParams(ccoin._address, toWei('1'), toWei('10')) // shouldn't impact calc
+            await bpool.methods.setParams(acoin._address, Bi, Wi).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(bcoin._address, Bo, Wo).send({from: acct0, gas: 0xffffffff});
+            await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
                                .send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
@@ -131,7 +131,7 @@ describe("crusty bpool tests", () => {
         let BBalance = toWei("50");
         let aBalBefore = await bpool.methods.getBalance(acoin._address).call();
         assert.equal(aBalBefore, toWei('1'));
-        await bpool.methods.setParams(acoin._address, AWeight, ABalance)
+        await bpool.methods.setParams(acoin._address, ABalance, AWeight)
                            .send({from: acct0, gas: 0xffffffff});
         let aweight = await bpool.methods.getWeight(acoin._address).call();
         let abalance = await bpool.methods.getBalance(acoin._address).call();
