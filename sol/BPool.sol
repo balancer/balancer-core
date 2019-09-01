@@ -533,9 +533,9 @@ contract BPool is BPoolBronze
     {
         byte err;
         
-        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
+        (Ao, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         check(err);
-        return Ai;
+        return Ao;
     }
 
 
