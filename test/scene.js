@@ -106,6 +106,8 @@ module.exports.phase3 = async (web3) => {
     // TODO: 3 limit types (in, out, price)
     berr.ERR_LIMIT_FAILED = await e.methods.ERR_LIMIT_FAILED().call();
 
+    berr.ERR_OUT_OF_RANGE = await e.methods.ERR_OUT_OF_RANGE().call();
+
 
     berr.ERR_NOT_BOUND     = await e.methods.ERR_NOT_BOUND().call();
     berr.ERR_ALREADY_BOUND = await e.methods.ERR_ALREADY_BOUND().call();
@@ -126,7 +128,9 @@ module.exports.phase3 = async (web3) => {
     bconst.MAX_TOTAL_WEIGHT      = web3.utils.fromWei(await c.methods.MAX_TOTAL_WEIGHT().call());
     bconst.MIN_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.MIN_TOKEN_BALANCE().call());
     bconst.MAX_TOKEN_BALANCE     = web3.utils.fromWei(await c.methods.MAX_TOKEN_BALANCE().call());
-    bconst.MAX_TRADE_FRAC        = web3.utils.fromWei(await c.methods.MAX_TRADE_FRAC().call());
+    bconst.MAX_TRADE_IN          = web3.utils.fromWei(await c.methods.MAX_TRADE_IN().call());
+    bconst.MAX_TRADE_OUT         = web3.utils.fromWei(await c.methods.MAX_TRADE_OUT().call());
+    bconst.MIN_SLIP_PRICE        = web3.utils.fromWei(await c.methods.MIN_SLIP_PRICE().call());
 
 
     for( user of [env.admin, env.user1, env.user2] ) {

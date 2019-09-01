@@ -147,6 +147,13 @@ module.exports.pool = {
             [price * priceRatio, price * priceRatio , price * (1-priceRatio)],
             [0, 0.03, 0.01]
         ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [10, 100, 90], [1, 5, 4],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
     ],
 
     "viewSwap_LimitPriceInExactOut": [
@@ -155,7 +162,14 @@ module.exports.pool = {
             [Ao_fromPrice*tokenRatio, Ao_fromPrice/tokenRatio, Ao_fromPrice*(1-tokenRatio)*2],
             [price*priceRatio, price*priceRatio, price*(1-priceRatio)],
             [0, 0.03, 0.01] 
-        ]
+        ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
     ],
 
     "viewSwap_MaxInMinOutLimitPrice": [
@@ -168,6 +182,15 @@ module.exports.pool = {
             [price * priceRatio, price * priceRatio, price * (1 - priceRatio) * 2],
             [0, 0.03, 0.01]
         ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
+ 
         /*
         [
             [600, 600, 1], [0.5, 0.5, 1],

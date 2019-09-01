@@ -38,6 +38,9 @@ contract BError
     // TODO: 3 limit types (in, out, price)
     byte constant public ERR_LIMIT_FAILED       = 0x30;
 
+    // bad input (e.g. would cause approximation to fail)
+    byte constant public ERR_OUT_OF_RANGE       = 0x40;
+
 
     byte constant public ERR_NOT_BOUND          = 0xe1;
     byte constant public ERR_ALREADY_BOUND      = 0xe2;

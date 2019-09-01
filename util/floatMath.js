@@ -244,10 +244,16 @@ module.exports.pool = {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
 
-        let maxAi = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return [Ai, berr.ERR_LIMIT_FAILED];
+        if( Ai > Bi * bconst.MAX_TRADE_IN ) return [0, berr.ERR_OUT_OF_RANGE];
+
+        let SER0 = module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo);
+        if( SER1 > SER0 ) return [0, berr.ERR_OUT_OF_RANGE];
+
 
         let Ao = module.exports.floatMath.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+
+        let SER2 = module.exports.floatMath.calc_SpotPrice(Bi + Ai, Wi, Bo - Ao, Wo);
+        if( SER2 < SER1 ) return [Ao, berr.ERR_LIMIT_FAILED];
 
         return [Ao, berr.ERR_NONE];
     },
@@ -256,9 +262,13 @@ module.exports.pool = {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
 
+        if( Ao > Bo * bconst.MAX_TRADE_OUT ) return [0, berr.ERR_OUT_OF_RANGE];
+        let SER0 = module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo);
+        if( SER1 > SER0 ) return [0, berr.ERR_OUT_OF_RANGE];
+
         let Ai = module.exports.floatMath.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
-        let maxAi = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > maxAi ) return [0, berr.ERR_LIMIT_FAILED];
+        let SER2 = module.exports.floatMath.calc_SpotPrice(Bi + Ai, Wi, Bo - Ao, Wo);
+        if( SER2 < SER1 ) return [Ao, berr.ERR_LIMIT_FAILED];
 
         return [Ai, berr.ERR_NONE];
     },
@@ -267,22 +277,29 @@ module.exports.pool = {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, 0, err];
 
-        let Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-        if( Ai > Li ) {
+        let SER0 = module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo);
+        if( SER1 > SER0 ) return [0, 0, berr.ERR_OUT_OF_RANGE];
+
+        let Ai;
+        let checkPrice = false;
+        if( SER1 >= bconst.MIN_SLIP_PRICE * SER0 ) {
+            Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+            if( Ai > Li ) {
+                Ai = Li;
+            }
+        } else {
             Ai = Li;
+            checkPrice = true;
         }
+
         let Ao = module.exports.floatMath.calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+        if( checkPrice ) {
+            let SER2 = module.exports.floatMath.calc_SpotPrice(Bi + Ai, Wi, Bo - Ao, Wo);
+            if( SER2 < SER1 ) return [Ai, Ao, berr.ERR_OUT_OF_RANGE];
+        }
         if( Ao < Lo ) return [Ai, Ao, berr.ERR_LIMIT_FAILED];
 
         return [Ai, Ao, berr.ERR_NONE];
     },
 
-    viewSwap_AnyInAnyOutExactPrice(Bi, Wi, Bo, Wo, SER1, fee) {
-        let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
-        if( err != berr.ERR_NONE ) return [0, 0, err];
-
-        let Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
-
-        return [Ai, berr.ERR_NONE];
-    },
 };
