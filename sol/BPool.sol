@@ -186,7 +186,7 @@ contract BPool is BPoolBronze
         }
     }
 
-    function setParams(address token, uint weight, uint balance)
+    function setParams(address token, uint balance, uint weight)
       public {
     //  note by sub-calls
         setWeightDirect(token, weight);
@@ -489,19 +489,27 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-
-
-        uint maxAi = calc_InGivenPrice( I.balance, I.weight
-                                      , O.balance, O.weight
-                                      , SER1, tradeFee );
-
-        if( paused ) return (Ao, ERR_PAUSED);
-
-        if( Ai > maxAi ) return (Ao, ERR_LIMIT_FAILED);
+        if( Ai > bmul(I.balance, MAX_TRADE_IN) ) {
+            return (0, ERR_OUT_OF_RANGE);
+        }
+        
+        if( SER1 > calc_SpotPrice(I.balance, I.weight
+                                , O.balance, O.weight) ) {
+            return (0, ERR_OUT_OF_RANGE);
+        }
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
                             , Ai, tradeFee );
+
+
+        if( paused ) return (Ao, ERR_PAUSED);
+
+        uint Iafter = badd(I.balance, Ai);
+        uint Oafter = bsub(O.balance, Ao);
+        uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
+        if( Pafter < SER1 )
+            return (Ao, ERR_LIMIT_FAILED);
 
         return (Ao, ERR_NONE);
  
@@ -533,9 +541,9 @@ contract BPool is BPoolBronze
     {
         byte err;
         
-        (Ai, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
+        (Ao, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
         check(err);
-        return Ai;
+        return Ao;
     }
 
 
@@ -600,17 +608,22 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint AiMax = calc_InGivenPrice( I.balance, I.weight
-                                      , O.balance, O.weight
-                                      , SER1, tradeFee );
-                
-        Ai    = calc_InGivenOut( I.balance, I.weight
-                               , O.balance, O.weight
-                               , Ao, tradeFee );
+        if( Ao > bmul(O.balance, MAX_TRADE_OUT) ) return (0, ERR_OUT_OF_RANGE);
+
+        if( SER1 > calc_SpotPrice(I.balance, I.weight
+                                , O.balance, O.weight) ) {
+            return (0, ERR_OUT_OF_RANGE);
+        }
+
+        Ai = calc_InGivenOut( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ao, tradeFee );
 
         if( paused ) return (Ai, ERR_PAUSED);
 
-        if( Ai > AiMax ) return (Ai, ERR_LIMIT_FAILED);
+        uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
+                                  , bsub(O.balance, Ao), O.weight );
+        if( SER2 < SER1 ) return (Ai, ERR_LIMIT_FAILED);
 
         return (Ai, ERR_NONE);
     }
@@ -655,15 +668,33 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        Ai = calc_InGivenPrice( I.balance, I.weight
-                              , O.balance, O.weight
-                              , SER1, tradeFee );
+        uint SER0 = calc_SpotPrice(I.balance, I.weight
+                                , O.balance, O.weight);
+        if( SER1 > SER0 ) {
+            return (0, 0, ERR_OUT_OF_RANGE);
+        }
 
-        if( Ai > Li ) Ai = Li;
+        bool checkPrice = false;
+        if( SER1 > bmul(SER0, MIN_SLIP_PRICE) ) {
+            Ai = calc_InGivenPrice( I.balance, I.weight
+                                  , O.balance, O.weight
+                                  , SER1, tradeFee );
+            if( Ai > Li ) Ai = Li;
+        } else {
+            Ai         = Li;
+            checkPrice = true;
+        }
 
         Ao = calc_OutGivenIn( I.balance, I.weight
+                            , Ai
                             , O.balance, O.weight
-                            , Ai, tradeFee );
+                            , tradeFee );
+
+        if( checkPrice ) {
+            uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
+                                      , bsub(O.balance, Ao), O.weight );
+            if( SER2 < SER1 ) return (Ai, Ao, ERR_OUT_OF_RANGE);
+        }
 
         if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
 

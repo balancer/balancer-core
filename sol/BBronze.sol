@@ -45,7 +45,7 @@ contract BPoolBronze is BBronze, BConst {
     function pause() public;
     function bind(address token, uint balance, uint weight) public;
     function unbind(address token) public;
-    function setParams(address token, uint weight, uint balance) public;
+    function setParams(address token, uint balance, uint weight) public;
     function setManager(address manager) public;
     function setFee(uint fee) public;
     function sweep(address token) public;
