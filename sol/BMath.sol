@@ -181,7 +181,7 @@ contract BMath is BNum
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // since we can't underflow, keep a tally of negative signs in 'select'
         uint select = 0;
-        for( uint i = 1; i < 20; i++) {
+        for( uint i = 1; i < 25; i++) {
             uint k = i * BONE;
             
             (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));

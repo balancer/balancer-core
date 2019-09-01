@@ -141,10 +141,10 @@ let price = (523/0.2)/(600/0.5);
 module.exports.pool = {
     "viewSwap_ExactInLimitPrice": [
         [ 
-            [235, 235, 1], [5, 5, 1], 
-            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
-            [150, 150, 1], [2, 2, 1],
-            [(150/0.2)/(235/0.5) * priceRatio, (150/0.2)/(235/0.5) / priceRatio, (150/0.2)/(235/0.5) * (1-priceRatio)],
+            [600, 600, 1], [5, 5, 1], 
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio) * 2],
+            [523, 523, 1], [2, 2, 1],
+            [price * priceRatio, price * priceRatio , price * (1-priceRatio)],
             [0, 0.03, 0.01]
         ],
     ],
@@ -152,8 +152,8 @@ module.exports.pool = {
     "viewSwap_LimitPriceInExactOut": [
         [
             [600, 600, 1], [5, 5, 1], [523, 523, 1], [2, 2, 1],
-            [Ao_fromPrice*priceRatio, Ao_fromPrice/priceRatio, Ao_fromPrice*(1-priceRatio)],
-            [(523/0.2)/(600/0.5)*priceRatio, (523/0.2)/(600/0.5)/priceRatio, (523/0.2)/(600/0.5)*(1-priceRatio)],
+            [Ao_fromPrice*tokenRatio, Ao_fromPrice/tokenRatio, Ao_fromPrice*(1-tokenRatio)*2],
+            [price*priceRatio, price*priceRatio, price*(1-priceRatio)],
             [0, 0.03, 0.01] 
         ]
     ],
@@ -162,10 +162,10 @@ module.exports.pool = {
     // Lp success
         [
             [600, 600, 1], [5, 5, 1],
-            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio)],
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio) * 2],
             [523, 523, 1], [2, 2, 1],
-            [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio)],
-            [price * priceRatio, price / priceRatio, price * (1 - priceRatio)],
+            [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio) * 2],
+            [price * priceRatio, price * priceRatio, price * (1 - priceRatio) * 2],
             [0, 0.03, 0.01]
         ],
         /*
@@ -191,9 +191,9 @@ module.exports.pool = {
     "viewSwap_MaxInExactOut": [
         [
             [600, 600, 1], [5, 5, 1], 
-            [(Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 * tokenRatio, 
-             (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 / tokenRatio,
-             (Math.pow((523/(523 - 70)), (0.2/0.5)) - 1) * 600 * (1-tokenRatio)],
+            [(Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 * tokenRatio, 
+             (Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 / tokenRatio,
+             (Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 * (1-tokenRatio)*2],
             [523, 523, 1], [2, 2, 1], 
             [70, 70, 1],         
             [0, 0.02, 0.01]

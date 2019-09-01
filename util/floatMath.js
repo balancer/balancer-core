@@ -104,6 +104,7 @@ module.exports.floatMath = {
     calc_InGivenPrice: function(Bi, Wi, Bo, Wo, SER1, fee) {
         this.mathCheck(Bi, Wi, Bo, Wo, fee);
         assert(SER1 > 0, "spot exchange rate can't slip to 0");
+        assert(SER1 <= module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo), "target SER should be less than SER");
 
         var SER0 = this.calc_SpotPrice(Bi, Wi, Bo, Wo);
         var exponent = Wo/(Wo + Wi);
@@ -226,7 +227,7 @@ module.exports.pool = {
         let Ai = module.exports.floatMath.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
         if( Ai > Li ) return [Ai, berr.ERR_LIMIT_FAILED];
 
-        return Ai;
+        return [Ai, berr.ERR_NONE];
     },
 
     viewSwap_ExactInMinOut: function(Bi, Wi, Ai, Bo, Wo, Lo, fee) {
@@ -242,9 +243,6 @@ module.exports.pool = {
     viewSwap_ExactInLimitPrice(Bi, Wi, Ai, Bo, Wo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ai > 0, "Ai must be positive");
-        assert(SER1 < module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let maxAi = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
         if( Ai > maxAi ) return [Ai, berr.ERR_LIMIT_FAILED];
@@ -257,9 +255,6 @@ module.exports.pool = {
     viewSwap_LimitPriceInExactOut(Bi, Wi, Bo, Wo, Ao, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, err];
-        assert(Ao > 0, "Ao must be positive");
-        assert(SER1 < module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let Ai = module.exports.floatMath.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
         let maxAi = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
@@ -271,11 +266,6 @@ module.exports.pool = {
     viewSwap_MaxInMinOutLimitPrice(Bi, Wi, Li, Bo, Wo, Lo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, 0, err];
-        assert(Lo > 0, "Lo must be positive");
-        assert(Li > 0, "Li must be positive");
-        assert(Lo < Bo, "Lo must be less than Bo");
-        assert(SER1 < module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
         if( Ai > Li ) {
@@ -290,8 +280,6 @@ module.exports.pool = {
     viewSwap_AnyInAnyOutExactPrice(Bi, Wi, Bo, Wo, SER1, fee) {
         let err = this.poolCheck(Bi, Wi, Bo, Wo, fee);
         if( err != berr.ERR_NONE ) return [0, 0, err];
-        assert(SER1 < module.exports.floatMath.calc_SpotPrice(Bi, Wi, Bo, Wo, "target SER must be less than current SER"));
-        assert(SER1 > 0, "spot exchange rate can't slip to 0");
 
         let Ai = module.exports.floatMath.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
 
