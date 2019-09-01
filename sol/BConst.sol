@@ -23,4 +23,8 @@ contract BConst
     uint256 public constant MAX_TOKEN_WEIGHT  = BONE * 100;
     uint256 public constant MIN_TOKEN_BALANCE = BONE / 10**6;
     uint256 public constant MAX_TOKEN_BALANCE = BONE * 10**12;
+
+    uint256 public constant MAX_TRADE_IN      = BONE * 9;
+    uint256 public constant MAX_TRADE_OUT     = BONE / 2;
+    uint256 public constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 }
