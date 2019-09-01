@@ -42,9 +42,9 @@ describe("swaps", () => {
             let Bo = args[2]; let Wo = args[3];
             let Ai = args[4];
             let fee = args[5];
-            await env.bpool.methods.setParams(env.acoin._address, toWei(Wi), toWei(Bi))
+            await env.bpool.methods.setParams(env.acoin._address, toWei(Bi), toWei(Wi))
                            .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setParams(env.bcoin._address, toWei(Wo), toWei(Bo))
+            await env.bpool.methods.setParams(env.bcoin._address, toWei(Bo), toWei(Wo))
                            .send({from: env.admin, gas:0xffffffff});
             await env.bpool.methods.setFee(toWei(fee))
                            .send({from: env.admin, gas:0xffffffff});

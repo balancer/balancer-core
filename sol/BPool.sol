@@ -186,7 +186,7 @@ contract BPool is BPoolBronze
         }
     }
 
-    function setParams(address token, uint weight, uint balance)
+    function setParams(address token, uint balance, uint weight)
       public {
     //  note by sub-calls
         setWeightDirect(token, weight);
