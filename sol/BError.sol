@@ -61,10 +61,20 @@ contract BError
             return "ERR_PAUSED";
         if( berr == ERR_NOT_BOUND )
             return "ERR_NOT_BOUND";
+        if( berr == ERR_ALREADY_BOUND )
+            return "ERR_ALREADY_BOUND";
         if( berr == ERR_BAD_CALLER )
             return "ERR_BAD_CALLER";
         if( berr == ERR_MIN_WEIGHT )
             return "ERR_MIN_WEIGHT";
+        if( berr == ERR_MAX_FEE )
+            return "ERR_MAX_FEE";
+        if( berr == ERR_MAX_TRADE )
+            return "ERR_MAX_TRADE";
+        if( berr == ERR_MIN_BALANCE )
+            return "ERR_MIN_BALANCE";
+        if( berr == ERR_MAX_BALANCE )
+            return "ERR_MAX_BALANCE";
         if( berr == ERR_ERC20_FALSE )
             return "ERR_ERC20_FALSE";
         if( berr == ERR_MATH_ADD_OVERFLOW )
@@ -87,6 +97,8 @@ contract BError
             return "ERR_LIMIT_FAILED";
         if( berr == ERR_UNJOINABLE )
             return "ERR_UNJOINABLE";
+        if( berr == ERR_UNREACHABLE )
+            return "ERR_UNREACHABLE";
         revert("ERR_PANIC_UNKNOWN");
     }
 
