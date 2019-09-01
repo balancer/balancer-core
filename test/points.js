@@ -287,3 +287,99 @@ module.exports.normalizedWeightPoints = [
                  [282, 0.3],
                  [2,   0.1]],},
 ];
+
+
+//let priceRatio   = 0.95
+//let Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 235
+//Ai_fromPrice = (Math.pow(1/priceRatio, 0.2/(0.2+0.5)) - 1) * 600
+//let Ao_fromPrice = (1 - (600/(600 + Ai_fromPrice))**(0.5/0.2)) * 523
+//let Lo = Ao_fromPrice - 1;
+//let Li = (Math.pow(1/0.95, 0.2/(0.2 + 0.5)) - 1) * 600
+//let tokenRatio = 0.95
+let price = (523/0.2)/(600/0.5);
+module.exports.pool = {
+    "viewSwap_ExactInLimitPrice": [
+        [ 
+            [600, 600, 1], [5, 5, 1], 
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio) * 2],
+            [523, 523, 1], [2, 2, 1],
+            [price * priceRatio, price * priceRatio , price * (1-priceRatio)],
+            [0, 0.03, 0.01]
+        ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [10, 100, 90], [1, 5, 4],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
+    ],
+
+    "viewSwap_LimitPriceInExactOut": [
+        [
+            [600, 600, 1], [5, 5, 1], [523, 523, 1], [2, 2, 1],
+            [Ao_fromPrice*tokenRatio, Ao_fromPrice/tokenRatio, Ao_fromPrice*(1-tokenRatio)*2],
+            [price*priceRatio, price*priceRatio, price*(1-priceRatio)],
+            [0, 0.03, 0.01] 
+        ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
+    ],
+
+
+    "viewSwap_MaxInMinOutLimitPrice": [
+    // Lp success
+        [
+            [600, 600, 1], [5, 5, 1],
+            [Ai_fromPrice * tokenRatio, Ai_fromPrice / tokenRatio, Ai_fromPrice * (1 - tokenRatio) * 2],
+            [523, 523, 1], [2, 2, 1],
+            [Ao_fromPrice * tokenRatio, Ao_fromPrice / tokenRatio, Ao_fromPrice * (1 - tokenRatio) * 2],
+            [price * priceRatio, price * priceRatio, price * (1 - priceRatio) * 2],
+            [0, 0.03, 0.01]
+        ],
+        [
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [10, 100, 90], [1, 5, 4],
+            [1, 101, 25],
+            [5/100, 12+5/100, 3],
+            [0, 0.02, 0.02]
+        ],
+
+        /*
+        [
+            [600, 600, 1], [0.5, 0.5, 1],
+            [1, 700, 50],
+            [523, 523, 1], [0.2, 0.2, 1],
+            [1, 700, 50],
+            [price/3, price, price /8],
+            [0, 0.04, 0.01]
+        ]
+        */
+    ],
+    "viewSwap_ExactInMinOut": [
+        [ 
+            [235, 235, 1], [5, 5, 1], [32, 32, 1], [150, 150, 1], [2, 2, 1], [0, 0, 1], [0, 0.02, 0.01]],
+        [ 
+            [235, 235, 1], [5, 5, 1], [32, 32, 1], [150, 150, 1], [2, 2, 1], 
+            [ (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 - 1, (1 - Math.pow((235/(235+32)),(0.5/0.2)))*150 + 1, 1], 
+            [0, 0.02, 0.01], 
+        ]
+    ],
+    "viewSwap_MaxInExactOut": [
+        [
+            [600, 600, 1], [5, 5, 1], 
+            [(Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 * tokenRatio, 
+             (Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 / tokenRatio,
+             (Math.pow((523/(523 - 70)), (2/5)) - 1) * 600 * (1-tokenRatio)*2],
+            [523, 523, 1], [2, 2, 1], 
+            [70, 70, 1],         
+            [0, 0.02, 0.01]
+        ]
+    ],
+}
