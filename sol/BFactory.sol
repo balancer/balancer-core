@@ -16,17 +16,14 @@ pragma solidity ^0.5.10;
 import 'ds-token/token.sol';
 
 import "./BBronze.sol";
-import "./BConst.sol";
 
 import "./BPool.sol";
 
 contract BFactory is BBronze
-                   , BConst
 {
     mapping(address=>bool) public isBPool;
-    mapping(address=>bool) public isBWrap;
 
-    event LOG_newBPool( address indexed caller
+    event LOG_newBPool( address indexed initialManager
                       , address indexed pool );
 
     function newBPool()
@@ -37,9 +34,5 @@ contract BFactory is BBronze
         isBPool[address(bpool)] = true;
         emit LOG_newBPool(msg.sender, address(bpool));
         return bpool;
-    }
-
-    function newBWrap(address erc20) {
-        
     }
 }
