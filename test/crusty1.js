@@ -18,6 +18,7 @@ let asciiToHex = web3.utils.asciiToHex;
 
 let approxTolerance = 10 ** -6;
 let floatEqTolerance = 10 ** -12;
+let MAX256 = web3.utils.toTwosComplement('-1');
 
 let assertCloseBN = (a, b, tolerance) => {
     tolerance = toBN(toWei(tolerance));
@@ -60,8 +61,7 @@ describe("crusty bpool tests", () => {
         for (coin of [acoin, bcoin, ccoin]) {
             await coin.methods.mint(preBindBalance).send({from: acct0});
             for (user of [acct0, acct1, acct2] ) {
-                let maxApproval = web3.utils.toTwosComplement('-1');
-                await coin.methods.approve(bpool._address, maxApproval)
+                await coin.methods.approve(bpool._address, MAX256)
                           .send({from: user});
             }
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
@@ -77,7 +77,7 @@ describe("crusty bpool tests", () => {
         let Wo  = toWei(pt.Wo.toString());
         let fee = toWei(pt.fee.toString());
         let Ao  = toWei(pt.Ao.toString());
-        it(`${pt.res} ~= bpool.doSwap_AnyInExactOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.res},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.doSwap_MaxInExactOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.res},${pt.fee})`, async () => {
             await bpool.methods.setParams(acoin._address, Bi, Wi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Bo, Wo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
@@ -85,9 +85,9 @@ describe("crusty bpool tests", () => {
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
+            var resultStatic = await bpool.methods.doSwap_MaxInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                                   .call();
-            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
+            var result = await bpool.methods.doSwap_MaxInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();
@@ -147,9 +147,9 @@ describe("crusty bpool tests", () => {
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
+            var resultStatic = await bpool.methods.doSwap_MaxInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                                   .call();
-            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, bcoin._address, Ao)
+            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();

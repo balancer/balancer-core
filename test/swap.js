@@ -49,11 +49,11 @@ describe("swaps", () => {
             await env.bpool.methods.setFee(toWei(fee))
                            .send({from: env.admin, gas:0xffffffff});
 
-            let view = await env.bpool.methods.viewSwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
+            let view = await env.bpool.methods.viewSwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
                                       .call();
 
             // [res, err]
-            let reserr = await env.bpool.methods.trySwap_ExactInAnyOut(env.acoin._address, env.bcoin._address, toWei(Ai))
+            let reserr = await env.bpool.methods.trySwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
                                                 .call();
             let res = reserr[0];
             let err = reserr[1];
