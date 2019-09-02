@@ -32,7 +32,7 @@ let bpool = new web3.eth.Contract(BPool.abi);
 
 ## API Docs
 
-[Check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/index.md)
+[Check out our work in progress docs](https://balancer-labs.github.io/balancer-page/api.html)
 
 ## Developing (working on `balancer-core`)
 
