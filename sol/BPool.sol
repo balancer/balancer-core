@@ -124,7 +124,7 @@ contract BPool is BPoolBronze
         token=token; revert('unimplemented');
     }
 
-    function getWeightedTotalBalance()
+    function getValueConstant()
       public view returns (uint res)
     {
         if (_index.length == 0) return 0;
@@ -145,9 +145,9 @@ contract BPool is BPoolBronze
     {
         check(msg.sender == manager, ERR_BAD_CALLER);
         joinable = true;
-        uint WTB = getWeightedTotalBalance();
-        DSToken(poolcoin).mint(WTB);
-        DSToken(poolcoin).transfer(msg.sender, WTB);
+        uint V = getValueConstant();
+        DSToken(poolcoin).mint(V);
+        DSToken(poolcoin).transfer(msg.sender, V);
     }
 
     function joinPool(uint poolAo)

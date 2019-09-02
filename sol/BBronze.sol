@@ -33,7 +33,7 @@ contract BPoolBronze is BBronze, BConst {
     function getTotalWeight() public view returns (uint);
     function getBalance(address token) public view returns (uint);
     function getWeightedBalance(address token) public view returns (uint);
-    function getWeightedTotalBalance() public view returns (uint);
+    function getValueConstant() public view returns (uint);
 
     //== Pooling
     function isJoinable() public view returns (bool);
