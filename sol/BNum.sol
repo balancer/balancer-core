@@ -59,9 +59,9 @@ contract BNum is BConst
     function bdiv(uint a, uint b) internal pure returns (uint) {
         check(b != 0, ERR_MATH_DIV_ZERO);
         uint c0 = a * BONE;
-        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERFLOW); // bmul check
+        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERNAL); // bmul check
         uint c1 = c0 + (b / 2);
-        check(c1 >= c0, ERR_MATH_DIV_INTERFLOW); //  badd check
+        check(c1 >= c0, ERR_MATH_DIV_INTERNAL); //  badd check
         uint c2 = c1 / b;
         return c2;
     }

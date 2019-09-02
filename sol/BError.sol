@@ -24,7 +24,7 @@ contract BError
     byte constant public ERR_MATH_SUB_UNDERFLOW = 0x11;
     byte constant public ERR_MATH_MUL_OVERFLOW  = 0x12;
     byte constant public ERR_MATH_DIV_ZERO      = 0x13;
-    byte constant public ERR_MATH_DIV_INTERFLOW = 0x14; // intermdiate values overflow (we keep precision)
+    byte constant public ERR_MATH_DIV_INTERNAL  = 0x14;
 
     byte constant public ERR_MAX_TOKENS         = 0x20;
     byte constant public ERR_MIN_WEIGHT         = 0x20;
@@ -85,8 +85,8 @@ contract BError
             return "ERR_MATH_MUL_OVERFLOW";
         if( berr == ERR_MATH_DIV_ZERO )
             return "ERR_MATH_DIV_ZERO";
-        if( berr == ERR_MATH_DIV_INTERFLOW )
-            return "ERR_MATH_DIV_INTERFLOW";
+        if( berr == ERR_MATH_DIV_INTERNAL )
+            return "ERR_MATH_DIV_INTERNAL";
         if( berr == ERR_MIN_WEIGHT )
             return "ERR_MIN_WEIGHT";
         if( berr == ERR_MAX_WEIGHT )
