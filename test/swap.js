@@ -34,10 +34,6 @@ describe("swaps", () => {
         assert.exists(env.bpool);
     });
     for( let pt of points.math.calc_OutGivenIn ) {
-        if (typeof(pt[0]) == 'string') {
-            console.log('WARN: skipping error case');
-            continue;
-        }
         it(`test pt ${pt}`, async () => {
             let expected = pt[0];
             let args = pt[1];
@@ -45,12 +41,26 @@ describe("swaps", () => {
             let Bo = args[2]; let Wo = args[3];
             let Ai = args[4];
             let fee = args[5];
-            await env.bpool.methods.setParams(env.acoin._address, toWei(Bi), toWei(Wi))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setParams(env.bcoin._address, toWei(Bo), toWei(Wo))
-                           .send({from: env.admin, gas:0xffffffff});
-            await env.bpool.methods.setFee(toWei(fee))
-                           .send({from: env.admin, gas:0xffffffff});
+            try {
+                await env.bpool.methods.setParams(env.acoin._address, toWei(Bi), toWei(Wi))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setParams(env.bcoin._address, toWei(Bo), toWei(Wo))
+                               .send({from: env.admin, gas:0xffffffff});
+                await env.bpool.methods.setFee(toWei(fee))
+                               .send({from: env.admin, gas:0xffffffff});
+                throw null;
+            } catch (err) {
+                if (err != null && typeof(expected) == 'string') {
+                    assert.equal(err.name, 'RuntimeError');
+                    // extract error string
+                    assert(Object.keys(err.results).length == 1, 'more than one exception in transaction!?');
+                    let trxID = Object.keys(err.results)[0];
+                    let info = err.results[trxID];
+                    let errStr = info.reason;
+                    assert.equal(errStr, expected);
+                    return;
+                }
+            }
 
             let view = await env.bpool.methods.viewSwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
                                       .call();
@@ -60,7 +70,12 @@ describe("swaps", () => {
                                                 .call();
             let res = reserr[0];
             let err = reserr[1];
-            assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+            if (typeof(expected) == 'number') {
+                assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+            }
+            if (typeof(expected) == 'string') {
+                assert.equal(res, expected);
+            }
 
         });
     }
