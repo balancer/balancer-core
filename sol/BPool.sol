@@ -193,6 +193,13 @@ contract BPool is BPoolBronze
         setBalanceDirect(token, balance);
     }
 
+    function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public {
+        for( uint i = 0; i < tokenBalanceWeights.length; i++ ) {
+            bytes32[3] memory TBW = tokenBalanceWeights[i];
+            setParams(address(bytes20(TBW[0])), uint(TBW[1]), uint(TBW[2]));
+        }
+    }
+
     function setWeightDirect(address token, uint weight)
       public
         note

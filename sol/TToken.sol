@@ -16,5 +16,8 @@ pragma solidity ^0.5.10;
 import 'ds-token/token.sol';
 
 // interim test token contract, eventually will converge with BToken
-contract TToken is DSToken {}
+contract TToken is DSToken {
+    constructor(bytes32 symbol) public
+        DSToken(symbol) {}
+}
 

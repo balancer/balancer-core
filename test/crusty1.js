@@ -43,9 +43,9 @@ describe("crusty bpool tests", () => {
         acct1 = accts[1];
         acct2 = accts[2];
 
-        acoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("A")]);
-        bcoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("B")]);
-        ccoin = await pkg.deploy(web3, acct0, "BToken", [asciiToHex("C")]);
+        acoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("A")]);
+        bcoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
+        ccoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
 
         factory = await pkg.deploy(web3, acct0, "BFactory");
 

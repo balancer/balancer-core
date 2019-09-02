@@ -37,6 +37,7 @@ contract BPoolBronze is BBronze, BConst {
 
     //== Pooling
     function isJoinable() public view returns (bool);
+    function makeJoinable() public;
     function joinPool(uint poolAo) public;
     function exitPool(uint poolAi) public;
 
@@ -46,6 +47,7 @@ contract BPoolBronze is BBronze, BConst {
     function bind(address token, uint balance, uint weight) public;
     function unbind(address token) public;
     function setParams(address token, uint balance, uint weight) public;
+    function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public;
     function setManager(address manager) public;
     function setFee(uint fee) public;
     function sweep(address token) public;

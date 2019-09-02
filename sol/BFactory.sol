@@ -35,4 +35,5 @@ contract BFactory is BBronze
         emit LOG_newBPool(msg.sender, address(bpool));
         return bpool;
     }
+
 }
