@@ -10,29 +10,34 @@ Ti := Token In
 To := Token Out
 Ai := Amount In
 Ao := Amount Out
-Li := Limit In
-Lo := Limit Out
-B  := Balance
-W  := Weight
-P  := Price (always "how Ti does one To cost") TODO or the opposite
+Li := Limit In (amount)
+Lo := Limit Out (amount)
+Bi := Balance of "in" token
+Wi := Weight
+LP := Limit Price
 F  := Fee (as a percent, as a `bnum`)
+
+Canonical order (parenthesis to help remember order by cluster):
+
+(Ti, Bi, Wi, Ai, To, Bo, Wo, Ao, LP, F)
+
+to help remember:
+
+((Ti, (Bi, Wi)), Ai), ((To, (Bo, Wo)), Ao), LP, F
+(token, amount), (token, amount), price, fee
 ```
 
 | Function
 |-
-[`getSpotPrice(address T) returns (uint)`](#getSpotPrice) 
-[`*_ExactInAnyOut(address Ti, address To, uint Ai) -> (uint Ao)`](#swap_ExactInMinOut)  |
-[`*_ExactInMinOut(address Ti, address To, uint Ai, uint Lo) -> (uint Ao)`](#swap_ExactInMinOut) | 
-[`*_ExactInLimitPrice(address Ti, address To, uint Ai, uint P) -> (uint Ao)`]() | 
-[`*_AnyInExactOut(address Ti, address To, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) |
-[`*_MaxInExactOut(address Ti, address To, uint Li, uint Ao) -> (uint Ao)`](#swap_MaxInExactOut) | 
-[`*_LimitPriceExactOut(address Ti, address To, uint P, uint Ao) -> (uint Ao)`]() | 
-[`*_MaxInMinOutLimitPrice(address Ti, address To, uint Li, uint Lo) -> (uint Ai, uint Ao)`]() | 
-[`isPoolOpen() returns (bool)`](#isPoolOpen) | 
+[`*_ExactInMinOut(TODO) -> (uint Ao)`](#swap_ExactInMinOut) | 
+[`*_ExactInLimitPrice(TODO) -> (uint Ao)`]() | 
+[`*_MaxInExactOut(TODO) -> (uint Ao)`](#swap_MaxInExactOut) | 
+[`*_LimitPriceExactOut(TODO) -> (uint Ao)`]() | 
+[`*_MaxInMinOutLimitPrice(TODO) -> (uint Ai, uint Ao)`]() | 
+[`isJoinable() returns (bool)`](#isJoinable) | 
+[`makeJoinable()`](#isJoinable) | 
 [`joinPool(uint Ai)`](#joinPool) | 
 [`exitPool(uint Ao)`](#exitPool) | 
-[`getJoinPoolAmounts(uint Ai) returns (uint[MAX_TOKENS])`](#getJoinPoolAmounts) | 
-[`getExitPoolAmounts(uint Ao) returns (uint[MAX_TOKENS])`](#getExitPoolAmounts) | 
 [`start()`](#start) | 
 [`pause()`](#pause) | 
 [`bind(address T, uint B, uint W)`](#bind) | 
@@ -46,14 +51,10 @@ F  := Fee (as a percent, as a `bnum`)
 
 ## Trader API
 
-### `*Swap_ExactInAnyOut`
-`*Swap_ExactInAnyOut(...)`
 ### `*Swap_ExactInMinOut`
 `*Swap_ExactInMinOut(...)`
 ### `*Swap_ExactInLimitPrice`
 `*Swap_ExactInLimitPrice(...)`
-### `*Swap_MaxInAnyOut`
-`*Swap_MaxInAnyOut(...)`
 ### `*Swap_MaxInExactOut`
 `*Swap_MaxInExactOut(...)`
 ### `*Swap_LimitPriceExactOut`
@@ -66,16 +67,14 @@ F  := Fee (as a percent, as a `bnum`)
 
 ## Pooling API
 
-### `isPoolOpen`
-`isPoolOpen() returns (bool)`
+### `isJoinable`
+`isJoinable() returns (bool)`
+### `makeJoinable`
+`makeJoinable() returns (bool)`
 ### `joinPool`
 `joinPool(uint ptoken_amt_in)`
 ### `exitPool`
 `exitPool(uint ptoken_amt_out)`
-### `getJoinPoolAmounts`
-`getJoinPoolAmounts`
-### `getExitPoolAmounts`
-`getExitPoolAmounts`
 
 ## Manager API
 
