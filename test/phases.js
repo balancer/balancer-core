@@ -30,7 +30,7 @@ describe("scene tests", async () => {
         env = await scene.phase1(web3, admin);
 
         assert.exists(env.bpool, "bpool");
-        let poolBuiltHere = await env.factory.methods.wasBPoolBuiltHere(env.bpool._address).call();
+        let poolBuiltHere = await env.factory.methods.isBPool(env.bpool._address).call();
         assert(poolBuiltHere, "factory doesn't remember building bpool");
 
         assert.exists(env.acoin);

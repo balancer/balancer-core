@@ -23,7 +23,8 @@ import "./BPool.sol";
 contract BFactory is BBronze
                    , BConst
 {
-    mapping(address=>bool) public wasBPoolBuiltHere;
+    mapping(address=>bool) public isBPool;
+    mapping(address=>bool) public isBWrap;
 
     event LOG_newBPool( address indexed caller
                       , address indexed pool );
@@ -33,8 +34,12 @@ contract BFactory is BBronze
     {
         BPool bpool = new BPool();
         bpool.setManager(msg.sender);
-        wasBPoolBuiltHere[address(bpool)] = true;
+        isBPool[address(bpool)] = true;
         emit LOG_newBPool(msg.sender, address(bpool));
         return bpool;
+    }
+
+    function newBWrap(address erc20) {
+        
     }
 }
