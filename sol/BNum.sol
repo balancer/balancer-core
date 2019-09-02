@@ -59,32 +59,29 @@ contract BNum is BConst
     function bdiv(uint a, uint b) internal pure returns (uint) {
         check(b != 0, ERR_MATH_DIV_ZERO);
         uint c0 = a * BONE;
-        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERFLOW);
+        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERFLOW); // bmul check
         uint c1 = c0 + (b / 2);
-        check(c1 >= c0, ERR_MATH_DIV_INTERFLOW);
+        check(c1 >= c0, ERR_MATH_DIV_INTERFLOW); //  badd check
         uint c2 = c1 / b;
         return c2;
     }
 
-    function bpown(uint x, uint n) internal pure returns (uint z) {
-        z = n % 2 != 0 ? x : BONE;
+    // DSMath.wpow
+    function bpown(uint a, uint n) internal pure returns (uint) {
+        uint z = n % 2 != 0 ? a : BONE;
 
         for (n /= 2; n != 0; n /= 2) {
-            x = bmul(x, x);
+            a = bmul(a, a);
 
             if (n % 2 != 0) {
-                z = bmul(z, x);
+                z = bmul(z, a);
             }
         }
+        return z;
     }
 
-    function bfloor(uint x) internal pure returns (uint z) {
-        z = x / BONE * BONE;
+    function bfloor(uint a) internal pure returns (uint) {
+        return (a / BONE) * BONE;
     }
-
-    function bbot(uint x) internal pure returns (uint z) {
-        return bfloor(x);
-    }
-
 
 }
