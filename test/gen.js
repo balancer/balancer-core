@@ -43,9 +43,13 @@ describe("generated math points", () => {
     for(let funcname in points.math) {
         pairs = points.math[funcname]
         for( let pair of pairs ) {
+            if( typeof(pair[0]) == 'string' ) {
+                console.log("WARN: skipping error case");
+                continue;
+            }
             let expected = pair[0];
             let args = pair[1]
-            desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
+            let desc_fmath = `${expected} ?= fmath.${funcname}(${args})`;
             let actual;
             it(desc_fmath, async () => {
                 actual = fmath[funcname](...args);
@@ -56,7 +60,7 @@ describe("generated math points", () => {
             for( arg of args ) {
                 argsBN.push(web3.utils.toWei(arg.toString()))
             }
-            desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
+            let desc_bmath = `${expectedBN} ?= BMath.${funcname}(${argsBN})`;
             let actualBN;
             it(desc_bmath, async () => {
                 actualBN = await bmath.methods[funcname](...argsBN).call();

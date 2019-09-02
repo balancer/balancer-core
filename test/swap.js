@@ -34,8 +34,11 @@ describe("swaps", () => {
         assert.exists(env.bpool);
     });
     for( let pt of points.math.calc_OutGivenIn ) {
-
-       it(`test pt ${pt}`, async () => {
+        if (typeof(pt[0]) == 'string') {
+            console.log('WARN: skipping error case');
+            continue;
+        }
+        it(`test pt ${pt}`, async () => {
             let expected = pt[0];
             let args = pt[1];
             let Bi = args[0]; let Wi = args[1];

@@ -149,7 +149,7 @@ describe("crusty bpool tests", () => {
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
             var resultStatic = await bpool.methods.doSwap_MaxInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                                   .call();
-            var result = await bpool.methods.doSwap_AnyInExactOut(acoin._address, MAX256, bcoin._address, Ao)
+            var result = await bpool.methods.doSwap_MaxInExactOut(acoin._address, MAX256, bcoin._address, Ao)
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();
