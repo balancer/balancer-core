@@ -18,12 +18,11 @@ pragma solidity ^0.5.10;
 
 contract BError
 {
+    string constant public ERR_NONE               = "";
+
     function isError(string memory err) public returns (bool) {
         return bytes(err).length != 0;
     }
-
-    // TODO no
-    string constant public ERR_NONE               = "";
 
     string constant public ERR_MATH_ADD_OVERFLOW  = "ERR_MATH_ADD_OVERFLOW";
     string constant public ERR_MATH_SUB_UNDERFLOW = "ERR_MATH_SUB_UNDERFLOW";

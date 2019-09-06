@@ -441,6 +441,47 @@ contract BPool is BPoolBronze
         return Ao;
     }
 
+    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
+        public returns (uint Ao, uint MP)
+    {
+        
+        require( isBound(Ti), ERR_NOT_BOUND );
+        require( isBound(To), ERR_NOT_BOUND );
+        require( ! isPaused(), ERR_PAUSED );
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        // TODO bad error name
+        require( Ai > bmul(I.balance, MAX_TRADE_IN)
+               , ERR_OUT_OF_RANGE );
+      
+        require( LP > calc_SpotPrice(I.balance, I.weight, O.balance, O.weight )
+               , ERR_OUT_OF_RANGE);
+
+        Ao = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, tradeFee );
+
+        uint Iafter = badd(I.balance, Ai);
+        uint Oafter = bsub(O.balance, Ao);
+        uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
+
+        require(Pafter < LP, ERR_LIMIT_FAILED);
+
+        bool xfer;
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        records[Ti].balance = badd(records[Ti].balance, Ai);
+        records[To].balance = bsub(records[To].balance, Ao);
+
+        return (Ao, Pafter);
+    }
+
 
     function viewSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public view
@@ -629,11 +670,6 @@ contract BPool is BPoolBronze
         return (Ai, Ao);
     }
 
-    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)
-        public returns (uint Ao, uint MP)
-    {
-        revert('unimplemented');
-    }
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
         public returns (uint Ai, uint MP)
     {
@@ -651,7 +687,5 @@ contract BPool is BPoolBronze
     {
         revert('unimplemented');
     }
-
-
 
 }
