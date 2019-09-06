@@ -127,11 +127,11 @@ contract BPool is BPoolBronze
     function makeJoinable()
       public
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
+        require(msg.sender == manager, ERR_BAD_CALLER);
         joinable = true;
-        uint V = getValueConstant();
-        DSToken(poolcoin).mint(V);
-        DSToken(poolcoin).transfer(msg.sender, V);
+        uint supply = 10**6 * 10**18;
+        DSToken(poolcoin).mint(supply); // TODO constant
+        DSToken(poolcoin).transfer(msg.sender, supply);
     }
 
     function joinPool(uint poolAo)
@@ -145,7 +145,7 @@ contract BPool is BPoolBronze
             uint bal = records[t].balance;
             uint tAi = bmul(ratio, bal);
             bool ok = ERC20(t).transferFrom(msg.sender, address(this), tAi);
-            check(ok, ERR_ERC20_FALSE);
+            require(ok, ERR_ERC20_FALSE);
         }
         DSToken(poolcoin).mint(poolAo);
         DSToken(poolcoin).transfer(msg.sender, poolAo);
@@ -166,7 +166,7 @@ contract BPool is BPoolBronze
             uint bal = records[t].balance;
             uint tAo = bmul(ratio, bal);
             bool ok = ERC20(t).transfer(msg.sender, tAo);
-            check(ok, ERR_ERC20_FALSE);
+            require(ok, ERR_ERC20_FALSE);
         }
     }
 
@@ -188,11 +188,11 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(isBound(token), ERR_NOT_BOUND);
-        check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
-        check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
-        check( ! joinable, ERR_UNJOINABLE);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require(isBound(token), ERR_NOT_BOUND);
+        require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
+        require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        require( ! joinable, ERR_UNJOINABLE);
 
         uint oldWeight = records[token].weight;
         records[token].weight = weight;
@@ -208,21 +208,21 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(isBound(token), ERR_NOT_BOUND);
-        check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
-        check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
-        check( ! joinable, ERR_UNJOINABLE);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require(isBound(token), ERR_NOT_BOUND);
+        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        require( ! joinable, ERR_UNJOINABLE);
 
         uint oldBalance = records[token].balance;
         records[token].balance = balance;
 
         if (balance > oldBalance) {
             bool ok = ERC20(token).transferFrom(msg.sender, address(this), bsub(balance, oldBalance));
-            check(ok, ERR_ERC20_FALSE);
+            require(ok, ERR_ERC20_FALSE);
         } else if( balance < oldBalance) {
             bool ok = ERC20(token).transfer(msg.sender, bsub(oldBalance, balance));
-            check(ok, ERR_ERC20_FALSE);
+            require(ok, ERR_ERC20_FALSE);
         }
 
     }
@@ -231,8 +231,8 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
         tradeFee = tradeFee_;
     }
 
@@ -240,7 +240,7 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
+        require(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
 
@@ -249,16 +249,16 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check( ! isBound(token), ERR_NOT_BOUND);
-        check(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
-        check(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
-        check(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
-        check(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
-        check(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require( ! isBound(token), ERR_NOT_BOUND);
+        require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
+        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
+        require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
 
         bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
-        check(ok, ERR_ERC20_FALSE);
+        require(ok, ERR_ERC20_FALSE);
 
         totalWeight += weight;
         records[token] = Record({
@@ -274,12 +274,12 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(isBound(token), ERR_NOT_BOUND);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require(isBound(token), ERR_NOT_BOUND);
 
         uint balance = ERC20(token).balanceOf(address(this));
         bool ok = ERC20(token).transfer(msg.sender, balance);
-        check(ok, ERR_ERC20_FALSE);
+        require(ok, ERR_ERC20_FALSE);
 
         uint index = records[token].index;
         uint last = _index.length-1;
@@ -295,19 +295,19 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
-        check(isBound(token), ERR_NOT_BOUND);
+        require(msg.sender == manager, ERR_BAD_CALLER);
+        require(isBound(token), ERR_NOT_BOUND);
         uint selfBalance = records[token].balance;
         uint trueBalance = ERC20(token).balanceOf(address(this));
         bool ok = ERC20(token).transfer(msg.sender, bsub(trueBalance, selfBalance));
-        check(ok, ERR_ERC20_FALSE);
+        require(ok, ERR_ERC20_FALSE);
     }
 
     function pause()
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
+        require(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
@@ -315,13 +315,13 @@ contract BPool is BPoolBronze
       public
         note
     {
-        check(msg.sender == manager, ERR_BAD_CALLER);
+        require(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
 
 
     function viewSwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
-        public view returns (uint Ao, byte err)
+        public view returns (uint Ao, string memory err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -343,17 +343,17 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
-        public returns (uint Ao, byte err)
+        public returns (uint Ao, string memory err)
     {
         (Ao, err) = viewSwap_ExactInMinOut(Ti, Ai, To, Lo);
-        if (err != ERR_NONE) {
+        if (bytes(err).length != 0) {
             return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
+            require(okIn, ERR_ERC20_FALSE);
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
+            require(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             records[Ti].balance = badd(records[Ti].balance, Ai);
@@ -366,15 +366,15 @@ contract BPool is BPoolBronze
     function doSwap_ExactInMinOut(address Ti, uint Ai, address To, uint Lo)
         public returns (uint Ao)
     {
-        byte err;
+        string memory err;
         
         (Ai, err) = trySwap_ExactInMinOut(Ti, Ai, To, Lo);
-        check(err);
+        revert(err);
         return Ai;
     }
 
     function viewSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
-        public view returns (uint Ao, byte err)
+        public view returns (uint Ao, string memory err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -409,17 +409,17 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
-        public returns (uint Ao, byte err)
+        public returns (uint Ao, string memory err)
     {
         (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
-        if (err != ERR_NONE) {
+        if (bytes(err).length != 0) {
             return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
+            require(okIn, ERR_ERC20_FALSE);
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
+            require(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             records[Ti].balance = badd(records[Ti].balance, Ai);
@@ -432,17 +432,17 @@ contract BPool is BPoolBronze
     function doSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
         public returns (uint Ao)
     {
-        byte err;
+        string memory err;
         
         (Ao, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
-        check(err);
+        revert(err);
         return Ao;
     }
 
 
     function viewSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public view
-        returns (uint Ai, byte err)
+        returns (uint Ai, string memory err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -462,17 +462,17 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
-      public returns (uint Ai, byte err)
+      public returns (uint Ai, string memory err)
     {
         (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
-        if (err != ERR_NONE) {
+        if (bytes(err).length != 0) {
             return (Ai, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
+            require(okIn, ERR_ERC20_FALSE);
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
+            require(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             records[Ti].balance = badd(records[Ti].balance, Ai);
@@ -485,15 +485,15 @@ contract BPool is BPoolBronze
     function doSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
       public returns (uint Ai)
     {
-        byte err;
+        string memory err;
         (Ai, err) = trySwap_MaxInExactOut(Ti, Li, To, Ao);
-        check(err);
+        revert(err);
         return Ai;
     }
 
     function viewSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint SER1)
       public view
-        returns (uint Ai, byte err)
+        returns (uint Ai, string memory err)
     {
         if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, ERR_NOT_BOUND);
@@ -522,17 +522,17 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
-      public returns (uint Ai, byte err)
+      public returns (uint Ai, string memory err)
     {
         (Ai, err) = viewSwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        if (err != ERR_NONE) {
+        if (bytes(err).length != 0) {
             return (Ai, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
+            require(okIn, ERR_ERC20_FALSE);
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
+            require(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             records[Ti].balance = badd(records[Ti].balance, Ai);
@@ -545,15 +545,15 @@ contract BPool is BPoolBronze
     function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
       public returns (uint Ai)
     {
-        byte err;
+        string memory err;
         (Ai, err) = trySwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        check(err);
+        revert(err);
         return Ai;
     }
 
     function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
       public view
-        returns (uint Ai, uint Ao, byte err)
+        returns (uint Ai, uint Ao, string memory err)
     {
         if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
         if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
@@ -567,7 +567,7 @@ contract BPool is BPoolBronze
             return (0, 0, ERR_OUT_OF_RANGE);
         }
 
-        bool checkPrice = false;
+        bool requirePrice = false;
         if( SER1 > bmul(SER0, MIN_SLIP_PRICE) ) {
             Ai = calc_InGivenPrice( I.balance, I.weight
                                   , O.balance, O.weight
@@ -575,7 +575,7 @@ contract BPool is BPoolBronze
             if( Ai > Li ) Ai = Li;
         } else {
             Ai         = Li;
-            checkPrice = true;
+            requirePrice = true;
         }
 
         Ao = calc_OutGivenIn( I.balance, I.weight
@@ -583,7 +583,7 @@ contract BPool is BPoolBronze
                             , O.balance, O.weight
                             , tradeFee );
 
-        if( checkPrice ) {
+        if( requirePrice ) {
             uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
                                       , bsub(O.balance, Ao), O.weight );
             if( SER2 < SER1 ) return (Ai, Ao, ERR_OUT_OF_RANGE);
@@ -597,17 +597,17 @@ contract BPool is BPoolBronze
     }
 
     function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao, byte err)
+      public returns (uint Ai, uint Ao, string memory err)
     {
         (Ai, Ao, err) = viewSwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        if (err != ERR_NONE) {
+        if (bytes(err).length != 0) {
             return (Ai, Ao, err);
         } else {
             // We must revert if a token transfer fails.
             bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            check(okIn, ERR_ERC20_FALSE);
+            require(okIn, ERR_ERC20_FALSE);
             bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            check(okOut, ERR_ERC20_FALSE);
+            require(okOut, ERR_ERC20_FALSE);
 
             emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
             records[Ti].balance = badd(records[Ti].balance, Ai);
@@ -620,9 +620,9 @@ contract BPool is BPoolBronze
     function doSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
       public returns (uint Ai, uint Ao)
     {
-        byte err;
+        string memory err;
         (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        check(err);
+        revert(err);
         return (Ai, Ao);
     }
 

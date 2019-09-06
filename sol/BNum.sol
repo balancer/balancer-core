@@ -29,13 +29,13 @@ contract BNum is BConst
 
     function badd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        check(c >= a, ERR_MATH_ADD_OVERFLOW);
+        require(c >= a, ERR_MATH_ADD_OVERFLOW);
         return c;
     }
 
     function bsub(uint a, uint b) internal pure returns (uint) {
         (uint c, bool flag) = bsubSign(a, b);
-        check(!flag, ERR_MATH_SUB_UNDERFLOW);
+        require(!flag, ERR_MATH_SUB_UNDERFLOW);
         return c;
     }
 
@@ -49,19 +49,19 @@ contract BNum is BConst
 
     function bmul(uint a, uint b) internal pure returns (uint) {
         uint c0 = a * b;
-        check(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
+        require(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
         uint c1 = c0 + (BONE / 2);
-        check(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
+        require(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
         uint c2 = c1 / BONE;
         return c2;
     }
 
     function bdiv(uint a, uint b) internal pure returns (uint) {
-        check(b != 0, ERR_MATH_DIV_ZERO);
+        require(b != 0, ERR_MATH_DIV_ZERO);
         uint c0 = a * BONE;
-        check(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERNAL); // bmul check
+        require(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERNAL); // bmul require
         uint c1 = c0 + (b / 2);
-        check(c1 >= c0, ERR_MATH_DIV_INTERNAL); //  badd check
+        require(c1 >= c0, ERR_MATH_DIV_INTERNAL); //  badd require
         uint c2 = c1 / b;
         return c2;
     }

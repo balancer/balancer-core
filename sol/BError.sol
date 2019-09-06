@@ -18,100 +18,38 @@ pragma solidity ^0.5.10;
 
 contract BError
 {
-    byte constant public ERR_NONE               = 0x00;
+    // TODO no
+    string constant public ERR_NONE               = "ERR_NONE";
 
-    byte constant public ERR_MATH_ADD_OVERFLOW  = 0x10;
-    byte constant public ERR_MATH_SUB_UNDERFLOW = 0x11;
-    byte constant public ERR_MATH_MUL_OVERFLOW  = 0x12;
-    byte constant public ERR_MATH_DIV_ZERO      = 0x13;
-    byte constant public ERR_MATH_DIV_INTERNAL  = 0x14;
+    string constant public ERR_MATH_ADD_OVERFLOW  = "ERR_MATH_ADD_OVERFLOW";
+    string constant public ERR_MATH_SUB_UNDERFLOW = "ERR_MATH_SUB_UNDERFLOW";
+    string constant public ERR_MATH_MUL_OVERFLOW  = "ERR_MATH_MUL_OVERFLOW";
+    string constant public ERR_MATH_DIV_ZERO      = "ERR_MATH_DIV_ZERO";
+    string constant public ERR_MATH_DIV_INTERNAL  = "ERR_MATH_DIV_INTERNAL";
 
-    byte constant public ERR_MAX_TOKENS         = 0x20;
-    byte constant public ERR_MIN_WEIGHT         = 0x20;
-    byte constant public ERR_MAX_WEIGHT         = 0x21;
-    byte constant public ERR_MAX_TOTAL_WEIGHT   = 0x21;
-    byte constant public ERR_MAX_FEE            = 0x22;
-    byte constant public ERR_MIN_BALANCE        = 0x23;
-    byte constant public ERR_MAX_BALANCE        = 0x24;
-    byte constant public ERR_MAX_TRADE          = 0x25;
+    string constant public ERR_MAX_TOKENS         = "ERR_MAX_TOKENS";
+    string constant public ERR_MIN_WEIGHT         = "ERR_MIN_WEIGHT";
+    string constant public ERR_MAX_WEIGHT         = "ERR_MAX_WEIGHT";
+    string constant public ERR_MAX_TOTAL_WEIGHT   = "ERR_MAX_TOTAL_WEIGHT";
+    string constant public ERR_MAX_FEE            = "ERR_MAX_FEE";
+    string constant public ERR_MIN_BALANCE        = "ERR_MIN_BALANCE";
+    string constant public ERR_MAX_BALANCE        = "ERR_MAX_BALANCE";
+    string constant public ERR_MAX_TRADE          = "ERR_MAX_TRADE";
 
     // TODO: 3 limpublic it types (in, out, price)
-    byte constant public ERR_LIMIT_FAILED       = 0x30;
+    string constant public ERR_LIMIT_FAILED       = "ERR_LIMIT_FAILED";
 
-    byte constant public ERR_OUT_OF_RANGE       = 0x40;
+    string constant public ERR_OUT_OF_RANGE       = "ERR_OUT_OF_RANGE";
 
-    byte constant public ERR_NOT_BOUND          = 0xe1;
-    byte constant public ERR_ALREADY_BOUND      = 0xe2;
+    string constant public ERR_NOT_BOUND          = "ERR_NOT_BOUND";
+    string constant public ERR_ALREADY_BOUND      = "ERR_ALREADY_BOUND";
 
-    byte constant public ERR_PAUSED             = 0xd0;
-    byte constant public ERR_UNJOINABLE         = 0xd1;
-    byte constant public ERR_BAD_CALLER         = 0xd2;
+    string constant public ERR_PAUSED             = "ERR_PAUSED";
+    string constant public ERR_UNJOINABLE         = "ERR_UNJOINABLE";
+    string constant public ERR_BAD_CALLER         = "ERR_BAD_CALLER";
 
-    byte constant public ERR_ERC20_FALSE        = 0xe0;
+    string constant public ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
     
-    byte constant public ERR_UNREACHABLE        = 0xff;
-
-    function errs(byte berr)
-      public pure
-        returns (string memory)
-    {
-        if( berr == ERR_NONE )
-            return "ERR_NONE";
-        if( berr == ERR_PAUSED )
-            return "ERR_PAUSED";
-        if( berr == ERR_NOT_BOUND )
-            return "ERR_NOT_BOUND";
-        if( berr == ERR_ALREADY_BOUND )
-            return "ERR_ALREADY_BOUND";
-        if( berr == ERR_BAD_CALLER )
-            return "ERR_BAD_CALLER";
-        if( berr == ERR_MIN_WEIGHT )
-            return "ERR_MIN_WEIGHT";
-        if( berr == ERR_MAX_FEE )
-            return "ERR_MAX_FEE";
-        if( berr == ERR_MAX_TRADE )
-            return "ERR_MAX_TRADE";
-        if( berr == ERR_MIN_BALANCE )
-            return "ERR_MIN_BALANCE";
-        if( berr == ERR_MAX_BALANCE )
-            return "ERR_MAX_BALANCE";
-        if( berr == ERR_ERC20_FALSE )
-            return "ERR_ERC20_FALSE";
-        if( berr == ERR_MATH_ADD_OVERFLOW )
-            return "ERR_MATH_ADD_OVERFLOW";
-        if( berr == ERR_MATH_SUB_UNDERFLOW )
-            return "ERR_MATH_SUB_UNDERFLOW";
-        if( berr == ERR_MATH_MUL_OVERFLOW )
-            return "ERR_MATH_MUL_OVERFLOW";
-        if( berr == ERR_MATH_DIV_ZERO )
-            return "ERR_MATH_DIV_ZERO";
-        if( berr == ERR_MATH_DIV_INTERNAL )
-            return "ERR_MATH_DIV_INTERNAL";
-        if( berr == ERR_MIN_WEIGHT )
-            return "ERR_MIN_WEIGHT";
-        if( berr == ERR_MAX_WEIGHT )
-            return "ERR_MAX_WEIGHT";
-        if( berr == ERR_MAX_TOTAL_WEIGHT )
-            return "ERR_MAX_TOTAL_WEIGHT";
-        if( berr == ERR_LIMIT_FAILED )
-            return "ERR_LIMIT_FAILED";
-        if( berr == ERR_UNJOINABLE )
-            return "ERR_UNJOINABLE";
-        if( berr == ERR_UNREACHABLE )
-            return "ERR_UNREACHABLE";
-        revert("ERR_PANIC_UNKNOWN");
-    }
-
-    function check(byte berr)
-      pure internal {
-        check(berr == ERR_NONE, berr);
-    } 
-
-    function check(bool cond, byte berr)
-      pure internal {
-        if(!cond) {
-            revert(errs(berr));
-        }
-    }
+    string constant public ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 
 }
