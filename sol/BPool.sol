@@ -332,11 +332,9 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        require( Ai <= bmul(I.balance, MAX_TRADE_IN)
-               , ERR_MAX_IN );
+        require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight )
-               , ERR_LIMIT_PRICE);
+        require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
 
         Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, tradeFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
@@ -362,14 +360,10 @@ contract BPool is BPoolBronze
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        require( Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
-
-        require( PL < calc_SpotPrice( I.balance, I.weight, O.balance, O.weight)
-               , ERR_OUT_OF_RANGE );
-
+        require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
+        require(PL < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
 
         Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
-        // TODO error names
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
@@ -393,21 +387,11 @@ contract BPool is BPoolBronze
         Record storage O = records[address(To)];
 
         // TODO error names
-        require( Ao <= bmul(O.balance, MAX_TRADE_OUT)
-               , ERR_OUT_OF_RANGE);
+        require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
+        require(MP < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
 
-        require(MP < calc_SpotPrice( I.balance, I.weight
-                                   , O.balance, O.weight)
-            , ERR_OUT_OF_RANGE);
-
-
-        Ai = calc_InGivenPrice( I.balance, I.weight
-                              , O.balance, O.weight
-                              , MP, tradeFee );
-
-        Ao = calc_OutGivenIn( I.balance, I.weight
-                            , O.balance, O.weight
-                            , Ai, tradeFee );
+        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, tradeFee );
+        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, tradeFee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -464,16 +448,22 @@ contract BPool is BPoolBronze
     function _swap(address Ti, uint Ai, address To, uint Ao)
         internal
     {
-      swaplock = true;
+        require( ! swaplock, ERR_ERC20_REENTRY);
+        swaplock = true;
+
         bool xfer;
         xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         require(xfer, ERR_ERC20_FALSE);
+
         records[Ti].balance = badd(records[Ti].balance, Ai);
         records[To].balance = bsub(records[To].balance, Ao);
+
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+
         xfer = ERC20(To).transfer(msg.sender, Ao);
         require(xfer, ERR_ERC20_FALSE);
-      swaplock = false;
+
+        swaplock = false;
     }
 
 }
