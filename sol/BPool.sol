@@ -119,22 +119,6 @@ contract BPool is BPoolBronze
         return records[token].balance;
     }
 
-    function getWeightedBalance(address token)
-      public view returns (uint) {
-        token=token; revert('unimplemented');
-    }
-
-    function getValueConstant()
-      public view returns (uint res)
-    {
-        if (_index.length == 0) return 0;
-        res = BONE;
-        for (uint i = 0; i < _index.length; i++) {
-            res *= bpow(records[_index[i]].balance, records[_index[i]].weight);
-        }
-        return res;
-    }
- 
     function isJoinable()
       public view returns (bool) {
         return joinable;
