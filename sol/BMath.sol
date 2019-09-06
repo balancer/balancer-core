@@ -102,18 +102,13 @@ contract BMath is BBronze
       public pure
         returns ( uint Ai )
     {
-        bool sign;
         uint SER0    = calc_SpotPrice(Bi, Wi, Bo, Wo);
-        require( SER1 <= SER0, ERR_OUT_OF_RANGE); // TODO errname
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
-        (Ai,sign)    = bsubSign(bpow(base, exp), BONE);
-        require( !sign, ERR_CALC_PANIC );
+        Ai           = bsub(bpow(base, exp), BONE);
         Ai           = bmul(Ai, Bi);
-        uint foo;
-        (foo,sign)   = bsubSign(BONE, fee);
-        require( !sign, ERR_CALC_PANIC);
-        Ai           = bdiv(Ai, bsub(BONE, fee)); // TODO bsubSign, require etc
+        uint foo     = bsub(BONE, fee);
+        Ai           = bdiv(Ai, foo);
         return Ai;
     }
 
@@ -123,9 +118,9 @@ contract BMath is BBronze
       public pure
         returns (uint)
     {
+        require(base <= BONE * 2, ERR_BPOW_BASE);
         uint whole                 = bfloor(exp);   
-        (uint remain, bool flag)   = bsubSign(exp, whole);
-        require( !flag, "FAIL: remain must be positive here");
+        uint remain                = bsub(exp, whole);
 
         // make whole agree with wpown def
         uint wholePow              = bpown(base, btoi(whole));
