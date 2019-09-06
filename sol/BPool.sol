@@ -641,4 +641,30 @@ contract BPool is BPoolBronze
         check(err);
         return (Ai, Ao);
     }
+
+    function ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)
+        public returns (uint Ao, uint MP)
+    {
+        revert('unimplemented');
+    }
+    function ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+        public returns (uint Ai, uint MP)
+    {
+        revert('unimplemented');
+    }
+
+    function ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+        public returns (uint Ai, uint Ao)
+    {
+        revert('unimplemented');
+    }
+
+    function ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
+        public returns (uint Ai, uint Ao, uint MP)
+    {
+        revert('unimplemented');
+    }
+
+
+
 }

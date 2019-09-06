@@ -61,6 +61,16 @@ contract BPoolBronze is BBronze, BConst {
                   , uint256         amountOut
                   , uint256         feeRatio );
 
+
+    function ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)
+        public returns (uint Ao, uint MP);
+    function ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+        public returns (uint Ai, uint MP);
+    function ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+        public returns (uint Ai, uint Ao);
+    function ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
+        public returns (uint Ai, uint Ao, uint MP);
+
     // swap ExactInMinOut
     function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
         public view returns (uint256 Ao, byte err);
