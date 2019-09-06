@@ -20,8 +20,8 @@ import "./BError.sol";
 contract BIHub {
     function isPool(address p) public returns (bool);
 }
+
 contract BVault is BError
-                 , DSToken
 {
     BIHub                  public hub;
     ERC20                  public inner;

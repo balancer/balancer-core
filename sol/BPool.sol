@@ -43,7 +43,7 @@ contract BPool is BPoolBronze
     bool                      joinable;
     address                   poolcoin;
 
-    bool                      swaplock; // mutex
+    bool                      mutex;
 
     struct Record {
         bool    bound;
@@ -433,21 +433,26 @@ contract BPool is BPoolBronze
     {
         _swap(false, Ti, Ai, To, Ao);
     }
+
     function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
         internal
     {
-        require( ! swaplock, ERR_ERC20_REENTRY);
-        swaplock = true;
+        require( ! mutex, ERR_ERC20_REENTRY);
+        mutex = true;
 
         bool xfer;
+        Record memory I = records[Ti];
+        Record memory O = records[To];
 
-        if ( ! wrap) {
+        if (wrap) {
+            (uint deficit, bool negative) = bsubSign(Ai, I.balance);
+        } else {
             xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
             require(xfer, ERR_ERC20_FALSE);
         }
 
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-        records[To].balance = bsub(records[To].balance, Ao);
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
 
@@ -456,7 +461,7 @@ contract BPool is BPoolBronze
             require(xfer, ERR_ERC20_FALSE);
         }
 
-        swaplock = false;
+        mutex = false;
     }
 
 
