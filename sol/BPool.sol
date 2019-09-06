@@ -469,15 +469,18 @@ contract BPool is BPoolBronze
 
         require(Pafter < LP, ERR_LIMIT_FAILED);
 
+        records[To].balance = bsub(records[To].balance, Ao);
+
         bool xfer;
         xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
         require(xfer, ERR_ERC20_FALSE);
+
+        records[Ti].balance = badd(records[Ti].balance, Ai);
+
         xfer = ERC20(To).transfer(msg.sender, Ao);
         require(xfer, ERR_ERC20_FALSE);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-        records[To].balance = bsub(records[To].balance, Ao);
 
         return (Ao, Pafter);
     }
