@@ -415,30 +415,22 @@ contract BPool is BPoolBronze
         uint Pbefore = calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        bool requirePrice = false;
-        if( PL > bmul(Pbefore, MIN_SLIP_PRICE) ) {
-            Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, tradeFee);
-            if( Ai > Li ) {
-                Ai = Li;
-            }
-        } else {
-            Ai         = Li;
-            requirePrice = true;
+        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, tradeFee);
+        if( Ai > Li ) {
+            Ai = Li;
         }
 
-        Ao = calc_OutGivenIn( I.balance, I.weight, Ai
-                            , O.balance, O.weight
-                            , tradeFee );
-
-        require( Ao >= Lo, ERR_LIMIT_OUT );
+        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, tradeFee);
+        if( Ao < Lo ) {
+            Ao = Lo;
+            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
+        }
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
         uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
     
-        if( requirePrice ) {
-            require( Pafter >= PL, ERR_LIMIT_PRICE );
-        }
+        require( Pafter >= PL, ERR_LIMIT_PRICE );
 
         _swap(Ti, Ai, To, Ao);
 
