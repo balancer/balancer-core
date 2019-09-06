@@ -137,7 +137,7 @@ contract BPool is BPoolBronze
     function joinPool(uint poolAo)
       public
     {
-        require(joinable, "not joinable");
+        require(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -154,7 +154,7 @@ contract BPool is BPoolBronze
     function exitPool(uint poolAi)
       public
     {
-        require(joinable, "not joinable");
+        require(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
         
@@ -407,7 +407,42 @@ contract BPool is BPoolBronze
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
         public returns (uint Ai, uint Ao)
     {
-        revert('unimplemented');
+        require( isBound(Ti), ERR_NOT_BOUND);
+        require( isBound(To), ERR_NOT_BOUND);
+        require( ! paused, ERR_PAUSED);
+
+        Record storage I = records[address(Ti)];
+        Record storage O = records[address(To)];
+
+        Ai = calc_InGivenPrice( I.balance, I.weight
+                              , O.balance, O.weight
+                              , MP, tradeFee );
+
+        Ai = calc_OutGivenIn( I.balance, I.weight
+                            , O.balance, O.weight
+                            , Ai, tradeFee );
+
+        require( Ai <= Li, ERR_LIMIT_FAILED);
+        require( Ao >= Lo, ERR_LIMIT_FAILED);
+
+        require( Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
+
+        require(MP < calc_SpotPrice( I.balance, I.weight
+                                   , O.balance, O.weight)
+            , ERR_OUT_OF_RANGE);
+
+        bool xfer;
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        records[Ti].balance = badd(records[Ti].balance, Ai);
+        records[To].balance = bsub(records[To].balance, Ao);
+
+        return (Ai, Ao);
+
     }
 
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
