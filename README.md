@@ -4,17 +4,21 @@
 
 <h2 align=center><code>balancer</code></h2>
 
-Balancer is an automated portfolio manager, liquidity provider, and price sensor.
+**Balancer** is an automated **portfolio manager**, **liquidity provider**, and **price sensor**.
 
 Balancer turns the concept of an index fund on its head: instead of an investors paying fees
-to portfolio managers to rebalance their portfolio, investors *collect* fees from traders who rebalance
-their portfolio by following arbitrage opportunities.
+to portfolio managers to rebalance their portfolio, investors collect fees from traders who rebalance
+the portfolio by following arbitrage opportunities.
 
 
 
 <h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
 
-The *Bronze Release* is the first of 3 planned releases of the Balancer Protocol. Bronze could be described as solid, but heavyweight.
+The *🍂Bronze Release*  is the first of 3 planned releases of the Balancer Protocol. Bronze puts an emphasis on security and code clarity for verification, foregoing even obvious gas optimizations. Balancer charges a per-pool exit fee for Bronze pools.
+
+The *❄️Silver Release* will bring a number of gas optimizations and architecture changes that should massively increase liquidity and reduce transaction overhead. Balancer will charge a per-vault "unwrap" fee for Silver pools.
+
+The *☀️Golden Release* will introduce a curious new liquidity mechanism to the market.
 
 ## Installing
 
@@ -38,7 +42,7 @@ let bpool = new web3.eth.Contract(BPool.abi);
 
 ## API Docs
 
-[Check out our work in progress docs](https://balancer-labs.github.io/balancer-page/api.html)
+[Check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/api.md)
 
 ## Developing (working on `balancer-core`)
 
@@ -54,7 +58,7 @@ cd balancer-core
 yarn setup       # clone submodules and install packages
 
 # Dev loop
-# yarn build       # compile the solidity contracts to tmp/  (`make build`)
+# yarn build     # compile the solidity contracts to tmp/  (`make build`)
 yarn test        # build contracts and run the tests (`yarn build && mocha`)
 yarn dist        # cp artifacts to out/ for commit (`make dist`)
 ```
