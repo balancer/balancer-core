@@ -431,20 +431,30 @@ contract BPool is BPoolBronze
     function _swap(address Ti, uint Ai, address To, uint Ao)
         internal
     {
+        _swap(false, Ti, Ai, To, Ao);
+    }
+    function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
+        internal
+    {
         require( ! swaplock, ERR_ERC20_REENTRY);
         swaplock = true;
 
         bool xfer;
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
+
+        if ( ! wrap) {
+            xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            require(xfer, ERR_ERC20_FALSE);
+        }
 
         records[Ti].balance = badd(records[Ti].balance, Ai);
         records[To].balance = bsub(records[To].balance, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
 
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
+        if ( ! wrap) {
+            xfer = ERC20(To).transfer(msg.sender, Ao);
+            require(xfer, ERR_ERC20_FALSE);
+        }
 
         swaplock = false;
     }
