@@ -17,7 +17,7 @@ contract BError
 {
     string constant public ERR_NONE               = "";
 
-    function isError(string memory err) public returns (bool) {
+    function isError(string memory err) public pure returns (bool) {
         return bytes(err).length != 0;
     }
 
@@ -26,6 +26,9 @@ contract BError
     string constant public ERR_MATH_MUL_OVERFLOW  = "ERR_MATH_MUL_OVERFLOW";
     string constant public ERR_MATH_DIV_ZERO      = "ERR_MATH_DIV_ZERO";
     string constant public ERR_MATH_DIV_INTERNAL  = "ERR_MATH_DIV_INTERNAL";
+
+    string constant public ERR_CALC_PANIC         = "ERR_CALC_PANIC";
+    string constant public ERR_BPOW_BASE          = "ERR_BPOW_BASE";
 
     string constant public ERR_MAX_TOKENS         = "ERR_MAX_TOKENS";
     string constant public ERR_MIN_WEIGHT         = "ERR_MIN_WEIGHT";
