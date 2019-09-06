@@ -32,8 +32,6 @@ contract BPoolBronze is BBronze, BConst {
     function getNormalizedWeight(address token) public view returns (uint);
     function getTotalWeight() public view returns (uint);
     function getBalance(address token) public view returns (uint);
-    function getWeightedBalance(address token) public view returns (uint);
-    function getValueConstant() public view returns (uint);
 
     //== Pooling
     function isJoinable() public view returns (bool);
@@ -61,45 +59,14 @@ contract BPoolBronze is BBronze, BConst {
                   , uint256         amountOut
                   , uint256         feeRatio );
 
-    // swap ExactInMinOut
-    function viewSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public view returns (uint256 Ao, byte err);
-    function trySwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao, byte err);
-    function doSwap_ExactInMinOut(address Ti, uint256 Ai, address To, uint256 Lo)
-        public returns (uint256 Ao);
 
-    // swap ExactInLimitPrice
-    function viewSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
-        public view returns (uint Ao, byte err);
-    function trySwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
-        public returns (uint Ao, byte err);
-    function doSwap_ExactInLimitPrice(address Ti, uint Ai, address To, uint SER1)
-        public returns (uint Ao);
-
-    // swap MaxInExactOut
-    function viewSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
-        public view returns (uint Ai, byte err);
-    function trySwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
-        public returns (uint Ai, byte err);
-    function doSwap_MaxInExactOut(address Ti, uint256 Li, address To, uint Ao)
-        public returns (uint Ai);
-
-    // swap LimitPriceInExactOut   TODO  =>LimitPriceExactOut
-    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint SER1)
-      public view returns (uint Ai, byte err);
-    function trySwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
-      public returns (uint Ai, byte err);
-    function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
-      public returns (uint Ai);
-
-    // swap MaxInMinOutLimitPrice
-    function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public view returns (uint Ai, uint Ao, byte err);
-    function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao, byte err);
-    function doSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao);
-
+    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)
+        public returns (uint Ao, uint MP);
+    function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+        public returns (uint Ai, uint MP);
+    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+        public returns (uint Ai, uint Ao);
+    function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
+        public returns (uint Ai, uint Ao, uint MP);
 
 }

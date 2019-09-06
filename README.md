@@ -4,7 +4,13 @@
 
 <h2 align=center><code>balancer</code></h2>
 
-<p align=center><i>Balancer is a trustless on-chain price feed, liquidity provider, and portfolio manager.</i></p>
+Balancer is an automated portfolio manager, liquidity provider, and price sensor.
+
+Balancer turns the concept of an index fund on its head: instead of an investors paying fees
+to portfolio managers to rebalance their portfolio, investors *collect* fees from traders who rebalance
+their portfolio by following arbitrage opportunities.
+
+
 
 <h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
 
@@ -56,7 +62,6 @@ yarn dist        # cp artifacts to out/ for commit (`make dist`)
 ### Project structure
 
 ```
-docs/           markdown docs
 lib/            solidity dependencies
 out/            solidity build artifacts
 sol/            solidity source files (the contracts)
@@ -65,7 +70,7 @@ tmp/            .gitignore'd transient build out
 util/           javascript support code
 LICENSE         GPL3
 Makefile        solidity build command defined here
-package.js      package entrypoint (module.exports)
+pkg.js          package entrypoint (module.exports)
 package.json
 yarn.lock
 ```
