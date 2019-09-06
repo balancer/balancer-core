@@ -16,17 +16,20 @@ pragma solidity ^0.5.10;
 import 'erc20/erc20.sol';
 
 import 'ds-token/token.sol';
-import 'ds-note/note.sol';
 
 import "./BBronze.sol";
-import "./BMath.sol";
+import "./BConst.sol";
 import "./BError.sol";
+import "./BEvent.sol";
+import "./BMath.sol";
 
 contract BPool is BPoolBronze
+                , BConst
                 , BError
+                , BEvent
                 , BMath
-                , DSNote
 {
+
     bool                      paused;
     address                   manager;
 
@@ -127,8 +130,9 @@ contract BPool is BPoolBronze
     }
 
     function makeJoinable()
-      public
+      public // emits LOG_CALL
     {
+        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         joinable = true;
         uint supply = 10**6 * 10**18;
@@ -137,7 +141,7 @@ contract BPool is BPoolBronze
     }
 
     function joinPool(uint poolAo)
-      public
+      public // TODO LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
@@ -154,7 +158,7 @@ contract BPool is BPoolBronze
     }
 
     function exitPool(uint poolAi)
-      public
+      public // emits LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = ERC20(poolcoin).totalSupply();
@@ -173,7 +177,8 @@ contract BPool is BPoolBronze
     }
 
     function setParams(address token, uint balance, uint weight)
-      public {
+      public // emits LOG_PARAMS
+    {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
         require( ! joinable, ERR_UNJOINABLE);
@@ -207,7 +212,8 @@ contract BPool is BPoolBronze
     }
 
     function batchSetParams(bytes32[3][] memory tokenBalanceWeights)
-      public {
+      public // emits LOG_PARAMS
+    {
         for( uint i = 0; i < tokenBalanceWeights.length; i++ ) {
             bytes32[3] memory TBW = tokenBalanceWeights[i];
             setParams(address(bytes20(TBW[0])), uint(TBW[1]), uint(TBW[2]));
@@ -216,8 +222,8 @@ contract BPool is BPoolBronze
 
     function setFee(uint tradeFee_)
       public
-        note
-    {
+    { 
+        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
         tradeFee = tradeFee_;
@@ -225,16 +231,15 @@ contract BPool is BPoolBronze
 
     function setManager(address manager_)
       public
-        note
     {
+        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
 
 
     function bind(address token, uint balance, uint weight)
-      public
-        note
+      public // emits LOG_PARAMS
     {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require( ! isBound(token), ERR_NOT_BOUND);
@@ -244,29 +249,31 @@ contract BPool is BPoolBronze
         require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
 
-        bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
-        require(ok, ERR_ERC20_FALSE);
-
-        totalWeight += weight;
         records[token] = Record({
             bound: true
           , index: _index.length
-          , weight: weight
-          , balance: balance
+          , weight: 0
+          , balance: 0
         });
         _index.push(token);
+
+        setParams(token, balance, weight);
     }
 
     function unbind(address token)
-      public
-        note
+      public // emits LOG_PARAMS
     {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
 
-        uint balance = ERC20(token).balanceOf(address(this));
-        bool ok = ERC20(token).transfer(msg.sender, balance);
-        require(ok, ERR_ERC20_FALSE);
+        Record memory T = records[token];
+      
+        bool xfer = ERC20(token).transfer(msg.sender, T.balance);
+        require(xfer, ERR_ERC20_FALSE);
+
+        totalWeight = bsub(totalWeight, T.weight);
+
+        emit LOG_PARAMS(token, T.balance, T.weight, totalWeight);
 
         uint index = records[token].index;
         uint last = _index.length-1;
@@ -280,8 +287,7 @@ contract BPool is BPoolBronze
     // Collect any excess token that may have been transferred in
     function sweep(address token)
       public
-        note
-    {
+    { 
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
         uint selfBalance = records[token].balance;
@@ -292,16 +298,16 @@ contract BPool is BPoolBronze
 
     function pause()
       public
-        note
-    {
+    { 
+        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
     function start()
       public
-        note
     {
+        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
@@ -442,5 +448,6 @@ contract BPool is BPoolBronze
 
         swaplock = false;
     }
+
 
 }

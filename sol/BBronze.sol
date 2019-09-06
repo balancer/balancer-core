@@ -24,8 +24,10 @@ contract BBronze is BColor {
     }
 }
 
-contract BPoolBronze is BBronze, BConst {
-    //== General View
+contract BPoolBronze is BBronze {
+
+    // General View
+    // ==
     function isBound(address token) public view returns (bool);
     function getNumTokens() public view returns (uint);
     function getWeight(address token) public view returns (uint);
@@ -33,38 +35,45 @@ contract BPoolBronze is BBronze, BConst {
     function getTotalWeight() public view returns (uint);
     function getBalance(address token) public view returns (uint);
 
-    //== Pooling
+
+    // Pooling
+    // ===
+
+    // emits `LOG_CALL`
+    // -- 
     function isJoinable() public view returns (bool);
     function makeJoinable() public;
+
+    // emits `LOG_SWAP` x N
     function joinPool(uint poolAo) public;
     function exitPool(uint poolAi) public;
 
-    //== Manager
+
+    // Manager
+    // =======
+
+    // emits `LOG_CALL`
+    // ---
     function start() public;
     function pause() public;
-    function bind(address token, uint balance, uint weight) public;
-    function unbind(address token) public;
-    function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public;
-    function setParams(address token, uint balance, uint weight) public;
     function setManager(address manager) public;
     function setFee(uint fee) public;
     function sweep(address token) public;
 
-    //== Trader
-    // swap event
-    event LOG_SWAP( address indexed caller
-                  , address indexed tokenIn
-                  , address indexed tokenOut
-                  , uint256         amountIn
-                  , uint256         amountOut
-                  , uint256         feeRatio );
-
-    event LOG_PARAMS( address indexed token
-                    , uint256 balance
-                    , uint256 weight
-                    , uint256 totalWeight);
+    // emits `LOG_PARAMS`
+    // ---
+    function bind(address token, uint balance, uint weight) public;
+    function unbind(address token) public;
+    function setParams(address token, uint balance, uint weight) public;
+    // emits `LOG_PARAMS` x N
+    function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public;
 
 
+    // Trader
+    // ===
+
+    // emits `LOG_SWAP`
+    // ---
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)
         public returns (uint Ao, uint MP);
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)

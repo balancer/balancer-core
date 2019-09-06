@@ -13,9 +13,6 @@
 
 pragma solidity ^0.5.10;
 
-// `pure internal` operating on constants should get fully optimized by compiler
-// in other cases, should be used as a library
-
 contract BError
 {
     string constant public ERR_NONE               = "";
