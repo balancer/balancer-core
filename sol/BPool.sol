@@ -346,7 +346,7 @@ contract BPool is BPoolBronze
         public returns (uint Ao, string memory err)
     {
         (Ao, err) = viewSwap_ExactInMinOut(Ti, Ai, To, Lo);
-        if (bytes(err).length != 0) {
+        if (isError(err)) {
             return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
@@ -369,7 +369,8 @@ contract BPool is BPoolBronze
         string memory err;
         
         (Ai, err) = trySwap_ExactInMinOut(Ti, Ai, To, Lo);
-        revert(err);
+
+        require( ! isError(err), err);
         return Ai;
     }
 
@@ -412,7 +413,7 @@ contract BPool is BPoolBronze
         public returns (uint Ao, string memory err)
     {
         (Ao, err) = viewSwap_ExactInLimitPrice(Ti, Ai, To, SER1);
-        if (bytes(err).length != 0) {
+        if (isError(err)) {
             return (Ao, err);
         } else {
             // We must revert if a token transfer fails.
@@ -435,7 +436,8 @@ contract BPool is BPoolBronze
         string memory err;
         
         (Ao, err) = trySwap_ExactInLimitPrice(Ti, Ai, To, SER1);
-        revert(err);
+
+        require( ! isError(err), err);
         return Ao;
     }
 
@@ -465,7 +467,7 @@ contract BPool is BPoolBronze
       public returns (uint Ai, string memory err)
     {
         (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
-        if (bytes(err).length != 0) {
+        if (isError(err)) {
             return (Ai, err);
         } else {
             // We must revert if a token transfer fails.
@@ -487,7 +489,8 @@ contract BPool is BPoolBronze
     {
         string memory err;
         (Ai, err) = trySwap_MaxInExactOut(Ti, Li, To, Ao);
-        revert(err);
+
+        require( ! isError(err), err);
         return Ai;
     }
 
@@ -525,7 +528,7 @@ contract BPool is BPoolBronze
       public returns (uint Ai, string memory err)
     {
         (Ai, err) = viewSwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        if (bytes(err).length != 0) {
+        if (isError(err)) {
             return (Ai, err);
         } else {
             // We must revert if a token transfer fails.
@@ -547,7 +550,7 @@ contract BPool is BPoolBronze
     {
         string memory err;
         (Ai, err) = trySwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        revert(err);
+        require( ! isError(err), err);
         return Ai;
     }
 
@@ -600,7 +603,7 @@ contract BPool is BPoolBronze
       public returns (uint Ai, uint Ao, string memory err)
     {
         (Ai, Ao, err) = viewSwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        if (bytes(err).length != 0) {
+        if (isError(err)) {
             return (Ai, Ao, err);
         } else {
             // We must revert if a token transfer fails.
@@ -622,7 +625,7 @@ contract BPool is BPoolBronze
     {
         string memory err;
         (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        revert(err);
+        require( ! isError(err), err);
         return (Ai, Ao);
     }
 

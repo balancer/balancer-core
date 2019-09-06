@@ -64,6 +64,9 @@ describe("swaps", () => {
 
             let view = await env.bpool.methods.viewSwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
                                       .call();
+            let viewResult = view[0];
+            let viewError = view[1];
+            //console.log(viewResult, `error(${viewError})`);
 
             // [res, err]
             let reserr = await env.bpool.methods.trySwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')

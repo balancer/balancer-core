@@ -108,7 +108,7 @@ describe("crusty bpool tests", () => {
         let Lo  = toWei(pt.Lo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_ExactInMinOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.doSwap_ExactInMinOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},${pt.fee})`, async () => {
             await bpool.methods.setParams(acoin._address, Bi, Wi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Bo, Wo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
@@ -139,7 +139,7 @@ describe("crusty bpool tests", () => {
         let Wo  = toWei(pt.Wo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_MaxInExactOut(${pt.Bi},${pt.Wi},${pt.Li},${pt.Bo},${pt.Wo},${pt.Ao},${pt.fee}>`, async () => {
+        it(`${pt.res} ~= bpool.doSwap_MaxInExactOut(${pt.Bi},${pt.Wi},${pt.Li},${pt.Bo},${pt.Wo},${pt.Ao},${pt.fee})`, async () => {
             await bpool.methods.setParams(acoin._address, Bi, Wi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Bo, Wo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
