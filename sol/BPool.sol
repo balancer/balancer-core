@@ -364,12 +364,11 @@ contract BPool is BPoolBronze
     }
 
 
-    function viewSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
-      public view
-        returns (uint Ai, string memory err)
+    function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+        public returns (uint Ai, uint MP)
     {
-        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
-        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
+        require( isBound(Ti), ERR_NOT_BOUND);
+        require( isBound(To), ERR_NOT_BOUND);
 
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
@@ -378,102 +377,31 @@ contract BPool is BPoolBronze
                             , O.balance, O.weight
                             , Ao, tradeFee );
 
-        if( paused ) return (Ai, ERR_PAUSED);
+        require( ! paused, ERR_PAUSED);
 
-        if( Ai > Li ) return (Ai, ERR_LIMIT_FAILED);
+        require( Ai <= Li, ERR_LIMIT_FAILED);
 
-        return (Ai, ERR_NONE);
-    }
+        require( Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
 
-    function trySwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
-      public returns (uint Ai, string memory err)
-    {
-        (Ai, err) = viewSwap_MaxInExactOut(Ti, Li, To, Ao);
-        if (isError(err)) {
-            return (Ai, err);
-        } else {
-            // We must revert if a token transfer fails.
-            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            require(okIn, ERR_ERC20_FALSE);
-            bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            require(okOut, ERR_ERC20_FALSE);
-
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-            records[Ti].balance = badd(records[Ti].balance, Ai);
-            records[To].balance = bsub(records[To].balance, Ao);
-
-            return (Ai, ERR_NONE);
-        }
-    }
-
-    function doSwap_MaxInExactOut(address Ti, uint Li, address To, uint Ao)
-      public returns (uint Ai)
-    {
-        string memory err;
-        (Ai, err) = trySwap_MaxInExactOut(Ti, Li, To, Ao);
-
-        require( ! isError(err), err);
-        return Ai;
-    }
-
-    function viewSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint SER1)
-      public view
-        returns (uint Ai, string memory err)
-    {
-        if( !isBound(Ti) ) return (0, ERR_NOT_BOUND);
-        if( !isBound(To) ) return (0, ERR_NOT_BOUND);
-
-        Record storage I = records[address(Ti)];
-        Record storage O = records[address(To)];
-
-        if( Ao > bmul(O.balance, MAX_TRADE_OUT) ) return (0, ERR_OUT_OF_RANGE);
-
-        if( SER1 > calc_SpotPrice(I.balance, I.weight
-                                , O.balance, O.weight) ) {
-            return (0, ERR_OUT_OF_RANGE);
-        }
-
-        Ai = calc_InGivenOut( I.balance, I.weight
-                            , O.balance, O.weight
-                            , Ao, tradeFee );
-
-        if( paused ) return (Ai, ERR_PAUSED);
+        require(PL < calc_SpotPrice( I.balance, I.weight
+                                   , O.balance, O.weight)
+            , ERR_OUT_OF_RANGE);
 
         uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
                                   , bsub(O.balance, Ao), O.weight );
-        if( SER2 < SER1 ) return (Ai, ERR_LIMIT_FAILED);
+        require( SER2 >= PL, ERR_LIMIT_FAILED);
 
-        return (Ai, ERR_NONE);
-    }
+        bool xfer;
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
 
-    function trySwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
-      public returns (uint Ai, string memory err)
-    {
-        (Ai, err) = viewSwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        if (isError(err)) {
-            return (Ai, err);
-        } else {
-            // We must revert if a token transfer fails.
-            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            require(okIn, ERR_ERC20_FALSE);
-            bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            require(okOut, ERR_ERC20_FALSE);
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        records[Ti].balance = badd(records[Ti].balance, Ai);
+        records[To].balance = bsub(records[To].balance, Ao);
 
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-            records[Ti].balance = badd(records[Ti].balance, Ai);
-            records[To].balance = bsub(records[To].balance, Ao);
-
-            return (Ai, ERR_NONE);
-        }
-    }
-
-    function doSwap_LimitPriceInExactOut(address Ti, address To, uint Ao, uint Lp)
-      public returns (uint Ai)
-    {
-        string memory err;
-        (Ai, err) = trySwap_LimitPriceInExactOut(Ti, To, Ao, Lp);
-        require( ! isError(err), err);
-        return Ai;
+        return (Ai, SER2);
     }
 
     function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
@@ -549,12 +477,6 @@ contract BPool is BPoolBronze
         (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
         require( ! isError(err), err);
         return (Ai, Ao);
-    }
-
-    function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
-        public returns (uint Ai, uint MP)
-    {
-        revert('unimplemented');
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
