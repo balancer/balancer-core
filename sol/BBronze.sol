@@ -44,8 +44,8 @@ contract BPoolBronze is BBronze, BConst {
     function pause() public;
     function bind(address token, uint balance, uint weight) public;
     function unbind(address token) public;
-    function setParams(address token, uint balance, uint weight) public;
     function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public;
+    function setParams(address token, uint balance, uint weight) public;
     function setManager(address manager) public;
     function setFee(uint fee) public;
     function sweep(address token) public;
@@ -58,6 +58,11 @@ contract BPoolBronze is BBronze, BConst {
                   , uint256         amountIn
                   , uint256         amountOut
                   , uint256         feeRatio );
+
+    event LOG_PARAMS( address indexed token
+                    , uint256 balance
+                    , uint256 weight
+                    , uint256 totalWeight);
 
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint PL)

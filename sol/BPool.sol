@@ -174,27 +174,14 @@ contract BPool is BPoolBronze
 
     function setParams(address token, uint balance, uint weight)
       public {
-    //  note by sub-calls
-        setWeightDirect(token, weight);
-        setBalanceDirect(token, balance);
-    }
-
-    function batchSetParams(bytes32[3][] memory tokenBalanceWeights) public {
-        for( uint i = 0; i < tokenBalanceWeights.length; i++ ) {
-            bytes32[3] memory TBW = tokenBalanceWeights[i];
-            setParams(address(bytes20(TBW[0])), uint(TBW[1]), uint(TBW[2]));
-        }
-    }
-
-    function setWeightDirect(address token, uint weight)
-      public
-        note
-    {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
+        require( ! joinable, ERR_UNJOINABLE);
+
         require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
-        require( ! joinable, ERR_UNJOINABLE);
+        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
+        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
 
         uint oldWeight = records[token].weight;
         records[token].weight = weight;
@@ -204,17 +191,6 @@ contract BPool is BPoolBronze
         } else {
             totalWeight = bsub(totalWeight, bsub(oldWeight, weight));
         }        
-    }
-
-    function setBalanceDirect(address token, uint balance)
-      public
-        note
-    {
-        require(msg.sender == manager, ERR_BAD_CALLER);
-        require(isBound(token), ERR_NOT_BOUND);
-        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
-        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
-        require( ! joinable, ERR_UNJOINABLE);
 
         uint oldBalance = records[token].balance;
         records[token].balance = balance;
@@ -227,6 +203,15 @@ contract BPool is BPoolBronze
             require(ok, ERR_ERC20_FALSE);
         }
 
+        emit LOG_PARAMS(token, balance, weight, totalWeight);
+    }
+
+    function batchSetParams(bytes32[3][] memory tokenBalanceWeights)
+      public {
+        for( uint i = 0; i < tokenBalanceWeights.length; i++ ) {
+            bytes32[3] memory TBW = tokenBalanceWeights[i];
+            setParams(address(bytes20(TBW[0])), uint(TBW[1]), uint(TBW[2]));
+        }
     }
 
     function setFee(uint tradeFee_)
