@@ -404,6 +404,18 @@ contract BPool is BPoolBronze
         return (Ai, SER2);
     }
 
+    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+        public returns (uint Ai, uint Ao)
+    {
+        revert('unimplemented');
+    }
+
+    function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
+        public returns (uint Ai, uint Ao, uint MP)
+    {
+        revert('unimplemented');
+    }
+
     function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
       public view
         returns (uint Ai, uint Ao, string memory err)
@@ -478,17 +490,4 @@ contract BPool is BPoolBronze
         require( ! isError(err), err);
         return (Ai, Ao);
     }
-
-    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-        public returns (uint Ai, uint Ao)
-    {
-        revert('unimplemented');
-    }
-
-    function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
-        public returns (uint Ai, uint Ao, uint MP)
-    {
-        revert('unimplemented');
-    }
-
 }
