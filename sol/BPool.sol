@@ -413,30 +413,23 @@ contract BPool is BPoolBronze
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
         public returns (uint Ai, uint Ao, uint MP)
     {
-        revert('unimplemented');
-    }
-
-    function viewSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public view
-        returns (uint Ai, uint Ao, string memory err)
-    {
-        if( !isBound(Ti) ) return (0, 0, ERR_NOT_BOUND);
-        if( !isBound(To) ) return (0, 0, ERR_NOT_BOUND);
+        require( isBound(Ti), ERR_NOT_BOUND);
+        require( isBound(To), ERR_NOT_BOUND);
+        require( ! paused, ERR_PAUSED );
 
         Record storage I = records[address(Ti)];
         Record storage O = records[address(To)];
 
-        uint SER0 = calc_SpotPrice(I.balance, I.weight
-                                , O.balance, O.weight);
-        if( SER1 > SER0 ) {
-            return (0, 0, ERR_OUT_OF_RANGE);
-        }
+        uint SER0 = calc_SpotPrice( I.balance, I.weight
+                                  , O.balance, O.weight);
+
+        require( PL <= SER0, ERR_OUT_OF_RANGE);
 
         bool requirePrice = false;
-        if( SER1 > bmul(SER0, MIN_SLIP_PRICE) ) {
+        if( PL > bmul(SER0, MIN_SLIP_PRICE) ) {
             Ai = calc_InGivenPrice( I.balance, I.weight
                                   , O.balance, O.weight
-                                  , SER1, tradeFee );
+                                  , PL, tradeFee );
             if( Ai > Li ) Ai = Li;
         } else {
             Ai         = Li;
@@ -448,46 +441,30 @@ contract BPool is BPoolBronze
                             , O.balance, O.weight
                             , tradeFee );
 
+        uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
+                                  , bsub(O.balance, Ao), O.weight );
+    
         if( requirePrice ) {
-            uint SER2 = calc_SpotPrice( badd(I.balance, Ai), I.weight
-                                      , bsub(O.balance, Ao), O.weight );
-            if( SER2 < SER1 ) return (Ai, Ao, ERR_OUT_OF_RANGE);
+            require( SER2 >= PL, ERR_OUT_OF_RANGE );
         }
 
-        if( Ao < Lo ) return (Ai, Ao, ERR_LIMIT_FAILED);
+        require( Ao >= Lo, ERR_LIMIT_FAILED );
 
-        if( paused ) return (Ai, Ao, ERR_PAUSED);
+        bool xfer;
 
-        return (Ai, Ao, ERR_NONE);
+        O.balance = bsub(O.balance, Ao);
+
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+
+        I.balance = badd(I.balance, Ai);
+
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+
+        return (Ai, Ao, SER2);
     }
 
-    function trySwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao, string memory err)
-    {
-        (Ai, Ao, err) = viewSwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        if (isError(err)) {
-            return (Ai, Ao, err);
-        } else {
-            // We must revert if a token transfer fails.
-            bool okIn = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            require(okIn, ERR_ERC20_FALSE);
-            bool okOut = ERC20(To).transfer(msg.sender, Ao);
-            require(okOut, ERR_ERC20_FALSE);
-
-            emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-            records[Ti].balance = badd(records[Ti].balance, Ai);
-            records[To].balance = bsub(records[To].balance, Ao);
-
-            return (Ai, Ao, ERR_NONE);
-        }
-    }
-
-    function doSwap_MaxInMinOutLimitPrice(address Ti, uint Li, address To, uint Lo, uint SER1)
-      public returns (uint Ai, uint Ao)
-    {
-        string memory err;
-        (Ai, Ao, err) = trySwap_MaxInMinOutLimitPrice(Ti, Li, To, Lo, SER1);
-        require( ! isError(err), err);
-        return (Ai, Ao);
-    }
 }
