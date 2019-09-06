@@ -40,6 +40,8 @@ contract BPool is BPoolBronze
     bool                      joinable;
     address                   poolcoin;
 
+    bool                      swaplock; // mutex
+
     struct Record {
         bool    bound;
         uint    index;   // int
@@ -341,24 +343,15 @@ contract BPool is BPoolBronze
                             , O.balance, O.weight
                             , Ai, tradeFee );
 
+        require( Ao >= Lo, ERR_LIMIT_FAILED );
+
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
         uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
 
         require(Pafter > LP, ERR_LIMIT_FAILED);
 
-        records[To].balance = bsub(records[To].balance, Ao);
-
-        bool xfer;
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
-
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        _swap(Ti, Ai, To, Ao);
 
         return (Ao, Pafter);
     }
@@ -391,15 +384,7 @@ contract BPool is BPoolBronze
                                   , bsub(O.balance, Ao), O.weight );
         require( SER2 >= PL, ERR_LIMIT_FAILED);
 
-        bool xfer;
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-        records[To].balance = bsub(records[To].balance, Ao);
+        _swap(Ti, Ai, To, Ao);
 
         return (Ai, SER2);
     }
@@ -431,18 +416,9 @@ contract BPool is BPoolBronze
                                    , O.balance, O.weight)
             , ERR_OUT_OF_RANGE);
 
-        bool xfer;
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-        records[To].balance = bsub(records[To].balance, Ao);
+        _swap(Ti, Ai, To, Ao);
 
         return (Ai, Ao);
-
     }
 
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
@@ -485,21 +461,25 @@ contract BPool is BPoolBronze
 
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
-        bool xfer;
-
-        O.balance = bsub(O.balance, Ao);
-
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
-
-        I.balance = badd(I.balance, Ai);
-
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        _swap(Ti, Ai, To, Ao);
 
         return (Ai, Ao, SER2);
     }
+
+    function _swap(address Ti, uint Ai, address To, uint Ao)
+        internal
+    {
+      swaplock = true;
+        bool xfer;
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+        records[Ti].balance = badd(records[Ti].balance, Ai);
+        records[To].balance = bsub(records[To].balance, Ao);
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
+      swaplock = false;
+    }
+
 
 }

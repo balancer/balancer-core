@@ -56,6 +56,7 @@ contract BError
     string constant public ERR_BAD_CALLER         = "ERR_BAD_CALLER";
 
     string constant public ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
+    string constant public ERR_ERC20_REENTRY      = "ERR_ERC20_REENTRY";
     
     string constant public ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 }
