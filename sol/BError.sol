@@ -40,9 +40,13 @@ contract BError
     string constant public ERR_MAX_TRADE          = "ERR_MAX_TRADE";
 
     // TODO: 3 limpublic it types (in, out, price)
-    string constant public ERR_LIMIT_FAILED       = "ERR_LIMIT_FAILED";
+    string constant public ERR_LIMIT_FAILED       = "ERR___TODO_LIMIT";
+    string constant public ERR_LIMIT_IN           = "ERR_LIMIT_IN";
+    string constant public ERR_LIMIT_OUT          = "ERR_LIMIT_OUT";
+    string constant public ERR_LIMIT_PRICE        = "ERR_LIMIT_PRICE";
 
-    string constant public ERR_OUT_OF_RANGE       = "ERR_OUT_OF_RANGE";
+    string constant public ERR_MAX_IN             = "ERR_MAX_IN";
+    string constant public ERR_OUT_OF_RANGE       = "ERR____TODO_RANGE";
 
     string constant public ERR_NOT_BOUND          = "ERR_NOT_BOUND";
     string constant public ERR_ALREADY_BOUND      = "ERR_ALREADY_BOUND";

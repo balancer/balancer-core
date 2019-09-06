@@ -48,6 +48,19 @@ describe("swaps", () => {
                                .send({from: env.admin, gas:0xffffffff});
                 await env.bpool.methods.setFee(toWei(fee))
                                .send({from: env.admin, gas:0xffffffff});
+
+                let res = await env.bpool.methods
+                                         .swap_ExactAmountIn( env.acoin._address, toWei(Ai)   // Ti, Ai
+                                                            , env.bcoin._address, '0'         // To, Ao
+                                                            , '0');                           // LP
+
+                if (typeof(expected) == 'number') {
+                    assertCloseBN(res, toWei(expected), toWei("0.0000001"));
+                }
+                if (typeof(expected) == 'string') {
+                    assert.equal(res, expected);
+                }
+
                 throw null;
             } catch (err) {
                 if (err != null && typeof(expected) == 'string') {
@@ -60,24 +73,6 @@ describe("swaps", () => {
                     assert.equal(errStr, expected);
                     return;
                 }
-            }
-
-            let view = await env.bpool.methods.viewSwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
-                                      .call();
-            let viewResult = view[0];
-            let viewError = view[1];
-            //console.log(viewResult, `error(${viewError})`);
-
-            // [res, err]
-            let reserr = await env.bpool.methods.trySwap_ExactInMinOut(env.acoin._address, toWei(Ai), env.bcoin._address, '0')
-                                                .call();
-            let res = reserr[0];
-            let err = reserr[1];
-            if (typeof(expected) == 'number') {
-                assertCloseBN(res, toWei(expected), toWei("0.0000001"));
-            }
-            if (typeof(expected) == 'string') {
-                assert.equal(res, expected);
             }
 
         });

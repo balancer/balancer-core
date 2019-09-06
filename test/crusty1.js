@@ -108,7 +108,9 @@ describe("crusty bpool tests", () => {
         let Lo  = toWei(pt.Lo.toString());
         let fee = toWei(pt.fee.toString());
         let expected = toWei(pt.res.toString());
-        it(`${pt.res} ~= bpool.doSwap_ExactInMinOut(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},${pt.fee})`, async () => {
+        it(`${pt.res} ~= bpool.swap_ExactAmountIn(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},((0)),${pt.fee})`
+                , async () => 
+        {
             await bpool.methods.setParams(acoin._address, Bi, Wi).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(bcoin._address, Bo, Wo).send({from: acct0, gas: 0xffffffff});
             await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
@@ -116,17 +118,17 @@ describe("crusty bpool tests", () => {
             await bpool.methods.setFee(fee).send({from: acct0, gas: 0xffffffff});
             var abefore = await acoin.methods.balanceOf(acct0).call();
             var bbefore = await bcoin.methods.balanceOf(acct0).call();
-            var resultStatic = await bpool.methods.doSwap_ExactInMinOut(acoin._address, Ai, bcoin._address, Lo)
+            var resultStatic = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, '0')
                                                   .call();
-            var result = await bpool.methods.doSwap_ExactInMinOut(acoin._address, Ai, bcoin._address, Lo)
+            var result = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, '0')
                                             .send({from: acct0, gas: 0xffffffff});
             var aafter = await acoin.methods.balanceOf(acct0).call();
             var bafter = await bcoin.methods.balanceOf(acct0).call();
             var adiff = toBN(abefore).sub(toBN(aafter));
             var bdiff = toBN(bafter).sub(toBN(bbefore));
-            assert.equal(bdiff, resultStatic);
+            assert.equal(bdiff, resultStatic.Ao);
             assert.equal(adiff, Ai);
-            assertCloseBN(expected, resultStatic, approxTolerance.toString());
+            assertCloseBN(expected, resultStatic.Ao, approxTolerance.toString());
         });
     }
 

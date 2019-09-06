@@ -453,11 +453,11 @@ contract BPool is BPoolBronze
         Record storage O = records[address(To)];
 
         // TODO bad error name
-        require( Ai > bmul(I.balance, MAX_TRADE_IN)
-               , ERR_OUT_OF_RANGE );
+        require( Ai <= bmul(I.balance, MAX_TRADE_IN)
+               , ERR_MAX_IN );
       
-        require( LP > calc_SpotPrice(I.balance, I.weight, O.balance, O.weight )
-               , ERR_OUT_OF_RANGE);
+        require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight )
+               , ERR_LIMIT_PRICE);
 
         Ao = calc_OutGivenIn( I.balance, I.weight
                             , O.balance, O.weight
@@ -467,7 +467,7 @@ contract BPool is BPoolBronze
         uint Oafter = bsub(O.balance, Ao);
         uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
 
-        require(Pafter < LP, ERR_LIMIT_FAILED);
+        require(Pafter > LP, ERR_LIMIT_FAILED);
 
         records[To].balance = bsub(records[To].balance, Ao);
 
