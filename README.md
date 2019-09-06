@@ -1,5 +1,5 @@
 <p align=center>
-<img src="https://balancer-labs.github.io/pebbles/png/pebbles-pad.064w.png" alt="balancer pebbles logo"/>
+<img width="128px" src="https://balancer-labs.github.io/pebbles/images/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
 
 <h2 align=center><code>balancer</code></h2>
