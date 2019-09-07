@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "balancer-core",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
   "author": {

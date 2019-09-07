@@ -2,7 +2,8 @@ let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../pkg.js");
-pkg.types.loadTypes("../tmp/combined.json");
+pkg.types.loadTestTypes();
+
 let web3 = new Web3(ganache.provider({
     gasLimit: 0xffffffff,
     allowUnlimitedContractSize: true,

@@ -13,7 +13,6 @@
 
 pragma solidity ^0.5.10;
 
-import 'ds-token/token.sol';
 import 'erc20/erc20.sol';
 
 import "./BError.sol";

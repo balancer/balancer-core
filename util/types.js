@@ -31,5 +31,9 @@ module.exports.loadTypes = function(path) {
     module.exports.liftTypes(buildout.contracts);
 }
 
+module.exports.loadTestTypes = function() {
+    this.loadTypes("../out/tmp/combined.json");
+}
+
 let dist = require("../out/combined.json");
 module.exports.liftTypes(dist.contracts);
