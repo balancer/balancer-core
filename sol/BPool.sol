@@ -465,8 +465,8 @@ contract BPool is BBronze
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
 
+        Vo.move(address(this), msg.sender, Ao);
         if (skipwrap) {
-            Vo.move(address(this), msg.sender, Ao);
             Vo.forceUnwrap(msg.sender, Ao);
         } else {
             revert('unimplemented');
@@ -474,5 +474,4 @@ contract BPool is BBronze
 
       mutex = false;
     }
-
 }
