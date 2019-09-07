@@ -13,6 +13,7 @@
 
 pragma solidity ^0.5.10;
 
+import 'erc20/erc20.sol';
 import "./BColor.sol";
 import "./BConst.sol";
 
@@ -24,7 +25,9 @@ contract BBronze is BColor {
     }
 }
 
-contract BPoolBronze is BBronze {
+contract BPoolBronze is BBronze 
+                      , ERC20
+{
 
     // General View
     // ==
@@ -42,7 +45,7 @@ contract BPoolBronze is BBronze {
     // emits `LOG_CALL`
     // -- 
     function isJoinable() public view returns (bool);
-    function makeJoinable() public;
+    function makeJoinable(uint initSupply) public;
 
     // emits `LOG_SWAP` x N
     function joinPool(uint poolAo) public;

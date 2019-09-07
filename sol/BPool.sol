@@ -15,17 +15,20 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
-import 'ds-token/token.sol';
-
 import "./BBronze.sol";
+import "./BToken.sol";
 import "./BConst.sol";
 import "./BError.sol";
 import "./BEvent.sol";
 import "./BMath.sol";
 
-contract BPool is BPoolBronze
+contract BPool is 
+//                BPoolBronze
+                  BTokenBase
+/*
                 , BConst
                 , BError
+*/
                 , BEvent
                 , BMath
 {
@@ -41,7 +44,6 @@ contract BPool is BPoolBronze
     uint                      totalWeight;
 
     bool                      joinable;
-    address                   poolcoin;
 
     bool                      mutex;
 
@@ -55,18 +57,7 @@ contract BPool is BPoolBronze
     constructor() public {
         manager = msg.sender;
         paused = true;
-        poolcoin = address(new DSToken("Balancer Pool Token (Bronze)"));
         joinable = false;
-    }
-
-    function getPoolToken()
-      public view returns (address) {
-        return poolcoin;
-    }
-
-    function getPoolTokenSupply()
-      public view returns (uint) {
-        return ERC20(poolcoin).totalSupply();
     }
 
     function getManager()
@@ -129,22 +120,22 @@ contract BPool is BPoolBronze
         return joinable;
     }
 
-    function makeJoinable()
+    function makeJoinable(uint initSupply)
       public // emits LOG_CALL
     {
         logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
+        require(initSupply >= MIN_TOKEN_SUPPLY);
         joinable = true;
-        uint supply = 10**6 * 10**18;
-        DSToken(poolcoin).mint(supply); // TODO constant
-        DSToken(poolcoin).transfer(msg.sender, supply);
+        _mint(initSupply);
+        _push(msg.sender, initSupply);
     }
 
     function joinPool(uint poolAo)
       public // TODO LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
-        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
@@ -153,19 +144,19 @@ contract BPool is BPoolBronze
             bool ok = ERC20(t).transferFrom(msg.sender, address(this), tAi);
             require(ok, ERR_ERC20_FALSE);
         }
-        DSToken(poolcoin).mint(poolAo);
-        DSToken(poolcoin).transfer(msg.sender, poolAo);
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
     }
 
     function exitPool(uint poolAi)
       public // emits LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
-        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
-        
-        DSToken(poolcoin).transferFrom(msg.sender, address(this), poolAi);
-        DSToken(poolcoin).burn(poolAi);
+       
+        _pull(msg.sender, poolAi); 
+        _burn(poolAi);
 
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
@@ -463,6 +454,5 @@ contract BPool is BPoolBronze
 
         mutex = false;
     }
-
 
 }

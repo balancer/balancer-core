@@ -13,34 +13,56 @@
 
 pragma solidity ^0.5.10;
 
+import 'erc20/erc20.sol';
 import 'ds-token/token.sol';
 
+import "./BToken.sol";
 import "./BError.sol";
+import "./BConst.sol";
+import "./BNum.sol";
 
 contract BIHub {
     function isPool(address p) public returns (bool);
 }
 
-contract BVault is BError
+contract BVault is BTokenBase
+//                 , BError
+//                 , BNum
 {
     BIHub                  public hub;
     ERC20                  public inner;
-    address                public blabs;
-    uint256                public unwrapFee;
-    mapping(address=>uint) public poolBalances;
+
+    constructor(ERC20 token) public {
+        hub = BIHub(msg.sender);
+        inner = token;
+    }
 
     // User
-    function wrap(uint256 amt) public;
-    function unwrap(uint256 amt) public;
+    function wrap(uint256 amt) public {
+        bool xfer = inner.transferFrom(msg.sender, address(this), amt);
+        require(xfer, ERR_ERC20_FALSE);
+
+        _balance[msg.sender] += amt;
+        _totalSupply += amt;
+    }
+    function unwrap(uint256 amt) public returns (uint256 out) {
+        uint fee = bmul(UNWRAP_FEE, amt);
+        out = amt - fee;
+
+        _pull(msg.sender, amt);
+        _push(address(hub), fee);
+        _burn(out);
+
+        bool xfer = inner.transfer(msg.sender, out);
+        require(xfer, ERR_ERC20_FALSE);
+        // TODO events (burn?)
+    }
 
     function forceWrap(address whom, uint256 amt) public {
-        require(hub.isPool(msg.sender));
+        require(hub.isPool(msg.sender) || msg.sender == address(hub));
     }
     function forceUnwrap(address whom, uint256 amt) public {
-        require(hub.isPool(msg.sender));
-    }
-
-    function move(address src, address dst, uint256 amt) public {
+        require(hub.isPool(msg.sender) || msg.sender == address(hub));
     }
 
 }
