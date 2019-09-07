@@ -19,14 +19,15 @@ import "./BColor.sol";
 import "./BToken.sol";
 import "./BMath.sol";
 import "./BBase.sol";
+import "./BVault.sol";
+import "./BHub.sol";
 
 contract BPool is BBronze
-                , ERC20
                 , BTokenBase
                 , BMath
                 , BBase
 {
-
+    BHub                      hub;
     bool                      paused;
     address                   manager;
 
@@ -45,9 +46,11 @@ contract BPool is BBronze
         uint    index;   // int
         uint    weight;  // bnum
         uint    balance; // bnum
+        BVault  vault; // bnum
     }
 
     constructor() public {
+        hub = BHub(msg.sender);
         manager = msg.sender;
         paused = true;
         joinable = false;
@@ -116,17 +119,22 @@ contract BPool is BBronze
     function makeJoinable(uint initSupply)
       public // emits LOG_CALL
     {
+      require(!mutex, ERR_ERC20_REENTRY);
+      mutex = true;
         logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(initSupply >= MIN_TOKEN_SUPPLY);
         joinable = true;
         _mint(initSupply);
         _push(msg.sender, initSupply);
+      mutex = false;
     }
 
     function joinPool(uint poolAo)
       public // TODO LOG_SWAP
     {
+      require(!mutex, ERR_ERC20_REENTRY);
+      mutex = true;
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
@@ -139,11 +147,14 @@ contract BPool is BBronze
         }
         _mint(poolAo);
         _push(msg.sender, poolAo);
+      mutex = false;
     }
 
     function exitPool(uint poolAi)
       public // emits LOG_SWAP
     {
+      require(!mutex, ERR_ERC20_REENTRY);
+      mutex = true;
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
@@ -158,6 +169,7 @@ contract BPool is BBronze
             bool ok = ERC20(t).transfer(msg.sender, tAo);
             require(ok, ERR_ERC20_FALSE);
         }
+      mutex = false;
     }
 
     function setParams(address token, uint balance, uint weight)
@@ -238,6 +250,7 @@ contract BPool is BBronze
           , index: _index.length
           , weight: 0
           , balance: 0
+          , vault: BVault(hub.getVaultForToken(token))
         });
         _index.push(token);
 
@@ -427,6 +440,8 @@ contract BPool is BBronze
         bool xfer;
         Record memory I = records[Ti];
         Record memory O = records[To];
+        BVault Vi = I.vault;
+        BVault Vo = O.vault;
 
         if (wrap) {
             revert('unimplemented');
@@ -435,22 +450,25 @@ contract BPool is BBronze
                 // Vi.forceWrap(msg.sender, deficit);
             }
         } else {
-            // Vi.forceWrap(msg.sender, Ai);
-                    xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-                    require(xfer, ERR_ERC20_FALSE);
+            Vi.forceWrap(msg.sender, Ai);
+            //        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+            //        require(xfer, ERR_ERC20_FALSE);
         }
 
 
+        Vi.move(msg.sender, address(this), Ai);
+
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
-        // Vi.move(msg.sender, this, Ai);
+
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+
 
         if (wrap) {
             revert('unimplemented');
         } else {
-            // Vo.move(this, msg.sender, Ao);
-            // Vo.forceUnwrap(msg.sender, Ao);
+            Vo.move(address(this), msg.sender, Ao);
+            Vo.forceUnwrap(msg.sender, Ao);
                     xfer = ERC20(To).transfer(msg.sender, Ao);
                     require(xfer, ERR_ERC20_FALSE);
         }

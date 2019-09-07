@@ -15,11 +15,11 @@ pragma solidity ^0.5.10;
 
 import './BVault.sol';
 import './BPool.sol';
-import './BHubI.sol';
+import './BHub.sol';
 
-contract BalancerBronze is BalancerHub
-                         , BBronze
-                         , BBase
+contract Balancer is BBronze
+                   , BHub
+                   , BBase
 {
     address public BalancerLabs;
     constructor() public {

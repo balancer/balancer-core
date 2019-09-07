@@ -26,5 +26,6 @@ build:
 	sol/BToken.sol \
 	sol/BVault.sol \
 	sol/BHub.sol \
+	sol/Balancer.sol \
 	sol/TToken.sol \
 

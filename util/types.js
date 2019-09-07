@@ -27,6 +27,7 @@ module.exports.liftTypes = function(types) {
     lift("BPool");
     lift("BToken");
     lift("BVault");
+    lift("Balancer");
     lift("TToken");
 
     module.exports.types = types;

@@ -4,15 +4,14 @@ pkg.types.loadTypes("../tmp/combined.json");
 // phase0: 
 //  env.admin = accts[0]
 //  user1-2 = accts[1-2]
-//  factory = new factory
+//  hub = new hub
 module.exports.phase0 = async (web3) => {
     let env = {};
     env.accts = await web3.eth.getAccounts();
     env.admin = env.accts[0];
     env.user1 = env.accts[1];
     env.user2 = env.accts[2];
-    let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
-    env.factory = await deploy(web3, env.admin, "BFactory");
+    env.hub = await pkg.deploy(web3, env.admin, "Balancer");
     return env;
 }
 
@@ -25,8 +24,7 @@ module.exports.phase0 = async (web3) => {
 //  *coin.approve(bpool)
 module.exports.phase1 = async (web3) => {
     let env = await module.exports.phase0(web3);
-    let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
-    var fn_newBPool = await env.factory.methods.newBPool();
+    var fn_newBPool = await env.hub.methods.newBPool();
     let bpoolAddr = await fn_newBPool.call();
     env.bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpoolAddr);
     await fn_newBPool.send({from: env.admin, gas:0xffffffff});
@@ -36,6 +34,10 @@ module.exports.phase1 = async (web3) => {
     env.acoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("A")]);
     env.bcoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("B")]);
     env.ccoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("C")]);
+
+    env.avault = await env.hub.methods.getVaultForToken(env.acoin._address).send({from:env.admin, gas:0xffffffff});
+    env.bvault = await env.hub.methods.getVaultForToken(env.acoin._address).send({from:env.admin, gas:0xffffffff});
+    env.cvault = await env.hub.methods.getVaultForToken(env.acoin._address).send({from:env.admin, gas:0xffffffff});
 
     env.acoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin});
     env.bcoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin});
@@ -63,12 +65,14 @@ module.exports.phase2 = async (web3) => {
     env.initWeight = web3.utils.toWei('10');
     env.initBalance = web3.utils.toWei('10');
 
+    console.log('prebind');
     await env.bpool.methods.bind(env.acoin._address, env.initBalance, env.initWeight)
                            .send({from: env.admin, gas:0xffffffff});
     await env.bpool.methods.bind(env.bcoin._address, env.initBalance, env.initWeight)
                            .send({from: env.admin, gas:0xffffffff});
     await env.bpool.methods.bind(env.ccoin._address, env.initBalance, env.initWeight)
                            .send({from: env.admin, gas:0xffffffff});
+    console.log('postbind');
 
     await env.bpool.methods.start()
                            .send({from: env.admin, gas:0xffffffff});
