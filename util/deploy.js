@@ -1,6 +1,6 @@
 module.exports = async function(web3, from, typeName, args) {
     // TODO very fragile, dependencies expect this bound properly
-    let type = this.types.types[typeName];
+    let type = this.types[typeName];
     if(type == undefined) {
         throw new Error(`Trying to deploy ${typeName}, but type name not recognized`);
     }

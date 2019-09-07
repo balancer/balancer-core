@@ -14,25 +14,19 @@
 
 module.exports.liftTypes = function(types) {
     function lift(type) {
-        types[type] = types[`sol/${type}.sol:${type}`];
+        module.exports[type] = types[`sol/${type}.sol:${type}`];
     }
 
     lift("BFactory");
     lift("BMath");
     lift("BPool");
     lift("TToken");
-
-    module.exports.types = types;
-}
-
-module.exports.loadTypes = function(path) {
-    let buildout = require(path);
-    let types = buildout.contracts;
-    module.exports.liftTypes(buildout.contracts);
 }
 
 module.exports.loadTestTypes = function() {
-    this.loadTypes("../out/tmp/combined.json");
+    let testPath = "../out/tmp/combined.json";
+    let buildout = require(testPath);
+    module.exports.liftTypes(buildout.contracts);
 }
 
 let dist = require("../out/combined.json");

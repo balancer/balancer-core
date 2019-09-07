@@ -28,10 +28,10 @@ module.exports.phase1 = async (web3) => {
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
     var fn_newBPool = await env.factory.methods.newBPool();
     let bpoolAddr = await fn_newBPool.call();
-    env.bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpoolAddr);
+    env.bpool = new web3.eth.Contract(JSON.parse(pkg.types.BPool.abi), bpoolAddr);
     await fn_newBPool.send({from: env.admin, gas:0xffffffff});
     let poolcoinAddr = env.bpool._address;
-    env.poolcoin = new web3.eth.Contract(JSON.parse(pkg.types.types.TToken.abi), poolcoinAddr);
+    env.poolcoin = new web3.eth.Contract(JSON.parse(pkg.types.TToken.abi), poolcoinAddr);
 
     env.acoin = await pkg.deploy(web3, env.admin, "TToken");
     env.bcoin = await pkg.deploy(web3, env.admin, "TToken");

@@ -50,14 +50,9 @@ describe("crusty bpool tests", () => {
 
         factory = await pkg.deploy(web3, acct0, "BFactory");
 
-        //== TODO clean
-        bpool = await factory.methods.newBPool().call();
-        //console.log(bpool);
+        bpoolAddr = await factory.methods.newBPool().call();
         await factory.methods.newBPool().send({from: acct0, gas:0xffffffff});
-        //console.log(pkg.types.types.BPool);
-        bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpool);
-        //console.log(bpool);
-        //--
+        bpool = new web3.eth.Contract(JSON.parse(pkg.types.BPool.abi), bpoolAddr);
 
         for (coin of [acoin, bcoin, ccoin]) {
             await coin.methods.mint(preBindBalance).send({from: acct0, gas:0xffffffff});
