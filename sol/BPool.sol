@@ -271,9 +271,8 @@ contract BPool is BBronze
         require(isBound(token), ERR_NOT_BOUND);
 
         Record memory T = records[token];
-      
-        bool xfer = ERC20(token).transfer(msg.sender, T.balance);
-        require(xfer, ERR_ERC20_FALSE);
+        BVault vault = T.vault; 
+        vault.move(address(this), msg.sender, T.balance);
 
         totalWeight = bsub(totalWeight, T.weight);
 
@@ -441,10 +440,9 @@ contract BPool is BBronze
     function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
         internal
     {
-        require( ! mutex, ERR_ERC20_REENTRY);
-        mutex = true;
+      require( ! mutex, ERR_ERC20_REENTRY);
+      mutex = true;
 
-        bool xfer;
         Record memory I = records[Ti];
         Record memory O = records[To];
         BVault Vi = I.vault;
@@ -474,11 +472,9 @@ contract BPool is BBronze
         } else {
             Vo.move(address(this), msg.sender, Ao);
             Vo.forceUnwrap(msg.sender, Ao);
-                    xfer = ERC20(To).transfer(msg.sender, Ao);
-                    require(xfer, ERR_ERC20_FALSE);
         }
 
-        mutex = false;
+      mutex = false;
     }
 
 }

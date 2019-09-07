@@ -53,12 +53,12 @@ describe("crusty bpool tests", () => {
         getAvault = hub.methods.getVaultForToken(acoin._address);
         getBvault = hub.methods.getVaultForToken(bcoin._address);
         getCvault = hub.methods.getVaultForToken(ccoin._address);
-        avaultAddr = await getAvault.call();
-        bvaultAddr = await getBvault.call();
-        cvaultAddr = await getCvault.call();
         await getAvault.send({from: acct0, gas: 5000000});
         await getBvault.send({from: acct0, gas: 5000000});
         await getCvault.send({from: acct0, gas: 5000000});
+        avaultAddr = await getAvault.call();
+        bvaultAddr = await getBvault.call();
+        cvaultAddr = await getCvault.call();
         avault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), avaultAddr);
         bvault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), bvaultAddr);
         cvault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), cvaultAddr);
@@ -75,7 +75,6 @@ describe("crusty bpool tests", () => {
                        .send({from: user});
         }
         var approval = await acoin.methods.allowance(acct0, avaultAddr).call();
-        console.log(approval);
         for (coin of [acoin, bcoin, ccoin]) {
             await coin.methods.mint(preBindBalance).send({from: acct0});
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
@@ -190,7 +189,7 @@ describe("crusty bpool tests", () => {
     it("bind/unbind no-revert cases", async() => {
         numBound = await bpool.methods.getNumTokens().call();
         assert.equal(3, numBound);
-        await bpool.methods.unbind(acoin._address).send({from: acct0});
+        await bpool.methods.unbind(acoin._address).send({from: acct0, gas:5000000});
         numBound = await bpool.methods.getNumTokens().call();
         assert.equal(2, numBound);
     });
@@ -215,7 +214,7 @@ describe("crusty bpool tests", () => {
         let abalance = await bpool.methods.getBalance(acoin._address).call();
         assert.equal(AWeight, aweight, 'wrong weight after setting');
         assert.equal(ABalance, abalance, 'wrong balance after setting');
-        assert.equal(ABalance, (await acoin.methods.balanceOf(bpool._address).call()), 'wrong bpool acoin balance');
+        assert.equal(ABalance, (await acoin.methods.balanceOf(avault._address).call()), 'wrong acoin.balanceOf(avault)');
         assert.equal(preBindBalance - ABalance,
                     (await acoin.methods.balanceOf(acct0).call()), 'wrong initBalance - ABalanceBound');
     });
