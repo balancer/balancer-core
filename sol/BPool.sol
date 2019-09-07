@@ -429,24 +429,30 @@ contract BPool is ERC20
         Record memory O = records[To];
 
         if (wrap) {
-            (uint deficit, bool negative) = bsubSign(Ai, I.balance);
             revert('unimplemented');
+            (uint diff, bool sign) = bsubSign(I.balance, Ai);
+            if (sign) {
+                // Vi.forceWrap(msg.sender, deficit);
+            }
         } else {
-            // forceWrap
-            // 
-            // forceUnwrap
-            xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            require(xfer, ERR_ERC20_FALSE);
+            // Vi.forceWrap(msg.sender, Ai);
+                    xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+                    require(xfer, ERR_ERC20_FALSE);
         }
+
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
-
+        // Vi.move(msg.sender, this, Ai);
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
 
-        if ( ! wrap) {
-            xfer = ERC20(To).transfer(msg.sender, Ao);
-            require(xfer, ERR_ERC20_FALSE);
+        if (wrap) {
+            revert('unimplemented');
+        } else {
+            // Vo.move(this, msg.sender, Ao);
+            // Vo.forceUnwrap(msg.sender, Ao);
+                    xfer = ERC20(To).transfer(msg.sender, Ao);
+                    require(xfer, ERR_ERC20_FALSE);
         }
 
         mutex = false;
