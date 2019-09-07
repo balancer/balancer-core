@@ -33,13 +33,13 @@ module.exports.phase1 = async (web3) => {
     let poolcoinAddr = env.bpool._address;
     env.poolcoin = new web3.eth.Contract(JSON.parse(pkg.types.types.TToken.abi), poolcoinAddr);
 
-    env.acoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("A")]);
-    env.bcoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("B")]);
-    env.ccoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("C")]);
+    env.acoin = await pkg.deploy(web3, env.admin, "TToken");
+    env.bcoin = await pkg.deploy(web3, env.admin, "TToken");
+    env.ccoin = await pkg.deploy(web3, env.admin, "TToken");
 
-    env.acoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin});
-    env.bcoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin});
-    env.ccoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin});
+    env.acoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin, gas:5000000});
+    env.bcoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin, gas:5000000});
+    env.ccoin.methods.mint(web3.utils.toTwosComplement('-1')).send({from: env.admin, gas:5000000});
 
     env.acoin.methods.approve(env.bpool._address, web3.utils.toTwosComplement('-1'))
              .send({from: env.admin});

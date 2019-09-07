@@ -43,9 +43,9 @@ describe("crusty bpool tests", () => {
         acct1 = accts[1];
         acct2 = accts[2];
 
-        acoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("A")]);
-        bcoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
-        ccoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
+        acoin = await pkg.deploy(web3, acct0, "TToken");
+        bcoin = await pkg.deploy(web3, acct0, "TToken");
+        ccoin = await pkg.deploy(web3, acct0, "TToken");
 
         factory = await pkg.deploy(web3, acct0, "BFactory");
 
@@ -59,7 +59,7 @@ describe("crusty bpool tests", () => {
         //--
 
         for (coin of [acoin, bcoin, ccoin]) {
-            await coin.methods.mint(preBindBalance).send({from: acct0});
+            await coin.methods.mint(preBindBalance).send({from: acct0, gas:0xffffffff});
             for (user of [acct0, acct1, acct2] ) {
                 await coin.methods.approve(bpool._address, MAX256)
                           .send({from: user});

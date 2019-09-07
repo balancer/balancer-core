@@ -58,19 +58,19 @@ contract BTokenBase is ERC20
         return true;
     }
 
-    event LOG_MINT(uint amt);
-    event LOG_BURN(uint amt);
+    event Mint(uint amt);
+    event Burn(uint amt);
 
     function _mint(uint amt) internal {
         _balance[address(this)] = badd(_balance[address(this)], amt);
         _totalSupply   = badd(_totalSupply, amt);
-        emit LOG_MINT(amt);
+        emit Mint(amt);
     }
 
     function _burn(uint amt) internal {
         _balance[address(this)] = bsub(_balance[address(this)], amt);
         _totalSupply   = bsub(_totalSupply, amt);
-        emit LOG_BURN(amt);
+        emit Burn(amt);
     }
 
     function _move(address src, address dst, uint amt) internal {

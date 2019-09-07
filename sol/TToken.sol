@@ -13,11 +13,15 @@
 
 pragma solidity ^0.5.10;
 
-import 'ds-token/token.sol';
+import "./BToken.sol";
 
-// interim test token contract, eventually will converge with BToken
-contract TToken is DSToken {
-    constructor(bytes32 symbol) public
-        DSToken(symbol) {}
+contract TToken is BTokenBase {
+    function mint(uint amt) public {
+        _mint(amt);
+        _push(msg.sender, amt);
+    }
+    function burn(uint amt) public {
+        _pull(msg.sender, amt);
+        _burn(amt);
+    }
 }
-
