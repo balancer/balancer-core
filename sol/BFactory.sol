@@ -17,16 +17,25 @@ import "./BColor.sol";
 import "./BPool.sol";
 
 contract BFactory is BBronze {
-    event NEW_POOL(address indexed caller, address indexed pool, bytes32 indexed color);
-    mapping(address=>bool) public isBPool;
+
+    event LOG_NEW_POOL( address indexed caller
+                      , address indexed pool, 
+                        bytes32 indexed color );
+
+    mapping(address=>bool) _isBPool;
+
+    function isBPool(address b)
+      public view returns (bool) {
+        return _isBPool[b];
+    }
 
     function newBPool()
       public returns (BPool)
     {
         BPool bpool = new BPool();
         bpool.setManager(msg.sender);
-        isBPool[address(bpool)] = true;
-        emit NEW_POOL(msg.sender, address(bpool), getColor());
+        _isBPool[address(bpool)] = true;
+        emit LOG_NEW_POOL(msg.sender, address(bpool), getColor());
         return bpool;
     }
 
