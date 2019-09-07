@@ -140,7 +140,7 @@ contract BPool is ERC20
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
-        require(initSupply >= MIN_TOKEN_SUPPLY);
+        require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
         _joinable = true;
         _mint(initSupply);
         _push(msg.sender, initSupply);
@@ -194,19 +194,19 @@ contract BPool is ERC20
         require(isBound(token), ERR_NOT_BOUND);
         require( ! _joinable, ERR_UNJOINABLE);
 
-        require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
-        require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
-        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
-        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
+        require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
+        require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
+        require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
+        require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
 
         uint oldWeight = _records[token].weight;
-        _records[token].weight = weight;
-
         if (weight > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(weight, oldWeight));
+            require(_totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
         } else {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, weight));
         }        
+        _records[token].weight = weight;
 
         uint oldBalance = _records[token].balance;
         _records[token].balance = balance;
@@ -243,14 +243,16 @@ contract BPool is ERC20
         require(msg.sender == _manager, ERR_BAD_CALLER);
         require( ! isBound(token), ERR_ALREADY_BOUND);
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
-        require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
-        require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
-        require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
-        require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
+        require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
+        require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
+        require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
+        require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
 
         _pullT(token, msg.sender, balance);
 
         _totalWeight = badd(_totalWeight, weight);
+
+        require(_totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
 
         _index.push(token);
         _records[token] = Record({
