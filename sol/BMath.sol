@@ -14,7 +14,7 @@
 pragma solidity ^0.5.10;
 
 import "./BColor.sol";
-import "./BBase.sol";
+import "./BNum.sol";
 
 contract BMath is BBronze
                 , BNum
