@@ -11,18 +11,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// Tired of linearizing your inheritance graph?
+
+import "./BConst.sol";
+import "./BError.sol";
+import "./BEvent.sol";
+import "./BNum.sol";
+
 pragma solidity ^0.5.10;
 
-contract BColor {
-    function getColor()
-      public view
-        returns (bytes32);
-}
-
-contract BBronze is BColor {
-    function getColor()
-      public view
-        returns (bytes32) {
-        return "BRONZE";
-    }
-}
+contract BBase is BConst, BError, BEvent {}

@@ -16,28 +16,75 @@ pragma solidity ^0.5.10;
 import 'ds-token/token.sol';
 import 'erc20/erc20.sol';
 
-import "./BBronze.sol";
+import "./BError.sol";
+import "./BNum.sol";
 
-contract BToken is DSToken
-                 , BBronze
+contract BTokenBase is ERC20
+                     , BNum
 {
-    ERC20 public inner;
+    mapping(address=>
+      mapping(address=>uint))   internal _allowance;
+    mapping(address=>uint)      internal _balance;
+    uint                        internal _totalSupply;
 
-    constructor(bytes32 symbol_, ERC20 inner_)
-      public
-        DSToken(symbol_)
-    {
-        inner = inner_;
+    function allowance(address src, address guy) public view returns (uint) {
+        return _allowance[src][guy];
     }
 
-    function transferFrom(address src, address dst, uint256 amt)
-      public
-        returns (bool)
-    {
-        if (_balances[src] < amt) {
-            uint256 diff = amt - _balances[src];
-            inner.transferFrom(src, address(this), diff);
+    function balanceOf(address whom) public view returns (uint) {
+        return _balance[whom];
+    }
+
+    function totalSupply() public view returns (uint) {
+        return _totalSupply;
+    }
+
+    function approve(address guy, uint wad) public returns (bool) {
+        _allowance[msg.sender][guy] = wad;
+        emit Approval(msg.sender, guy, wad);
+    }
+
+    function transfer(address dst, uint wad) public returns (bool) {
+        _move(msg.sender, dst, wad);
+        return true;
+    }
+
+    function transferFrom(address src, address dst, uint wad) public returns (bool) {
+        require(msg.sender == src || wad <= _allowance[src][msg.sender], ERR_BAD_CALLER);
+        _move(src, dst, wad);
+        if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
+            _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], wad);
         }
-        return super.transferFrom(src, dst, amt);
+        return true;
     }
+
+    event LOG_MINT(uint amt);
+    event LOG_BURN(uint amt);
+
+    function _mint(uint amt) internal {
+        _balance[address(this)] = badd(_balance[address(this)], amt);
+        _totalSupply   = badd(_totalSupply, amt);
+        emit LOG_MINT(amt);
+    }
+
+    function _burn(uint amt) internal {
+        _balance[address(this)] = bsub(_balance[address(this)], amt);
+        _totalSupply   = bsub(_totalSupply, amt);
+        emit LOG_BURN(amt);
+    }
+
+    function _move(address src, address dst, uint amt) internal {
+        _balance[src] = bsub(_balance[src], amt);
+        _balance[dst] = badd(_balance[dst], amt);
+        emit Transfer(src, dst, amt);
+    }
+
+    function _push(address to, uint amt) internal {
+        _move(address(this), to, amt);
+    }
+
+    function _pull(address from, uint amt) internal {
+        _move(from, address(this), amt);
+    }
+    
 }

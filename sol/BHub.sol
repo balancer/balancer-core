@@ -13,16 +13,8 @@
 
 pragma solidity ^0.5.10;
 
-contract BColor {
-    function getColor()
-      public view
-        returns (bytes32);
-}
-
-contract BBronze is BColor {
-    function getColor()
-      public view
-        returns (bytes32) {
-        return "BRONZE";
-    }
+contract BHub {
+    function isBPool(address p) public returns (bool);
+    function isBVault(address v) public returns (bool);
+    function getVaultForToken(address token) public returns (address vault);
 }

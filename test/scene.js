@@ -30,7 +30,7 @@ module.exports.phase1 = async (web3) => {
     let bpoolAddr = await fn_newBPool.call();
     env.bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpoolAddr);
     await fn_newBPool.send({from: env.admin, gas:0xffffffff});
-    let poolcoinAddr = await env.bpool.methods.getPoolToken().call();
+    let poolcoinAddr = env.bpool._address;
     env.poolcoin = new web3.eth.Contract(JSON.parse(pkg.types.types.TToken.abi), poolcoinAddr);
 
     env.acoin = await pkg.deploy(web3, env.admin, "TToken", [web3.utils.toHex("A")]);

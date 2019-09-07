@@ -13,37 +13,32 @@
 
 pragma solidity ^0.5.10;
 
-import 'erc20/erc20.sol';
+import "erc20/erc20.sol";
 
-import 'ds-token/token.sol';
-
-import "./BBronze.sol";
-import "./BConst.sol";
-import "./BError.sol";
-import "./BEvent.sol";
+import "./BColor.sol";
+import "./BToken.sol";
 import "./BMath.sol";
+import "./BBase.sol";
 
-contract BPool is BPoolBronze
-                , BConst
-                , BError
-                , BEvent
+contract BPool is BBronze
+                , ERC20
+                , BTokenBase
                 , BMath
+                , BBase
 {
 
     bool                      paused;
     address                   manager;
 
-    uint                      tradeFee;
-    uint                      exitFee;
+    uint                      fee;
 
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
     uint                      totalWeight;
 
     bool                      joinable;
-    address                   poolcoin;
 
-    bool                      swaplock; // mutex
+    bool                      mutex;
 
     struct Record {
         bool    bound;
@@ -55,18 +50,7 @@ contract BPool is BPoolBronze
     constructor() public {
         manager = msg.sender;
         paused = true;
-        poolcoin = address(new DSToken("Balancer Pool Token (Bronze)"));
         joinable = false;
-    }
-
-    function getPoolToken()
-      public view returns (address) {
-        return poolcoin;
-    }
-
-    function getPoolTokenSupply()
-      public view returns (uint) {
-        return ERC20(poolcoin).totalSupply();
     }
 
     function getManager()
@@ -91,7 +75,7 @@ contract BPool is BPoolBronze
 
     function getFee()
       public view returns (uint) {
-        return tradeFee;
+        return fee;
     }
 
     function getWeight(address token)
@@ -129,22 +113,22 @@ contract BPool is BPoolBronze
         return joinable;
     }
 
-    function makeJoinable()
+    function makeJoinable(uint initSupply)
       public // emits LOG_CALL
     {
         logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
+        require(initSupply >= MIN_TOKEN_SUPPLY);
         joinable = true;
-        uint supply = 10**6 * 10**18;
-        DSToken(poolcoin).mint(supply); // TODO constant
-        DSToken(poolcoin).transfer(msg.sender, supply);
+        _mint(initSupply);
+        _push(msg.sender, initSupply);
     }
 
     function joinPool(uint poolAo)
       public // TODO LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
-        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
@@ -153,19 +137,19 @@ contract BPool is BPoolBronze
             bool ok = ERC20(t).transferFrom(msg.sender, address(this), tAi);
             require(ok, ERR_ERC20_FALSE);
         }
-        DSToken(poolcoin).mint(poolAo);
-        DSToken(poolcoin).transfer(msg.sender, poolAo);
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
     }
 
     function exitPool(uint poolAi)
       public // emits LOG_SWAP
     {
         require(joinable, ERR_UNJOINABLE);
-        uint poolTotal = ERC20(poolcoin).totalSupply();
+        uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
-        
-        DSToken(poolcoin).transferFrom(msg.sender, address(this), poolAi);
-        DSToken(poolcoin).burn(poolAi);
+       
+        _pull(msg.sender, poolAi); 
+        _burn(poolAi);
 
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
@@ -220,13 +204,13 @@ contract BPool is BPoolBronze
         }
     }
 
-    function setFee(uint tradeFee_)
+    function setFee(uint fee_)
       public
     { 
         logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
-        require(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
-        tradeFee = tradeFee_;
+        require(fee_ <= MAX_FEE, ERR_MAX_FEE);
+        fee = fee_;
     }
 
     function setManager(address manager_)
@@ -327,7 +311,7 @@ contract BPool is BPoolBronze
 
         require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, tradeFee);
+        Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, fee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
@@ -354,7 +338,7 @@ contract BPool is BPoolBronze
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
         require(PL < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
 
-        Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
+        Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, fee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
@@ -381,8 +365,8 @@ contract BPool is BPoolBronze
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
         require(MP < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, tradeFee );
-        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, tradeFee );
+        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, fee );
+        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, fee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -406,15 +390,15 @@ contract BPool is BPoolBronze
         uint Pbefore = calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, tradeFee);
+        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, fee);
         if( Ai > Li ) {
             Ai = Li;
         }
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, tradeFee);
+        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, fee);
         if( Ao < Lo ) {
             Ao = Lo;
-            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
+            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, fee);
         }
 
         uint Iafter = badd(I.balance, Ai);
@@ -431,23 +415,47 @@ contract BPool is BPoolBronze
     function _swap(address Ti, uint Ai, address To, uint Ao)
         internal
     {
-        require( ! swaplock, ERR_ERC20_REENTRY);
-        swaplock = true;
-
-        bool xfer;
-        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-        require(xfer, ERR_ERC20_FALSE);
-
-        records[Ti].balance = badd(records[Ti].balance, Ai);
-        records[To].balance = bsub(records[To].balance, Ao);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
-
-        xfer = ERC20(To).transfer(msg.sender, Ao);
-        require(xfer, ERR_ERC20_FALSE);
-
-        swaplock = false;
+        _swap(false, Ti, Ai, To, Ao);
     }
 
+    function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
+        internal
+    {
+        require( ! mutex, ERR_ERC20_REENTRY);
+        mutex = true;
+
+        bool xfer;
+        Record memory I = records[Ti];
+        Record memory O = records[To];
+
+        if (wrap) {
+            revert('unimplemented');
+            (uint diff, bool sign) = bsubSign(I.balance, Ai);
+            if (sign) {
+                // Vi.forceWrap(msg.sender, deficit);
+            }
+        } else {
+            // Vi.forceWrap(msg.sender, Ai);
+                    xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+                    require(xfer, ERR_ERC20_FALSE);
+        }
+
+
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
+        // Vi.move(msg.sender, this, Ai);
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
+
+        if (wrap) {
+            revert('unimplemented');
+        } else {
+            // Vo.move(this, msg.sender, Ao);
+            // Vo.forceUnwrap(msg.sender, Ao);
+                    xfer = ERC20(To).transfer(msg.sender, Ao);
+                    require(xfer, ERR_ERC20_FALSE);
+        }
+
+        mutex = false;
+    }
 
 }

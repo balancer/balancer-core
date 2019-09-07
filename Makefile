@@ -15,7 +15,6 @@ build:
 		ds-auth=lib/ds-auth/src \
 	/=/ \
 	-o tmp \
-	sol/BBronze.sol \
 	sol/BColor.sol \
 	sol/BConst.sol \
 	sol/BError.sol \
@@ -25,5 +24,7 @@ build:
 	sol/BNum.sol \
 	sol/BPool.sol \
 	sol/BToken.sol \
+	sol/BVault.sol \
+	sol/BHub.sol \
 	sol/TToken.sol \
 
