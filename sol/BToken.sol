@@ -39,15 +39,18 @@ contract BTokenBase is ERC20
     }
 
     function approve(address guy, uint wad) public returns (bool) {
-        require(msg.sender == guy);//, ERR_BAD_CALLER);
         _allowance[msg.sender][guy] = wad;
         emit Approval(msg.sender, guy, wad);
     }
     function transfer(address dst, uint wad) public returns (bool) {
-        _push(dst, wad);
+        _move(msg.sender, dst, wad);
     }
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
+        require(msg.sender == src || wad <= _allowance[src][msg.sender], ERR_BAD_CALLER);
         _move(src, dst, wad);
+        if( _allowance[src][msg.sender] != uint256(-1) ) {
+            _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], wad);
+        }
     }
 
     event LOG_MINT(uint amt);
