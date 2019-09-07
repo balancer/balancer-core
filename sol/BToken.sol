@@ -1,3 +1,4 @@
+// (C) Balancer Labs, 2019
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -37,6 +38,14 @@ contract BTokenBase is ERC20
 
     function totalSupply() public view returns (uint) {
         return _totalSupply;
+    }
+
+    function enable(address dapp) public returns (bool) {
+        approve(dapp, uint256(-1));
+    }
+    
+    function disable(address dapp) public returns (bool) {
+        approve(dapp, 0);
     }
 
     function approve(address guy, uint wad) public returns (bool) {
