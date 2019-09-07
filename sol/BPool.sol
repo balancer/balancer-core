@@ -434,10 +434,10 @@ contract BPool is BBronze
     function _swap(address Ti, uint Ai, address To, uint Ao)
         internal
     {
-        _swap(false, Ti, Ai, To, Ao);
+        _swap(Ti, Ai, To, Ao, true);
     }
 
-    function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
+    function _swap(address Ti, uint Ai, address To, uint Ao, bool skipwrap)
         internal
     {
       require( ! mutex, ERR_ERC20_REENTRY);
@@ -448,16 +448,15 @@ contract BPool is BBronze
         BVault Vi = I.vault;
         BVault Vo = O.vault;
 
-        if (wrap) {
+        if( skipwrap ) {
+            Vi.forceWrap(msg.sender, Ai);
+        } else {
             revert('unimplemented');
             (uint deficit, bool sign) = bsubSign(I.balance, Ai);
             if (sign) {
                 Vi.forceWrap(msg.sender, deficit);
             }
-        } else {
-            Vi.forceWrap(msg.sender, Ai);
         }
-
 
         Vi.move(msg.sender, address(this), Ai);
 
@@ -466,12 +465,11 @@ contract BPool is BBronze
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
 
-
-        if (wrap) {
-            revert('unimplemented');
-        } else {
+        if (skipwrap) {
             Vo.move(address(this), msg.sender, Ao);
             Vo.forceUnwrap(msg.sender, Ao);
+        } else {
+            revert('unimplemented');
         }
 
       mutex = false;
