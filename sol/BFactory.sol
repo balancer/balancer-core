@@ -13,10 +13,7 @@
 
 pragma solidity ^0.5.10;
 
-import 'ds-token/token.sol';
-
-import "./BBronze.sol";
-
+import "./BColor.sol";
 import "./BPool.sol";
 
 contract BFactory is BBronze

@@ -15,9 +15,9 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
+import "./BColor.sol";
 import "./BToken.sol";
 import "./BBase.sol";
-
 import "./BHub.sol";
 
 contract BVault is BBronze

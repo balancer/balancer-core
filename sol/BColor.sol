@@ -18,3 +18,11 @@ contract BColor {
       public view
         returns (bytes32);
 }
+
+contract BBronze is BColor {
+    function getColor()
+      public view
+        returns (bytes32) {
+        return "BRONZE";
+    }
+}
