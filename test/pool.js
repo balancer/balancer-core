@@ -25,24 +25,24 @@ describe("manager and pooling", async () => {
     });
 
     it("join/exit", async () => {
-        await env.bpool.methods.makeJoinable()
+        await env.bpool.methods.makeJoinable(web3.utils.toWei('1000000'))
                        .send({from: env.admin, gas:0xffffffff});
         let ABalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalBefore = await env.bpool.methods.getBalance(env.acoin._address).call();
-        let PSupplyBefore = await env.bpool.methods.getPoolTokenSupply().call();
+        let PSupplyBefore = await env.bpool.methods.totalSupply().call();
 
         await env.bpool.methods.joinPool(web3.utils.toWei('1.0'))
                        .send({from: env.admin, gas:0xffffffff});
         let ABalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalMiddle = await env.bpool.methods.getBalance(env.acoin._address).call();
-        let PSupplyMiddle = await env.bpool.methods.getPoolTokenSupply().call();
+        let PSupplyMiddle = await env.bpool.methods.totalSupply().call();
 
         await env.bpool.methods.exitPool(web3.utils.toWei('1.0'))
                        .send({from: env.admin, gas:0xffffffff});
 
         let ABalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
         let BBalAfter = await env.bpool.methods.getBalance(env.acoin._address).call();
-        let PSupplyAfter = await env.bpool.methods.getPoolTokenSupply().call();
+        let PSupplyAfter = await env.bpool.methods.totalSupply().call();
 
         console.warn("TODO");
     });
