@@ -16,12 +16,9 @@ pragma solidity ^0.5.10;
 import "./BColor.sol";
 import "./BPool.sol";
 
-contract BFactory is BBronze
-{
+contract BFactory is BBronze {
+    event NEW_POOL(address indexed caller, address indexed pool, bytes32 indexed color);
     mapping(address=>bool) public isBPool;
-
-    event LOG_newBPool( address indexed initialManager
-                      , address indexed pool );
 
     function newBPool()
       public returns (BPool)
@@ -29,8 +26,9 @@ contract BFactory is BBronze
         BPool bpool = new BPool();
         bpool.setManager(msg.sender);
         isBPool[address(bpool)] = true;
-        emit LOG_newBPool(msg.sender, address(bpool));
+        emit NEW_POOL(msg.sender, address(bpool), getColor());
         return bpool;
     }
 
 }
+

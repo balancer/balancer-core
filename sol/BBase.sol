@@ -13,11 +13,10 @@
 
 // Tired of linearizing your inheritance graph?
 
-import "./BConst.sol";
-import "./BError.sol";
-import "./BEvent.sol";
-import "./BNum.sol";
-
 pragma solidity ^0.5.10;
 
-contract BBase is BConst, BError, BEvent, BNum {}
+import "./BConst.sol";
+import "./BError.sol";
+import "./BNum.sol";
+
+contract BBase is BConst, BError, BNum {}
