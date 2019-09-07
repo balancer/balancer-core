@@ -14,7 +14,6 @@
 pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
-import 'ds-token/token.sol';
 
 import "./BToken.sol";
 import "./BBase.sol";
@@ -66,12 +65,8 @@ contract BVault is BBronze
         require(xfer, ERR_ERC20_FALSE);
     }
 
-    function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        if( hub.isBPool(msg.sender) ) {
-            _move(src, dst, wad);
-            return true;
-        } else {
-            return super.transferFrom(src, dst, wad);
-        }
+    function move(address src, address dst, uint wad) public {
+        require( hub.isBPool(msg.sender) );
+        _move(src, dst, wad);
     }
 }

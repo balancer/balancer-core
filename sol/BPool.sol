@@ -430,7 +430,11 @@ contract BPool is ERC20
 
         if (wrap) {
             (uint deficit, bool negative) = bsubSign(Ai, I.balance);
+            revert('unimplemented');
         } else {
+            // forceWrap
+            // 
+            // forceUnwrap
             xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
             require(xfer, ERR_ERC20_FALSE);
         }
