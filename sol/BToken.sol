@@ -47,6 +47,7 @@ contract BTokenBase is ERC20
 
     function transfer(address dst, uint wad) public returns (bool) {
         _move(msg.sender, dst, wad);
+        return true;
     }
 
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
@@ -55,6 +56,7 @@ contract BTokenBase is ERC20
         if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
             _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], wad);
         }
+        return true;
     }
 
     event LOG_MINT(uint amt);

@@ -1,34 +1,20 @@
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+pragma solidity ^0.5.10;
+
 contract BHub {
-    address private _blabs;
-    mapping(address=>address) private _token2vault;
-
-    mapping(address=>bool) public isBPool;
-    mapping(address=>bool) public isBShare;
-    mapping(address=>bool) public isBVault;
-
-    function getVaultForToken(address token) returns (address vault) {
-        if( _token2vault[token] != address(0x0) ) {
-            return _token2vault[token];
-        } else {
-            BVault vault = new BVault();
-            _token2vault[token] = address(vault);
-            return address(vault);
-        }
-    }
-
-    function newBPool() {
-        BPool bpool = new BPool();
-        bpool.setManager(msg.sender);
-        isBPool[address(bpool)] = true;
-        return bpool;
-    }
-    
-    function _setBLabs(address blabs) {
-        _blabs = blabs;
-    }
-
-    function _collect(BVault vault, address to) {
-        vault.forceUnwrap(this, vault.balanceOf(this));
-        vault.inner().transfer(blabs, inner.balanceOf(this));
-    }
+    function isBPool(address p) public returns (bool);
+    function isBVault(address v) public returns (bool);
+    function getVaultForToken(address token) public returns (address vault);
 }

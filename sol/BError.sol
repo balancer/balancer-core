@@ -58,6 +58,7 @@ contract BError
     string constant ERR_ERC20_REENTRY      = "ERR_ERC20_REENTRY";
     string constant ERR_VAULT_BALANCE      = "ERR_VAULT_BALANCE";
     string constant ERR_FORCE_WRAP         = "ERR_FORCE_WRAP";
+    string constant ERR_RECURSIVE_VAULT    = "ERR_RECURSIVE_VAULT";
     
     string constant ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 }
