@@ -17,27 +17,20 @@ import 'erc20/erc20.sol';
 
 import "./BBronze.sol";
 import "./BToken.sol";
-import "./BConst.sol";
-import "./BError.sol";
-import "./BEvent.sol";
 import "./BMath.sol";
+import "./BBase.sol";
 
-contract BPool is 
-//                BPoolBronze
-                  BTokenBase
-/*
-                , BConst
-                , BError
-*/
-                , BEvent
+contract BPool is ERC20
+                , BPoolBronze
+                , BTokenBase
                 , BMath
+                , BBase
 {
 
     bool                      paused;
     address                   manager;
 
-    uint                      tradeFee;
-    uint                      exitFee;
+    uint                      fee;
 
     mapping(address=>Record)  records;
     address[]                 _index; // private index for iteration
@@ -82,7 +75,7 @@ contract BPool is
 
     function getFee()
       public view returns (uint) {
-        return tradeFee;
+        return fee;
     }
 
     function getWeight(address token)
@@ -211,13 +204,13 @@ contract BPool is
         }
     }
 
-    function setFee(uint tradeFee_)
+    function setFee(uint fee_)
       public
     { 
         logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
-        require(tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
-        tradeFee = tradeFee_;
+        require(fee_ <= MAX_FEE, ERR_MAX_FEE);
+        fee = fee_;
     }
 
     function setManager(address manager_)
@@ -318,7 +311,7 @@ contract BPool is
 
         require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, tradeFee);
+        Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, fee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
@@ -345,7 +338,7 @@ contract BPool is
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
         require(PL < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
 
-        Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
+        Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, fee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
@@ -372,8 +365,8 @@ contract BPool is
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
         require(MP < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, tradeFee );
-        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, tradeFee );
+        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, fee );
+        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, fee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -397,15 +390,15 @@ contract BPool is
         uint Pbefore = calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, tradeFee);
+        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, fee);
         if( Ai > Li ) {
             Ai = Li;
         }
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, tradeFee);
+        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, fee);
         if( Ao < Lo ) {
             Ao = Lo;
-            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, tradeFee);
+            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, fee);
         }
 
         uint Iafter = badd(I.balance, Ai);
@@ -445,7 +438,7 @@ contract BPool is
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, tradeFee);
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
 
         if ( ! wrap) {
             xfer = ERC20(To).transfer(msg.sender, Ao);

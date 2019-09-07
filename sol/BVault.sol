@@ -17,17 +17,15 @@ import 'erc20/erc20.sol';
 import 'ds-token/token.sol';
 
 import "./BToken.sol";
-import "./BError.sol";
-import "./BConst.sol";
-import "./BNum.sol";
+import "./BBase.sol";
 
 contract BIHub {
     function isPool(address p) public returns (bool);
 }
 
-contract BVault is BTokenBase
-//                 , BError
-//                 , BNum
+contract BVault is BBronze
+                 , BBase
+                 , BTokenBase
 {
     BIHub                  public hub;
     ERC20                  public inner;
