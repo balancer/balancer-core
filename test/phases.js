@@ -37,13 +37,14 @@ describe("scene tests", async () => {
         assert.exists(env.bcoin);
         assert.exists(env.ccoin);
 
-        let max = web3.utils.toBN(web3.utils.toTwosComplement('-1'));
+        let max = web3.utils.toTwosComplement('-1');
         for( let coin of [env.acoin, env.bcoin, env.ccoin] ) {
             let bal = await coin.methods.balanceOf(env.admin).call();
-            assert.equal(bal, max);
+            assert.equal(web3.utils.toHex(bal), max);
+            let vault = await env.hub.methods.getVaultForToken(coin._address).call(); 
             // DSToken MAX_U256 means infinite allowance
-            allowance = await coin.methods.allowance(env.admin, env.bpool._address).call();
-            assert.equal(allowance, max);
+            allowance = await coin.methods.allowance(env.admin, vault).call();
+            assert.equal(web3.utils.toHex(allowance), max);
         }
     });
 
@@ -52,10 +53,15 @@ describe("scene tests", async () => {
         let paused = await env.bpool.methods.isPaused().call();
         assert.isFalse(paused);
         for( let coin of [env.acoin, env.bcoin, env.ccoin] ) {
-            let bal = await env.bpool.methods.getBalance(coin._address).call();
-            let truebal = await coin.methods.balanceOf(env.bpool._address).call();
-            assert.equal(bal, env.initBalance, "wrong bpool.getBalance(coin)");
-            assert.equal(truebal, env.initBalance, "wrong coin.balanceOf(bpool)");
+            let vaultAddr = await env.hub.methods.getVaultForToken(coin._address).call();
+            let vault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), vaultAddr);
+
+            let localbal = await env.bpool.methods.getBalance(coin._address).call();
+            assert.equal(localbal, env.initBalance, "wrong bpool.getBalance(coin)");
+            let vaultbal = await vault.methods.balanceOf(env.bpool._address).call();
+            assert.equal(vaultbal, env.initBalance, "wrong vault.balanceOf(bpool)");
+            let truebal = await coin.methods.balanceOf(vaultAddr).call();
+            assert.equal(truebal, env.initBalance, "wrong coin.balanceOf(vault)");
         }
     })
 

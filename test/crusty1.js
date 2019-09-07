@@ -27,11 +27,12 @@ let assertCloseBN = (a, b, tolerance) => {
 }
 
 describe("crusty bpool tests", () => {
-    var factory;
+    var hub;
     var accts;
     var acct0; var acct1; var acct2;
     var bpool;
     var acoin; var bcoin; var ccoin;
+    var avault; var bvault; var cvault;
 
     // balance of acct0 (for each coin) at start of each test
     let preBindBalance = toWei("1001"); // +1 for initial bind
@@ -43,27 +44,40 @@ describe("crusty bpool tests", () => {
         acct1 = accts[1];
         acct2 = accts[2];
 
+        hub = await pkg.deploy(web3, acct0, "BHubBronze");
+
         acoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("A")]);
         bcoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("B")]);
         ccoin = await pkg.deploy(web3, acct0, "TToken", [asciiToHex("C")]);
 
-        factory = await pkg.deploy(web3, acct0, "BFactory");
+        getAvault = hub.methods.getVaultForToken(acoin._address);
+        getBvault = hub.methods.getVaultForToken(bcoin._address);
+        getCvault = hub.methods.getVaultForToken(ccoin._address);
+        avaultAddr = await getAvault.call();
+        bvaultAddr = await getBvault.call();
+        cvaultAddr = await getCvault.call();
+        await getAvault.send({from: acct0, gas: 5000000});
+        await getBvault.send({from: acct0, gas: 5000000});
+        await getCvault.send({from: acct0, gas: 5000000});
+        avault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), avaultAddr);
+        bvault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), bvaultAddr);
+        cvault = new web3.eth.Contract(JSON.parse(pkg.types.types.BVault.abi), cvaultAddr);
 
-        //== TODO clean
-        bpool = await factory.methods.newBPool().call();
-        //console.log(bpool);
-        await factory.methods.newBPool().send({from: acct0, gas:0xffffffff});
-        //console.log(pkg.types.types.BPool);
-        bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpool);
-        //console.log(bpool);
-        //--
-
+        bpoolAddr = await hub.methods.newBPool().call();
+        await hub.methods.newBPool().send({from: acct0, gas:0xffffffff});
+        bpool = new web3.eth.Contract(JSON.parse(pkg.types.types.BPool.abi), bpoolAddr);
+        for (user of [acct0, acct1, acct2] ) {
+            await acoin.methods.approve(avaultAddr, MAX256)
+                       .send({from: user});
+            await bcoin.methods.approve(bvaultAddr, MAX256)
+                       .send({from: user});
+            await ccoin.methods.approve(cvaultAddr, MAX256)
+                       .send({from: user});
+        }
+        var approval = await acoin.methods.allowance(acct0, avaultAddr).call();
+        console.log(approval);
         for (coin of [acoin, bcoin, ccoin]) {
             await coin.methods.mint(preBindBalance).send({from: acct0});
-            for (user of [acct0, acct1, acct2] ) {
-                await coin.methods.approve(bpool._address, MAX256)
-                          .send({from: user});
-            }
             await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({from: acct0, gas:0xffffffff});
         }
         await bpool.methods.start().send({from: acct0});

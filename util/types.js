@@ -27,8 +27,11 @@ module.exports.liftTypes = function(types) {
     lift("BPool");
     lift("BToken");
     lift("BVault");
-    lift("Balancer");
+    lift("BHub");
+    lift("BHubBronze");
     lift("TToken");
+    
+    types["BHubBronze"] = types["sol/BHub.sol:BHubBronze"];
 
     module.exports.types = types;
 }

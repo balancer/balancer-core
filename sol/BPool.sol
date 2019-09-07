@@ -196,12 +196,19 @@ contract BPool is BBronze
         uint oldBalance = records[token].balance;
         records[token].balance = balance;
 
+        BVault vault = records[token].vault;
+
         if (balance > oldBalance) {
-            bool ok = ERC20(token).transferFrom(msg.sender, address(this), bsub(balance, oldBalance));
-            require(ok, ERR_ERC20_FALSE);
+            uint diff = bsub(balance, oldBalance);
+            (uint deficit, bool sign) = bsubSign(vault.balanceOf(msg.sender), diff);
+            if (sign) {
+                vault.forceWrap(msg.sender, deficit);
+            }
+            vault.move(msg.sender, address(this), diff);
         } else if( balance < oldBalance) {
-            bool ok = ERC20(token).transfer(msg.sender, bsub(oldBalance, balance));
-            require(ok, ERR_ERC20_FALSE);
+            vault.move(address(this), msg.sender, bsub(oldBalance, balance));
+        } else {
+            // balance == oldBalance
         }
 
         emit LOG_PARAMS(token, balance, weight, totalWeight);
@@ -445,14 +452,12 @@ contract BPool is BBronze
 
         if (wrap) {
             revert('unimplemented');
-            (uint diff, bool sign) = bsubSign(I.balance, Ai);
+            (uint deficit, bool sign) = bsubSign(I.balance, Ai);
             if (sign) {
-                // Vi.forceWrap(msg.sender, deficit);
+                Vi.forceWrap(msg.sender, deficit);
             }
         } else {
             Vi.forceWrap(msg.sender, Ai);
-            //        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-            //        require(xfer, ERR_ERC20_FALSE);
         }
 
 
