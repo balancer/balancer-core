@@ -13,29 +13,23 @@
 
 pragma solidity ^0.5.10;
 
-
 contract BEvent
 {
-    event LOG_SWAP( address indexed caller
-                  , address indexed tokenIn
-                  , address indexed tokenOut
-                  , uint256         amountIn
-                  , uint256         amountOut
-                  , uint256         feeRatio );
-
-    event LOG_PARAMS( address indexed token
-                    , uint256         balance
-                    , uint256         weight
-                    , uint256         totalWeight);
+ 
+    modifier logf() {
+        emit LOG_CALL(msg.sender, msg.sig, msg.data);
+        _;
+    }
 
     event LOG_CALL( address indexed caller
                   , bytes4  indexed sig
                   , bytes           data
                   ) anonymous;
 
-    function logcall() internal {
-        emit LOG_CALL(msg.sender, msg.sig, msg.data);
-    }
- 
-
+    event LOG_SWAP( address indexed caller
+                  , address indexed tokenIn
+                  , address indexed tokenOut
+                  , uint256         amountIn
+                  , uint256         amountOut
+                  , uint256         feeRatio );
 }

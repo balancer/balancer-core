@@ -54,8 +54,8 @@ contract BError
     string constant ERR_UNJOINABLE         = "ERR_UNJOINABLE";
     string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
 
+    string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
-    string constant ERR_ERC20_REENTRY      = "ERR_ERC20_REENTRY";
     string constant ERR_VAULT_BALANCE      = "ERR_VAULT_BALANCE";
     string constant ERR_FORCE_WRAP         = "ERR_FORCE_WRAP";
     string constant ERR_RECURSIVE_VAULT    = "ERR_RECURSIVE_VAULT";

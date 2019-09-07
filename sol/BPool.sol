@@ -38,8 +38,14 @@ contract BPool is BBronze
 
     bool                      joinable;
 
-    bool                      mutex;
+    bool                      _mutex;
 
+    modifier mutex() {
+        require( !_mutex, ERR_REENTRY);
+        _mutex = true;
+        _;
+        _mutex = false;
+    }
     struct Record {
         bool    bound;
         uint    index;   // int
@@ -115,8 +121,8 @@ contract BPool is BBronze
 
     function makeJoinable(uint initSupply)
       public // emits LOG_CALL
+        logf
     {
-        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(initSupply >= MIN_TOKEN_SUPPLY);
         joinable = true;
@@ -126,6 +132,8 @@ contract BPool is BBronze
 
     function joinPool(uint poolAo)
       public // TODO LOG_SWAP
+       mutex
+        logf
     {
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = totalSupply();
@@ -143,6 +151,8 @@ contract BPool is BBronze
 
     function exitPool(uint poolAi)
       public // emits LOG_SWAP
+       mutex
+        logf
     {
         require(joinable, ERR_UNJOINABLE);
         uint poolTotal = totalSupply();
@@ -161,7 +171,9 @@ contract BPool is BBronze
     }
 
     function setParams(address token, uint balance, uint weight)
-      public // emits LOG_PARAMS
+      public
+       mutex
+        logf
     {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
@@ -191,23 +203,12 @@ contract BPool is BBronze
             bool ok = ERC20(token).transfer(msg.sender, bsub(oldBalance, balance));
             require(ok, ERR_ERC20_FALSE);
         }
-
-        emit LOG_PARAMS(token, balance, weight, totalWeight);
-    }
-
-    function batchSetParams(bytes32[3][] memory tokenBalanceWeights)
-      public // emits LOG_PARAMS
-    {
-        for( uint i = 0; i < tokenBalanceWeights.length; i++ ) {
-            bytes32[3] memory TBW = tokenBalanceWeights[i];
-            setParams(address(bytes20(TBW[0])), uint(TBW[1]), uint(TBW[2]));
-        }
     }
 
     function setFee(uint fee_)
       public
+        logf
     { 
-        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(fee_ <= MAX_FEE, ERR_MAX_FEE);
         fee = fee_;
@@ -215,37 +216,44 @@ contract BPool is BBronze
 
     function setManager(address manager_)
       public
+        logf
     {
-        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         manager = manager_;
     }
 
 
     function bind(address token, uint balance, uint weight)
-      public // emits LOG_PARAMS
+      public
+       mutex
+        logf
     {
         require(msg.sender == manager, ERR_BAD_CALLER);
-        require( ! isBound(token), ERR_NOT_BOUND);
+        require( ! isBound(token), ERR_ALREADY_BOUND);
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
         require(balance >= MIN_TOKEN_BALANCE, ERR_MIN_BALANCE);
         require(balance <= MAX_TOKEN_BALANCE, ERR_MAX_BALANCE);
         require(weight >= MIN_TOKEN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_TOKEN_WEIGHT, ERR_MAX_WEIGHT);
 
+        bool ok = ERC20(token).transferFrom(msg.sender, address(this), balance);
+        require(ok, ERR_ERC20_FALSE);
+
+        totalWeight = badd(totalWeight, weight);
+
         records[token] = Record({
             bound: true
           , index: _index.length
-          , weight: 0
-          , balance: 0
+          , weight: weight
+          , balance: balance
         });
         _index.push(token);
-
-        setParams(token, balance, weight);
     }
 
     function unbind(address token)
-      public // emits LOG_PARAMS
+      public
+       mutex
+        logf
     {
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
@@ -257,7 +265,7 @@ contract BPool is BBronze
 
         totalWeight = bsub(totalWeight, T.weight);
 
-        emit LOG_PARAMS(token, T.balance, T.weight, totalWeight);
+        delete records[token]; // zero all values
 
         uint index = records[token].index;
         uint last = _index.length-1;
@@ -265,12 +273,14 @@ contract BPool is BBronze
             _index[index] = _index[last];
         }
         _index.pop();
-        delete records[token];
     }
 
     // Collect any excess token that may have been transferred in
+    // The difference between `token.balanceOf(pool)` and `pool.getBalance(token)`
     function sweep(address token)
       public
+       mutex
+        logf
     { 
         require(msg.sender == manager, ERR_BAD_CALLER);
         require(isBound(token), ERR_NOT_BOUND);
@@ -282,16 +292,16 @@ contract BPool is BBronze
 
     function pause()
       public
+        logf
     { 
-        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         paused = true;
     }
 
     function start()
       public
+        logf
     {
-        logcall();
         require(msg.sender == manager, ERR_BAD_CALLER);
         paused = false;
     }
@@ -414,48 +424,22 @@ contract BPool is BBronze
 
     function _swap(address Ti, uint Ai, address To, uint Ao)
         internal
+        mutex
     {
-        _swap(false, Ti, Ai, To, Ao);
-    }
-
-    function _swap(bool wrap, address Ti, uint Ai, address To, uint Ao)
-        internal
-    {
-        require( ! mutex, ERR_ERC20_REENTRY);
-        mutex = true;
-
-        bool xfer;
         Record memory I = records[Ti];
         Record memory O = records[To];
 
-        if (wrap) {
-            revert('unimplemented');
-            (uint diff, bool sign) = bsubSign(I.balance, Ai);
-            if (sign) {
-                // Vi.forceWrap(msg.sender, deficit);
-            }
-        } else {
-            // Vi.forceWrap(msg.sender, Ai);
-                    xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
-                    require(xfer, ERR_ERC20_FALSE);
-        }
-
-
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
+
+        bool xfer;
+        xfer = ERC20(Ti).transferFrom(msg.sender, address(this), Ai);
+        require(xfer, ERR_ERC20_FALSE);
+        xfer = ERC20(To).transfer(msg.sender, Ao);
+        require(xfer, ERR_ERC20_FALSE);
+
         // Vi.move(msg.sender, this, Ai);
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao, fee);
-
-        if (wrap) {
-            revert('unimplemented');
-        } else {
-            // Vo.move(this, msg.sender, Ao);
-            // Vo.forceUnwrap(msg.sender, Ao);
-                    xfer = ERC20(To).transfer(msg.sender, Ao);
-                    require(xfer, ERR_ERC20_FALSE);
-        }
-
-        mutex = false;
     }
 
 }

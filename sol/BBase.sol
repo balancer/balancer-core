@@ -20,4 +20,4 @@ import "./BNum.sol";
 
 pragma solidity ^0.5.10;
 
-contract BBase is BConst, BError, BEvent {}
+contract BBase is BConst, BError, BEvent, BNum {}

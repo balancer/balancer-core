@@ -52,10 +52,6 @@ module.exports.phase1 = async (web3) => {
     return env;
 }
 
-// phase2:
-//  initWeight = toWei(10)
-//  initBalance = toWei(1000)
-//  bpool.bind(*coin, initWeight, initBalance)
 module.exports.phase2 = async (web3) => {
     let env = await module.exports.phase1(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);
@@ -76,9 +72,6 @@ module.exports.phase2 = async (web3) => {
     return env;
 }
 
-//  admin: *coin.move(admin, user*, initBalance)
-//  user: *coin.trusts(bpool, true)
-//  user: poolcoin.trusts(bpool)
 module.exports.phase3 = async (web3) => {
     let env = await module.exports.phase2(web3);
     let deploy = (w, a, t) => pkg.deploy(web3, env.admin, t);

@@ -17,16 +17,10 @@ module.exports.liftTypes = function(types) {
         types[type] = types[`sol/${type}.sol:${type}`];
     }
 
-    lift("BConst");
-    lift("BError");
-    lift("BEvent");
     lift("BFactory");
     lift("BMath");
     lift("BNote");
-    lift("BNum");
     lift("BPool");
-    lift("BToken");
-    lift("BVault");
     lift("TToken");
 
     module.exports.types = types;

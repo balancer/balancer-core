@@ -176,7 +176,7 @@ describe("crusty bpool tests", () => {
     it("bind/unbind no-revert cases", async() => {
         numBound = await bpool.methods.getNumTokens().call();
         assert.equal(3, numBound);
-        await bpool.methods.unbind(acoin._address).send({from: acct0});
+        await bpool.methods.unbind(acoin._address).send({from: acct0, gas:5000000});
         numBound = await bpool.methods.getNumTokens().call();
         assert.equal(2, numBound);
     });
