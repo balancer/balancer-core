@@ -1,21 +1,34 @@
 let t = require("../util/twrap.js");
 
-let Web3 = require("web3");
 let ganache = require("ganache-core");
 
 let pkg = require("../pkg.js");
 pkg.types.loadTestTypes();
 
-let web3 = new Web3(ganache.provider({
-    gasLimit: 0xffffffff,
-    allowUnlimitedContractSize: true,
-    debug: true
-}));
+let Web3 = require('web3'); // utils only
 
-let toWei = web3.utils.toWei;
+let toWei = Web3.utils.toWei;
 
-module.exports.scene1 = async (env) => {
-    env.MAX = web3.utils.hexToNumberString(web3.utils.toTwosComplement('-1'));
+module.exports.scene0 = async (web3) => {
+    let env = {};
+    env.web3 = web3;
+    env.types = pkg.types;
+
+    env.accts = await env.web3.eth.getAccounts();
+    env.admin = env.accts[0];
+    env.user1 = env.accts[1];
+    env.user2 = env.accts[1];
+
+    env.web3.opts = {
+        from: env.admin,
+        gas: 6000000
+    }
+
+    return env;
+}
+module.exports.scene1 = async (web3) => {
+    let env = await module.exports.scene0(web3);
+    env.MAX = Web3.utils.hexToNumberString(Web3.utils.toTwosComplement('-1'));
     env.initDAI = toWei('5000');
     env.initETH = toWei('40');
     env.initMKR = toWei('10');
@@ -41,7 +54,8 @@ module.exports.scene1 = async (env) => {
     return env;
 }
 
-module.exports.scene2 = async(env) => {
+module.exports.scene2 = async(web3) => {
+    let env = await module.exports.scene1(web3);
     await env.MKR.mint(env.initMKR);
     await env.ETH.mint(env.initETH);
     await env.DAI.mint(env.initDAI);
