@@ -11,7 +11,7 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
-let scene = require("./scene.js");
+let scene = require("./crusty_phases.js");
 let points = require("./points.js");
 
 let toBNum = (n) => web3.utils.toBN(web3.utils.toWei(n.toString()));

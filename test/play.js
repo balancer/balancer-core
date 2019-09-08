@@ -12,19 +12,17 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
-describe('a play about balancer', async () => {
-  it('is a long play', async () => {
-    let accts = await web3.eth.getAccounts();
-    web3.eth.defaultOptions = {
-        from: accts[0],
-        gas: 6000000
-    }
-
-    let BFactory = new t.TType(web3, pkg.types, "BFactory");
-    let factory = await BFactory.deploy();
-    let color = await factory.getColor();
+// Precondition:
+// env.web3 exists
+// env.types exists
+// env.admin exists, env.eth.web3.defaultOptions.from == env.admin
+module.exports.scene1 = async (env) => {
+    let BFactory = new t.TType(env.web3, env.types, "BFactory");
+    env.factory = await BFactory.deploy();
+    let color = await env.factory.getColor();
     assert.equal(color, web3.utils.padRight(web3.utils.toHex("BRONZE"), 64));
-    let bpool = await factory.newBPool();
+    env.bpool = await env.factory.newBPool();
+    return env;
+}
 
-  });
-});
+

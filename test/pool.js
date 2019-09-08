@@ -10,7 +10,7 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
-let scene = require("./scene.js");
+let scene = require("./crusty_phases.js");
 
 describe("manager and pooling", async () => {
     let env = {};

@@ -10,9 +10,9 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
-let scene = require("./scene.js");
+let scene = require("./crusty_phases.js");
 
-describe("scene tests", async () => {
+describe("crusty_phases tests", async () => {
     let accts;
     let admin;
     let env = {};
