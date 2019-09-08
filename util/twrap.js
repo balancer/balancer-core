@@ -1,3 +1,5 @@
+let copy = (o) => { return JSON.parse(JSON.stringify(o)); }
+
 module.exports.TType = class {
     constructor(web3, buildout, tname) {
         this.web3 = web3;
@@ -11,11 +13,10 @@ module.exports.TType = class {
     }
 
     async deploy(args) {
-      let opts = this.web3.eth.defaultOptions;
       let T = new module.exports.TWrap(this.web3, this.buildout, this.tname);
       T.__web3obj = await new this.web3.eth.Contract(this.abi)
                                       .deploy({data: this.bin, arguments: args})
-                                      .send(opts);
+                                      .send(copy(this.web3.opts));
           
       T.__address = T.__web3obj._address;
       return T;
@@ -55,9 +56,10 @@ module.exports.TWrap = class {
             let fn = this.__web3obj.methods[func.name](...arguments);
             let result;
             let gas;
+            let opts = copy(this.__web3.opts);
             try {
                 result = await fn.call();
-                let tx = await fn.send(this.__web3.eth.defaultOptions);
+                let tx = await fn.send(copy(opts));
                 this._lastGas = tx.gasUsed;
                 this._lastEvents = tx.events;
             } catch (err) {
@@ -77,10 +79,13 @@ module.exports.TWrap = class {
             desc += ' '.repeat(16) + ` -> ${result}`;
             this._lastDesc = desc;
            
-            if( func.outputs && func.outputs[0].internalType.startsWith("contract") ) {
-                let tname = func.outputs[0].internalType.split(' ')[1];
-                let ttype = new module.exports.TType(this.__web3, this.__buildout, tname);
-                result = ttype.at(result);
+            if( func.outputs && func.outputs[0]) {
+                let restype = func.outputs[0].internalType;
+                if( restype && restype.startsWith('contract ') ) {
+                    let tname = func.outputs[0].internalType.split(' ')[1];
+                    let ttype = new module.exports.TType(this.__web3, this.__buildout, tname);
+                    result = ttype.at(result);
+                }
             }
             
             return result;
