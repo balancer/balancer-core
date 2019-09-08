@@ -41,58 +41,72 @@ module.exports.TWrap = class {
     if( typeof(this.__abi) == 'string') {
         this.__abi = JSON.parse(this.__abi);
     }
-    this._lastGas;
-    this._lastEvents;
-    this._lastDesc;
+    this.__lastGas;
+    this.__lastEvents;
+    this.__lastDesc;
     for( let func of this.__abi ) {
       if(func.type == 'function') {
         this[func.name] = async function() {
-
           if (this.__address == undefined) {
             throw new Error(
 `Tried to call a function on a type (call it on an instance instead): ${func.name}`
             );
-          } else {
-            let fn = this.__web3obj.methods[func.name](...arguments);
-            let result;
-            let gas;
-            let opts = copy(this.__web3.opts);
-            try {
-                result = await fn.call();
-                let tx = await fn.send(copy(opts));
-                this._lastGas = tx.gasUsed;
-                this._lastEvents = tx.events;
-            } catch (err) {
-                if (err != null && err.name == 'RuntimeError') {
-                    assert(Object.keys(err.results).length == 1, 'more than one exception in transaction!?');
-                    let trxID = Object.keys(err.results)[0];
-                    result = err.results[trxID].reason;
-                } else {
-                    throw err;
-                }
-            }
-            let args = Array.prototype.slice.call(arguments);
-            let desc = `[gas: ${this._lastGas}]`;
-            desc = this.__web3.utils.padRight(desc, 16, ' ');
-            desc += `${func.name}(${args})`;
-            desc += `\n`;
-            desc += ' '.repeat(16) + ` -> ${result}`;
-            this._lastDesc = desc;
-           
-            if( func.outputs && func.outputs[0]) {
-                let restype = func.outputs[0].internalType;
-                if( restype && restype.startsWith('contract ') ) {
-                    let tname = func.outputs[0].internalType.split(' ')[1];
-                    let ttype = new module.exports.TType(this.__web3, this.__buildout, tname);
-                    result = ttype.at(result);
-                }
-            }
-            
-            return result;
-
           }
 
+          let fn = this.__web3obj.methods[func.name](...arguments);
+          let result;
+          let gas;
+          let opts = copy(this.__web3.opts);
+          result = await fn.call();
+          let tx = await fn.send(copy(opts));
+          this.__lastGas = tx.gasUsed;
+          this.__lastEvents = tx.events;
+
+          let args = Array.prototype.slice.call(arguments);
+          let desc = `[gas: ${this.__lastGas}]`;
+          desc = this.__web3.utils.padRight(desc, 16, ' ');
+          desc += `${func.name}(${args})`;
+          desc += `\n`;
+          desc += ' '.repeat(16) + ` -> ${result}`;
+          this.__lastDesc = desc;
+          
+          if( func.outputs && func.outputs[0]) {
+              let restype = func.outputs[0].internalType;
+              if( restype && restype.startsWith('contract ') ) {
+                  let tname = func.outputs[0].internalType.split(' ')[1];
+                  let ttype = new module.exports.TType(this.__web3, this.__buildout, tname);
+                  result = ttype.at(result);
+              }
+          }
+          
+          return result;
         }
+
+        this["CATCH_" + func.name] = async function() {
+          if (this.__address == undefined) {
+            throw new Error(
+`Tried to call a function on a type (call it on an instance instead): ${func.name}`
+            );
+          }
+          let fn = this.__web3obj.methods[func.name](...arguments);
+          let result;
+          let gas;
+          let opts = copy(this.__web3.opts);
+          try {
+            await fn.call();
+            throw new Error(`Expected CATCH_ variant to throw: CATCH_${func.name}`);
+          } catch (err) {
+              if (err != null && err.name == 'RuntimeError') {
+                  assert(Object.keys(err.results).length == 1, 'more than one exception in transaction!?');
+                  let trxID = Object.keys(err.results)[0];
+                  result = err.results[trxID].reason;
+                  return result;
+              } else {
+                  throw err;
+              }
+          }
+        }
+
       }
     }
   }
