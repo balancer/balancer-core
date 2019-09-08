@@ -12,12 +12,16 @@ let web3 = new Web3(ganache.provider({
     debug: true
 }));
 
-let play = require('./play.js');
+let play = require('../util/play.js');
 
 let toWei = web3.utils.toWei;
 let fromWei = web3.utils.fromWei;
 
 describe('a play about balancer', async () => {
+  beforeEach(async () => {
+    await play.stage(web3);
+  });
+
   it('scene 1', async () => {
     let env = await play.scene1(web3);
     assert.exists(env.Ali);

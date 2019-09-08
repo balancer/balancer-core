@@ -1,20 +1,27 @@
-let t = require("../util/twrap.js");
-
-let ganache = require("ganache-core");
-
-let pkg = require("../pkg.js");
-pkg.types.loadTestTypes();
-
-let Web3 = require('web3'); // utils only
-
+let Web3 = require("web3"); // utils only
 let toWei = Web3.utils.toWei;
+let fromWei = Web3.utils.fromWei;
 
-module.exports.scene0 = async (web3) => {
-    let env = {};
-    env.web3 = web3;
-    env.types = pkg.types;
+let t = require("./twrap.js");
+let types_ = require("./types.js");
+types_.loadTestTypes();
 
-    env.accts = await env.web3.eth.getAccounts();
+
+let env;
+let web3;
+let staged = false;
+
+module.exports.stage = async (web3_, accts_) => {
+    env = {};
+    env.web3 = web3_
+    env.MAX = Web3.utils.hexToNumberString(Web3.utils.toTwosComplement('-1'));
+    if (accts_ == undefined) {
+        accts_ = await env.web3.eth.getAccounts();
+    }
+
+    env.types = types_;
+
+    env.accts = accts_
     env.Ali = env.accts[0];
     env.Bob = env.accts[1];
     env.Cat = env.accts[1];
@@ -24,15 +31,12 @@ module.exports.scene0 = async (web3) => {
         gas: 6000000
     }
 
+    staged = true;
     return env;
 }
-module.exports.scene1 = async (web3) => {
-    let env = await module.exports.scene0(web3);
-    env.MAX = Web3.utils.hexToNumberString(Web3.utils.toTwosComplement('-1'));
-    env.initDAI = toWei('5000');
-    env.initETH = toWei('40');
-    env.initMKR = toWei('10');
 
+module.exports.scene1 = async () => {
+    assert(staged, "please call `stage`");
     let TToken = new t.TType(env.web3, env.types, "TToken");
 
     env.ETH = await TToken.deploy();
@@ -51,11 +55,18 @@ module.exports.scene1 = async (web3) => {
         }
     }
     env.web3.opts.from = env.Ali;
+
+    staged = false;
     return env;
 }
 
 module.exports.scene2 = async(web3) => {
-    let env = await module.exports.scene1(web3);
+    await module.exports.scene1();
+
+    env.initDAI = toWei('5000');
+    env.initETH = toWei('40');
+    env.initMKR = toWei('10');
+
     await env.MKR.mint(env.initMKR);
     await env.ETH.mint(env.initETH);
     await env.DAI.mint(env.initDAI);
