@@ -17,11 +17,9 @@
 
 pragma solidity ^0.5.10;
 
-import "./BError.sol";
 import "./BConst.sol";
 
 contract BNum is BConst
-               , BError
 {
     function btoi(uint a) internal pure returns (uint) {
         return a / BONE;

@@ -15,7 +15,6 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
-import "./BError.sol";
 import "./BNum.sol";
 
 contract BTokenBase is ERC20
