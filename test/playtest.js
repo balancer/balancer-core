@@ -23,7 +23,7 @@ describe('a play about balancer', async () => {
   });
 
   it('scene 1', async () => {
-    let env = await play.scene1(web3);
+    let env = await play.scene1();
     assert.exists(env.Ali);
     assert.exists(env.factory);
     assert.exists(env.bpool);
@@ -33,10 +33,15 @@ describe('a play about balancer', async () => {
 
     let approval = await env.ETH.allowance(env.Ali, env.bpool.__address);
     assert.equal(approval, env.MAX);
+
+    env.web3.opts.from = env.Bob;
+    let err = await env.bpool.CATCH_setParams(env.DAI.__address, toWei('100'), toWei('1.5'));
+    assert.equal(err, "ERR_BAD_CALLER");
+    env.web3.opts.from = env.Ali;
   });
 
-  it('scene 2', async() => {
-    let env = await play.scene2(web3);
+  it('scene 2', async () => {
+    let env = await play.scene2();
     let bal = await env.DAI.balanceOf(env.bpool.__address);
     assert.equal(bal, env.initDAI);
     let paused = await env.bpool.isPaused();
@@ -61,4 +66,9 @@ describe('a play about balancer', async () => {
     let err = await env.bpool.CATCH_joinPool('0');
     assert.equal(err, "ERR_UNJOINABLE");
   });
+
+  it('scene 3', async () => {
+    let env = await play.scene3();
+  });
+
 });

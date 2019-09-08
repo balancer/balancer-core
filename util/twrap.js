@@ -93,7 +93,7 @@ module.exports.TWrap = class {
           let gas;
           let opts = copy(this.__web3.opts);
           try {
-            await fn.call();
+            await fn.call(opts);
             throw new Error(`Expected CATCH_ variant to throw: CATCH_${func.name}`);
           } catch (err) {
               if (err != null && err.name == 'RuntimeError') {

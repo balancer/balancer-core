@@ -37,6 +37,8 @@ module.exports.stage = async (web3_, accts_) => {
 
 module.exports.scene1 = async () => {
     assert(staged, "please call `stage`");
+    staged = false;
+
     let TToken = new t.TType(env.web3, env.types, "TToken");
 
     env.ETH = await TToken.deploy();
@@ -56,11 +58,10 @@ module.exports.scene1 = async () => {
     }
     env.web3.opts.from = env.Ali;
 
-    staged = false;
     return env;
 }
 
-module.exports.scene2 = async(web3) => {
+module.exports.scene2 = async() => {
     await module.exports.scene1();
 
     env.initDAI = toWei('5000');
@@ -76,6 +77,12 @@ module.exports.scene2 = async(web3) => {
     await env.bpool.bind(env.DAI.__address, toWei('5000'), toWei('1.1'));
 
     await env.bpool.start();
+
+    return env;
+}
+
+module.exports.scene3 = async() => {
+    await module.exports.scene2();
 
     return env;
 }
