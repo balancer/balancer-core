@@ -78,18 +78,6 @@ contract BMath is BBronze
         return r;
     }
 
-    // TODO remove
-    function amountUpToPriceApprox( uint Bi, uint Wi
-                                  , uint Bo, uint Wo
-                                  , uint SER1
-                                  , uint fee
-                                  )
-      public pure
-        returns ( uint Ai )
-    {
-        Ai = calc_InGivenPrice( Bi, Wi, Bo, Wo, SER1, fee );
-    }
-
     function calc_InGivenPrice( uint Bi, uint Wi
                               , uint Bo , uint Wo
                               , uint SER1
