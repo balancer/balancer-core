@@ -11,23 +11,22 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+module.exports.liftTypes = function (types) {
+  function lift (type) {
+    module.exports[type] = types[`sol/${type}.sol:${type}`]
+  }
 
-module.exports.liftTypes = function(types) {
-    function lift(type) {
-        module.exports[type] = types[`sol/${type}.sol:${type}`];
-    }
-
-    lift("BFactory");
-    lift("BMath");
-    lift("BPool");
-    lift("TToken");
+  lift('BFactory')
+  lift('BMath')
+  lift('BPool')
+  lift('TToken')
 }
 
-module.exports.loadTestTypes = function() {
-    let testPath = "../out/tmp/combined.json";
-    let buildout = require(testPath);
-    module.exports.liftTypes(buildout.contracts);
+module.exports.loadTestTypes = function () {
+  const testPath = '../out/tmp/combined.json'
+  const buildout = require(testPath)
+  module.exports.liftTypes(buildout.contracts)
 }
 
-let dist = require("../out/combined.json");
-module.exports.liftTypes(dist.contracts);
+const dist = require('../out/combined.json')
+module.exports.liftTypes(dist.contracts)
