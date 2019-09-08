@@ -18,177 +18,175 @@
 // Ai := Amount of token In
 module.exports.floatMath = {
 
-    calc_SpotPrice: function() {
-        return module.exports.floatMath.spotPrice(...arguments);
-    },
-    spotPrice: function(Bi, Wi, Bo, Wo) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
+  calc_SpotPrice: function () {
+    return module.exports.floatMath.spotPrice(...arguments)
+  },
+  spotPrice: function (Bi, Wi, Bo, Wo) {
+    assert(Bi > 0, 'Bi must be positive')
+    assert(Wi > 0, 'Wi must be positive')
+    assert(Bo > 0, 'Bo must be positive')
+    assert(Wo > 0, 'Wo must be positive')
 
-        var numer = Bo/Wo;
-        var denom = Bi/Wi;
-        return numer/denom;
-    },
+    var numer = Bo / Wo
+    var denom = Bi / Wi
+    return numer / denom
+  },
 
-    calc_OutGivenInExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
-        assert(Ai > 0, "Ai must be positive");
-        assert(Ai < Bi, "Ai must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+  calc_OutGivenInExact: function (Bi, Wi, Bo, Wo, Ai, fee) {
+    assert(Bi > 0, 'Bi must be positive')
+    assert(Wi > 0, 'Wi must be positive')
+    assert(Bo > 0, 'Bo must be positive')
+    assert(Wo > 0, 'Wo must be positive')
+    assert(Ai > 0, 'Ai must be positive')
+    assert(Ai < Bi, 'Ai must be less than Bi')
+    assert(fee => 0, 'fee must be nonnegative')
+    assert(fee < 1, 'fee must be less than one')
 
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
-        var bar = foo**exponent;
-        
-        return Bo * (1 - bar);
-    },
+    var exponent = (Wi / Wo)
+    var adjustedIn = Ai * (1 - fee)
+    var foo = Bi / (Bi + adjustedIn)
+    var bar = foo ** exponent
 
-    calc_OutGivenIn: function() {
-        return module.exports.floatMath.calc_OutGivenInApprox(...arguments);
-    },
-    calc_OutGivenInApprox: function(Bi, Wi, Bo, Wo, Ai, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
-        assert(Ai > 0, "Ai must be positive");
-        assert(Ai < Bi, "Ai must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+    return Bo * (1 - bar)
+  },
 
-        assert( Ai < Bi, "Ai must be less than Bi" );
-        if( Bo<=0 || Bi<=0 || Ai<=0 || Wi<=0 || Wo<=0 || fee>=1 ) {
-            throw new Error("Invalid arguments");
-        }
-        var exponent = (Wi / Wo);
-        var adjustedIn = Ai * (1-fee);
-        var foo = Bi / (Bi + adjustedIn);
-        var bar = this.powApprox(foo, exponent);
-        
-        return Bo * (1 - bar);
+  calc_OutGivenIn: function () {
+    return module.exports.floatMath.calc_OutGivenInApprox(...arguments)
+  },
+  calc_OutGivenInApprox: function (Bi, Wi, Bo, Wo, Ai, fee) {
+    assert(Bi > 0, 'Bi must be positive')
+    assert(Wi > 0, 'Wi must be positive')
+    assert(Bo > 0, 'Bo must be positive')
+    assert(Wo > 0, 'Wo must be positive')
+    assert(Ai > 0, 'Ai must be positive')
+    assert(Ai < Bi, 'Ai must be less than Bi')
+    assert(fee => 0, 'fee must be nonnegative')
+    assert(fee < 1, 'fee must be less than one')
 
-    },
-   
-    calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
-        assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bo, "Ao must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+    assert(Ai < Bi, 'Ai must be less than Bi')
+    if (Bo <= 0 || Bi <= 0 || Ai <= 0 || Wi <= 0 || Wo <= 0 || fee >= 1) {
+      throw new Error('Invalid arguments')
+    }
+    var exponent = (Wi / Wo)
+    var adjustedIn = Ai * (1 - fee)
+    var foo = Bi / (Bi + adjustedIn)
+    var bar = this.powApprox(foo, exponent)
 
-        var exponent = (Wo / Wi);
-        var foo = Bo / (Bo - Ao);
-        var bar = foo**exponent;
-        
-        return Bi * (bar - 1) / (1 - fee);
-    },
+    return Bo * (1 - bar)
+  },
 
-    calc_InGivenOut: function() {
-        return module.exports.floatMath.calc_InGivenOutApprox(...arguments);
-    },
-    calc_InGivenOutApprox: function(Bi, Wi, Bo, Wo, Ao, fee) {
-        assert(Bi > 0, "Bi must be positive");
-        assert(Wi > 0, "Wi must be positive");
-        assert(Bo > 0, "Bo must be positive");
-        assert(Wo > 0, "Wo must be positive");
-        assert(Ao > 0, "Ao must be positive");
-        assert(Ao < Bo, "Ao must be less than Bi" );
-        assert(fee => 0, "fee must be nonnegative");
-        assert(fee < 1, "fee must be less than one");
+  calc_InGivenOutExact: function (Bi, Wi, Bo, Wo, Ao, fee) {
+    assert(Bi > 0, 'Bi must be positive')
+    assert(Wi > 0, 'Wi must be positive')
+    assert(Bo > 0, 'Bo must be positive')
+    assert(Wo > 0, 'Wo must be positive')
+    assert(Ao > 0, 'Ao must be positive')
+    assert(Ao < Bo, 'Ao must be less than Bi')
+    assert(fee => 0, 'fee must be nonnegative')
+    assert(fee < 1, 'fee must be less than one')
 
-        var exponent = (Wo / Wi);
-        var foo = Bo / (Bo - Ao);
-        var bar = this.powApprox(foo, exponent);
-        
-        return Bi * (bar - 1) / (1 - fee);
+    var exponent = (Wo / Wi)
+    var foo = Bo / (Bo - Ao)
+    var bar = foo ** exponent
 
-    },
+    return Bi * (bar - 1) / (1 - fee)
+  },
 
-    calc_InGivenPrice: function() {
-        return module.exports.floatMath.amountUpToPrice(...arguments);
-    },
+  calc_InGivenOut: function () {
+    return module.exports.floatMath.calc_InGivenOutApprox(...arguments)
+  },
+  calc_InGivenOutApprox: function (Bi, Wi, Bo, Wo, Ao, fee) {
+    assert(Bi > 0, 'Bi must be positive')
+    assert(Wi > 0, 'Wi must be positive')
+    assert(Bo > 0, 'Bo must be positive')
+    assert(Wo > 0, 'Wo must be positive')
+    assert(Ao > 0, 'Ao must be positive')
+    assert(Ao < Bo, 'Ao must be less than Bi')
+    assert(fee => 0, 'fee must be nonnegative')
+    assert(fee < 1, 'fee must be less than one')
 
-    amountUpToPriceExact: function(Bi, Wi, Bo, Wo, SER1, fee) {
-        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
-        var exponent = Wo/(Wo + Wi);
-        var foo = SER0/SER1;
+    var exponent = (Wo / Wi)
+    var foo = Bo / (Bo - Ao)
+    var bar = this.powApprox(foo, exponent)
 
-        return (foo ** exponent - 1) * Bi / (1 - fee);
-    },
+    return Bi * (bar - 1) / (1 - fee)
+  },
 
-    amountUpToPrice: function() {
-        return module.exports.floatMath.amountUpToPriceApprox(...arguments);
-    },
-    amountUpToPriceApprox: function(Bi, Wi, Bo, Wo, SER1, fee) {
-        var SER0 = this.spotPrice(Bi, Wi, Bo, Wo);
-        var exponent = Wo/(Wo + Wi);
-        var foo = SER0/SER1;
-        var Ai  = (this.powApprox(foo, exponent) - 1) * Bi
-        return Ai / (1 - fee);
-    },
+  calc_InGivenPrice: function () {
+    return module.exports.floatMath.amountUpToPrice(...arguments)
+  },
 
-    powApprox: function(base, exponent) {
-        assert(base <= 2, "base must be <= 2 for powApprox");
-        let x = base - 1;
-   
-        let whole = Math.floor(exponent);   
-        let remain = exponent - whole;
-        let wholePow = base ** whole;
+  amountUpToPriceExact: function (Bi, Wi, Bo, Wo, SER1, fee) {
+    var SER0 = this.spotPrice(Bi, Wi, Bo, Wo)
+    var exponent = Wo / (Wo + Wi)
+    var foo = SER0 / SER1
 
-        if (remain == 0) {
-            return wholePow;
-        }
-     
-        // term 0:
-        var a     = remain;
-        var numer = 1;
-        var denom = 1;
-        var sum   = 1;
+    return (foo ** exponent - 1) * Bi / (1 - fee)
+  },
 
-        for( var k = 1; k < 100; k++ ) {
-            numer    = numer * (a - (k-1)) * x;
-            denom    = denom * k;
-            sum     += numer / denom;
-        }
+  amountUpToPrice: function () {
+    return module.exports.floatMath.amountUpToPriceApprox(...arguments)
+  },
+  amountUpToPriceApprox: function (Bi, Wi, Bo, Wo, SER1, fee) {
+    var SER0 = this.spotPrice(Bi, Wi, Bo, Wo)
+    var exponent = Wo / (Wo + Wi)
+    var foo = SER0 / SER1
+    var Ai = (this.powApprox(foo, exponent) - 1) * Bi
+    return Ai / (1 - fee)
+  },
 
-        return sum * wholePow;
-    },
+  powApprox: function (base, exponent) {
+    assert(base <= 2, 'base must be <= 2 for powApprox')
+    const x = base - 1
 
-    getValue: function(tokenList) {
-        if (tokenList.length == 0) return 0;
-        let res = 1;
-        for (let token of tokenList) {
-            res *= Math.pow(token[0], token[1]);
-        }
-        return res;
-    },
+    const whole = Math.floor(exponent)
+    const remain = exponent - whole
+    const wholePow = base ** whole
 
-    getRefSpotPrice: function(Bo, Wo, tokens) {
-        return (Bo/Wo) / this.getValue(tokens);
-    },
+    if (remain == 0) {
+      return wholePow
+    }
 
-    getTotalWeight: function(tokens) {
-        let res = 0;
-        for (let token of tokens) {
-            res += token[1];
-        }
-        return res;
-    },
+    // term 0:
+    var a = remain
+    var numer = 1
+    var denom = 1
+    var sum = 1
 
-    getNormalizedWeight: function(W, tokens) {
-        let totalWeight = this.getTotalWeight(tokens);
-        if (totalWeight == 0) return 0;
-        return W/totalWeight;
-    },
+    for (var k = 1; k < 100; k++) {
+      numer = numer * (a - (k - 1)) * x
+      denom = denom * k
+      sum += numer / denom
+    }
+
+    return sum * wholePow
+  },
+
+  getValue: function (tokenList) {
+    if (tokenList.length == 0) return 0
+    let res = 1
+    for (const token of tokenList) {
+      res *= Math.pow(token[0], token[1])
+    }
+    return res
+  },
+
+  getRefSpotPrice: function (Bo, Wo, tokens) {
+    return (Bo / Wo) / this.getValue(tokens)
+  },
+
+  getTotalWeight: function (tokens) {
+    let res = 0
+    for (const token of tokens) {
+      res += token[1]
+    }
+    return res
+  },
+
+  getNormalizedWeight: function (W, tokens) {
+    const totalWeight = this.getTotalWeight(tokens)
+    if (totalWeight == 0) return 0
+    return W / totalWeight
+  }
 
 }
