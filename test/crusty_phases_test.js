@@ -23,15 +23,15 @@ describe('crusty_phases tests', async () => {
     assert.exists(env.admin)
     assert.exists(env.user1)
     assert.exists(env.user2)
-    assert.exists(env.factory)
+    assert.exists(env.hub)
   })
 
   it('phase1 postconditions', async () => {
     env = await scene.phase1(web3, admin)
 
     assert.exists(env.bpool, 'bpool')
-    const poolBuiltHere = await env.factory.methods.isBPool(env.bpool._address).call()
-    assert(poolBuiltHere, "factory doesn't remember building bpool")
+    const poolBuiltHere = await env.hub.methods.isBPool(env.bpool._address).call()
+    assert(poolBuiltHere, "hub doesn't remember building bpool")
 
     assert.exists(env.acoin)
     assert.exists(env.bcoin)

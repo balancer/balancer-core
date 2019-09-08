@@ -15,7 +15,7 @@ pragma solidity ^0.5.10;
 
 import "./BPool.sol";
 
-contract BFactory {
+contract BHub {
 
     event LOG_NEW_POOL( address indexed caller
                       , address indexed pool );

@@ -12,7 +12,7 @@ build:
 	-o out/tmp \
 	sol/BConst.sol \
 	sol/BError.sol \
-	sol/BFactory.sol \
+	sol/BHub.sol \
 	sol/BMath.sol \
 	sol/BNum.sol \
 	sol/BPool.sol \

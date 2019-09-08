@@ -4,7 +4,7 @@ pkg.types.loadTestTypes()
 // phase0:
 //  env.admin = accts[0]
 //  user1-2 = accts[1-2]
-//  factory = new factory
+//  hub = new hub
 module.exports.phase0 = async (web3) => {
   const env = {}
   env.accts = await web3.eth.getAccounts()
@@ -12,7 +12,7 @@ module.exports.phase0 = async (web3) => {
   env.user1 = env.accts[1]
   env.user2 = env.accts[2]
   const deploy = (w, a, t) => pkg.deploy(web3, env.admin, t)
-  env.factory = await deploy(web3, env.admin, 'BFactory')
+  env.hub = await deploy(web3, env.admin, 'BHub')
   return env
 }
 
@@ -26,7 +26,7 @@ module.exports.phase0 = async (web3) => {
 module.exports.phase1 = async (web3) => {
   const env = await module.exports.phase0(web3)
   const deploy = (w, a, t) => pkg.deploy(web3, env.admin, t)
-  var fn_newBPool = await env.factory.methods.newBPool()
+  var fn_newBPool = await env.hub.methods.newBPool()
   const bpoolAddr = await fn_newBPool.call()
   env.bpool = new web3.eth.Contract(JSON.parse(pkg.types.BPool.abi), bpoolAddr)
   await fn_newBPool.send({ from: env.admin, gas: 0xffffffff })

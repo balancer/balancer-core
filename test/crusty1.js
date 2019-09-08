@@ -28,7 +28,7 @@ const assertCloseBN = (a, b, tolerance) => {
 }
 
 describe('crusty bpool tests', () => {
-  var factory
+  var hub
   var accts
   var acct0; var acct1; var acct2
   var bpool
@@ -48,10 +48,10 @@ describe('crusty bpool tests', () => {
     bcoin = await pkg.deploy(web3, acct0, 'TToken')
     ccoin = await pkg.deploy(web3, acct0, 'TToken')
 
-    factory = await pkg.deploy(web3, acct0, 'BFactory')
+    hub = await pkg.deploy(web3, acct0, 'BHub')
 
-    bpoolAddr = await factory.methods.newBPool().call()
-    await factory.methods.newBPool().send({ from: acct0, gas: 0xffffffff })
+    bpoolAddr = await hub.methods.newBPool().call()
+    await hub.methods.newBPool().send({ from: acct0, gas: 0xffffffff })
     bpool = new web3.eth.Contract(JSON.parse(pkg.types.BPool.abi), bpoolAddr)
 
     for (coin of [acoin, bcoin, ccoin]) {

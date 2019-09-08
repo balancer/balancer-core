@@ -44,10 +44,10 @@ module.exports.scene1 = async () => {
   env.DAI = await TToken.deploy()
   env.MKR = await TToken.deploy()
 
-  const BFactory = new t.TType(env.web3, env.types, 'BFactory')
+  const BHub = new t.TType(env.web3, env.types, 'BHub')
 
-  env.factory = await BFactory.deploy()
-  env.bpool = await env.factory.newBPool()
+  env.hub = await BHub.deploy()
+  env.bpool = await env.hub.newBPool()
 
   for (user of [env.Ali, env.Bob, env.Cat]) {
     for (coin of [env.ETH, env.DAI, env.MKR]) {

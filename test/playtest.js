@@ -25,7 +25,7 @@ describe('a play about balancer', async () => {
   it('scene 1', async () => {
     const env = await play.scene1()
     assert.exists(env.Ali)
-    assert.exists(env.factory)
+    assert.exists(env.hub)
     assert.exists(env.bpool)
 
     const numTokens = await env.bpool.getNumTokens()
