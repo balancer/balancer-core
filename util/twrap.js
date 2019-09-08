@@ -1,23 +1,58 @@
-module.exports = class TWrap {
+module.exports.TType = class {
+    constructor(web3, buildout, tname) {
+        this.web3 = web3;
+        this.buildout = buildout;
+        this.tname = tname;
+        this.abi = this.buildout[tname].abi;
+        if( typeof(this.abi) == 'string' ) {
+           this.abi = JSON.parse(this.abi);
+        }
+        this.bin = this.buildout[tname].bin;
+    }
 
-  constructor(bundle) {
-    this.__bundle = bundle;
-    this.__abi = bundle.abi;
+    async deploy(args) {
+      let opts = this.web3.eth.defaultOptions;
+      let T = new module.exports.TWrap(this.web3, this.buildout, this.tname);
+      T.__web3obj = await new this.web3.eth.Contract(this.abi)
+                                      .deploy({data: this.bin, arguments: args})
+                                      .send(opts);
+          
+      T.__address = T.__web3obj._address;
+      return T;
+    }
+
+    at(address) {
+      let T = new module.exports.TWrap(this.web3, this.buildout, this.tname);
+      T.__address = address;
+      T.__web3obj = new this.web3.eth.Contract(T.__abi, T.__address);
+      return T;
+    }
+}
+
+module.exports.TWrap = class {
+  constructor(web3, buildout, name) {
+    this.__web3 = web3;
+    this.__buildout = buildout;
+    this.__tname = name;
+    this.__bundle = this.__buildout[name];
+    this.__bin = this.__bundle.bin;
+    this.__abi = this.__bundle.abi;
+    if( typeof(this.__abi) == 'string') {
+        this.__abi = JSON.parse(this.__abi);
+    }
     this._lastGas;
     this._lastEvents;
-    if( typeof(bundle.abi) == 'string' ) {
-       this.__abi = JSON.parse(bundle.abi);
-    }
-    this.__bin = bundle.bin;
-    for( let item of this.__abi ) {
-      if(item.type == 'function') {
-        this[item.name] = async function() {
+    this._lastDesc;
+    for( let func of this.__abi ) {
+      if(func.type == 'function') {
+        this[func.name] = async function() {
+
           if (this.__address == undefined) {
             throw new Error(
-`Tried to call a function on a type (call it on an instance instead): ${item.name}`
+`Tried to call a function on a type (call it on an instance instead): ${func.name}`
             );
           } else {
-            let fn = this.__web3obj.methods[item.name](...arguments);
+            let fn = this.__web3obj.methods[func.name](...arguments);
             let result;
             let gas;
             try {
@@ -30,40 +65,31 @@ module.exports = class TWrap {
                     assert(Object.keys(err.results).length == 1, 'more than one exception in transaction!?');
                     let trxID = Object.keys(err.results)[0];
                     result = err.results[trxID].reason;
+                } else {
+                    throw err;
                 }
             }
             let args = Array.prototype.slice.call(arguments);
             let desc = `[gas: ${this._lastGas}]`;
             desc = this.__web3.utils.padRight(desc, 16, ' ');
-            desc += `${item.name}(${args})`;
+            desc += `${func.name}(${args})`;
             desc += `\n`;
             desc += ' '.repeat(16) + ` -> ${result}`;
             this._lastDesc = desc;
+           
+            if( func.outputs && func.outputs[0].internalType.startsWith("contract") ) {
+                let tname = func.outputs[0].internalType.split(' ')[1];
+                let ttype = new module.exports.TType(this.__web3, this.__buildout, tname);
+                result = ttype.at(result);
+            }
+            
             return result;
 
           }
+
         }
       }
     }
   }
 
-  async deploy(web3, args) {
-    let opts = web3.eth.defaultOptions;
-    let T = new TWrap(this.__bundle);
-    T.__web3 = web3;
-    T.__web3obj = await new web3.eth.Contract(this.__abi)
-                                    .deploy({data: this.__bin, arguments: args})
-                                    .send(opts);
-        
-    T.__address = T.__web3obj._address;
-    return T;
-  }
-
-  at(web3, address) {
-    let T = new TWrap(this.__bundle);
-    T.__web3 = web3;
-    T.__address = address;
-    T.__web3obj = new this.__web3.eth.Contract(T.__abi, T.__address);
-    return T;
-  }
 }
