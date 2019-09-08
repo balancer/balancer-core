@@ -15,12 +15,10 @@ pragma solidity ^0.5.10;
 
 import "erc20/erc20.sol";
 
-import "./BColor.sol";
 import "./BToken.sol";
 import "./BMath.sol";
 
 contract BPool is ERC20
-                , BBronze
                 , BMath
                 , BTokenBase
 {

@@ -13,11 +13,9 @@
 
 pragma solidity ^0.5.10;
 
-import "./BColor.sol";
 import "./BNum.sol";
 
-contract BMath is BBronze
-                , BNum
+contract BMath is BNum
 {
     // Names
     // Bi := Balance In

@@ -10,7 +10,6 @@ build:
 		erc20=lib/erc20/src \
 	/=/ \
 	-o out/tmp \
-	sol/BColor.sol \
 	sol/BConst.sol \
 	sol/BError.sol \
 	sol/BFactory.sol \
