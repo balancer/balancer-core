@@ -38,4 +38,3 @@ contract BHub {
     }
 
 }
-

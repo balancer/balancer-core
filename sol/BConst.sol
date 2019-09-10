@@ -19,7 +19,7 @@ contract BConst
     uint256 constant BONE              = 10**18;
     uint256 constant MIN_FEE           = BONE / 10000;
     uint256 constant MAX_FEE           = BONE / 10;
-    uint256 constant UNWRAP_FEE        = BONE / 1000;
+    uint256 constant EXIT_FEE          = BONE / 1000;
     uint256 constant MIN_WEIGHT        = BONE;
     uint256 constant MAX_WEIGHT        = BONE * 100;
     uint256 constant MAX_TOTAL_WEIGHT  = BONE * 100;
@@ -54,10 +54,9 @@ contract BConst
     string constant ERR_ALREADY_BOUND      = "ERR_ALREADY_BOUND";
 
     string constant ERR_PAUSED             = "ERR_PAUSED";
-    string constant ERR_NOT_JOINABLE       = "ERR_NOT_JOINABLE";
+    string constant ERR_NOT_PUBLIC         = "ERR_NOT_PUBLIC";
     string constant ERR_NOT_MANAGER        = "ERR_NOT_MANAGER";
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
-
 
     string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";

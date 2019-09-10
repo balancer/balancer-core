@@ -63,7 +63,7 @@ contract BPool is ERC20
     uint                      _exitFee;
 
     address[]                 _index; // private index for iteration
-    mapping(address=>Record)  _records;
+    mapping(address=>Record)  _records; // token balance/weight
     uint                      _totalWeight;
 
     constructor() public {
@@ -129,12 +129,12 @@ contract BPool is ERC20
         return _records[token].balance;
     }
 
-    function isJoinable()
+    function isPublic()
       public view returns (bool) {
         return _public;
     }
 
-    function makeJoinable(uint initSupply)
+    function makePublic(uint initSupply)
       _note_
       public
     {
@@ -150,7 +150,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_public, ERR_NOT_JOINABLE);
+        require(_public, ERR_NOT_PUBLIC);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -168,7 +168,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_public, ERR_NOT_JOINABLE);
+        require(_public, ERR_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
@@ -191,7 +191,7 @@ contract BPool is ERC20
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! _public, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_PUBLIC);
 
         require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
@@ -320,7 +320,7 @@ contract BPool is ERC20
       _note_
       public
     { 
-        require( ! _public, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_PUBLIC);
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = true;
     }
@@ -329,7 +329,7 @@ contract BPool is ERC20
       _note_
       public
     {
-        require( ! _public, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_PUBLIC);
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = false;
     }

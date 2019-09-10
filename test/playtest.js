@@ -46,7 +46,7 @@ describe('a play about balancer', async () => {
     assert.equal(bal, env.initDAI)
     const paused = await env.bpool.isPaused()
     assert(!paused)
-    const joinable = await env.bpool.isJoinable()
+    const joinable = await env.bpool.isPublic()
     assert(!joinable)
 
     // TODO spotPriceExternal
@@ -64,7 +64,7 @@ describe('a play about balancer', async () => {
     // TODO price orientations etc
 
     const err = await env.bpool.CATCH_joinPool('0')
-    assert.equal(err, 'ERR_NOT_JOINABLE')
+    assert.equal(err, 'ERR_NOT_PUBLIC')
   })
 
   it('scene 3', async () => {
