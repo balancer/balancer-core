@@ -13,8 +13,6 @@
 
 pragma solidity ^0.5.11;
 
-import 'erc20/erc20.sol';
-
 import "./BMath.sol";
 
 contract BTokenBase is BMath
@@ -54,6 +52,21 @@ contract BTokenBase is BMath
         _move(from, address(this), amt);
     }
 
+}
+
+contract ERC20 {
+    event Approval(address indexed src, address indexed guy, uint wad);
+    event Transfer(address indexed src, address indexed dst, uint wad);
+
+    function totalSupply() public view returns (uint);
+    function balanceOf(address guy) public view returns (uint);
+    function allowance(address src, address guy) public view returns (uint);
+
+    function approve(address guy, uint wad) public returns (bool);
+    function transfer(address dst, uint wad) public returns (bool);
+    function transferFrom(
+        address src, address dst, uint wad
+    ) public returns (bool);
 }
 
 contract BToken is BBronze

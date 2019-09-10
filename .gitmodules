@@ -1,3 +1,0 @@
-[submodule "lib/erc20"]
-	path = lib/erc20
-	url = https://github.com/dapphub/erc20

@@ -13,8 +13,6 @@
 
 pragma solidity ^0.5.11;
 
-import "erc20/erc20.sol";
-
 import "./BToken.sol";
 import "./BMath.sol";
 

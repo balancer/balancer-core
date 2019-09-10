@@ -6,11 +6,10 @@ build:
 	--optimize \
 	--pretty-json \
 	--combined-json abi,bin,metadata \
-	--overwrite \
-		erc20=lib/erc20/src \
-	/=/ \
+	--overwrite\
+		/=/ \
 	-o out/tmp \
-    sol/BColor.sol \
+	sol/BColor.sol \
 	sol/BConst.sol \
 	sol/BFactory.sol \
 	sol/BMath.sol \
