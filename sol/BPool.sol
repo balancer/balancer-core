@@ -342,8 +342,9 @@ contract BPool is ERC20
     }
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
-      _mute_
-      public returns (uint Ao, uint MP)
+        _note_
+        _mute_
+        public returns (uint Ao, uint MP)
     {
         
         require( isBound(Ti), ERR_NOT_BOUND );
@@ -371,8 +372,9 @@ contract BPool is ERC20
     }
 
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
-      _mute_ 
-      public returns (uint Ai, uint MP)
+        _note_
+        _mute_ 
+        public returns (uint Ai, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
@@ -398,8 +400,9 @@ contract BPool is ERC20
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-      _mute_
-      public returns (uint Ai, uint Ao)
+        _note
+        _mute_
+        public returns (uint Ai, uint Ao)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
@@ -424,6 +427,7 @@ contract BPool is ERC20
     }
 
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
+        _note_
         _mute_
         public returns (uint Ai, uint Ao, uint MP)
     {
