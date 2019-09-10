@@ -138,7 +138,7 @@ contract BPool is ERC20
       _note_
       public
     {
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
         _joinable = true;
         _mint(initSupply);
@@ -150,7 +150,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_joinable, ERR_UNJOINABLE);
+        require(_joinable, ERR_NOT_JOINABLE);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -168,7 +168,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_joinable, ERR_UNJOINABLE);
+        require(_joinable, ERR_NOT_JOINABLE);
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
@@ -189,9 +189,9 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! _joinable, ERR_UNJOINABLE);
+        require( ! _joinable, ERR_NOT_JOINABLE);
 
         require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
@@ -217,21 +217,21 @@ contract BPool is ERC20
         }
     }
 
-    function setFee(uint _tradeFee_)
+    function setFee(uint tradeFee)
       _note_
       public
     { 
-        require(msg.sender == _manager, ERR_BAD_CALLER);
-        require(_tradeFee_ <= MAX_FEE, ERR_MAX_FEE);
-        _tradeFee = _tradeFee_;
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
+        _tradeFee = tradeFee;
     }
 
-    function setManager(address _manager_)
+    function setManager(address manager)
       _note_
       public
     {
-        require(msg.sender == _manager, ERR_BAD_CALLER);
-        _manager = _manager_;
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        _manager = manager;
     }
 
     function bind(address token, uint balance, uint weight)
@@ -239,7 +239,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         require( ! isBound(token), ERR_ALREADY_BOUND);
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
         require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
@@ -266,7 +266,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(isBound(token), ERR_NOT_BOUND);
 
         Record memory T = _records[token];
@@ -285,6 +285,7 @@ contract BPool is ERC20
         _index.pop();
     }
 
+    // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
       _note_
       _mute_
@@ -299,6 +300,7 @@ contract BPool is ERC20
       _mute_
       public
     {
+        require(msg.sender == _hub, ERR_NOT_FACTORY);
         uint fees = _balance[_hub];
         uint poolTotal = totalSupply();
         uint ratio = bdiv(fees, poolTotal);
@@ -318,8 +320,8 @@ contract BPool is ERC20
       _note_
       public
     { 
-        require( ! _joinable, ERR_UNJOINABLE);
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require( ! _joinable, ERR_NOT_JOINABLE);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = true;
     }
 
@@ -327,17 +329,17 @@ contract BPool is ERC20
       _note_
       public
     {
-        require( ! _joinable, ERR_UNJOINABLE);
-        require(msg.sender == _manager, ERR_BAD_CALLER);
+        require( ! _joinable, ERR_NOT_JOINABLE);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = false;
     }
 
+    // TODO fee
     function getSpotPrice(address Ti, address To)
       public view returns (uint P)
     {
         Record memory I = _records[Ti];
         Record memory O = _records[To];
-        // TODO fee
         return _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight);
     }
 
@@ -464,6 +466,8 @@ contract BPool is ERC20
         return (Ai, Ao, Pafter);
     }
 
+    // Internal token-manipulation functions are NOT locked
+    // You must `_mute_` or otherwise ensure reentry-safety
     function _swap(address Ti, uint Ai, address To, uint Ao)
       internal
     {

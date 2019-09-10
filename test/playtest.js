@@ -36,7 +36,7 @@ describe('a play about balancer', async () => {
 
     env.web3.opts.from = env.Bob
     const err = await env.bpool.CATCH_setParams(env.DAI.__address, toWei('100'), toWei('1.5'))
-    assert.equal(err, 'ERR_BAD_CALLER')
+    assert.equal(err, 'ERR_NOT_MANAGER')
     env.web3.opts.from = env.Ali
   })
 
@@ -64,7 +64,7 @@ describe('a play about balancer', async () => {
     // TODO price orientations etc
 
     const err = await env.bpool.CATCH_joinPool('0')
-    assert.equal(err, 'ERR_UNJOINABLE')
+    assert.equal(err, 'ERR_NOT_JOINABLE')
   })
 
   it('scene 3', async () => {

@@ -56,8 +56,10 @@ contract BConst
     string constant ERR_ALREADY_BOUND      = "ERR_ALREADY_BOUND";
 
     string constant ERR_PAUSED             = "ERR_PAUSED";
-    string constant ERR_UNJOINABLE         = "ERR_UNJOINABLE";
-    string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
+    string constant ERR_NOT_JOINABLE       = "ERR_NOT_JOINABLE";
+    string constant ERR_NOT_MANAGER        = "ERR_NOT_MANAGER";
+    string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
+
 
     string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
@@ -65,6 +67,8 @@ contract BConst
     string constant ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 
 // bad error names
+    string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
+
     string constant ERR_MAX_TRADE          = "ERR_MAX_TRADE";
     string constant ERR_LIMIT_FAILED       = "ERR___TODO_LIMIT";
     string constant ERR_LIMIT_IN           = "ERR_LIMIT_IN";

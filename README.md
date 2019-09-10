@@ -10,13 +10,15 @@ Balancer turns the concept of an index fund on its head: instead of an investors
 to portfolio managers to rebalance their portfolio, investors collect fees from traders who rebalance
 the portfolio by following arbitrage opportunities.
 
-
-
 <h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
 
-The *🍂Bronze Release*  is the first of 3 planned releases of the Balancer Protocol. Bronze puts an emphasis on security and code clarity for verification, foregoing even obvious gas optimizations. Balancer charges a per-pool exit fee for Bronze pools.
+The *🍂Bronze Release*  is the first of 3 planned releases of the Balancer Protocol.
+Bronze emphasizes code clarity for audit and verification, and does not attempt to optimize for gas.
+Bronze works directly with ERC20 tokens, inheriting all the warts associated with them.
+Balancer charges a per-pool exit fee for Bronze pools.
 
-The *❄️Silver Release* will bring a number of gas optimizations and architecture changes that should massively increase liquidity and reduce transaction overhead. Balancer will charge a per-vault "unwrap" fee for Silver pools.
+The *❄️Silver Release* will bring a number of gas optimizations and architecture changes that will reduce transaction overhead.
+Balancer will charge a per-vault "unwrap" fee for Silver pools.
 
 The *☀️Golden Release* will introduce a curious new liquidity mechanism to the market.
 
