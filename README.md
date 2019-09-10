@@ -39,9 +39,21 @@ Now you can require the package:
 
 ```javascript
 let bcore = require('./lib/balancer-core');
-let types = bcore.types;  # A combined.json object with type names lifted
+let types = bcore.types; # A combined.json-like object with type names lifted
+
+let Factory = bcore.types.BFactory;
 let BPool = bcore.types.BPool;
-let bpool = new web3.eth.Contract(BPool.abi);
+
+let factory = new web3.eth.Contract(Factory.abi).deploy(Factory.bin);
+let poolAddress = factory.newBPool();
+let bpool = web3.eth.Contract(BPool.abi).at(poolAddress);
+
+Acoin.approve(poolAddress, uint(-1));
+Bcoin.approve(poolAddress, uint(-1));
+
+bpool.bind(Acoin._address, toWei('200'), toWei('1'));
+bpool.bind(BCoin._address, toWei('100'), toWei('2'));
+bpool.start();
 ```
 
 ## API Docs
@@ -70,11 +82,10 @@ yarn dist        # cp artifacts to out/ for commit (`make dist`)
 ### Project structure
 
 ```
-lib/            solidity dependencies
 out/            solidity build artifacts
+    tmp/        .gitignore'd transient build out for tests
 sol/            solidity source files (the contracts)
 test/           tests for util/ and sol/
-tmp/            .gitignore'd transient build out
 util/           javascript support code
 LICENSE         GPL3
 Makefile        solidity build command defined here
