@@ -17,13 +17,51 @@ import 'erc20/erc20.sol';
 
 import "./BMath.sol";
 
-contract BTokenBase is ERC20
-                     , BMath
+contract BTokenBase is BMath
 {
     mapping(address=>
       mapping(address=>uint))   internal _allowance;
     mapping(address=>uint)      internal _balance;
     uint                        internal _totalSupply;
+
+    event Mint(uint amt);
+    event Burn(uint amt);
+    event Move(address indexed src, address indexed dst, uint amt);
+
+    function _mint(uint amt) internal {
+        _balance[address(this)] = badd(_balance[address(this)], amt);
+        _totalSupply   = badd(_totalSupply, amt);
+        emit Mint(amt);
+    }
+
+    function _burn(uint amt) internal {
+        _balance[address(this)] = bsub(_balance[address(this)], amt);
+        _totalSupply   = bsub(_totalSupply, amt);
+        emit Burn(amt);
+    }
+
+    function _move(address src, address dst, uint amt) internal {
+        _balance[src] = bsub(_balance[src], amt);
+        _balance[dst] = badd(_balance[dst], amt);
+        emit Move(src, dst, amt);
+    }
+
+    function _push(address to, uint amt) internal {
+        _move(address(this), to, amt);
+    }
+
+    function _pull(address from, uint amt) internal {
+        _move(from, address(this), amt);
+    }
+
+}
+
+contract BToken is BBronze
+                 , BTokenBase
+                 , ERC20
+{
+    //==  ERC20 is underspecified and bad for the Ethereum ecosystem ==//
+    //--                          @realDonaldTrump (Oct 16, 2016)    --//
 
     function allowance(address src, address guy) public view returns (uint) {
         return _allowance[src][guy];
@@ -44,45 +82,19 @@ contract BTokenBase is ERC20
 
     function transfer(address dst, uint wad) public returns (bool) {
         _move(msg.sender, dst, wad);
+        emit Transfer(msg.sender, dst, wad);
         return true;
     }
 
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
         require(msg.sender == src || wad <= _allowance[src][msg.sender], ERR_BAD_CALLER);
         _move(src, dst, wad);
+        emit Transfer(msg.sender, dst, wad);
         if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
             _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], wad);
         }
         return true;
     }
-
-    event Mint(uint amt);
-    event Burn(uint amt);
-
-    function _mint(uint amt) internal {
-        _balance[address(this)] = badd(_balance[address(this)], amt);
-        _totalSupply   = badd(_totalSupply, amt);
-        emit Mint(amt);
-    }
-
-    function _burn(uint amt) internal {
-        _balance[address(this)] = bsub(_balance[address(this)], amt);
-        _totalSupply   = bsub(_totalSupply, amt);
-        emit Burn(amt);
-    }
-
-    function _move(address src, address dst, uint amt) internal {
-        _balance[src] = bsub(_balance[src], amt);
-        _balance[dst] = badd(_balance[dst], amt);
-        emit Transfer(src, dst, amt);
-    }
-
-    function _push(address to, uint amt) internal {
-        _move(address(this), to, amt);
-    }
-
-    function _pull(address from, uint amt) internal {
-        _move(from, address(this), amt);
-    }
-    
 }
+
+

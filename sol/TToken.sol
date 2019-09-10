@@ -15,7 +15,7 @@ pragma solidity ^0.5.11;
 
 import "./BToken.sol";
 
-contract TToken is BTokenBase {
+contract TToken is BToken {
     function mint(uint amt) public {
         _mint(amt);
         _push(msg.sender, amt);

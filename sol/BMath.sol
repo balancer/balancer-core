@@ -15,7 +15,7 @@ pragma solidity ^0.5.11;
 
 import "./BConst.sol";
 
-contract BMath is BConst
+contract BMath is BBronze, BConst
 {
     // Names
     // Bi := Balance In

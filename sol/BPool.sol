@@ -18,9 +18,7 @@ import "erc20/erc20.sol";
 import "./BToken.sol";
 import "./BMath.sol";
 
-contract BPool is ERC20
-                , BMath
-                , BTokenBase
+contract BPool is BBronze, BToken
 {
     struct Record {
         uint index;

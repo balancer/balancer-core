@@ -13,7 +13,9 @@
 
 pragma solidity ^0.5.11;
 
-contract BConst
+import "sol/BColor.sol";
+
+contract BConst is BBronze
 {
     uint8   constant MAX_BOUND_TOKENS  = 8;
     uint256 constant BONE              = 10**18;
