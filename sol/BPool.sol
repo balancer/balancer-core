@@ -39,12 +39,12 @@ contract BPool is ERC20
                   , bytes           data
                   ) anonymous;
 
-    modifier _beep_() {
+    modifier _note_() {
         emit LOG_CALL(msg.sender, msg.sig, msg.data);
         _;
     }
 
-    modifier _lock_() {
+    modifier _mute_() {
         require( !_mutex, ERR_REENTRY);
         _mutex = true;
         _;
@@ -135,7 +135,7 @@ contract BPool is ERC20
     }
 
     function makeJoinable(uint initSupply)
-      _beep_
+      _note_
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -146,8 +146,8 @@ contract BPool is ERC20
     }
 
     function joinPool(uint poolAo)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(_joinable, ERR_UNJOINABLE);
@@ -164,8 +164,8 @@ contract BPool is ERC20
     }
 
     function exitPool(uint poolAi)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(_joinable, ERR_UNJOINABLE);
@@ -185,8 +185,8 @@ contract BPool is ERC20
     }
 
     function setParams(address token, uint balance, uint weight)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -218,7 +218,7 @@ contract BPool is ERC20
     }
 
     function setFee(uint _tradeFee_)
-      _beep_
+      _note_
       public
     { 
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -227,7 +227,7 @@ contract BPool is ERC20
     }
 
     function setManager(address _manager_)
-      _beep_
+      _note_
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -235,8 +235,8 @@ contract BPool is ERC20
     }
 
     function bind(address token, uint balance, uint weight)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -262,8 +262,8 @@ contract BPool is ERC20
     }
 
     function unbind(address token)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(msg.sender == _manager, ERR_BAD_CALLER);
@@ -286,8 +286,8 @@ contract BPool is ERC20
     }
 
     function gulp(address token)
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         require(isBound(token), ERR_NOT_BOUND);
@@ -295,8 +295,8 @@ contract BPool is ERC20
     }
 
     function collect()
-      _beep_
-      _lock_
+      _note_
+      _mute_
       public
     {
         uint fees = _balance[_hub];
@@ -315,7 +315,7 @@ contract BPool is ERC20
     }
 
     function pause()
-      _beep_
+      _note_
       public
     { 
         require( ! _joinable, ERR_UNJOINABLE);
@@ -324,7 +324,7 @@ contract BPool is ERC20
     }
 
     function start()
-      _beep_
+      _note_
       public
     {
         require( ! _joinable, ERR_UNJOINABLE);
@@ -342,7 +342,7 @@ contract BPool is ERC20
     }
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
-      _lock_
+      _mute_
       public returns (uint Ao, uint MP)
     {
         
@@ -371,7 +371,7 @@ contract BPool is ERC20
     }
 
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
-      _lock_ 
+      _mute_ 
       public returns (uint Ai, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
@@ -398,7 +398,7 @@ contract BPool is ERC20
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-      _lock_
+      _mute_
       public returns (uint Ai, uint Ao)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
@@ -424,7 +424,7 @@ contract BPool is ERC20
     }
 
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
-        _lock_
+        _mute_
         public returns (uint Ai, uint Ao, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
