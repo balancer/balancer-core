@@ -32,8 +32,6 @@ contract BConst
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
 
-    string constant ERR_NONE               = "";
-
     string constant ERR_MATH_ADD_OVERFLOW  = "ERR_MATH_ADD_OVERFLOW";
     string constant ERR_MATH_SUB_UNDERFLOW = "ERR_MATH_SUB_UNDERFLOW";
     string constant ERR_MATH_MUL_OVERFLOW  = "ERR_MATH_MUL_OVERFLOW";
