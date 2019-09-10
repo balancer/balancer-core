@@ -11,7 +11,7 @@
 // You should have received a copy of the GNU General Public License
 // along with th_was program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.10;
+pragma solidity ^0.5.11;
 
 import "./BPool.sol";
 

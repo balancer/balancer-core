@@ -11,7 +11,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.10;
+pragma solidity ^0.5.11;
 
 import "erc20/erc20.sol";
 
@@ -400,7 +400,7 @@ contract BPool is ERC20
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-        _note
+        _note_
         _mute_
         public returns (uint Ai, uint Ao)
     {
