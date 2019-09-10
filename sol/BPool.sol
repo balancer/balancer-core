@@ -53,13 +53,13 @@ contract BPool is ERC20
 
     bool                      _mutex;
 
-    bool                      _joinable;
+    bool                      _public;
     bool                      _paused;
 
-    address                   _hub;
+    address                   _factory;
     address                   _manager;
 
-    uint                      _tradeFee;
+    uint                      _swapFee;
     uint                      _exitFee;
 
     address[]                 _index; // private index for iteration
@@ -67,7 +67,7 @@ contract BPool is ERC20
     uint                      _totalWeight;
 
     constructor() public {
-        _joinable = false;
+        _public = false;
         _manager = msg.sender;
         _paused = true;
     }
@@ -94,7 +94,7 @@ contract BPool is ERC20
 
     function getFee()
       public view returns (uint) {
-        return _tradeFee;
+        return _swapFee;
     }
 
     function getWeight(address token)
@@ -131,7 +131,7 @@ contract BPool is ERC20
 
     function isJoinable()
       public view returns (bool) {
-        return _joinable;
+        return _public;
     }
 
     function makeJoinable(uint initSupply)
@@ -140,7 +140,7 @@ contract BPool is ERC20
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
-        _joinable = true;
+        _public = true;
         _mint(initSupply);
         _push(msg.sender, initSupply);
     }
@@ -150,7 +150,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_joinable, ERR_NOT_JOINABLE);
+        require(_public, ERR_NOT_JOINABLE);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -168,7 +168,7 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(_joinable, ERR_NOT_JOINABLE);
+        require(_public, ERR_NOT_JOINABLE);
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
@@ -191,7 +191,7 @@ contract BPool is ERC20
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! _joinable, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_JOINABLE);
 
         require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
@@ -223,7 +223,7 @@ contract BPool is ERC20
     { 
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
-        _tradeFee = tradeFee;
+        _swapFee = tradeFee;
     }
 
     function setManager(address manager)
@@ -300,19 +300,19 @@ contract BPool is ERC20
       _mute_
       public
     {
-        require(msg.sender == _hub, ERR_NOT_FACTORY);
-        uint fees = _balance[_hub];
+        require(msg.sender == _factory, ERR_NOT_FACTORY);
+        uint fees = _balance[_factory];
         uint poolTotal = totalSupply();
         uint ratio = bdiv(fees, poolTotal);
  
-        _pull(_hub, fees);
+        _pull(_factory, fees);
         _burn(fees);
 
         for( uint i = 0; i < _index.length; i++ ) {
             address t = _index[i];
             uint bal  = _records[t].balance;
             uint tAo  = bmul(ratio, bal);
-            _pushT(t, _hub, tAo);
+            _pushT(t, _factory, tAo);
         }
     }
 
@@ -320,7 +320,7 @@ contract BPool is ERC20
       _note_
       public
     { 
-        require( ! _joinable, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_JOINABLE);
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = true;
     }
@@ -329,7 +329,7 @@ contract BPool is ERC20
       _note_
       public
     {
-        require( ! _joinable, ERR_NOT_JOINABLE);
+        require( ! _public, ERR_NOT_JOINABLE);
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = false;
     }
@@ -360,7 +360,7 @@ contract BPool is ERC20
 
         require( LP <= _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
 
-        Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee);
+        Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
@@ -388,7 +388,7 @@ contract BPool is ERC20
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
         require(PL < _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
 
-        Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
+        Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
@@ -417,8 +417,8 @@ contract BPool is ERC20
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
         require(MP < _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _tradeFee );
-        Ao = _calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee );
+        Ai = _calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _swapFee );
+        Ao = _calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _swapFee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -444,15 +444,15 @@ contract BPool is ERC20
         uint Pbefore = _calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        Ai = _calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _tradeFee);
+        Ai = _calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _swapFee);
         if( Ai > Li ) {
             Ai = Li;
         }
 
-        Ao = _calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, _tradeFee);
+        Ao = _calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, _swapFee);
         if( Ao < Lo ) {
             Ao = Lo;
-            Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
+            Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _swapFee);
         }
 
         uint Iafter = badd(I.balance, Ai);
