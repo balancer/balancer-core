@@ -16,7 +16,7 @@ module.exports.liftTypes = function (types) {
     module.exports[type] = types[`sol/${type}.sol:${type}`]
   }
 
-  lift('BHub')
+  lift('BFactory')
   lift('BMathPub')
   lift('BPool')
   lift('TToken')

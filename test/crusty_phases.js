@@ -12,7 +12,7 @@ module.exports.phase0 = async (web3) => {
   env.user1 = env.accts[1]
   env.user2 = env.accts[2]
   const deploy = (w, a, t) => pkg.deploy(web3, env.admin, t)
-  env.hub = await deploy(web3, env.admin, 'BHub')
+  env.hub = await deploy(web3, env.admin, 'BFactory')
   return env
 }
 

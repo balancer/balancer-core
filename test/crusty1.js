@@ -48,7 +48,7 @@ describe('crusty bpool tests', () => {
     bcoin = await pkg.deploy(web3, acct0, 'TToken')
     ccoin = await pkg.deploy(web3, acct0, 'TToken')
 
-    hub = await pkg.deploy(web3, acct0, 'BHub')
+    hub = await pkg.deploy(web3, acct0, 'BFactory')
 
     bpoolAddr = await hub.methods.newBPool().call()
     await hub.methods.newBPool().send({ from: acct0, gas: 0xffffffff })

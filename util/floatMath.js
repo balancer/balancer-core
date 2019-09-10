@@ -16,6 +16,7 @@
 // Wi := Weight of token In
 // Wo := Weight of token Out
 // Ai := Amount of token In
+// Ai := Amount of token Out
 module.exports.floatMath = {
 
   calc_SpotPrice: function () {

@@ -11,7 +11,7 @@ build:
 	/=/ \
 	-o out/tmp \
 	sol/BConst.sol \
-	sol/BHub.sol \
+	sol/BFactory.sol \
 	sol/BMath.sol \
 	sol/BMathPub.sol \
 	sol/BPool.sol \

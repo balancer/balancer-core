@@ -44,9 +44,9 @@ module.exports.scene1 = async () => {
   env.DAI = await TToken.deploy()
   env.MKR = await TToken.deploy()
 
-  const BHub = new t.TType(env.web3, env.types, 'BHub')
+  const BFactory = new t.TType(env.web3, env.types, 'BFactory')
 
-  env.hub = await BHub.deploy()
+  env.hub = await BFactory.deploy()
   env.bpool = await env.hub.newBPool()
 
   for (user of [env.Ali, env.Bob, env.Cat]) {
