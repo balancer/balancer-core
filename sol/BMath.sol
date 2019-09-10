@@ -13,9 +13,9 @@
 
 pragma solidity ^0.5.10;
 
-import "./BNum.sol";
+import "./BConst.sol";
 
-contract BMath is BNum
+contract BMath is BConst
 {
     // Names
     // Bi := Balance In
@@ -28,12 +28,12 @@ contract BMath is BNum
     // To := Token Out
 
     //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
-    function calc_OutGivenIn( uint Bi, uint Wi
+    function _calc_OutGivenIn( uint Bi, uint Wi
                             , uint Bo, uint Wo
                             , uint Ai
                             , uint fee
                             )
-      public pure
+      pure internal
         returns ( uint Ao )
     {
         uint wRatio     = bdiv(Wi, Wo);
@@ -47,7 +47,7 @@ contract BMath is BNum
 	}
 
     // Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
-    function calc_InGivenOut( uint Bi, uint Wi
+    function _calc_InGivenOut( uint Bi, uint Wi
                             , uint Bo, uint Wo
                             , uint Ao
                             , uint fee
@@ -65,7 +65,7 @@ contract BMath is BNum
         return Ai;
     }
 
-    function calc_SpotPrice( uint Bi, uint Wi
+    function _calc_SpotPrice( uint Bi, uint Wi
                            , uint Bo, uint Wo )
       public pure
         returns ( uint r ) 
@@ -76,14 +76,14 @@ contract BMath is BNum
         return r;
     }
 
-    function calc_InGivenPrice( uint Bi, uint Wi
+    function _calc_InGivenPrice( uint Bi, uint Wi
                               , uint Bo , uint Wo
                               , uint SER1
                               , uint fee)
       public pure
         returns ( uint Ai )
     {
-        uint SER0    = calc_SpotPrice(Bi, Wi, Bo, Wo);
+        uint SER0    = _calc_SpotPrice(Bi, Wi, Bo, Wo);
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
         Ai           = bsub(bpow(base, exp), BONE);
@@ -96,7 +96,7 @@ contract BMath is BNum
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
     function bpow(uint base, uint exp)
-      public pure
+      pure internal
         returns (uint)
     {
         require(base <= BONE * 2, ERR_BPOW_BASE);
@@ -139,5 +139,67 @@ contract BMath is BNum
 
         return bmul(sum, wholePow);
     }
+
+    function btoi(uint a) internal pure returns (uint) {
+        return a / BONE;
+    }
+
+    function badd(uint a, uint b) internal pure returns (uint) {
+        uint c = a + b;
+        require(c >= a, ERR_MATH_ADD_OVERFLOW);
+        return c;
+    }
+
+    function bsub(uint a, uint b) internal pure returns (uint) {
+        (uint c, bool flag) = bsubSign(a, b);
+        require(!flag, ERR_MATH_SUB_UNDERFLOW);
+        return c;
+    }
+
+    function bsubSign(uint a, uint b) internal pure returns (uint, bool) {
+        if (a >= b) {
+            return (a - b, false);
+        } else {
+            return (b - a, true);
+        }
+    }
+
+    function bmul(uint a, uint b) internal pure returns (uint) {
+        uint c0 = a * b;
+        require(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
+        uint c1 = c0 + (BONE / 2);
+        require(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
+        uint c2 = c1 / BONE;
+        return c2;
+    }
+
+    function bdiv(uint a, uint b) internal pure returns (uint) {
+        require(b != 0, ERR_MATH_DIV_ZERO);
+        uint c0 = a * BONE;
+        require(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERNAL); // bmul require
+        uint c1 = c0 + (b / 2);
+        require(c1 >= c0, ERR_MATH_DIV_INTERNAL); //  badd require
+        uint c2 = c1 / b;
+        return c2;
+    }
+
+    // DSMath.wpow
+    function bpown(uint a, uint n) internal pure returns (uint) {
+        uint z = n % 2 != 0 ? a : BONE;
+
+        for (n /= 2; n != 0; n /= 2) {
+            a = bmul(a, a);
+
+            if (n % 2 != 0) {
+                z = bmul(z, a);
+            }
+        }
+        return z;
+    }
+
+    function bfloor(uint a) internal pure returns (uint) {
+        return (a / BONE) * BONE;
+    }
+
 
 }

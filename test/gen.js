@@ -38,7 +38,7 @@ describe('generated math points', () => {
   let bmath
   beforeEach(async () => {
     env = await scene.phase0(web3)
-    bmath = await pkg.deploy(web3, env.admin, 'BMath')
+    bmath = await pkg.deploy(web3, env.admin, 'BMathPub')
   })
   for (const funcname in points.math) {
     pairs = points.math[funcname]

@@ -15,10 +15,10 @@ pragma solidity ^0.5.10;
 
 import 'erc20/erc20.sol';
 
-import "./BNum.sol";
+import "./BMath.sol";
 
 contract BTokenBase is ERC20
-                     , BNum
+                     , BMath
 {
     mapping(address=>
       mapping(address=>uint))   internal _allowance;

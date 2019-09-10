@@ -120,6 +120,7 @@ contract BPool is ERC20
         if (total == 0) {
             return 0;
         }
+        // TODO require(res != 0) ?
         return bdiv(_records[token].weight, total);
     }
 
@@ -331,6 +332,15 @@ contract BPool is ERC20
         _paused = false;
     }
 
+    function getSpotPrice(address Ti, address To)
+      public view returns (uint P)
+    {
+        Record memory I = _records[Ti];
+        Record memory O = _records[To];
+        // TODO fee
+        return _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight);
+    }
+
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
       _lock_
       public returns (uint Ao, uint MP)
@@ -345,14 +355,14 @@ contract BPool is ERC20
 
         require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP <= calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
+        require( LP <= _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee);
+        Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
         require(Pafter > LP, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -372,14 +382,14 @@ contract BPool is ERC20
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
-        require(PL < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
+        require(PL < _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
 
-        Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
+        Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = badd(O.balance, Ao);
-        uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
         require( Pafter >= PL, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -400,10 +410,10 @@ contract BPool is ERC20
 
         // TODO error names
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
-        require(MP < calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
+        require(MP < _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _tradeFee );
-        Ao = calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee );
+        Ai = _calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _tradeFee );
+        Ao = _calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _tradeFee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -425,23 +435,23 @@ contract BPool is ERC20
         Record storage O = _records[address(To)];
 
         // TODO error names
-        uint Pbefore = calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
+        uint Pbefore = _calc_SpotPrice( I.balance, I.weight, O.balance, O.weight);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        Ai = calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _tradeFee);
+        Ai = _calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _tradeFee);
         if( Ai > Li ) {
             Ai = Li;
         }
 
-        Ao = calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, _tradeFee);
+        Ao = _calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, _tradeFee);
         if( Ao < Lo ) {
             Ao = Lo;
-            Ai = calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
+            Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _tradeFee);
         }
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotPrice(Iafter, I.weight, Oafter, O.weight);
     
         require( Pafter >= PL, ERR_LIMIT_PRICE );
 

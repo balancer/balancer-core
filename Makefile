@@ -13,7 +13,7 @@ build:
 	sol/BConst.sol \
 	sol/BHub.sol \
 	sol/BMath.sol \
-	sol/BNum.sol \
+	sol/BMathPub.sol \
 	sol/BPool.sol \
 	sol/BToken.sol \
 	sol/TToken.sol \
