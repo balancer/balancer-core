@@ -182,6 +182,43 @@ contract BPool is BBronze, BToken
         }
     }
 
+    // Note the argument is the *pool token* amount *out*
+    function joinswap_PoolAmountOut(uint pAo, address Ti)
+        _beep_
+        _lock_
+        public
+    {
+        revert('unimplemented');
+    }
+
+    function joinswap_HeldAmountIn(address Ti, address tAi)
+        _beep_
+        _lock_
+        public
+    {
+        revert('unimplemented');
+    }
+
+    // Note the argument is the *pool token* amount *in*
+    function exitswap_PoolAmountIn(uint pAi, address To)
+        _beep_
+        _lock_
+        public
+    {
+        revert('unimplemented');
+    }
+
+    function exitswap_HeldAmountOut(address To, address tAo)
+        _beep_
+        _lock_
+        public
+    {
+        revert('unimplemented');
+        revert('unimplemented');
+    }
+
+
+
     function setParams(address token, uint balance, uint weight)
       _beep_
       _lock_
