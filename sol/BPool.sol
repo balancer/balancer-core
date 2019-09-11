@@ -153,6 +153,7 @@ contract BPool is BBronze, BToken
             address t = _index[i];
             uint bal = _records[t].balance;
             uint tAi = bmul(ratio, bal);
+            _records[t].balance = badd(_records[t].balance, tAi);
             _pullT(t, msg.sender, tAi);
         }
         _mint(poolAo);
@@ -176,6 +177,7 @@ contract BPool is BBronze, BToken
             address t = _index[i];
             uint bal = _records[t].balance;
             uint tAo = bmul(ratio, bal);
+            _records[t].balance = bsub(_records[t].balance, tAo);
             _pushT(t, msg.sender, tAo);
         }
     }
