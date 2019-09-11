@@ -25,7 +25,7 @@ module.exports.stage = async (web3_, accts_) => {
 
   env.web3.opts = {
     from: env.Ali,
-    gas: 6000000
+    gas: 7000000
   }
 
   staged = true
