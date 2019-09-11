@@ -1,9 +1,2 @@
-tmp
+out/tmp
 node_modules
-*.swp
-.DS_Store
-.idea/balance.iml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
-.idea/workspace.xml
