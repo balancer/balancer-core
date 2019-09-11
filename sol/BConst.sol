@@ -34,11 +34,11 @@ contract BConst is BBronze
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
 
-    string constant ERR_ADD_OVERFLOW       = "ERR_MATH_ADD_OVERFLOW";
-    string constant ERR_SUB_UNDERFLOW      = "ERR_MATH_SUB_UNDERFLOW";
-    string constant ERR_MUL_OVERFLOW       = "ERR_MATH_MUL_OVERFLOW";
-    string constant ERR_DIV_ZERO           = "ERR_MATH_DIV_ZERO";
-    string constant ERR_DIV_INTERNAL       = "ERR_MATH_DIV_INTERNAL";
+    string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
+    string constant ERR_SUB_UNDERFLOW      = "ERR_SUB_UNDERFLOW";
+    string constant ERR_MUL_OVERFLOW       = "ERR_MUL_OVERFLOW";
+    string constant ERR_DIV_ZERO           = "ERR_DIV_ZERO";
+    string constant ERR_DIV_INTERNAL       = "ERR_DIV_INTERNAL";
     string constant ERR_BPOW_BASE          = "ERR_BPOW_BASE";
 
     string constant ERR_CALC_PANIC         = "ERR_CALC_PANIC";
