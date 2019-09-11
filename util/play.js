@@ -1,3 +1,4 @@
+const assert = require('assert')
 const Web3 = require('web3') // utils only
 const toWei = Web3.utils.toWei
 

@@ -11,6 +11,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const assert = require('assert')
+
 // Bi := Balance of token In
 // Bo := Balance of token Out
 // Wi := Weight of token In

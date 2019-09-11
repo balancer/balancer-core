@@ -1,12 +1,12 @@
 {
   "private": true,
   "name": "balancer-core",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
   "author": {
     "name": "Nikolai Mushegian",
-    "email": "mail+bcorepkg@nikolai.fyi",
+    "email": "mail@nikolai.fyi",
     "url": "https://nikolai.fyi"
   },
   "contributors": [{
@@ -20,7 +20,8 @@
   "scripts": {
     "build": "make build",
     "test": "make build && mocha",
-    "dist": "make dist && npx standard util/*"
+    "dist": "make dist && yarn run standard util/*",
+    "fmt": "yarn run standard util/*"
   },
   "repository": {
     "type": "git",

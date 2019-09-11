@@ -1,3 +1,4 @@
+const assert = require('assert')
 const copy = (o) => { return JSON.parse(JSON.stringify(o)) }
 
 module.exports.TType = class {
