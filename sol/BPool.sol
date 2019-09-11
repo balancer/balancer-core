@@ -30,17 +30,17 @@ contract BPool is BBronze, BToken
                   , uint256         amountIn
                   , uint256         amountOut );
 
-    event LOG_CALL( address indexed caller
-                  , bytes4  indexed sig
+    event LOG_CALL( bytes4  indexed sig
+                  , address indexed caller
                   , bytes           data
                   ) anonymous;
 
-    modifier _note_() {
-        emit LOG_CALL(msg.sender, msg.sig, msg.data);
+    modifier _beep_() {
+        emit LOG_CALL(msg.sig, msg.sender, msg.data);
         _;
     }
 
-    modifier _mute_() {
+    modifier _lock_() {
         require( !_mutex, ERR_REENTRY);
         _mutex = true;
         _;
@@ -131,7 +131,7 @@ contract BPool is BBronze, BToken
     }
 
     function makePublic(uint initSupply)
-      _note_
+      _beep_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -142,8 +142,8 @@ contract BPool is BBronze, BToken
     }
 
     function joinPool(uint poolAo)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(_public, ERR_NOT_PUBLIC);
@@ -160,8 +160,8 @@ contract BPool is BBronze, BToken
     }
 
     function exitPool(uint poolAi)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(_public, ERR_NOT_PUBLIC);
@@ -181,8 +181,8 @@ contract BPool is BBronze, BToken
     }
 
     function setParams(address token, uint balance, uint weight)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -214,7 +214,7 @@ contract BPool is BBronze, BToken
     }
 
     function setFee(uint tradeFee)
-      _note_
+      _beep_
       public
     { 
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -223,7 +223,7 @@ contract BPool is BBronze, BToken
     }
 
     function setManager(address manager)
-      _note_
+      _beep_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -231,8 +231,8 @@ contract BPool is BBronze, BToken
     }
 
     function bind(address token, uint balance, uint weight)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -258,8 +258,8 @@ contract BPool is BBronze, BToken
     }
 
     function unbind(address token)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -283,8 +283,8 @@ contract BPool is BBronze, BToken
 
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(isBound(token), ERR_NOT_BOUND);
@@ -292,8 +292,8 @@ contract BPool is BBronze, BToken
     }
 
     function collect()
-      _note_
-      _mute_
+      _beep_
+      _lock_
       public
     {
         require(msg.sender == _factory, ERR_NOT_FACTORY);
@@ -313,7 +313,7 @@ contract BPool is BBronze, BToken
     }
 
     function pause()
-      _note_
+      _beep_
       public
     { 
         require( ! _public, ERR_NOT_PUBLIC);
@@ -322,7 +322,7 @@ contract BPool is BBronze, BToken
     }
 
     function start()
-      _note_
+      _beep_
       public
     {
         require( ! _public, ERR_NOT_PUBLIC);
@@ -340,8 +340,8 @@ contract BPool is BBronze, BToken
     }
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
-        _note_
-        _mute_
+        _beep_
+        _lock_
         public returns (uint Ao, uint MP)
     {
         
@@ -370,8 +370,8 @@ contract BPool is BBronze, BToken
     }
 
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
-        _note_
-        _mute_ 
+        _beep_
+        _lock_ 
         public returns (uint Ai, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
@@ -398,8 +398,8 @@ contract BPool is BBronze, BToken
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-        _note_
-        _mute_
+        _beep_
+        _lock_
         public returns (uint Ai, uint Ao)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
@@ -425,8 +425,8 @@ contract BPool is BBronze, BToken
     }
 
     function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
-        _note_
-        _mute_
+        _beep_
+        _lock_
         public returns (uint Ai, uint Ao, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
@@ -463,7 +463,7 @@ contract BPool is BBronze, BToken
     }
 
     // Internal token-manipulation functions are NOT locked
-    // You must `_mute_` or otherwise ensure reentry-safety
+    // You must `_lock_` or otherwise ensure reentry-safety
     function _swap(address Ti, uint Ai, address To, uint Ao)
       internal
     {
