@@ -1,20 +1,28 @@
-all: build dist
-dist:
-	cp out/tmp/combined.json out/ && rm out/tmp/combined.json
+all: build
 build:
 	solc \
 	--optimize \
 	--pretty-json \
-	--combined-json abi,bin,metadata \
+	--combined-json abi,bin \
+	--abi \
+	--bin \
 	--overwrite\
 		/=/ \
 	-o out/tmp \
-	sol/BColor.sol \
-	sol/BConst.sol \
 	sol/BFactory.sol \
-	sol/BMath.sol \
 	sol/BMathPub.sol \
 	sol/BPool.sol \
-	sol/BToken.sol \
-	sol/TToken.sol \
-
+	sol/TToken.sol
+dist:
+	solc \
+	--optimize \
+	--pretty-json \
+	--combined-json abi,bin,metadata \
+	--abi \
+	--bin \
+	--metadata \
+	--overwrite\
+		/=/ \
+	-o out \
+	sol/BFactory.sol \
+	sol/BPool.sol \

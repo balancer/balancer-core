@@ -70,12 +70,11 @@ brew install node yarn ethereum
 git clone https://github.com/balancer-labs/balancer-core
 cd balancer-core
 
-# Get the dependencies
-yarn setup       # clone submodules and install packages
+yarn             # install dev dependencies
 
 # Dev loop
-# yarn build     # compile the solidity contracts to tmp/  (`make build`)
-yarn test        # build contracts and run the tests (`yarn build && mocha`)
+# yarn build     # compile the solidity contracts to tmp/  (`make`)
+yarn test        # build contracts and run the tests (`make && mocha`)
 yarn dist        # cp artifacts to out/ for commit (`make dist`)
 ```
 
@@ -93,4 +92,3 @@ pkg.js          package entrypoint (module.exports)
 package.json
 yarn.lock
 ```
-

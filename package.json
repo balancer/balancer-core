@@ -10,16 +10,17 @@
     "url": "https://nikolai.fyi"
   },
   "contributors": [{
-    "name": "Kevin Bravo",
-    "email": "kbravo@pm.me"
+      "name": "Kevin Bravo",
+      "email": "kbravo@pm.me"
+    },{
+      "name": "Fernando Martinelli",
+      "email": "fernando@balancer.finance"
   }],
   "main": "pkg.js",
   "scripts": {
-    "setup": "git submodule update --init --recursive && yarn install",
     "build": "make build",
-    "dist": "make dist",
     "test": "make build && mocha",
-    "docs": "cd doc && hugo"
+    "dist": "make dist"
   },
   "repository": {
     "type": "git",
