@@ -14,15 +14,15 @@ the portfolio by following arbitrage opportunities.
 
 The *🍂Bronze Release*  is the first of 3 planned releases of the Balancer Protocol.
 Bronze emphasizes code clarity for audit and verification, and does not attempt to optimize for gas.
-Bronze works directly with ERC20 tokens, inheriting all the warts associated with them.
+Bronze pools hold ERC20 tokens directly (deposits appear in `token.balanceOf(bpool)`), and also implement ERC20 directly to represent their pool share (`BPool is ERC20`).
 The relative weights of tokens in a Bronze pool *cannot be changed once the pool is public*.
 Balancer charges a per-pool exit fee for Bronze pools.
 
-The *❄️Silver Release* will bring a number of gas optimizations and architecture changes that will reduce transaction overhead.
+The *❄️ Silver Release* will bring a number of gas optimizations and architecture changes that will reduce transaction overhead.
 Many features that require wrapper contracts for Bronze will be possible directly in Silver pools in a cheaper and standardized way.
 Balancer will charge a per-vault "unwrap" fee for Silver pools (in other words, an exit fee for the whole system).
 
-The *☀️Golden Release* will introduce a curious new liquidity mechanism to the market.
+The *☀️ Golden Release* will introduce a curious new liquidity mechanism to the market.
 
 ## Installing
 
@@ -75,11 +75,11 @@ brew install node yarn ethereum
 git clone https://github.com/balancer-labs/balancer-core
 cd balancer-core
 
-yarn             # install dev dependencies
-# yarn build     # compile the solidity contracts to tmp/  (`make`)
-yarn test        # build contracts and run the tests (`make && mocha`)
-yarn dist        # cp artifacts to out/ for commit (`make dist`)
-                 # and also runs `npx standard util/*`
+yarn            # install dev dependencies
+# yarn build    # compile the solidity contracts to tmp/  (`make`)
+yarn test       # build contracts and run the tests (`make && mocha`)
+yarn dist       # cp artifacts to out/ for commit (`make dist`)
+                # and also runs `npx standard util/*`
 ```
 
 ### Project structure
@@ -97,4 +97,4 @@ package.json
 yarn.lock
 ```
 
-
+<p align=center>⊙</p>
