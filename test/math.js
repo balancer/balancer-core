@@ -142,7 +142,7 @@ describe('BMath', () => {
     const desc = `${pt.res} ~= math.bpow(${pt.base}, ${pt.exp})`
     it(desc, async () => {
       const accts = await web3.eth.getAccounts()
-      const math = await pkg.deploy(web3, accts[0], 'BMathPub')
+      const math = await pkg.deploy(web3, accts[0], 'BFactory')
       const base = toWei(pt.base).toString()
       const exp = toWei(pt.exp).toString()
       var actual = await math.methods.calc_bpow(base, exp).call()
@@ -158,7 +158,7 @@ describe('BMath', () => {
     const desc = `${pt.res} ~= bMath.calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
     it(desc, async () => {
       const accts = await web3.eth.getAccounts()
-      const math = await pkg.deploy(web3, accts[0], 'BMathPub')
+      const math = await pkg.deploy(web3, accts[0], 'BFactory')
       var actual = await math.methods.calc_SpotPrice(Bi, Wi, Bo, Wo).call()
       assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance)
     })
@@ -175,7 +175,7 @@ describe('BMath', () => {
     const desc = `${pt.res} ~= bMath.calc_InGivenPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.SER1}, ${pt.fee})`
     it(desc, async () => {
       const accts = await web3.eth.getAccounts()
-      const math = await pkg.deploy(web3, accts[0], 'BMathPub')
+      const math = await pkg.deploy(web3, accts[0], 'BFactory')
       var actual = await math.methods.calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee).call()
       assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance)
     })
@@ -192,7 +192,7 @@ describe('BMath', () => {
     var desc = `${pt.res} ~= bMath.calc_InGivenOutPoints(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.Ao}, ${pt.fee})`
     it(desc, async () => {
       accts = await web3.eth.getAccounts()
-      math = await pkg.deploy(web3, accts[0], 'BMathPub')
+      math = await pkg.deploy(web3, accts[0], 'BFactory')
       var actual = await math.methods.calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee).call()
       assertCloseBN(res, web3.utils.toBN(actual), approxTolerance)
     })

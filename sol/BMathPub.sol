@@ -13,9 +13,14 @@
 
 pragma solidity ^0.5.11;
 
+import "./BColor.sol";
 import "./BMath.sol";
 
-contract BMathPub is BMath
+// BMathPub exposes BMath internal functions.
+// It gets mixed into the factory for use as a library.
+
+contract BMathPub is BBronze
+                   , BMath
 {
     function calc_SpotPrice( uint Bi, uint Wi
                            , uint Bo, uint Wo )
@@ -33,7 +38,8 @@ contract BMathPub is BMath
                             , uint fee
                             )
       public pure
-        returns ( uint Ao ) {
+        returns ( uint Ao )
+    {
         return _calc_OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee);
     }
 
@@ -43,7 +49,8 @@ contract BMathPub is BMath
                             , uint fee
                             )
       public pure
-        returns ( uint Ai ) {
+        returns ( uint Ai )
+    {
         return _calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
     }
 
@@ -52,7 +59,8 @@ contract BMathPub is BMath
                               , uint SER1
                               , uint fee)
       public pure
-        returns ( uint Ai ) {
+        returns ( uint Ai )
+    {
         return _calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
     }
 

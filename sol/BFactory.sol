@@ -13,9 +13,16 @@
 
 pragma solidity ^0.5.11;
 
-import "./BPool.sol";
+// Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
+// Grants access to BPool internal math utils, for use as a library
 
-contract BFactory {
+import './BColor.sol';
+import './BPool.sol';
+import './BMathPub.sol';
+
+contract BFactory is BBronze
+                   , BMathPub
+{
 
     event LOG_NEW_POOL( address indexed caller
                       , address indexed pool );

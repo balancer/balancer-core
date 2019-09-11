@@ -1,4 +1,3 @@
-const assert = (b, s) => assert(b, s) // standard.js warnings
 const copy = (o) => { return JSON.parse(JSON.stringify(o)) }
 
 module.exports.TType = class {

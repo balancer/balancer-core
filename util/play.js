@@ -1,4 +1,3 @@
-const assert = (b, s) => assert(b, s) // standard.js warnings
 const Web3 = require('web3') // utils only
 const toWei = Web3.utils.toWei
 
