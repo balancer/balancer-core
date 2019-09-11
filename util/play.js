@@ -1,20 +1,19 @@
+const assert = (b, s) => assert(b, s) // standard.js warnings
 const Web3 = require('web3') // utils only
 const toWei = Web3.utils.toWei
-const fromWei = Web3.utils.fromWei
 
 const t = require('./twrap.js')
 const types_ = require('./types.js')
 types_.loadTestTypes()
 
 let env
-let web3
 let staged = false
 
 module.exports.stage = async (web3_, accts_) => {
   env = {}
   env.web3 = web3_
   env.MAX = Web3.utils.hexToNumberString(Web3.utils.toTwosComplement('-1'))
-  if (accts_ == undefined) {
+  if (accts_ === undefined) {
     accts_ = await env.web3.eth.getAccounts()
   }
 
@@ -49,8 +48,8 @@ module.exports.scene1 = async () => {
   env.hub = await BFactory.deploy()
   env.bpool = await env.hub.newBPool()
 
-  for (user of [env.Ali, env.Bob, env.Cat]) {
-    for (coin of [env.ETH, env.DAI, env.MKR]) {
+  for (const user of [env.Ali, env.Bob, env.Cat]) {
+    for (const coin of [env.ETH, env.DAI, env.MKR]) {
       env.web3.opts.from = user
       await coin.approve(env.bpool.__address, env.MAX)
     }

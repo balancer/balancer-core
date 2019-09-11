@@ -1,3 +1,4 @@
+const assert = (b, s) => assert(b, s) // standard.js warnings
 const copy = (o) => { return JSON.parse(JSON.stringify(o)) }
 
 module.exports.TType = class {
@@ -41,13 +42,13 @@ module.exports.TWrap = class {
     if (typeof (this.__abi) === 'string') {
       this.__abi = JSON.parse(this.__abi)
     }
-    this.__lastGas
-    this.__lastEvents
-    this.__lastDesc
+    this.__lastGas = 0
+    this.__lastEvents = []
+    this.__lastDesc = ''
     for (const func of this.__abi) {
-      if (func.type == 'function') {
+      if (func.type === 'function') {
         this[func.name] = async function () {
-          if (this.__address == undefined) {
+          if (this.__address === undefined) {
             throw new Error(
 `Tried to call a function on a type (call it on an instance instead): ${func.name}`
             )
@@ -55,7 +56,6 @@ module.exports.TWrap = class {
 
           const fn = this.__web3obj.methods[func.name](...arguments)
           let result
-          let gas
           const opts = copy(this.__web3.opts)
           result = await fn.call()
           const tx = await fn.send(copy(opts))
@@ -83,24 +83,21 @@ module.exports.TWrap = class {
         }
 
         this['CATCH_' + func.name] = async function () {
-          if (this.__address == undefined) {
+          if (this.__address === undefined) {
             throw new Error(
 `Tried to call a function on a type (call it on an instance instead): ${func.name}`
             )
           }
           const fn = this.__web3obj.methods[func.name](...arguments)
-          let result
-          let gas
           const opts = copy(this.__web3.opts)
           try {
             await fn.call(opts)
             throw new Error(`Expected CATCH_ variant to throw: CATCH_${func.name}`)
           } catch (err) {
-            if (err != null && err.name == 'RuntimeError') {
-              assert(Object.keys(err.results).length == 1, 'more than one exception in transaction!?')
+            if (err != null && err.name === 'RuntimeError') {
+              assert(Object.keys(err.results).length === 1, 'more than one exception in transaction!?')
               const trxID = Object.keys(err.results)[0]
-              result = err.results[trxID].reason
-              return result
+              return err.results[trxID].reason
             } else {
               throw err
             }

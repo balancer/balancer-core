@@ -31,14 +31,13 @@ Most users will be interested in consuming ABI definitions for various Balancer 
 At the moment, the best way to use it is as a git submodule.
 
 ```
-mkdir lib
-git submodule add https://github.com/balancer-labs/balancer-core lib/balancer-core
+git submodule add https://github.com/balancer-labs/balancer-core
 ```
 
 Now you can require the package:
 
 ```javascript
-let bcore = require('./lib/balancer-core');
+let bcore = require('./balancer-core');
 let types = bcore.types; # A combined.json-like object with type names lifted
 
 let Factory = bcore.types.BFactory;
@@ -48,8 +47,8 @@ let factory = new web3.eth.Contract(Factory.abi).deploy(Factory.bin);
 let poolAddress = factory.newBPool();
 let bpool = web3.eth.Contract(BPool.abi).at(poolAddress);
 
-Acoin.approve(poolAddress, uint(-1));
-Bcoin.approve(poolAddress, uint(-1));
+Acoin.approve(poolAddress, toTwosComplement(-1));
+Bcoin.approve(poolAddress, toTwosComplement(-1));
 
 bpool.bind(Acoin._address, toWei('200'), toWei('1'));
 bpool.bind(BCoin._address, toWei('100'), toWei('2'));

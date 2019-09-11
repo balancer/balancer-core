@@ -11,6 +11,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+const assert = (b, s) => assert(b, s) // standard.js warnings
+
 // Bi := Balance of token In
 // Bo := Balance of token Out
 // Wi := Weight of token In
@@ -144,7 +146,7 @@ module.exports.floatMath = {
     const remain = exponent - whole
     const wholePow = base ** whole
 
-    if (remain == 0) {
+    if (remain === 0) {
       return wholePow
     }
 
@@ -164,7 +166,7 @@ module.exports.floatMath = {
   },
 
   getValue: function (tokenList) {
-    if (tokenList.length == 0) return 0
+    if (tokenList.length === 0) return 0
     let res = 1
     for (const token of tokenList) {
       res *= Math.pow(token[0], token[1])
@@ -186,7 +188,7 @@ module.exports.floatMath = {
 
   getNormalizedWeight: function (W, tokens) {
     const totalWeight = this.getTotalWeight(tokens)
-    if (totalWeight == 0) return 0
+    if (totalWeight === 0) return 0
     return W / totalWeight
   }
 

@@ -1,10 +1,9 @@
 module.exports = async function (web3, from, typeName, args) {
-  // TODO very fragile, dependencies expect this bound properly
   const type = this.types[typeName]
-  if (type == undefined) {
+  if (type === undefined) {
     throw new Error(`Trying to deploy ${typeName}, but type name not recognized`)
   }
-  if (type.bin == '') {
+  if (type.bin === '') {
     throw new Error(`Trying to deploy contract ${typeName} with empty \`bin\``)
   }
   return new web3.eth.Contract(JSON.parse(type.abi))

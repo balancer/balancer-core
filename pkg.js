@@ -11,7 +11,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-module.exports.floatMath = require("./util/floatMath.js");
-module.exports.types = require("./util/types.js");
-module.exports.deploy = require("./util/deploy.js");
+module.exports.floatMath = require('./util/floatMath.js');
+module.exports.types = require('./util/types.js');
+module.exports.deploy = require('./util/deploy.js');
