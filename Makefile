@@ -8,7 +8,7 @@ build:
 	--bin \
 	--overwrite\
 		/=/ \
-	-o out/tmp \
+	-o out/tmp/ \
 	sol/BFactory.sol \
 	sol/BMathPub.sol \
 	sol/BPool.sol \
@@ -23,6 +23,11 @@ dist:
 	--metadata \
 	--overwrite\
 		/=/ \
-	-o out \
+	-o out/tmp/ \
 	sol/BFactory.sol \
 	sol/BPool.sol \
+\
+	&& cp out/tmp/combined.json out \
+	&& cp out/tmp/BFactory* out \
+	&& cp out/tmp/BPool* out \
+	&& echo 'Copied select build output to out/'
