@@ -20,8 +20,7 @@ import './BColor.sol';
 import './BPool.sol';
 import './BMathPub.sol';
 
-contract BFactory is BBronze
-                   , BMathPub
+contract BFactory is BBronze, BMathPub
 {
 
     event LOG_NEW_POOL( address indexed caller

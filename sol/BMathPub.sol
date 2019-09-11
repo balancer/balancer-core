@@ -19,8 +19,7 @@ import "./BMath.sol";
 // BMathPub exposes BMath internal functions.
 // It gets mixed into the factory for use as a library.
 
-contract BMathPub is BBronze
-                   , BMath
+contract BMathPub is BBronze, BMath
 {
     function calc_SpotPrice( uint Bi, uint Wi
                            , uint Bo, uint Wo )
