@@ -21,7 +21,7 @@ The *❄️Silver Release❄️* will bring many gas optimizations and architect
 The *☀️Golden Release☀️* will introduce a curious new liquidity mechanism to the market.
 
 
-# Installing
+## Using the ABI definitions
 
 Most users will want to consume the ABI definitions for `BFactory` and `BPool`.
 
@@ -35,14 +35,6 @@ Now you can require the package:
 
 ```javascript
 let bcore = require('./balancer-core');
-```
-
-# Using
-
-### Quickstart
-
-```javascript
-let bcore = require('./balancer-core')
 let BFactory = bcore.types.BFactory
 let BPool = bcore.types.BPool
 
@@ -62,7 +54,7 @@ bpool.start()
 
 For more information [check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/api.md)
 
-# Developing (working on `balancer-core`)
+## Developing (working on `balancer-core`)
 
 ```sh
 # To develop you need `yarn`, `node`, and `solc`
