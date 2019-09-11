@@ -34,14 +34,14 @@ contract BConst is BBronze
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
 
-    string constant ERR_MATH_ADD_OVERFLOW  = "ERR_MATH_ADD_OVERFLOW";
-    string constant ERR_MATH_SUB_UNDERFLOW = "ERR_MATH_SUB_UNDERFLOW";
-    string constant ERR_MATH_MUL_OVERFLOW  = "ERR_MATH_MUL_OVERFLOW";
-    string constant ERR_MATH_DIV_ZERO      = "ERR_MATH_DIV_ZERO";
-    string constant ERR_MATH_DIV_INTERNAL  = "ERR_MATH_DIV_INTERNAL";
+    string constant ERR_ADD_OVERFLOW       = "ERR_MATH_ADD_OVERFLOW";
+    string constant ERR_SUB_UNDERFLOW      = "ERR_MATH_SUB_UNDERFLOW";
+    string constant ERR_MUL_OVERFLOW       = "ERR_MATH_MUL_OVERFLOW";
+    string constant ERR_DIV_ZERO           = "ERR_MATH_DIV_ZERO";
+    string constant ERR_DIV_INTERNAL       = "ERR_MATH_DIV_INTERNAL";
+    string constant ERR_BPOW_BASE          = "ERR_BPOW_BASE";
 
     string constant ERR_CALC_PANIC         = "ERR_CALC_PANIC";
-    string constant ERR_BPOW_BASE          = "ERR_BPOW_BASE";
 
     string constant ERR_MAX_TOKENS         = "ERR_MAX_TOKENS";
     string constant ERR_MAX_FEE            = "ERR_MAX_FEE";
@@ -52,11 +52,13 @@ contract BConst is BBronze
     string constant ERR_MAX_TOTAL_WEIGHT   = "ERR_MAX_TOTAL_WEIGHT";
     string constant ERR_MIN_POOL_SUPPLY    = "ERR_MAX_BALANCE";
 
+    string constant ERR_IS_BOUND           = "ERR_IS_BOUND";
     string constant ERR_NOT_BOUND          = "ERR_NOT_BOUND";
-    string constant ERR_ALREADY_BOUND      = "ERR_ALREADY_BOUND";
-
-    string constant ERR_PAUSED             = "ERR_PAUSED";
+    string constant ERR_IS_PAUSED          = "ERR_IS_PAUSED";
+    string constant ERR_NOT_PAUSED         = "ERR_NOT_PAUSED";
+    string constant ERR_IS_PUBLIC          = "ERR_IS_PUBLIC";
     string constant ERR_NOT_PUBLIC         = "ERR_NOT_PUBLIC";
+
     string constant ERR_NOT_MANAGER        = "ERR_NOT_MANAGER";
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
 

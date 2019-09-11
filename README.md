@@ -2,7 +2,7 @@
 <img width="128px" src="https://balancer-labs.github.io/pebbles/images/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
 
-<h2 align=center><code>balancer</code></h2>
+<h1 align=center><code>balancer</code></h1>
 
 **Balancer** is an automated **portfolio manager**, **liquidity provider**, and **price sensor**.
 
@@ -10,17 +10,18 @@ Balancer turns the concept of an index fund on its head: instead of an investors
 to portfolio managers to rebalance their portfolio, investors collect fees from traders, who rebalance
 the portfolio by following arbitrage opportunities.
 
+Balancer is based on an N-dimensional invariant surface which is a generalization of the constant product formula described by Vitalik Buterin (a concept which was proven viable by the popular Uniswap dapp).
+
 <h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
 
 The *🍂Bronze Release*  is the first of 3 planned releases of the Balancer Protocol.
 
-* Bronze emphasizes code clarity for audit and verification, and does not attempt to optimize for gas.
+* Bronze emphasizes code clarity for audit and verification, and does not go to great lengths to optimize for gas.
 * Bronze pools are either Private or Public. Private pools can only be funded by their managers. Public pools can be funded (`join`ed) by anyone. **All pools have public `swap`**.
 * The relative weights of tokens in a Bronze pool **cannot be changed once the pool is public** - it becomes a fixed-allocation index fund.
 * Balancer charges a per-pool exit fee for Bronze pools.
 
-The *❄️ Silver Release* will bring a number of gas optimizations and architecture changes that will reduce transaction overhead.
-It will extend the functionality of Bronze pools in small but important and useful ways.
+The *❄️ Silver Release* will bring many gas optimizations and architecture changes that will reduce transaction overhead and enable more flexibility for managed pools.
 
 The *☀️ Golden Release* will introduce a curious new liquidity mechanism to the market.
 

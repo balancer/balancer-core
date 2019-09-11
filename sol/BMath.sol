@@ -100,11 +100,11 @@ contract BMath is BBronze, BConst
         returns (uint)
     {
         require(base <= BONE * 2, ERR_BPOW_BASE);
-        uint whole                 = bfloor(exp);   
-        uint remain                = bsub(exp, whole);
+        uint whole  = bfloor(exp);   
+        uint remain = bsub(exp, whole);
 
         // make whole agree with wpown def
-        uint wholePow              = bpown(base, btoi(whole));
+        uint wholePow = bpown(base, btoi(whole));
 
         if (remain == 0) {
             return wholePow;
@@ -121,6 +121,7 @@ contract BMath is BBronze, BConst
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // since we can't underflow, keep a tally of negative signs in 'select'
+
         uint select = 0;
         for( uint i = 1; i < 20; i++) {
             uint k = i * BONE;
@@ -146,13 +147,13 @@ contract BMath is BBronze, BConst
 
     function badd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c >= a, ERR_MATH_ADD_OVERFLOW);
+        require(c >= a, ERR_ADD_OVERFLOW);
         return c;
     }
 
     function bsub(uint a, uint b) internal pure returns (uint) {
         (uint c, bool flag) = bsubSign(a, b);
-        require(!flag, ERR_MATH_SUB_UNDERFLOW);
+        require(!flag, ERR_SUB_UNDERFLOW);
         return c;
     }
 
@@ -166,19 +167,19 @@ contract BMath is BBronze, BConst
 
     function bmul(uint a, uint b) internal pure returns (uint) {
         uint c0 = a * b;
-        require(a == 0 || c0 / a == b, ERR_MATH_MUL_OVERFLOW);
+        require(a == 0 || c0 / a == b, ERR_MUL_OVERFLOW);
         uint c1 = c0 + (BONE / 2);
-        require(c1 >= c0, ERR_MATH_MUL_OVERFLOW);
+        require(c1 >= c0, ERR_MUL_OVERFLOW);
         uint c2 = c1 / BONE;
         return c2;
     }
 
     function bdiv(uint a, uint b) internal pure returns (uint) {
-        require(b != 0, ERR_MATH_DIV_ZERO);
+        require(b != 0, ERR_DIV_ZERO);
         uint c0 = a * BONE;
-        require(a == 0 || c0 / a == BONE, ERR_MATH_DIV_INTERNAL); // bmul require
+        require(a == 0 || c0 / a == BONE, ERR_DIV_INTERNAL); // bmul overflow
         uint c1 = c0 + (b / 2);
-        require(c1 >= c0, ERR_MATH_DIV_INTERNAL); //  badd require
+        require(c1 >= c0, ERR_DIV_INTERNAL); //  badd require
         uint c2 = c1 / b;
         return c2;
     }
@@ -200,6 +201,4 @@ contract BMath is BBronze, BConst
     function bfloor(uint a) internal pure returns (uint) {
         return (a / BONE) * BONE;
     }
-
-
 }

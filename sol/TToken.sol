@@ -15,6 +15,8 @@ pragma solidity ^0.5.11;
 
 import "./BToken.sol";
 
+// TToken is a test token with public `mint` and `burn`.
+
 contract TToken is BToken {
     function mint(uint amt) public {
         _mint(amt);

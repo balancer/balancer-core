@@ -236,7 +236,7 @@ contract BPool is BBronze, BToken
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
-        require( ! isBound(token), ERR_ALREADY_BOUND);
+        require( ! isBound(token), ERR_IS_BOUND);
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
         require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
         require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
@@ -347,7 +347,7 @@ contract BPool is BBronze, BToken
         
         require( isBound(Ti), ERR_NOT_BOUND );
         require( isBound(To), ERR_NOT_BOUND );
-        require( ! isPaused(), ERR_PAUSED );
+        require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -376,7 +376,7 @@ contract BPool is BBronze, BToken
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
-        require( ! _paused, ERR_PAUSED);
+        require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -404,7 +404,7 @@ contract BPool is BBronze, BToken
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
-        require( ! _paused, ERR_PAUSED);
+        require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -431,7 +431,7 @@ contract BPool is BBronze, BToken
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
-        require( ! _paused, ERR_PAUSED );
+        require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];

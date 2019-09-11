@@ -15,6 +15,8 @@ pragma solidity ^0.5.11;
 
 import "./BMath.sol";
 
+// Highly opinionated token implementation
+
 contract BTokenBase is BMath
 {
     mapping(address=>
