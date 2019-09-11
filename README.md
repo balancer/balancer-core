@@ -26,9 +26,9 @@ The *☀️Golden Release* will introduce a curious new liquidity mechanism to t
 
 ## Installing
 
-Most users will be interested in consuming ABI definitions for various Balancer contracts.
+Most users will want to consume the ABI definitions for `BFactory` and `BPool`.
 
-At the moment, the best way to use it is as a git submodule.
+At the moment, you can use the package as a git submodule.
 
 ```
 git submodule add https://github.com/balancer-labs/balancer-core
@@ -38,30 +38,36 @@ Now you can require the package:
 
 ```javascript
 let bcore = require('./balancer-core');
-let types = bcore.types; # A combined.json-like object with type names lifted
-
-let Factory = bcore.types.BFactory;
-let BPool = bcore.types.BPool;
-
-let factory = new web3.eth.Contract(Factory.abi).deploy(Factory.bin);
-let poolAddress = factory.newBPool();
-let bpool = web3.eth.Contract(BPool.abi).at(poolAddress);
-
-Acoin.approve(poolAddress, toTwosComplement(-1));
-Bcoin.approve(poolAddress, toTwosComplement(-1));
-
-bpool.bind(Acoin._address, toWei('200'), toWei('1'));
-bpool.bind(BCoin._address, toWei('100'), toWei('2'));
-bpool.start();
 ```
 
 ## API Docs
 
-[Check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/api.md)
+### Quickstart
+
+```javascript
+let bcore = require('./balancer-core')
+let BFactory = bcore.types.BFactory
+let BPool = bcore.types.BPool
+
+let factory = new web3.eth.Contract(BFactory.abi).deploy(BFactory.bin)
+let poolAddress = factory.newBPool()
+let bpool = web3.eth.Contract(BPool.abi).at(poolAddress)
+
+// Acoin and Bcoin are ERC20 tokens from somewhere else
+Acoin.approve(poolAddress, toTwosComplement(-1))
+Bcoin.approve(poolAddress, toTwosComplement(-1))
+
+// token, initial balance, denormalized weight
+bpool.bind(Acoin._address, toWei('200'), toWei('1'))
+bpool.bind(BCoin._address, toWei('100'), toWei('2'))
+bpool.start()
+```
+
+For more information [check out our work in progress docs](https://github.com/balancer-labs/balancer-page/blob/master/api.md)
 
 ## Developing (working on `balancer-core`)
 
-```
+```sh
 # To develop you need `yarn`, `node`, and `solc`
 brew install node yarn ethereum
 
@@ -82,7 +88,7 @@ yarn dist        # cp artifacts to out/ for commit (`make dist`)
 out/            solidity build artifacts
     tmp/        .gitignore'd transient build out for tests
 sol/            solidity source files (the contracts)
-test/           tests for util/ and sol/
+test/           tests for sol/ and util/
 util/           javascript support code
 LICENSE         GPL3
 Makefile        solidity build command defined here
