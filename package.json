@@ -20,7 +20,7 @@
   "scripts": {
     "build": "make build",
     "test": "make build && mocha",
-    "dist": "make dist"
+    "dist": "make dist && npx standard util/*"
   },
   "repository": {
     "type": "git",

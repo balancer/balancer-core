@@ -70,11 +70,10 @@ git clone https://github.com/balancer-labs/balancer-core
 cd balancer-core
 
 yarn             # install dev dependencies
-
-# Dev loop
 # yarn build     # compile the solidity contracts to tmp/  (`make`)
 yarn test        # build contracts and run the tests (`make && mocha`)
 yarn dist        # cp artifacts to out/ for commit (`make dist`)
+                 # and also runs `npx standard util/*`
 ```
 
 ### Project structure
@@ -91,3 +90,5 @@ pkg.js          package entrypoint (module.exports)
 package.json
 yarn.lock
 ```
+
+
