@@ -67,7 +67,7 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
-    function _calc_SpotPrice( uint Bi, uint Wi
+    function _calc_SpotRate( uint Bi, uint Wi
                            , uint Bo, uint Wo )
       public pure
         returns ( uint r ) 
@@ -85,7 +85,7 @@ contract BMath is BBronze, BConst, BNum
       public pure
         returns ( uint Ai )
     {
-        uint SER0    = _calc_SpotPrice(Bi, Wi, Bo, Wo);
+        uint SER0    = _calc_SpotRate(Bi, Wi, Bo, Wo);
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
         Ai           = bsub(bpow(base, exp), BONE);
