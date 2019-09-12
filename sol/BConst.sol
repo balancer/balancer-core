@@ -33,6 +33,7 @@ contract BConst is BBronze
     uint256 constant MAX_TRADE_OUT     = BONE / 2;
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
+    uint256 constant APPROX_ITERATIONS = 20;
 
     string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
     string constant ERR_SUB_UNDERFLOW      = "ERR_SUB_UNDERFLOW";

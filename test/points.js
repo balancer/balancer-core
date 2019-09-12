@@ -73,7 +73,7 @@ module.exports.math = {
     ['ERR_', [10, 2, 4600, 4, 0, 0.1]]
   ],
 
-  calc_SpotPrice: [
+  calc_SpotRate: [
     [4, [1, 2, 10, 5]],
     [1 / 4, [10, 5, 1, 2]],
 
@@ -92,7 +92,7 @@ module.exports.math = {
   ]
 }
 
-module.exports.spotPricePoints = [
+module.exports.spotRatePoints = [
 
   { res: 4, Bi: 1, Wi: 2, Bo: 10, Wo: 5 },
   { res: 1 / 4, Bi: 10, Wi: 5, Bo: 1, Wo: 2 },

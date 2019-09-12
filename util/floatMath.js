@@ -21,10 +21,10 @@ const assert = require('assert')
 // Ai := Amount of token Out
 module.exports.floatMath = {
 
-  calc_SpotPrice: function () {
-    return module.exports.floatMath.spotPrice(...arguments)
+  calc_SpotRate: function () {
+    return module.exports.floatMath.spotRate(...arguments)
   },
-  spotPrice: function (Bi, Wi, Bo, Wo) {
+  spotRate: function (Bi, Wi, Bo, Wo) {
     assert(Bi > 0, 'Bi must be positive')
     assert(Wi > 0, 'Wi must be positive')
     assert(Bo > 0, 'Bo must be positive')
@@ -120,7 +120,7 @@ module.exports.floatMath = {
   },
 
   amountUpToPriceExact: function (Bi, Wi, Bo, Wo, SER1, fee) {
-    var SER0 = this.spotPrice(Bi, Wi, Bo, Wo)
+    var SER0 = this.spotRate(Bi, Wi, Bo, Wo)
     var exponent = Wo / (Wo + Wi)
     var foo = SER0 / SER1
 
@@ -131,7 +131,7 @@ module.exports.floatMath = {
     return module.exports.floatMath.amountUpToPriceApprox(...arguments)
   },
   amountUpToPriceApprox: function (Bi, Wi, Bo, Wo, SER1, fee) {
-    var SER0 = this.spotPrice(Bi, Wi, Bo, Wo)
+    var SER0 = this.spotRate(Bi, Wi, Bo, Wo)
     var exponent = Wo / (Wo + Wi)
     var foo = SER0 / SER1
     var Ai = (this.powApprox(foo, exponent) - 1) * Bi

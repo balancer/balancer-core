@@ -19,6 +19,24 @@ import "./BNum.sol";
 
 contract BMath is BBronze, BConst, BNum
 {
+    function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo) 
+      public pure
+        returns ( uint p )
+    {
+        uint numer = bdiv(Bi, Wi);
+        uint denom = bdiv(Bo, Wo);
+        return  (p = bdiv(numer, denom));
+    }
+
+    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
+      public pure
+        returns ( uint r ) 
+    {
+        uint numer = bdiv(Bo, Wo);
+        uint denom = bdiv(Bi, Wi);
+        return  (r = bdiv(numer, denom));
+    }
+
     // Names
     // Bi := Balance In
     // Bo := Balance Out
@@ -65,24 +83,6 @@ contract BMath is BBronze, BConst, BNum
              Ai     = bsub(BONE, fee);
              Ai     = bdiv(bmul(Bi, foo), Ai);
         return Ai;
-    }
-
-    function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo) 
-      public pure
-        returns ( uint p )
-    {
-        uint numer = bdiv(Bi, Wi);
-        uint denom = bdiv(Bo, Wo);
-        return  (p = bdiv(numer, denom));
-    }
-
-    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
-      public pure
-        returns ( uint r ) 
-    {
-        uint numer = bdiv(Bo, Wo);
-        uint denom = bdiv(Bi, Wi);
-        return  (r = bdiv(numer, denom));
     }
 
     function _calc_InGivenPrice( uint Bi, uint Wi
@@ -132,7 +132,7 @@ contract BMath is BBronze, BConst, BNum
         // since we can't underflow, keep a tally of negative signs in 'select'
 
         uint select = 0;
-        for( uint i = 1; i < 20; i++) {
+        for( uint i = 1; i < APPROX_ITERATIONS; i++) {
             uint k = i * BONE;
             
             (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));

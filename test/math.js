@@ -28,10 +28,10 @@ const assertCloseBN = (a, b, tolerance) => {
 }
 
 describe('floatMath.js', function () {
-  for (const pt of testPoints.spotPricePoints) {
-    var desc = `${pt.res} ~= calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
+  for (const pt of testPoints.spotRatePoints) {
+    var desc = `${pt.res} ~= calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
     it(desc, function () {
-      assert.closeTo(pt.res, fMath.calc_SpotPrice(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance)
+      assert.closeTo(pt.res, fMath.calc_SpotRate(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance)
     })
   }
 
@@ -149,17 +149,17 @@ describe('BMath', () => {
       assertCloseBN(toWei(pt.res), web3.utils.toBN(actual), approxTolerance)
     })
   }
-  for (const pt of testPoints.spotPricePoints) {
+  for (const pt of testPoints.spotRatePoints) {
     const res = toWei(pt.res)
     const Bi = toWei(pt.Bi).toString()
     const Wi = toWei(pt.Wi).toString()
     const Bo = toWei(pt.Bo).toString()
     const Wo = toWei(pt.Wo).toString()
-    const desc = `${pt.res} ~= bMath.calc_SpotPrice(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
+    const desc = `${pt.res} ~= bMath.calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
     it(desc, async () => {
       const accts = await web3.eth.getAccounts()
       const math = await pkg.deploy(web3, accts[0], 'BStub')
-      var actual = await math.methods.calc_SpotPrice(Bi, Wi, Bo, Wo).call()
+      var actual = await math.methods.calc_SpotRate(Bi, Wi, Bo, Wo).call()
       assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance)
     })
   }

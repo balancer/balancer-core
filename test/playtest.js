@@ -57,10 +57,12 @@ describe('a play about balancer', async () => {
     const daiB = await env.bpool.getBalance(daiAddr)
     const mkrW = await env.bpool.getWeight(mkrAddr)
     const daiW = await env.bpool.getWeight(daiAddr)
-    const mkrIndai = await env.bpool.getSpotPrice(mkrAddr, daiAddr);
-    console.log(fromWei(mkrIndai))
-    const daiInmkr = await env.bpool.getSpotPrice(daiAddr, mkrAddr);
-    console.log(fromWei(daiInmkr))
+    const mkrRate = await env.bpool.getSpotRate(mkrAddr, daiAddr);
+    //const mkrPrice = await env.bpool.getSpotPrice(mkrAddr, daiAddr);
+    console.log(fromWei(mkrRate))
+    const daiRate = await env.bpool.getSpotRate(daiAddr, mkrAddr);
+    //const daiPrice = await env.bpool.getSpotRate(daiAddr, mkrAddr);
+    console.log(fromWei(daiRate))
     // TODO price orientations etc
 
     const err = await env.bpool.CATCH_joinPool('0')
