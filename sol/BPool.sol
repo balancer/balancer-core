@@ -13,10 +13,11 @@
 
 pragma solidity ^0.5.11;
 
+import "./BColor.sol";
 import "./BToken.sol";
 import "./BMath.sol";
 
-contract BPool is BBronze, BToken
+contract BPool is BBronze, BToken, BMath
 {
     struct Record {
         uint index;

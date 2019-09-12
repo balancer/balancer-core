@@ -13,11 +13,11 @@
 
 pragma solidity ^0.5.11;
 
-import "./BMath.sol";
+import "./BNum.sol";
 
 // Highly opinionated token implementation
 
-contract BTokenBase is BMath
+contract BTokenBase is BNum
 {
     mapping(address=>
       mapping(address=>uint))   internal _allowance;
