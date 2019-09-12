@@ -439,13 +439,19 @@ contract BPool is BBronze, BToken, BMath
         _paused = false;
     }
 
-    // TODO fee
+    function getSpotPrice(address Ti, address To)
+      public view returns (uint P) {
+        revert('unimplemented, finish untwisting');
+    }
+
     function getSpotRate(address Ti, address To)
-      public view returns (uint P)
+      public view returns (uint R)
     {
         Record memory I = _records[Ti];
         Record memory O = _records[To];
-        return _calc_SpotRate(I.balance, I.weight, O.balance, O.weight);
+        uint          r = _calc_SpotRate(I.balance, I.weight, O.balance, O.weight);
+    // TODO should this be  (r * (1+fee))  ?
+        return       (R = bdiv(r, bsub(BONE, _swapFee)));
     }
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
