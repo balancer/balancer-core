@@ -18,6 +18,7 @@ module.exports.liftTypes = function (types) {
 
   lift('BFactory')
   lift('BPool')
+  lift('BStub')
   lift('TToken')
 }
 
