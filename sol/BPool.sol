@@ -203,8 +203,8 @@ contract BPool is BBronze, BToken
         uint oldPoolTotal = totalSupply();
 
         // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
-        uint foo = bsub(1, T.weight);
-        uint bar = bmul(pAi, foo);
+        uint boo = bsub(1, T.weight);
+        uint bar = bmul(pAi, boo);
         uint baz = bmul(bar, _exitFee);
         uint pAi_fee = bsub(pAi, baz);
 
@@ -221,6 +221,7 @@ contract BPool is BBronze, BToken
 
         uint tAo = bsub(T.balance, newBalTo);
 
+        revert('todo set balance/supply');
         _pull(msg.sender, pAi); // Pull pAi, not only poolAiAfterFee
         _burn(pAi);
         _pushT(To, msg.sender, tAo);
@@ -231,18 +232,61 @@ contract BPool is BBronze, BToken
         _lock_
         public
     {
-        revert('unimplemented');
+        require( isBound(Ti), ERR_NOT_BOUND );
+        uint oldPoolTotal = totalSupply();
+
+        Record memory T = _records[Ti];
+
+        // Charge the trading fee for the proportion of tokenAi
+        ///  which is implicitly traded to the other pool tokens.
+        // That proportion is (1-T.weight)
+        // tokenAiAfterFee = tAi - tAi * (1-T.weight) * poolFee;
+        uint boo = bsub(1, T.weight);
+        uint bar = bmul(tAi, bmul(boo, _swapFee));
+        uint baz = bsub(tAi, bar);
+        uint tokenAiAfterFee = baz;
+
+        uint newBalTi = T.balance + tAi;
+        uint ratioTi = bdiv(newBalTi, T.balance);
+
+        // uint newPoolTotal = (ratioTi ^ T.weight) * oldPoolTotal;
+        uint zoo = bpow(ratioTi, T.weight);
+        uint zar = bmul(zoo, oldPoolTotal);
+        uint poolAo = bsub(zar, oldPoolTotal);
+
+        revert('todo set balance/supply');
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
+        _pullT(Ti, msg.sender, tAi);
     }
 
     function exitswap_ExternAmountOut(address To, uint tAo)
         _beep_
         _lock_
-        public
+        public returns (uint pAo)
     {
-        revert('unimplemented');
+        require( isBound(To), ERR_NOT_BOUND );
+        uint oldPoolTotal = totalSupply();
+        Record memory T = _records[To];
+        uint newBalTo = T.balance - tAo;
+        uint ratioTo = bdiv(newBalTo, T.balance);
+        //uint newPoolTotal = (ratioTo ^ weightTo) * oldPoolTotal;
+        uint boo = bpow(ratioTo, T.weight);
+        uint bar = bmul(boo, oldPoolTotal);
+        uint newPoolTotal = bar;
+        uint poolAo = oldPoolTotal - newPoolTotal;
+
+        //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
+        uint zoo = (1 - T.weight);
+        uint zar = bmul(zoo, _swapFee); // poolAoBeforeTradingFees
+        uint poolAoBeforeFees = zar / (1-_exitFee);
+       
+        revert('todo set balance/supply'); 
+        _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not only poolAo 
+        _burn(poolAoBeforeFees);    
+        _pushT(To, msg.sender, tAo);
+        return poolAoBeforeFees;
     }
-
-
 
     function setParams(address token, uint balance, uint weight)
       _beep_
