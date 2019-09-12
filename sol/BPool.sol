@@ -190,30 +190,52 @@ contract BPool is BBronze, BToken
     {
         revert('unimplemented');
     }
-
-    function joinswap_HeldAmountIn(address Ti, address tAi)
-        _beep_
-        _lock_
-        public
-    {
-        revert('unimplemented');
-    }
-
     // Note the argument is the *pool token* amount *in*
     function exitswap_PoolAmountIn(uint pAi, address To)
         _beep_
         _lock_
         public
     {
-        revert('unimplemented');
+        require( isBound(To), ERR_NOT_BOUND );
+
+        Record memory T = _records[To];
+
+        uint oldPoolTotal = totalSupply();
+
+        // poolAiAfterFee = poolAi - poolAi * (1-weightTo) * poolFee
+        uint foo = bsub(1, T.weight);
+        uint bar = bmul(pAi, foo);
+        uint baz = bmul(bar, _exitFee);
+        uint poolAiAfterFee = bsub(pAi, baz);
+
+        uint newPoolTotal = bsub(oldPoolTotal, poolAiAfterFee);
+        uint poolRatio = bdiv(newPoolTotal, oldPoolTotal);
+     
+        // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
+        uint zoo = bdiv(1, T.weight); 
+        uint zar = bpow(poolRatio, zoo);
+        uint newBalTo = bmul(zar, T.balance);
+
+        uint tAo = bsub(T.balance, newBalTo);
+
+        _pull(msg.sender, pAi); // Pull pAi, not only poolAiAfterFee
+        _burn(pAi);
+        _pushT(To, msg.sender, tAo);
     }
 
-    function exitswap_HeldAmountOut(address To, address tAo)
+    function joinswap_ExternAmountIn(address Ti, uint tAi)
         _beep_
         _lock_
         public
     {
         revert('unimplemented');
+    }
+
+    function exitswap_ExternAmountOut(address To, uint tAo)
+        _beep_
+        _lock_
+        public
+    {
         revert('unimplemented');
     }
 
