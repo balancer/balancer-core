@@ -10,7 +10,7 @@ build:
 		/=/ \
 	-o out/tmp/ \
 	sol/BFactory.sol \
-	sol/BMathPub.sol \
+	sol/BStub.sol \
 	sol/BPool.sol \
 	sol/TToken.sol
 dist:

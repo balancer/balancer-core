@@ -18,9 +18,9 @@ pragma solidity ^0.5.11;
 
 import './BColor.sol';
 import './BPool.sol';
-import './BMathPub.sol';
+import './BStub.sol';
 
-contract BFactory is BBronze, BMathPub
+contract BFactory is BBronze, BStub
 {
 
     event LOG_NEW_POOL( address indexed caller

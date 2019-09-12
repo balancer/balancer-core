@@ -16,10 +16,9 @@ pragma solidity ^0.5.11;
 import "./BColor.sol";
 import "./BMath.sol";
 
-// BMathPub exposes BMath internal functions.
-// It gets mixed into the factory for use as a library.
+// BStub exposes BMath internal functions
 
-contract BMathPub is BBronze, BMath
+contract BStub is BBronze, BMath
 {
     function calc_SpotPrice( uint Bi, uint Wi
                            , uint Bo, uint Wo )
