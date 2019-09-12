@@ -67,15 +67,22 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
-    function _calc_SpotRate( uint Bi, uint Wi
-                           , uint Bo, uint Wo )
+    function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo) 
+      public pure
+        returns ( uint p )
+    {
+        uint numer = bdiv(Bi, Wi);
+        uint denom = bdiv(Bo, Wo);
+        return  (p = bdiv(numer, denom));
+    }
+
+    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
       public pure
         returns ( uint r ) 
     {
         uint numer = bdiv(Bo, Wo);
         uint denom = bdiv(Bi, Wi);
-        r = bdiv(numer, denom);
-        return r;
+        return  (r = bdiv(numer, denom));
     }
 
     function _calc_InGivenPrice( uint Bi, uint Wi
