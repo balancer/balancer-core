@@ -217,6 +217,7 @@ contract BPool is BBronze, BToken
         uint newBalTo = bmul(zar, T.balance);
 
         T.balance = newBalTo;
+        _totalSupply = newPoolTotal;
 
         uint tAo = bsub(T.balance, newBalTo);
 
