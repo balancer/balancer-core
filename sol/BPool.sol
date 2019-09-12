@@ -202,19 +202,21 @@ contract BPool is BBronze, BToken
 
         uint oldPoolTotal = totalSupply();
 
-        // poolAiAfterFee = poolAi - poolAi * (1-weightTo) * poolFee
+        // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
         uint foo = bsub(1, T.weight);
         uint bar = bmul(pAi, foo);
         uint baz = bmul(bar, _exitFee);
-        uint poolAiAfterFee = bsub(pAi, baz);
+        uint pAi_fee = bsub(pAi, baz);
 
-        uint newPoolTotal = bsub(oldPoolTotal, poolAiAfterFee);
+        uint newPoolTotal = bsub(oldPoolTotal, pAi_fee);
         uint poolRatio = bdiv(newPoolTotal, oldPoolTotal);
      
         // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
         uint zoo = bdiv(1, T.weight); 
         uint zar = bpow(poolRatio, zoo);
         uint newBalTo = bmul(zar, T.balance);
+
+        T.balance = newBalTo;
 
         uint tAo = bsub(T.balance, newBalTo);
 
@@ -523,8 +525,11 @@ contract BPool is BBronze, BToken
         return (Ai, Ao, Pafter);
     }
 
+    // ==
     // Internal token-manipulation functions are NOT locked
     // You must `_lock_` or otherwise ensure reentry-safety
+    // Note that `_swap` changes record balances, but `_push` and `_pull` do not
+
     function _swap(address Ti, uint Ai, address To, uint Ao)
       internal
     {
