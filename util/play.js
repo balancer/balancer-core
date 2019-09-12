@@ -33,7 +33,7 @@ module.exports.stage = async (web3_, accts_) => {
   return env
 }
 
-module.exports.scene1 = async () => {
+module.exports.scene0 = async () => {
   assert(staged, 'please call `stage`')
   staged = false
 
@@ -59,28 +59,28 @@ module.exports.scene1 = async () => {
   return env
 }
 
-module.exports.scene2 = async () => {
-  await module.exports.scene1()
+module.exports.scene1 = async () => {
+  await module.exports.scene0()
 
-  env.initDAI = toWei('5000')
-  env.initETH = toWei('40')
   env.initMKR = toWei('10')
+  env.initETH = toWei('40')
+  env.initDAI = toWei('5000')
 
   await env.MKR.mint(env.initMKR)
   await env.ETH.mint(env.initETH)
   await env.DAI.mint(env.initDAI)
 
-  await env.bpool.bind(env.MKR.__address, toWei('10'), toWei('1.1'))
-  await env.bpool.bind(env.ETH.__address, toWei('40'), toWei('1.1'))
-  await env.bpool.bind(env.DAI.__address, toWei('5000'), toWei('1.1'))
+  await env.bpool.bind(env.MKR.__address, env.initMKR, toWei('1.1'))
+  await env.bpool.bind(env.ETH.__address, env.initETH, toWei('1.1'))
+  await env.bpool.bind(env.DAI.__address, env.initDAI, toWei('1.1'))
 
   await env.bpool.start()
 
   return env
 }
 
-module.exports.scene3 = async () => {
-  await module.exports.scene2()
+module.exports.scene2 = async () => {
+  await module.exports.scene1()
 
   return env
 }

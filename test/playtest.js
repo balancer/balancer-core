@@ -22,8 +22,8 @@ describe('a play about balancer', async () => {
     await play.stage(web3)
   })
 
-  it('scene 1', async () => {
-    const env = await play.scene1()
+  it('scene0', async () => {
+    const env = await play.scene0()
     assert.exists(env.Ali)
     assert.exists(env.hub)
     assert.exists(env.bpool)
@@ -40,8 +40,8 @@ describe('a play about balancer', async () => {
     env.web3.opts.from = env.Ali
   })
 
-  it('scene 2', async () => {
-    const env = await play.scene2()
+  it('scene1', async () => {
+    const env = await play.scene1()
     const bal = await env.DAI.balanceOf(env.bpool.__address)
     assert.equal(bal, env.initDAI)
     const paused = await env.bpool.isPaused()
@@ -49,27 +49,25 @@ describe('a play about balancer', async () => {
     const joinable = await env.bpool.isPublic()
     assert(!joinable)
 
-    // TODO spotPriceExternal
     const mkrAddr = env.MKR.__address
     const daiAddr = env.DAI.__address
     const ethAddr = env.ETH.__address
+
     const mkrB = await env.bpool.getBalance(mkrAddr)
     const daiB = await env.bpool.getBalance(daiAddr)
     const mkrW = await env.bpool.getWeight(mkrAddr)
     const daiW = await env.bpool.getWeight(daiAddr)
+
+    const mkrPrice = await env.bpool.getSpotPrice(daiAddr, mkrAddr);
+    assert.equal(mkrPrice, toWei('500'));
     const mkrRate = await env.bpool.getSpotRate(mkrAddr, daiAddr);
-    //const mkrPrice = await env.bpool.getSpotPrice(mkrAddr, daiAddr);
-    console.log(fromWei(mkrRate))
     const daiRate = await env.bpool.getSpotRate(daiAddr, mkrAddr);
-    //const daiPrice = await env.bpool.getSpotRate(daiAddr, mkrAddr);
-    console.log(fromWei(daiRate))
-    // TODO price orientations etc
 
     const err = await env.bpool.CATCH_joinPool('0')
     assert.equal(err, 'ERR_NOT_PUBLIC')
   })
 
-  it('scene 3', async () => {
-    const env = await play.scene3()
+  it('scene2', async () => {
+    const env = await play.scene2()
   })
 })
