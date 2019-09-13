@@ -17,6 +17,44 @@ const play = require('../util/play.js')
 const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 
+//const assert = require('chai');
+// slightly gte (bignum)
+assert.sgte = (a, b, errstr, tolerance) => { 
+    if( tolerance == undefined) {
+        tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
+    }
+    if( errstr == undefined) {
+        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
+    }
+    if(typeof(a) == 'string') {
+        a = web3.utils.toBN(a);
+    }
+    if(typeof(b) == 'string') {
+        b = web3.utils.toBN(b);
+    }
+    let diff = a.sub(b);
+    assert( diff.cmp(0) >= 0, errstr );
+    assert( diff.lt(tolerance), errstr );
+}
+// slightly lte (bignum)
+assert.slte = (a, b, errstr, tolerance) => { 
+    if( tolerance == undefined) {
+        tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
+    }
+    if( errstr == undefined) {
+        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
+    }
+    if(typeof(a) == 'string') {
+        a = web3.utils.toBN(a);
+    }
+    if(typeof(b) == 'string') {
+        b = web3.utils.toBN(b);
+    }
+    let diff = a.sub(b);
+    assert( diff.cmp(0) <= 0, errstr );
+    assert( diff.abs().lt(tolerance), errstr );
+}
+
 describe('a play about balancer', async () => {
   beforeEach(async () => {
     await play.stage(web3)
@@ -59,9 +97,8 @@ describe('a play about balancer', async () => {
     const daiW = await env.bpool.getWeight(daiAddr)
 
     const mkrPrice = await env.bpool.getSpotPrice(daiAddr, mkrAddr);
-    assert.equal(mkrPrice, toWei('500'));
-    const mkrRate = await env.bpool.getSpotRate(mkrAddr, daiAddr);
-    const daiRate = await env.bpool.getSpotRate(daiAddr, mkrAddr);
+    assert.sgte(mkrPrice, toWei('500'));
+    const ethPrice = await env.bpool.getSpotPrice(daiAddr, ethAddr);
 
     const err = await env.bpool.CATCH_joinPool('0')
     assert.equal(err, 'ERR_NOT_PUBLIC')

@@ -444,9 +444,7 @@ contract BPool is BBronze, BToken, BMath
         Record memory I = _records[Ti];
         Record memory O = _records[To];
         uint          p = _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight);
-    // TODO should this be  (p * (1+fee))  ?
-        return       (P = bdiv(p, bsub(BONE, _swapFee)));
-
+        return       (P = bmul(p, bsub(BONE, _swapFee)));
     }
 
     function getSpotRate(address Ti, address To)
@@ -455,7 +453,6 @@ contract BPool is BBronze, BToken, BMath
         Record memory I = _records[Ti];
         Record memory O = _records[To];
         uint          r = _calc_SpotRate(I.balance, I.weight, O.balance, O.weight);
-    // TODO should this be  (r * (1+fee))  ?
         return       (R = bdiv(r, bsub(BONE, _swapFee)));
     }
 
