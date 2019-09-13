@@ -48,6 +48,11 @@ contract BPool is BBronze, BToken, BMath
         _mutex = false;
     }
 
+    modifier _view_() {
+        require( !_mutex, ERR_REENTRY);
+        _;
+    }
+
     bool                      _mutex;
 
     bool                      _public;
@@ -95,7 +100,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getWeight(address token)
-      public view returns (uint) {
+      public view
+      _view_
+      returns (uint) {
         return _records[token].weight;
     }
 
