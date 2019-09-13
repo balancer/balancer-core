@@ -136,6 +136,7 @@ contract BPool is BBronze, BToken, BMath
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require( !_public, ERR_IS_PUBLIC);
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
         _public = true;
         _mint(initSupply);
