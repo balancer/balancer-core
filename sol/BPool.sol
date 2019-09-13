@@ -64,9 +64,10 @@ contract BPool is BBronze, BToken, BMath
     uint                      _totalWeight;
 
     constructor() public {
+        _paused = true;
         _public = false;
         _manager = msg.sender;
-        _paused = true;
+        _factory = msg.sender;
     }
 
     function getManager()
