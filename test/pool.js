@@ -51,6 +51,5 @@ describe('manager and pooling', async () => {
 
     assert(toBN(ABalAfter).lt(toBN(ABalMiddle)), "pool did not lose tokens on exit");
 
-    console.warn('TODO')
   })
 })

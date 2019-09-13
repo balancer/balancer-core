@@ -91,6 +91,7 @@ contract BToken is BBronze, BTokenBase, ERC20
     function approve(address guy, uint wad) public returns (bool) {
         _allowance[msg.sender][guy] = wad;
         emit Approval(msg.sender, guy, wad);
+        return true;
     }
 
     function transfer(address dst, uint wad) public returns (bool) {
