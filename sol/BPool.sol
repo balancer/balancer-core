@@ -270,10 +270,9 @@ contract BPool is BBronze, BToken, BMath
 
         Record memory T = _records[token];
      
-        _pullT(token, msg.sender, T.balance); 
-
         _totalWeight = bsub(_totalWeight, T.weight);
 
+        uint balanceOut = T.balance;
         delete _records[token]; // zero all values
 
         uint index = _records[token].index;
@@ -282,6 +281,8 @@ contract BPool is BBronze, BToken, BMath
             _index[index] = _index[last];
         }
         _index.pop();
+
+        _pushT(token, msg.sender, balanceOut); 
     }
 
     // Absorb any tokens that have been sent to this contract into the pool
