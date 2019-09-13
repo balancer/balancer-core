@@ -19,13 +19,23 @@ import "./BNum.sol";
 
 contract BMath is BBronze, BConst, BNum
 {
-    function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo) 
+    // Names
+    // Bi := Balance In
+    // Bo := Balance Out
+    // Wi := Weight In
+    // Wo := Weight Out
+    // Ai := Amount In
+    // Ao := Amount Out
+
+    function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo, uint f) 
       public pure
         returns ( uint p )
     {
         uint numer = bdiv(Bi, Wi);
         uint denom = bdiv(Bo, Wo);
-        return  (p = bdiv(numer, denom));
+        uint ratio = bdiv(numer, denom);
+        uint scale = bdiv(BONE, bsub(BONE, f));
+        return  (p = bmul(ratio, scale));
     }
 
     function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
@@ -36,16 +46,6 @@ contract BMath is BBronze, BConst, BNum
         uint denom = bdiv(Bi, Wi);
         return  (r = bdiv(numer, denom));
     }
-
-    // Names
-    // Bi := Balance In
-    // Bo := Balance Out
-    // Wi := Weight In
-    // Wo := Weight Out
-    // Ai := Amount In
-    // Ao := Amount Out
-    // Ti := Token In
-    // To := Token Out
 
     //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
     function _calc_OutGivenIn( uint Bi, uint Wi

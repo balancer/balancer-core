@@ -20,11 +20,11 @@ import "./BMath.sol";
 
 contract BStub is BBronze, BMath
 {
-    function calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo )
+    function calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo, uint f )
       public pure
         returns ( uint price ) 
     {
-        return (price = _calc_SpotPrice(Bi, Wi, Bo, Wo));
+        return (price = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
     }
 
     function calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )

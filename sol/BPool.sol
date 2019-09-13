@@ -441,10 +441,13 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPrice(address Ti, address To)
       public view returns (uint P) {
-        Record memory I = _records[Ti];
-        Record memory O = _records[To];
-        uint          p = _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight);
-        return       (P = bmul(p, bsub(BONE, _swapFee)));
+        uint Bi = _records[Ti].balance;
+        uint Wi = _records[Ti].weight;
+        uint Bo = _records[To].balance;
+        uint Wo = _records[To].weight;
+        uint  f = _swapFee;
+              P = _calc_SpotPrice(Bi, Wi, Bo, Wo, f);
+        return P;
     }
 
     function getSpotRate(address Ti, address To)
