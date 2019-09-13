@@ -27,11 +27,11 @@ contract BStub is BBronze, BMath
         return (price = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
     }
 
-    function calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
+    function calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f )
       public pure
         returns ( uint rate ) 
     {
-        return (rate = _calc_SpotRate(Bi, Wi, Bo, Wo));
+        return (rate = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
     }
 
     function calc_OutGivenIn( uint Bi, uint Wi

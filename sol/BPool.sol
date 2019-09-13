@@ -440,23 +440,27 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getSpotPrice(address Ti, address To)
-      public view returns (uint P) {
+      public view
+        returns (uint P)
+    {
         uint Bi = _records[Ti].balance;
         uint Wi = _records[Ti].weight;
         uint Bo = _records[To].balance;
         uint Wo = _records[To].weight;
         uint  f = _swapFee;
-              P = _calc_SpotPrice(Bi, Wi, Bo, Wo, f);
-        return P;
+        return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
     }
 
     function getSpotRate(address Ti, address To)
-      public view returns (uint R)
+      public view
+        returns (uint R)
     {
-        Record memory I = _records[Ti];
-        Record memory O = _records[To];
-        uint          r = _calc_SpotRate(I.balance, I.weight, O.balance, O.weight);
-        return       (R = bdiv(r, bsub(BONE, _swapFee)));
+        uint Bi = _records[Ti].balance;
+        uint Wi = _records[Ti].weight;
+        uint Bo = _records[To].balance;
+        uint Wo = _records[To].weight;
+        uint  f = _swapFee;
+        return (R = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
     }
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
@@ -474,14 +478,14 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP <= _calc_SpotRate(I.balance, I.weight, O.balance, O.weight ), ERR_LIMIT_PRICE);
+        require( LP <= _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee ), ERR_LIMIT_PRICE);
 
         Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
         require(Pafter > LP, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -502,14 +506,14 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
-        require(PL < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE );
+        require(PL < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee), ERR_OUT_OF_RANGE );
 
         Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = badd(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
         require( Pafter >= PL, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -531,7 +535,7 @@ contract BPool is BBronze, BToken, BMath
 
         // TODO error names
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
-        require(MP < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight), ERR_OUT_OF_RANGE);
+        require(MP < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee), ERR_OUT_OF_RANGE);
 
         Ai = _calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _swapFee );
@@ -557,7 +561,7 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         // TODO error names
-        uint Pbefore = _calc_SpotRate( I.balance, I.weight, O.balance, O.weight);
+        uint Pbefore = _calc_SpotRate( I.balance, I.weight, O.balance, O.weight, _swapFee);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
         Ai = _calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _swapFee);
@@ -573,7 +577,7 @@ contract BPool is BBronze, BToken, BMath
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight);
+        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
     
         require( Pafter >= PL, ERR_LIMIT_PRICE );
 

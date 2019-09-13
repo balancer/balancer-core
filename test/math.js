@@ -29,9 +29,9 @@ const assertCloseBN = (a, b, tolerance) => {
 
 describe('floatMath.js', function () {
   for (const pt of testPoints.spotRatePoints) {
-    var desc = `${pt.res} ~= calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
+    var desc = `${pt.res} ~= calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.fee})`
     it(desc, function () {
-      assert.closeTo(pt.res, fMath.calc_SpotRate(pt.Bi, pt.Wi, pt.Bo, pt.Wo), floatEqTolerance)
+      assert.closeTo(pt.res, fMath.calc_SpotRate(pt.Bi, pt.Wi, pt.Bo, pt.Wo, pt.fee), floatEqTolerance)
     })
   }
 
@@ -155,11 +155,12 @@ describe('BMath', () => {
     const Wi = toWei(pt.Wi).toString()
     const Bo = toWei(pt.Bo).toString()
     const Wo = toWei(pt.Wo).toString()
-    const desc = `${pt.res} ~= bMath.calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo})`
+    const fee =  toWei(pt.fee).toString()
+    const desc = `${pt.res} ~= bMath.calc_SpotRate(${pt.Bi}, ${pt.Wi}, ${pt.Bo}, ${pt.Wo}, ${pt.fee})`
     it(desc, async () => {
       const accts = await web3.eth.getAccounts()
       const math = await pkg.deploy(web3, accts[0], 'BStub')
-      var actual = await math.methods.calc_SpotRate(Bi, Wi, Bo, Wo).call()
+      var actual = await math.methods.calc_SpotRate(Bi, Wi, Bo, Wo, fee).call()
       assertCloseBN(toBN(res), web3.utils.toBN(actual), approxTolerance)
     })
   }

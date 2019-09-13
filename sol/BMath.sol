@@ -29,22 +29,24 @@ contract BMath is BBronze, BConst, BNum
 
     function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo, uint f) 
       public pure
-        returns ( uint p )
+        returns ( uint P )
     {
         uint numer = bdiv(Bi, Wi);
         uint denom = bdiv(Bo, Wo);
         uint ratio = bdiv(numer, denom);
         uint scale = bdiv(BONE, bsub(BONE, f));
-        return  (p = bmul(ratio, scale));
+        return  (P = bmul(ratio, scale));
     }
 
-    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo )
+    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f)
       public pure
-        returns ( uint r ) 
+        returns ( uint R ) 
     {
         uint numer = bdiv(Bo, Wo);
         uint denom = bdiv(Bi, Wi);
-        return  (r = bdiv(numer, denom));
+        uint ratio = bdiv(numer, denom);
+        uint scale = bmul(BONE, bsub(BONE, f));
+        return  (R = bmul(ratio, scale));
     }
 
     //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
@@ -92,7 +94,7 @@ contract BMath is BBronze, BConst, BNum
       public pure
         returns ( uint Ai )
     {
-        uint SER0    = _calc_SpotRate(Bi, Wi, Bo, Wo);
+        uint SER0    = _calc_SpotRate(Bi, Wi, Bo, Wo, 0);
         uint base    = bdiv(SER0, SER1);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
         Ai           = bsub(bpow(base, exp), BONE);
