@@ -58,7 +58,8 @@ For more information [check out our work in progress docs](https://github.com/ba
 
 ```sh
 # To develop you need `yarn`, `node`, and `solc`
-brew install node yarn ethereum
+brew tap ethereum/ethereum
+brew install node yarn solc
 
 # Clone the repo
 git clone https://github.com/balancer-labs/balancer-core
