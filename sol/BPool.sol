@@ -238,6 +238,10 @@ contract BPool is BBronze, BToken, BMath
 
         Record memory T = _records[Ti];
 
+
+        // poolAo = PoolOutGivenIn(totalSupply(), Ti, T.weight, tAi, _swapFee);
+        // return poolAo * (1-(_exitFee/2);
+
         // Charge the trading fee for the proportion of tokenAi
         ///  which is implicitly traded to the other pool tokens.
         // That proportion is (1-T.weight)
