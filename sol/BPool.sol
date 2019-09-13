@@ -23,6 +23,8 @@ contract BPool is BBronze, BToken, BMath
         uint index;
         uint weight;
         uint balance;
+        
+        address token; // TODO probably remove
     }
 
     event LOG_SWAP( address indexed caller
@@ -87,6 +89,11 @@ contract BPool is BBronze, BToken, BMath
     function getNumTokens()
       public view returns (uint) {
         return _index.length;
+    }
+
+    // TODO: probably remove this
+    function getTokens() public returns (address[] memory tokens) {
+        return _index;
     }
 
     function getFee()
@@ -363,6 +370,8 @@ contract BPool is BBronze, BToken, BMath
             index: _index.length - 1
           , weight: weight
           , balance: balance
+          
+          , token: token
         });
     }
 
