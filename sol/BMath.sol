@@ -104,11 +104,6 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
-    function _calc_PoolOutGivenIn(uint WT, address Ti, uint Wi, uint tAi, uint fee)
-      public pure
-    {
-    }
-
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
     function bpow(uint base, uint exp)
