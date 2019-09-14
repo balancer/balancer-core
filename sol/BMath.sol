@@ -49,7 +49,7 @@ contract BMath is BBronze, BConst, BNum
         return  (R = bmul(ratio, scale));
     }
 
-    //  Ao = (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo)) * Bo
+    //  Ao = Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
     function _calc_OutGivenIn( uint Bi, uint Wi
                             , uint Bo, uint Wo
                             , uint Ai
