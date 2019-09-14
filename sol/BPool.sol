@@ -487,6 +487,113 @@ contract BPool is BBronze, BToken, BMath
         return (Ai, Ao, Pafter);
     }
 
+    // Note the argument is the *pool token* amount *out*
+    function joinswap_PoolAmountOut(uint pAo, address Ti)
+        _beep_
+        _lock_
+        public
+    {
+        revert('unimplemented');
+    }
+    // Note the argument is the *pool token* amount *in*
+    function exitswap_PoolAmountIn(uint pAi, address To)
+        _beep_
+        _lock_
+        public
+    {
+        require( isBound(To), ERR_NOT_BOUND );
+
+        Record storage T = _records[To];
+
+        uint oldPoolTotal = totalSupply();
+
+        // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
+        uint boo = bsub(1, T.weight);
+        uint bar = bmul(pAi, boo);
+        uint baz = bmul(bar, _exitFee);
+        uint pAi_fee = bsub(pAi, baz);
+
+        uint newPoolTotal = bsub(oldPoolTotal, pAi_fee);
+        uint poolRatio = bdiv(newPoolTotal, oldPoolTotal);
+     
+        // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
+        uint zoo = bdiv(1, T.weight); 
+        uint zar = bpow(poolRatio, zoo);
+        uint newBalTo = bmul(zar, T.balance);
+
+        T.balance = newBalTo;
+        _totalSupply = newPoolTotal;
+
+        uint tAo = bsub(T.balance, newBalTo);
+
+        revert('todo set balance/supply');
+        _pull(msg.sender, pAi); // Pull pAi, not only poolAiAfterFee
+        _burn(pAi);
+        _pushT(To, msg.sender, tAo);
+    }
+
+    function joinswap_ExternAmountIn(address Ti, uint tAi)
+        _beep_
+        _lock_
+        public
+    {
+        require( isBound(Ti), ERR_NOT_BOUND );
+        uint oldPoolTotal = totalSupply();
+
+        Record storage T = _records[Ti];
+
+        // Charge the trading fee for the proportion of tokenAi
+        ///  which is implicitly traded to the other pool tokens.
+        // That proportion is (1-T.weight)
+        // tokenAiAfterFee = tAi - tAi * (1-T.weight) * poolFee;
+        uint boo = bsub(1, T.weight);
+        uint bar = bmul(tAi, bmul(boo, _swapFee));
+        uint baz = bsub(tAi, bar);
+        uint tokenAiAfterFee = baz;
+
+        uint newBalTi = T.balance + tAi;
+        uint ratioTi = bdiv(newBalTi, T.balance);
+
+        // uint newPoolTotal = (ratioTi ^ T.weight) * oldPoolTotal;
+        uint zoo = bpow(ratioTi, T.weight);
+        uint zar = bmul(zoo, oldPoolTotal);
+        uint poolAo = bsub(zar, oldPoolTotal);
+
+        revert('todo set balance/supply');
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
+        _pullT(Ti, msg.sender, tAi);
+    }
+
+    function exitswap_ExternAmountOut(address To, uint tAo)
+        _beep_
+        _lock_
+        public returns (uint pAo)
+    {
+        require( isBound(To), ERR_NOT_BOUND );
+        uint oldPoolTotal = totalSupply();
+        Record storage T = _records[To];
+        uint newBalTo = T.balance - tAo;
+        uint ratioTo = bdiv(newBalTo, T.balance);
+
+        //uint newPoolTotal = (ratioTo ^ weightTo) * oldPoolTotal;
+        uint boo = bpow(ratioTo, T.weight);
+        uint bar = bmul(boo, oldPoolTotal);
+        uint newPoolTotal = bar;
+        uint poolAo = oldPoolTotal - newPoolTotal;
+
+        //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
+        uint zoo = (1 - T.weight);
+        uint zar = bmul(zoo, _swapFee); // poolAoBeforeTradingFees
+        uint poolAoBeforeFees = zar / (1-_exitFee);
+       
+        revert('todo set balance/supply'); 
+        _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not only poolAo 
+        _burn(poolAoBeforeFees);    
+        _pushT(To, msg.sender, tAo);
+        return poolAoBeforeFees;
+    }
+
     // ==
     // Internal token-manipulation functions are NOT locked
     // You must `_lock_` or otherwise ensure reentry-safety
