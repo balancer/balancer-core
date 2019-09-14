@@ -6,11 +6,10 @@ const t = require('./twrap.js')
 const types_ = require('./types.js')
 types_.loadTestTypes()
 
-let env
 let staged = false
+let env = {}
 
 module.exports.stage = async (web3_, accts_) => {
-  env = {}
   env.web3 = web3_
   env.MAX = Web3.utils.hexToNumberString(Web3.utils.toTwosComplement('-1'))
   if (accts_ === undefined) {
@@ -45,8 +44,8 @@ module.exports.scene0 = async () => {
 
   const BFactory = new t.TType(env.web3, env.types, 'BFactory')
 
-  env.hub = await BFactory.deploy()
-  env.bpool = await env.hub.newBPool()
+  env.factory = await BFactory.deploy()
+  env.bpool = await env.factory.newBPool()
 
   for (const user of [env.Ali, env.Bob, env.Cat]) {
     for (const coin of [env.ETH, env.DAI, env.MKR]) {
@@ -55,12 +54,6 @@ module.exports.scene0 = async () => {
     }
   }
   env.web3.opts.from = env.Ali
-
-  return env
-}
-
-module.exports.scene1 = async () => {
-  await module.exports.scene0()
 
   env.initMKR = toWei('10')
   env.initETH = toWei('40')
@@ -75,12 +68,11 @@ module.exports.scene1 = async () => {
   await env.bpool.bind(env.DAI.__address, env.initDAI, toWei('1.1'))
 
   await env.bpool.start()
-
   return env
 }
 
-module.exports.scene2 = async () => {
-  await module.exports.scene1()
+module.exports.scene1 = async () => {
+  await module.exports.scene0();
 
   return env
 }

@@ -104,7 +104,7 @@ describe('crusty bpool tests', () => {
     const Lo = toWei(pt.Lo.toString())
     const fee = toWei(pt.fee.toString())
     const expected = toWei(pt.res.toString())
-    it(`${pt.res} ~= bpool.swap_ExactAmountIn(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},((0)),${pt.fee})`
+    it(`${pt.res} ~= bpool.swap_ExactAmountIn(${pt.Bi},${pt.Wi},${pt.Bo},${pt.Wo},${pt.Ai},${pt.Lo},(MAX),${pt.fee})`
       , async () => {
         await bpool.methods.setParams(acoin._address, Bi, Wi).send({ from: acct0, gas: 0xffffffff })
         await bpool.methods.setParams(bcoin._address, Bo, Wo).send({ from: acct0, gas: 0xffffffff })
@@ -113,9 +113,9 @@ describe('crusty bpool tests', () => {
         await bpool.methods.setFee(fee).send({ from: acct0, gas: 0xffffffff })
         var abefore = await acoin.methods.balanceOf(acct0).call()
         var bbefore = await bcoin.methods.balanceOf(acct0).call()
-        var resultStatic = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, '0')
+        var resultStatic = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, MAX256)
           .call()
-        var result = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, '0')
+        var result = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, MAX256)
           .send({ from: acct0, gas: 0xffffffff })
         var aafter = await acoin.methods.balanceOf(acct0).call()
         var bafter = await bcoin.methods.balanceOf(acct0).call()

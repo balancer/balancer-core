@@ -3,6 +3,7 @@
 module.exports.math = {
   // Ao = OutGivenIn(Bi, Wi, Bo, Wo, Ai, fee)
   calc_OutGivenIn: [
+    [4, [4, 1000, 12, 1000, 2, 0]],
     [(1 - Math.pow((2 / (2 + 1)), (0.1 / 0.1))) * 2,
       [2, 1, 2, 1, 1, 0]],
     [(1 - Math.pow((20 / (20 + 10)), (0.1 / 0.1))) * 20,

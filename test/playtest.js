@@ -63,23 +63,21 @@ describe('a play about balancer', async () => {
   it('scene0', async () => {
     const env = await play.scene0()
     assert.exists(env.Ali)
-    assert.exists(env.hub)
+    assert.exists(env.Bob)
+    assert.exists(env.factory)
     assert.exists(env.bpool)
 
     const numTokens = await env.bpool.getNumTokens()
-    assert.equal(numTokens, 0)
+    assert.equal(numTokens, 3)
 
     const approval = await env.ETH.allowance(env.Ali, env.bpool.__address)
     assert.equal(approval, env.MAX)
 
     env.web3.opts.from = env.Bob
-    const err = await env.bpool.CATCH_setParams(env.DAI.__address, toWei('100'), toWei('1.5'))
+    let err = await env.bpool.CATCH_setParams(env.DAI.__address, toWei('100'), toWei('1.5'))
     assert.equal(err, 'ERR_NOT_MANAGER')
     env.web3.opts.from = env.Ali
-  })
 
-  it('scene1', async () => {
-    const env = await play.scene1()
     const bal = await env.DAI.balanceOf(env.bpool.__address)
     assert.equal(bal, env.initDAI)
     const paused = await env.bpool.isPaused()
@@ -96,15 +94,15 @@ describe('a play about balancer', async () => {
     const mkrW = await env.bpool.getWeight(mkrAddr)
     const daiW = await env.bpool.getWeight(daiAddr)
 
-    const mkrPrice = await env.bpool.getSpotPrice(daiAddr, mkrAddr);
-    assert.sgte(mkrPrice, toWei('500'));
-    const ethPrice = await env.bpool.getSpotPrice(daiAddr, ethAddr);
-
-    const err = await env.bpool.CATCH_joinPool('0')
+    err = await env.bpool.CATCH_joinPool('0')
     assert.equal(err, 'ERR_NOT_PUBLIC')
+
   })
 
-  it('scene2', async () => {
-    const env = await play.scene2()
+// fernando's test sequence
+  it('scene1', async () => {
+    const env = await play.scene1()
+
   })
+
 })

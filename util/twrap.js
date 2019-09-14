@@ -55,10 +55,15 @@ module.exports.TWrap = class {
           }
 
           const fn = this.__web3obj.methods[func.name](...arguments)
-          let result
-          const opts = copy(this.__web3.opts)
-          result = await fn.call()
-          const tx = await fn.send(copy(opts))
+          let result = await fn.call()
+          if (typeof result == 'object' && Object.keys(result).length == 0) {
+            result = "{}";
+          }
+          let opts = copy(this.__web3.opts)
+          var tx;
+          try {
+            tx = await fn.send(copy(opts))
+          } catch (e) { console.log(e); throw new Error(e) }
           this.__lastGas = tx.gasUsed
           this.__lastEvents = tx.events
 
@@ -67,8 +72,9 @@ module.exports.TWrap = class {
           desc = this.__web3.utils.padRight(desc, 16, ' ')
           desc += `${func.name}(${args})`
           desc += '\n'
-          desc += ' '.repeat(16) + ` -> ${result}`
+          desc += ' '.repeat(16) + ` -> ${JSON.stringify(result)}`
           this.__lastDesc = desc
+          if(this.__log) { this.__log(desc); }
 
           if (func.outputs && func.outputs[0]) {
             const restype = func.outputs[0].internalType
@@ -78,7 +84,6 @@ module.exports.TWrap = class {
               result = ttype.at(result)
             }
           }
-
           return result
         }
 
