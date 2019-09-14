@@ -341,6 +341,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPrice(address Ti, address To)
       public view
+        _view_
         returns (uint P)
     {
         uint Bi = _records[Ti].balance;
@@ -362,6 +363,31 @@ contract BPool is BBronze, BToken, BMath
         uint  f = _swapFee;
         return (R = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
     }
+
+    function getSpotPriceSansFee(address Ti, address To)
+      public view
+        _view_
+        returns (uint P)
+    {
+        uint Bi = _records[Ti].balance;
+        uint Wi = _records[Ti].weight;
+        uint Bo = _records[To].balance;
+        uint Wo = _records[To].weight;
+        return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0));
+    }
+
+    function getSpotRateSansFee(address Ti, address To)
+      public view
+        _view_
+        returns (uint P)
+    {
+        uint Bi = _records[Ti].balance;
+        uint Wi = _records[Ti].weight;
+        uint Bo = _records[To].balance;
+        uint Wo = _records[To].weight;
+        return (P = _calc_SpotRate(Bi, Wi, Bo, Wo, 0));
+    }
+
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
         _beep_
