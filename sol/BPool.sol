@@ -380,7 +380,8 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP <= _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee ), ERR_LIMIT_PRICE);
+        require( LP <= _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee )
+               , ERR_LIMIT_PRICE);
 
         Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
@@ -496,8 +497,8 @@ contract BPool is BBronze, BToken, BMath
     function _swap(address Ti, uint Ai, address To, uint Ao)
       internal
     {
-        Record memory I = _records[Ti];
-        Record memory O = _records[To];
+        Record storage I = _records[Ti];
+        Record storage O = _records[To];
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);

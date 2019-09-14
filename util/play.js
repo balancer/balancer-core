@@ -72,22 +72,7 @@ module.exports.scene0 = async () => {
 }
 
 module.exports.scene1 = async () => {
-  check = async (toki, toko, args, errstr) => {
-    let Bi = await env.bpool.getBalance(toki.__address);
-    let Wi = await env.bpool.getWeight(toki.__address);
-    let Bo = await env.bpool.getBalance(toko.__address);
-    let Wo = await env.bpool.getWeight(toko.__address);
-    assert.equal(Bi, toWei(args[0].toString()));
-    assert.equal(Wi, toWei(args[1].toString()));
-    assert.equal(Bo, toWei(args[2].toString()));
-    assert.equal(Wo, toWei(args[3].toString()));
-  }
-
-  await env.bpool.setParams(env.MKR.__address, toWei('4'), toWei('1000'));
-  await env.bpool.setParams(env.DAI.__address, toWei('12'), toWei('1000'));
-  await check(env.MKR, env.DAI, [4, 1000, 12, 1000])
-
-
+  await module.exports.scene0();
 
   return env
 }

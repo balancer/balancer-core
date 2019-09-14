@@ -55,10 +55,15 @@ module.exports.TWrap = class {
           }
 
           const fn = this.__web3obj.methods[func.name](...arguments)
-          let result
-          const opts = copy(this.__web3.opts)
-          result = await fn.call()
-          const tx = await fn.send(copy(opts))
+          let result = await fn.call()
+          if (typeof result == 'object' && Object.keys(result).length == 0) {
+            result = "(no return value)";
+          }
+          let opts = copy(this.__web3.opts)
+          var tx;
+          try {
+            tx = await fn.send(copy(opts))
+          } catch (e) { console.log(e); throw new Error(e) }
           this.__lastGas = tx.gasUsed
           this.__lastEvents = tx.events
 
@@ -71,6 +76,7 @@ module.exports.TWrap = class {
           this.__lastDesc = desc
 
           if (func.outputs && func.outputs[0]) {
+            console.log(func.name, func.outputs);
             const restype = func.outputs[0].internalType
             if (restype && restype.startsWith('contract ')) {
               const tname = func.outputs[0].internalType.split(' ')[1]
@@ -78,7 +84,6 @@ module.exports.TWrap = class {
               result = ttype.at(result)
             }
           }
-
           return result
         }
 
