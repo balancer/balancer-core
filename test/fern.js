@@ -104,6 +104,7 @@ describe("fernando's test sequence", async () => {
     // 1
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
     assert.equal(res[1], toWei('0.75'));
+    assert.equal(await env.bpool.getSpotPrice(MKR, DAI), toWei('0.75'));
     await checkTBW(MKR, 6, 100)
     await checkTBW(DAI, 8, 100);
 
