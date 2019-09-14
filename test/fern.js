@@ -15,16 +15,14 @@ const web3 = new Web3(ganache.provider({
 
 const play = require('../util/play.js')
 
+const toBN = web3.utils.toBN
 const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 
 // slightly gte (bignum)
-assert.sgte = (a, b, errstr, tolerance) => { 
+assert.sgte = (a, b, tolerance) => { 
     if( tolerance == undefined) {
-        tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
-    }
-    if( errstr == undefined) {
-        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
+        tolerance = web3.utils.toBN(web3.utils.toWei('0.0000000001'))
     }
     if(typeof(a) == 'string') {
         a = web3.utils.toBN(a);
@@ -32,27 +30,28 @@ assert.sgte = (a, b, errstr, tolerance) => {
     if(typeof(b) == 'string') {
         b = web3.utils.toBN(b);
     }
+    errstr = `assert.sgte(${fromWei(a)}, ${fromWei(b)}, (tolerance=${fromWei(tolerance)}))`;
     let diff = a.sub(b);
     assert( diff.cmp(0) >= 0, errstr );
-    assert( diff.lt(tolerance), errstr );
+    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
+    assert( diff.abs().cmp(scaleA) <= 0, errstr );
 }
 // slightly lte (bignum)
 assert.slte = (a, b, errstr, tolerance) => { 
     if( tolerance == undefined) {
         tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
     }
-    if( errstr == undefined) {
-        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
-    }
     if(typeof(a) == 'string') {
         a = web3.utils.toBN(a);
     }
     if(typeof(b) == 'string') {
         b = web3.utils.toBN(b);
     }
+    errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
     let diff = a.sub(b);
-    assert( diff.cmp(0) <= 0, errstr );
-    assert( diff.abs().lt(tolerance), errstr );
+    assert( diff.cmp(toBN('0')) <= 0, errstr );
+    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
+    assert( diff.abs().cmp(scaleA) <= 0, errstr );
 }
 
 // approx/almost eq
@@ -60,17 +59,16 @@ assert.aeq = (a, b, errstr, tolerance) => {
     if( tolerance == undefined) {
         tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
     }
-    if( errstr == undefined) {
-        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
-    }
     if(typeof(a) == 'string') {
         a = web3.utils.toBN(a);
     }
     if(typeof(b) == 'string') {
         b = web3.utils.toBN(b);
     }
+    errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
     let diff = a.sub(b);
-    assert( diff.abs().lt(tolerance), errstr );
+    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
+    assert( diff.abs().cmp(scaleA) <= 0, errstr );
 }
 
 let MAX = web3.utils.toTwosComplement(-1);
@@ -91,6 +89,12 @@ describe("fernando's test sequence", async () => {
         assert.aeq((await env.bpool.getWeight(t)), toWei(w.toString()));
     }
 
+    assert.aeq(toWei('1.0000000001'), toWei('1'));
+    assert.sgte(toWei('1.0000000001'), toWei('1'));
+
+    assert.aeq(toWei('0.9999999999'), toWei('1'));
+    assert.slte(toWei('0.9999999999'), toWei('1'));
+
     res = await env.bpool.setParams(MKR, toWei('4'), toWei('100'));
     res = await env.bpool.setParams(DAI, toWei('12'), toWei('100'));
 
@@ -104,7 +108,6 @@ describe("fernando's test sequence", async () => {
     await checkTBW(DAI, 8, 100);
 
     // 2
-
 
 
   })

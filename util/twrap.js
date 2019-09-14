@@ -57,7 +57,7 @@ module.exports.TWrap = class {
           const fn = this.__web3obj.methods[func.name](...arguments)
           let result = await fn.call()
           if (typeof result == 'object' && Object.keys(result).length == 0) {
-            result = "(no return value)";
+            result = "{}";
           }
           let opts = copy(this.__web3.opts)
           var tx;
