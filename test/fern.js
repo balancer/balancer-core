@@ -73,8 +73,7 @@ assert.aeq = (a, b, errstr, tolerance) => {
     assert( diff.abs().lt(tolerance), errstr );
 }
 
-
-
+let MAX = web3.utils.toTwosComplement(-1);
 
 describe("fernando's test sequence", async () => {
   let env;
@@ -88,8 +87,8 @@ describe("fernando's test sequence", async () => {
     let DAI = env.DAI.__address;
 
     let checkTBW = async (t,b,w) => {
-        assert.equal((await env.bpool.getBalance(t)), toWei(b.toString()));
-        assert.equal((await env.bpool.getWeight(t)), toWei(w.toString()));
+        assert.aeq((await env.bpool.getBalance(t)), toWei(b.toString()));
+        assert.aeq((await env.bpool.getWeight(t)), toWei(w.toString()));
     }
 
     res = await env.bpool.setParams(MKR, toWei('4'), toWei('100'));
@@ -99,10 +98,14 @@ describe("fernando's test sequence", async () => {
     await checkTBW(DAI, 12, 100);
 
     // 1
-    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), toWei('0'));
+    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
+    assert.equal(res[1], toWei('0.75'));
     await checkTBW(MKR, 6, 100)
     await checkTBW(DAI, 8, 100);
 
     // 2
+
+
+
   })
 });

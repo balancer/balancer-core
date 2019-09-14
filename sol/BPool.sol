@@ -380,7 +380,7 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP <= _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee )
+        require( LP >= _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight, _swapFee )
                , ERR_LIMIT_PRICE);
 
         Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _swapFee);
@@ -388,8 +388,8 @@ contract BPool is BBronze, BToken, BMath
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
-        require(Pafter > LP, ERR_LIMIT_FAILED);
+        uint Pafter = _calc_SpotPrice(Iafter, I.weight, Oafter, O.weight, _swapFee);
+        require(Pafter <= LP, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
 
