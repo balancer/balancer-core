@@ -307,22 +307,12 @@ contract BPool is BBronze, BToken, BMath
     function collect()
       _beep_
       _lock_
-      public
+      public returns (uint collected)
     {
         require(msg.sender == _factory, ERR_NOT_FACTORY);
         uint fees = _balance[_factory];
-        uint poolTotal = totalSupply();
-        uint ratio = bdiv(fees, poolTotal);
- 
-        _pull(_factory, fees);
-        _burn(fees);
-
-        for( uint i = 0; i < _index.length; i++ ) {
-            address t = _index[i];
-            uint bal  = _records[t].balance;
-            uint tAo  = bmul(ratio, bal);
-            _pushT(t, _factory, tAo);
-        }
+        _push(_factory, fees);
+        return (collected = fees);
     }
 
     function pause()

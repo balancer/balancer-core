@@ -22,7 +22,6 @@ import './BStub.sol';
 
 contract BFactory is BBronze
 {
-
     event LOG_NEW_POOL( address indexed caller
                       , address indexed pool );
 
@@ -43,4 +42,22 @@ contract BFactory is BBronze
         return bpool;
     }
 
+    address _blabs;
+    constructor() public {
+        _blabs = msg.sender;
+    }
+    function getBLabs() public view returns (address) {
+        return _blabs;
+    }
+    function setBLabs(address b) public {
+        require(msg.sender == _blabs);
+        _blabs = b;
+    }
+    function collect(BPool pool, address to)
+      public 
+    {
+        require(msg.sender == _blabs, "ERR_NOT_BLABS");
+        uint collected = pool.collect();
+        pool.transfer(to, collected);
+    }
 }
