@@ -551,7 +551,7 @@ contract BPool is BBronze, BToken, BMath
         uint baz = bsub(tAi, bar);
         uint tokenAiAfterFee = baz;
 
-        uint newBalTi = T.balance + tAi;
+        uint newBalTi = T.balance + tokenAiAfterFee;
         uint ratioTi = bdiv(newBalTi, T.balance);
 
         // uint newPoolTotal = (ratioTi ^ T.weight) * oldPoolTotal;
