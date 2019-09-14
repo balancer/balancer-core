@@ -120,14 +120,12 @@ describe("fernando's test sequence", async () => {
     await checkTBW(DAI, 6, 100);
 
     // 3
-    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('4'), DAI, toWei('0'), MAX);
-    assert.slte(res[0], toWei('2')); // TODO WARN  .slte
+    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('4'), DAI, toWei('0'), MAX); // bad error
+    assert.slte(res[0], toWei('2'));
     assert.sgte(res[1], toWei((3).toString()));
     assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((3).toString()));
     await checkTBW(MKR, 12, 100)
     await checkTBW(DAI, 4, 100);
-
-
 
   })
 });
