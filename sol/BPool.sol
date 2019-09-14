@@ -64,8 +64,8 @@ contract BPool is BBronze, BToken, BMath
     uint                      _swapFee;
     uint                      _exitFee;
 
-    address[]                 _index; // private index for iteration
-    mapping(address=>Record)  _records; // token balance/weight
+    address[]                 _index;
+    mapping(address=>Record)  _records;
     uint                      _totalWeight;
 
     constructor() public {
@@ -108,7 +108,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getTotalWeight()
-      public view returns (uint)
+      public view 
+      _view_
+      returns (uint)
     {
         uint res = 0;
         for( uint i = 0; i < _index.length; i++ ) {
@@ -119,7 +121,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getNormalizedWeight(address token)
-      public view returns (uint)
+      public view
+      _view_
+      returns (uint)
     {
         uint total = getTotalWeight();
         if (total == 0) {
@@ -130,7 +134,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getBalance(address token)
-      public view returns (uint) {
+      public view
+      _view_
+      returns (uint) {
         return _records[token].balance;
     }
 
