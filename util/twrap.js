@@ -72,11 +72,11 @@ module.exports.TWrap = class {
           desc = this.__web3.utils.padRight(desc, 16, ' ')
           desc += `${func.name}(${args})`
           desc += '\n'
-          desc += ' '.repeat(16) + ` -> ${result}`
+          desc += ' '.repeat(16) + ` -> ${JSON.stringify(result)}`
           this.__lastDesc = desc
+          if(this.__log) { this.__log(desc); }
 
           if (func.outputs && func.outputs[0]) {
-            console.log(func.name, func.outputs);
             const restype = func.outputs[0].internalType
             if (restype && restype.startsWith('contract ')) {
               const tname = func.outputs[0].internalType.split(' ')[1]

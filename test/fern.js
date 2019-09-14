@@ -55,6 +55,25 @@ assert.slte = (a, b, errstr, tolerance) => {
     assert( diff.abs().lt(tolerance), errstr );
 }
 
+// approx/almost eq
+assert.aeq = (a, b, errstr, tolerance) => { 
+    if( tolerance == undefined) {
+        tolerance = web3.utils.toBN(web3.utils.toWei('0.0000001'))
+    }
+    if( errstr == undefined) {
+        errstr = `assert.sgte(${a}, ${b}, (tolerance=${tolerance}))`;
+    }
+    if(typeof(a) == 'string') {
+        a = web3.utils.toBN(a);
+    }
+    if(typeof(b) == 'string') {
+        b = web3.utils.toBN(b);
+    }
+    let diff = a.sub(b);
+    assert( diff.abs().lt(tolerance), errstr );
+}
+
+
 
 
 describe("fernando's test sequence", async () => {
@@ -64,29 +83,26 @@ describe("fernando's test sequence", async () => {
     this.timeout(5000);
     await play.stage(web3);
     env = await play.scene0();
+    env.bpool.__log = console.log;
     let MKR = env.MKR.__address;
     let DAI = env.DAI.__address;
-    console.log('MKR', MKR);
-    console.log('DAI', DAI);
-    res = await env.bpool.setParams(MKR, toWei('4'), toWei('10'));
-    console.log(env.bpool.__lastDesc);
-    console.log(env.bpool.__lastGas);
-    console.log(res);
-    res = await env.bpool.setParams(DAI, toWei('12'), toWei('10'));
-    console.log(env.bpool.__lastDesc);
-    console.log(env.bpool.__lastGas);
-    console.log(res);
-    assert.equal(await env.bpool.getBalance(MKR), toWei('4'));
-    assert.equal(await env.bpool.getWeight(MKR), toWei('10'));
-    assert.equal(await env.bpool.getBalance(DAI), toWei('12'));
-    assert.equal(await env.bpool.getWeight(DAI), toWei('10'));
 
+    let checkTBW = async (t,b,w) => {
+        assert.equal((await env.bpool.getBalance(t)), toWei(b.toString()));
+        assert.equal((await env.bpool.getWeight(t)), toWei(w.toString()));
+    }
+
+    res = await env.bpool.setParams(MKR, toWei('4'), toWei('100'));
+    res = await env.bpool.setParams(DAI, toWei('12'), toWei('100'));
+
+    await checkTBW(MKR, 4, 100)
+    await checkTBW(DAI, 12, 100);
+
+    // 1
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), toWei('0'));
-    console.log(res);
-    assert.equal(await env.bpool.getBalance(MKR), toWei('6'));
-    assert.equal(await env.bpool.getWeight(MKR), toWei('10'));
-    assert.equal(await env.bpool.getBalance(DAI), toWei('8'));
-    assert.equal(await env.bpool.getWeight(DAI), toWei('10'));
+    await checkTBW(MKR, 6, 100)
+    await checkTBW(DAI, 8, 100);
 
+    // 2
   })
 });
