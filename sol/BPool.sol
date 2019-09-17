@@ -124,14 +124,14 @@ contract BPool is BBronze, BToken, BMath
         return _swapFee;
     }
 
-    function getWeight(address token)
+    function getDenormalizedWeight(address token)
       public view
       _view_
       returns (uint) {
         return _records[token].weight;
     }
 
-    function getTotalWeight()
+    function getTotalDenormalizedWeight()
       public view 
       _view_
       returns (uint)
@@ -149,7 +149,7 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint)
     {
-        uint total = getTotalWeight();
+        uint total = getTotalDenormalizedWeight();
         if (total == 0) {
             return 0;
         }

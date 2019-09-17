@@ -188,7 +188,7 @@ describe('crusty bpool tests', () => {
     assert.equal(aBalBefore, toWei('1'))
     await bpool.methods.setParams(acoin._address, ABalance, AWeight)
       .send({ from: acct0, gas: 0xffffffff })
-    const aweight = await bpool.methods.getWeight(acoin._address).call()
+    const aweight = await bpool.methods.getDenormalized(acoin._address).call()
     const abalance = await bpool.methods.getBalance(acoin._address).call()
     assert.equal(AWeight, aweight, 'wrong weight after setting')
     assert.equal(ABalance, abalance, 'wrong balance after setting')
