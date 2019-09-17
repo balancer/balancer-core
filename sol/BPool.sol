@@ -57,6 +57,7 @@ contract BPool is BBronze, BToken, BMath
 
     bool                      _public;
     bool                      _paused;
+    bool                      _finalized;
 
     address                   _factory;
     address                   _manager;
@@ -85,14 +86,37 @@ contract BPool is BBronze, BToken, BMath
         return _paused;
     }
 
-    function isBound(address token)
-      public view returns (bool) {
-        return _records[token].weight != 0;
-    }
-
     function getNumTokens()
       public view returns (uint) {
         return _index.length;
+    }
+
+    function getCurrentTokens()
+      public view _view_
+        returns (address[] memory tokens)
+    {
+        revert('unimplemented');
+        return (new address[](0));
+    }
+
+    function getFinalTokens()
+      public view _view_
+        returns (address[] memory tokens)
+    {
+        revert('unimplemented');
+        return (new address[](0));
+    }
+
+    function getCurrentTsBsWs()
+      public view _view_
+        returns (address[3][] memory TBWs)
+    {
+    }   
+ 
+    function getFinalTsBsWs()
+      public view _view_
+        returns (address[3][] memory TBWs)
+    {
     }
 
     function getFee()
@@ -273,31 +297,6 @@ contract BPool is BBronze, BToken, BMath
           , weight: weight
           , balance: balance
         });
-    }
-
-    function unbind(address token)
-      _beep_
-      _lock_
-      public
-    {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
-        require(isBound(token), ERR_NOT_BOUND);
-
-        Record memory T = _records[token];
-     
-        _totalWeight = bsub(_totalWeight, T.weight);
-
-        uint balanceOut = T.balance;
-        delete _records[token]; // zero all values
-
-        uint index = _records[token].index;
-        uint last = _index.length-1;
-        if( index != last ) {
-            _index[index] = _index[last];
-        }
-        _index.pop();
-
-        _pushT(token, msg.sender, balanceOut); 
     }
 
     // Absorb any tokens that have been sent to this contract into the pool

@@ -167,12 +167,9 @@ describe('crusty bpool tests', () => {
     assert.equal(initBalance, (await bcoin.methods.balanceOf(acct0).call()), 'bcoin wrong init balance')
     assert.equal(initBalance, (await ccoin.methods.balanceOf(acct0).call()), 'ccoin wrong init balance')
   })
-  it('bind/unbind no-revert cases', async () => {
+  it('bind', async () => {
     numBound = await bpool.methods.getNumTokens().call()
     assert.equal(3, numBound)
-    await bpool.methods.unbind(acoin._address).send({ from: acct0, gas: 5000000 })
-    numBound = await bpool.methods.getNumTokens().call()
-    assert.equal(2, numBound)
   })
   it('can transfer tokens', async () => {
     var sent = toWei('10')
