@@ -97,11 +97,8 @@ describe('a play about balancer', async () => {
     err = await env.bpool.CATCH_joinPool('0')
     assert.equal(err, 'ERR_NOT_FINALIZED')
 
-  })
-
-// fernando's test sequence
-  it('scene1', async () => {
-    const env = await play.scene1()
+    err = await env.bpool.CATCH_getFinalTokens()
+    assert.equal(err, 'ERR_NOT_FINALIZED')
 
   })
 
