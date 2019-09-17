@@ -114,6 +114,7 @@ contract BPool is BBronze, BToken, BMath
       public view _view_
         returns (uint B, uint W)
     {
+        revert('remove?');
         return (_records[t].balance, _records[t].weight);
     }
 
@@ -121,23 +122,27 @@ contract BPool is BBronze, BToken, BMath
       public view _view_
         returns (address[3][] memory TBWs)
     {
+        revert('remove?');
     }   
  
     function getFinalTsBsWs()
       public view _view_
         returns (address[3][] memory TBWs)
     {
+        revert('remove?');
     }
 
     function getFee()
-      public view returns (uint) {
+      public view
+        returns (uint)
+    {
         return _swapFee;
     }
 
     function getDenormalizedWeight(address token)
-      public view
-      _view_
-      returns (uint) {
+      public view _view_
+        returns (uint)
+    {
         return _records[token].weight;
     }
 
