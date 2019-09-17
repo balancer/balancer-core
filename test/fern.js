@@ -95,7 +95,7 @@ describe("fernando's test sequence", async () => {
 
     let checkTBW = async (t,b,w) => {
         assert.approx((await env.bpool.getBalance(t)), toWei(b.toString()));
-        assert.approx((await env.bpool.getWeight(t)), toWei(w.toString()));
+        assert.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString()));
     }
 
     await env.bpool.setParams(MKR, toWei('4'), toWei('100'));

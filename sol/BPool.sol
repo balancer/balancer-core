@@ -86,6 +86,10 @@ contract BPool is BBronze, BToken, BMath
         return _paused;
     }
 
+    function isBound(address t) public view returns (bool) {
+        return _records[t].weight != 0;
+    }
+
     function getNumTokens()
       public view returns (uint) {
         return _index.length;
@@ -105,6 +109,13 @@ contract BPool is BBronze, BToken, BMath
     {
         revert('unimplemented');
         return (new address[](0));
+    }
+
+    function getTokenBalanceWeight(address t)
+      public view _view_
+        returns (uint B, uint W)
+    {
+        return (_records[t].balance, _records[t].weight);
     }
 
     function getCurrentTsBsWs()
