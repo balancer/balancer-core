@@ -57,8 +57,8 @@ contract BConst is BBronze
     string constant ERR_NOT_BOUND          = "ERR_NOT_BOUND";
     string constant ERR_IS_PAUSED          = "ERR_IS_PAUSED";
     string constant ERR_NOT_PAUSED         = "ERR_NOT_PAUSED";
-    string constant ERR_IS_PUBLIC          = "ERR_IS_PUBLIC";
-    string constant ERR_NOT_PUBLIC         = "ERR_NOT_PUBLIC";
+    string constant ERR_IS_FINALIZED       = "ERR_IS_FINALIZED";
+    string constant ERR_NOT_FINALIZED      = "ERR_NOT_FINALIZED";
 
     string constant ERR_NOT_MANAGER        = "ERR_NOT_MANAGER";
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";

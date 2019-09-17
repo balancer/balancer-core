@@ -27,7 +27,7 @@ describe('manager and pooling', async () => {
   })
 
   it('join/exit', async () => {
-    await env.bpool.methods.makePublic(web3.utils.toWei('1000000'))
+    await env.bpool.methods.finalize(web3.utils.toWei('1000000'))
       .send({ from: env.admin, gas: 0xffffffff })
     const ABalBefore = await env.bpool.methods.getBalance(env.acoin._address).call()
     const BBalBefore = await env.bpool.methods.getBalance(env.bcoin._address).call()

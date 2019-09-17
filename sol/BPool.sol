@@ -55,7 +55,6 @@ contract BPool is BBronze, BToken, BMath
 
     bool                      _mutex;
 
-    bool                      _public;
     bool                      _paused;
     bool                      _finalized;
 
@@ -71,7 +70,7 @@ contract BPool is BBronze, BToken, BMath
 
     constructor() public {
         _paused = true;
-        _public = false;
+        _finalized = false;
         _manager = msg.sender;
         _factory = msg.sender;
     }
@@ -177,19 +176,23 @@ contract BPool is BBronze, BToken, BMath
 
     function isPublic()
       public view returns (bool) {
-        return _public;
+        return _finalized;
     }
 
-    function makePublic(uint initSupply)
+    function finalize(uint initSupply)
       _beep_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
-        require( !_public, ERR_IS_PUBLIC);
+        require( !_finalized, ERR_IS_FINALIZED);
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
-        _public = true;
+
+        _finalized = true;
+        _paused = false;
+
         _mint(initSupply);
         _push(msg.sender, initSupply);
+
     }
 
     function joinPool(uint poolAo)
@@ -197,7 +200,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(_public, ERR_NOT_PUBLIC);
+        require(_finalized, ERR_NOT_FINALIZED);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _index.length; i++ ) {
@@ -216,7 +219,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(_public, ERR_NOT_PUBLIC);
+        require(_finalized, ERR_NOT_FINALIZED);
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAi, poolTotal);
@@ -240,7 +243,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! _public, ERR_NOT_PUBLIC);
+        require( ! _finalized, ERR_IS_FINALIZED);
 
         require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
         require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
@@ -335,7 +338,7 @@ contract BPool is BBronze, BToken, BMath
       _beep_
       public
     { 
-        require( ! _public, ERR_NOT_PUBLIC);
+        require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = true;
     }
@@ -344,7 +347,7 @@ contract BPool is BBronze, BToken, BMath
       _beep_
       public
     {
-        require( ! _public, ERR_NOT_PUBLIC);
+        // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _paused = false;
     }

@@ -95,7 +95,7 @@ describe('a play about balancer', async () => {
     const daiW = await env.bpool.getDenormalizedWeight(daiAddr)
 
     err = await env.bpool.CATCH_joinPool('0')
-    assert.equal(err, 'ERR_NOT_PUBLIC')
+    assert.equal(err, 'ERR_NOT_FINALIZED')
 
   })
 
