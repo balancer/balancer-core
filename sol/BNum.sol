@@ -79,9 +79,16 @@ contract BNum is BBronze, BConst {
         return z;
     }
 
+    function bpow(uint base, uint exp)
+      pure internal
+        returns (uint)
+    {
+        return bpowIterK(base, exp, APPROX_ITERATIONS);
+    }
+
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
-    function bpow(uint base, uint exp)
+    function bpowIterK(uint base, uint exp, uint K)
       pure internal
         returns (uint)
     {
@@ -109,7 +116,7 @@ contract BNum is BBronze, BConst {
         // since we can't underflow, keep a tally of negative signs in 'select'
 
         uint select = 0;
-        for( uint i = 1; i < APPROX_ITERATIONS; i++) {
+        for( uint i = 1; i < K; i++) {
             uint k = i * BONE;
             
             (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
