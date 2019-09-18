@@ -79,5 +79,53 @@ contract BNum is BBronze, BConst {
         return z;
     }
 
+    // Uses an approximation formula to compute b^(e.w)
+    // by splitting it into (b^e)*(b^0.w).
+    function bpow(uint base, uint exp)
+      pure internal
+        returns (uint)
+    {
+        require(base <= BONE * 2, ERR_BPOW_BASE);
+        uint whole  = bfloor(exp);   
+        uint remain = bsub(exp, whole);
+
+        // make whole agree with wpown def
+        uint wholePow = bpowi(base, btoi(whole));
+
+        if (remain == 0) {
+            return wholePow;
+        }
+
+        // term 0:
+        uint a     = remain;
+        uint numer = BONE;
+        uint denom = BONE;
+        uint sum   = BONE;
+        (uint x, bool xneg)  = bsubSign(base, BONE);
+
+        // term(k) = numer / denom 
+        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
+        // each iteration, multiply previous term by (a-(k-1)) * x / k
+        // since we can't underflow, keep a tally of negative signs in 'select'
+
+        uint select = 0;
+        for( uint i = 1; i < APPROX_ITERATIONS; i++) {
+            uint k = i * BONE;
+            
+            (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
+            numer               = bmul(numer, bmul(c, x));
+            denom               = bmul(denom, k);
+            if (xneg) select += 1;
+            if (cneg) select += 1;
+            if (select % 2 == 1) {
+                sum      = bsub(sum, bdiv(numer, denom));
+            } else {
+                sum      = badd(sum, bdiv(numer, denom));
+            }
+        }
+
+        return bmul(sum, wholePow);
+    }
+
 
 }
