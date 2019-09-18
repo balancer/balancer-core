@@ -277,6 +277,8 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         require( ! isBound(token), ERR_IS_BOUND);
+        require( ! isFinalized(), ERR_IS_FINALIZED);
+
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
         require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
         require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
