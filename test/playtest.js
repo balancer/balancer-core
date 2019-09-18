@@ -82,7 +82,7 @@ describe('a play about balancer', async () => {
     assert.equal(bal, env.initDAI)
     const paused = await env.bpool.isPaused()
     assert(!paused)
-    const joinable = await env.bpool.isPublic()
+    const joinable = await env.bpool.isFinalized()
     assert(!joinable)
 
     const mkrAddr = env.MKR.__address

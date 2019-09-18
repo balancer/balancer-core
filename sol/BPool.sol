@@ -115,7 +115,6 @@ contract BPool is BBronze, BToken, BMath
       public view _view_
         returns (uint B, uint W)
     {
-        revert('remove?');
         return (_records[t].balance, _records[t].weight);
     }
 
@@ -180,7 +179,7 @@ contract BPool is BBronze, BToken, BMath
         return _records[token].balance;
     }
 
-    function isPublic()
+    function isFinalized()
       public view returns (bool) {
         return _finalized;
     }
