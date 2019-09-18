@@ -89,6 +89,11 @@ contract BPool is BBronze, BToken, BMath
         return _records[t].weight != 0;
     }
 
+    function isFinalized()
+      public view returns (bool) {
+        return _finalized;
+    }
+
     function getNumTokens()
       public view returns (uint) {
         return _index.length;
@@ -109,27 +114,6 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         revert('unimplemented');
         return (new address[](0));
-    }
-
-    function getTokenBalanceWeight(address t)
-      public view _view_
-        returns (uint B, uint W)
-    {
-        return (_records[t].balance, _records[t].weight);
-    }
-
-    function getCurrentTsBsWs()
-      public view _view_
-        returns (address[3][] memory TBWs)
-    {
-        revert('remove?');
-    }   
- 
-    function getFinalTsBsWs()
-      public view _view_
-        returns (address[3][] memory TBWs)
-    {
-        revert('remove?');
     }
 
     function getFee()
@@ -177,11 +161,6 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint) {
         return _records[token].balance;
-    }
-
-    function isFinalized()
-      public view returns (bool) {
-        return _finalized;
     }
 
     function finalize(uint initSupply)
