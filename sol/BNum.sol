@@ -113,18 +113,19 @@ contract BNum is BBronze, BConst {
         // term(k) = numer / denom 
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
-        // since we can't underflow, keep a tally of negative signs in 'select'
+        // keep a tally of negative signs in 'negatives' to determine this term's sign
 
-        uint select = 0;
+        uint negatives = 0;
         for( uint i = 1; i < K; i++) {
             uint k = i * BONE;
             
             (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
             numer               = bmul(numer, bmul(c, x));
             denom               = bmul(denom, k);
-            if (xneg) select += 1;
-            if (cneg) select += 1;
-            if (select % 2 == 1) {
+            if (xneg) negatives += 1;
+            if (cneg) negatives += 1;
+
+            if (negatives % 2 == 1) {
                 sum      = bsub(sum, bdiv(numer, denom));
             } else {
                 sum      = badd(sum, bdiv(numer, denom));
