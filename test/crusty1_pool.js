@@ -12,7 +12,7 @@ const web3 = new Web3(ganache.provider({
 
 const toBN = web3.utils.toBN;
 
-const scene = require('./crusty_phases.js')
+const scene = require('./crusty1_phases.js')
 
 describe('manager and pooling', async () => {
   let env = {}
