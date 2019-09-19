@@ -33,9 +33,14 @@ describe('calc2', async () => {
     });
 
     it('bpow min and max base', async () => {
+        // TODO not proper error testing
         bpow(0, 0).catch((e) => {
             assert(-1 != e.message.indexOf("ERR_BPOW_BASE"));
         });
+        bpow(toWei('2.0000001'), 0).catch((e) => {
+            assert(-1 != e.message.indexOf("ERR_BPOW_BASE"));
+        });
+
     });
 
 });

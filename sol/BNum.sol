@@ -98,7 +98,8 @@ contract BNum is BBronze, BConst {
         uint remain = bsub(exp, whole);
 
         // make whole agree with wpown def
-        uint wholePow = bpowi(base, btoi(whole));
+        uint intExp = btoi(whole);
+        uint wholePow = bpowi(base, intExp); 
 
         if (remain == 0) {
             return wholePow;
