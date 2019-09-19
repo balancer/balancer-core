@@ -19,6 +19,7 @@ contract BConst is BBronze
 {
     uint8   constant MAX_BOUND_TOKENS  = 8;
     uint256 constant BONE              = 10**18;
+    uint256 constant MAX_BPOW_BASE     = BONE * 2;
     uint256 constant MIN_FEE           = BONE / 10000;
     uint256 constant MAX_FEE           = BONE / 10;
     uint256 constant EXIT_FEE          = BONE / 1000;

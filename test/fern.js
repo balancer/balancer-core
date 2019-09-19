@@ -19,58 +19,11 @@ const toBN = web3.utils.toBN
 const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 
-const TOLERANCE = '0.000000001'
+let slightly = require('../util/slightly.js');
 
-// slightly gte (bignum)
-assert.sgte = (a, b, tolerance) => { 
-    if( tolerance == undefined) {
-        tolerance = web3.utils.toBN(web3.utils.toWei(TOLERANCE))
-    }
-    if(typeof(a) == 'string') {
-        a = web3.utils.toBN(a);
-    }
-    if(typeof(b) == 'string') {
-        b = web3.utils.toBN(b);
-    }
-    errstr = `assert.sgte(${fromWei(a)}, ${fromWei(b)}, (tolerance=${fromWei(tolerance)}))`;
-    let diff = a.sub(b);
-    assert( diff.cmp(0) >= 0, errstr );
-    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
-    assert( diff.abs().cmp(scaleA) <= 0, errstr );
-}
-// slightly lte (bignum)
-assert.slte = (a, b, errstr, tolerance) => { 
-    if( tolerance == undefined) {
-        tolerance = web3.utils.toBN(web3.utils.toWei(TOLERANCE))
-    }
-    if(typeof(a) == 'string') {
-        a = web3.utils.toBN(a);
-    }
-    if(typeof(b) == 'string') {
-        b = web3.utils.toBN(b);
-    }
-    errstr = `assert.slte(${a}, ${b}, (tolerance=${tolerance}))`;
-    let diff = a.sub(b);
-    assert( diff.cmp(toBN('0')) <= 0, errstr );
-    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
-    assert( diff.abs().cmp(scaleA) <= 0, errstr );
-}
-
-assert.approx = (a, b, errstr, tolerance) => { 
-    if( tolerance == undefined) {
-        tolerance = web3.utils.toBN(web3.utils.toWei(TOLERANCE))
-    }
-    if(typeof(a) == 'string') {
-        a = web3.utils.toBN(a);
-    }
-    if(typeof(b) == 'string') {
-        b = web3.utils.toBN(b);
-    }
-    errstr = `assert.approx(${a}, ${b}, (tolerance=${tolerance}))`;
-    let diff = a.sub(b);
-    let scaleA = a.mul(tolerance).div(toBN(toWei('1')));
-    assert( diff.abs().cmp(scaleA) <= 0, errstr );
-}
+assert.slte = slightly.slte;
+assert.sgte = slightly.sgte;
+assert.approx = slightly.approx;
 
 let MAX = web3.utils.toTwosComplement(-1);
 
