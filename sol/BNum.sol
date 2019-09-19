@@ -94,10 +94,11 @@ contract BNum is BBronze, BConst {
     {
         require(exp != 0 || base != 0, ERR_BPOW_BASE_TOO_LOW);
         require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE_TOO_HIGH);
+
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);
 
-        // make whole agree with wpown def
+        // make whole agree with bpowi definition
         uint intExp = btoi(whole);
         uint wholePow = bpowi(base, intExp); 
 
@@ -105,36 +106,34 @@ contract BNum is BBronze, BConst {
             return wholePow;
         }
 
-        // term 0:
-        uint a     = remain;
-        uint numer = BONE;
-        uint denom = BONE;
-        uint sum   = BONE;
-        (uint x, bool xneg)  = bsubSign(base, BONE);
+        // TODO range check on sign conversion
+        int ibase = int256(base);
+        int iexp = int256(exp);
+        int iBONE = int256(BONE);
 
-        // term(k) = numer / denom 
-        //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
-        // each iteration, multiply previous term by (a-(k-1)) * x / k
-        // since we can't underflow, keep a tally of negative signs in 'select'
+        int a = iexp;
+        int x = ibase - iBONE;
 
-        uint select = 0;
-        for( uint i = 1; i < K; i++) {
-            uint k = i * BONE;
-            
-            (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
-            numer               = bmul(numer, bmul(c, x));
-            denom               = bmul(denom, k);
-            if (xneg) select += 1;
-            if (cneg) select += 1;
-            if (select % 2 == 1) {
-                sum      = bsub(sum, bdiv(numer, denom));
-            } else {
-                sum      = badd(sum, bdiv(numer, denom));
-            }
+        int acc = (a * x) / iBONE;
+        int result = iBONE + acc;
+
+        for( uint k = 0; k < K; k++ ) {
+            int bigK = iBONE * k;
+
+            // result += acc*(a-(k-1))*x / k
+            int boo = a - (bigK - iBONE);
+            int bar = (((acc * boo) / iBONE) * x) / iBONE;
+            int baz = (bar / bigK);
+            result += baz;
+
+            // acc = acc * a * x / k
+            int zoo = (acc * (a * x / iBONE)) / iBONE;
+            int zar = (zoo * bigK) / iBONE;
+            acc = zar;
         }
 
-        return bmul(sum, wholePow);
-    }
+        return uint256(result);
 
+    }
 
 }

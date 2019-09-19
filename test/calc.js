@@ -1,3 +1,4 @@
+const assert = require('assert');
 const Web3 = require('web3')
 const ganache = require('ganache-core')
 
@@ -14,7 +15,13 @@ let toWei = Web3.utils.toWei;
 let fromWei = Web3.utils.fromWei;
 let BONE = toWei('1');
 
+let slightly = require('../util/slightly.js');
+assert.slte = slightly.slte;
+assert.sgte = slightly.sgte;
+
+
 describe('calc2', async () => {
+
     let accts;
     let stub;
 
@@ -49,6 +56,7 @@ describe('calc2', async () => {
         assert.equal(toWei('1024'), await bpow(toWei('2'), toWei('10')));
         assert.equal(toWei('0.25'), await bpow(toWei('0.5'), toWei('2')));
         assert.equal(toWei('0.125'), await bpow(toWei('0.5'), toWei('3')));
+        assert.equal(toWei('0.00390625'), await bpow(toWei('0.5'), toWei('8')));
     });
 
 });
