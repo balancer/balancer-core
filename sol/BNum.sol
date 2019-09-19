@@ -83,15 +83,16 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        return bpowIterK(base, exp, APPROX_ITERATIONS);
+        return bpowK(base, exp, APPROX_ITERATIONS);
     }
 
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
-    function bpowIterK(uint base, uint exp, uint K)
+    function bpowK(uint base, uint exp, uint K)
       pure internal
         returns (uint)
     {
+        require(base != 0 || exp != 0, ERR_BPOW_BASE);
         require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE);
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);

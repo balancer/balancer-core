@@ -108,15 +108,13 @@ contract BMath is BBronze, BConst, BNum
       public pure
         returns (uint)
     {
-        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE);
         return bpow(base, exp);
     }
 
-    function calc_bpowIterK(uint base, uint exp, uint K)
+    function calc_bpowK(uint base, uint exp, uint K)
       public pure
         returns (uint)
     {
-        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE);
-        return bpowIterK(base, exp, K);
+        return bpowK(base, exp, K);
     }
 }

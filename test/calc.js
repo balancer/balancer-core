@@ -17,16 +17,25 @@ let BONE = toWei('1');
 describe('calc2', async () => {
     let accts;
     let stub;
+
+    let bpow = async (b, e) => {
+        return await stub.methods.calc_bpow(b, e).call();
+    }
+
     before(async () => {
         accts = await web3.eth.getAccounts();
         stub = await pkg.deploy(web3, accts[0], 'BStub');
     });
-    it('runs tests', async () => {
-        console.log('hello');
-    });
+
     it('has bpow', async () => {
-        let res = await stub.methods.calc_bpow(BONE, BONE).call();
+        let res = await bpow(BONE, BONE);
         assert.equal(res, BONE);
+    });
+
+    it('bpow min and max base', async () => {
+        bpow(0, 0).catch((e) => {
+            assert(-1 != e.message.indexOf("ERR_BPOW_BASE"));
+        });
     });
 
 });
