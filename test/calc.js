@@ -19,7 +19,6 @@ let slightly = require('../util/slightly.js');
 assert.slte = slightly.slte;
 assert.sgte = slightly.sgte;
 
-
 describe('calc2', async () => {
 
     let accts;
@@ -32,6 +31,9 @@ describe('calc2', async () => {
     before(async () => {
         accts = await web3.eth.getAccounts();
         stub = await pkg.deploy(web3, accts[0], 'BStub');
+        stub.events.allEvents({}, ((err, events) => {
+            console.log(err, events);
+        }));
     });
 
     it('has bpow', async () => {

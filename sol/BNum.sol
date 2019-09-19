@@ -86,6 +86,10 @@ contract BNum is BBronze, BConst {
         return bpowK(base, exp, APPROX_ITERATIONS);
     }
 
+    event print(string s);
+    event print(uint256 u);
+    event print(uint256 u, string s);
+
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
     function bpowK(uint base, uint exp, uint K)
@@ -117,6 +121,7 @@ contract BNum is BBronze, BConst {
         int acc = (a * x) / iBONE;
         int result = iBONE + acc;
 
+        emit print('test');
         for( uint k = 0; k < K; k++ ) {
             int bigK = iBONE * int256(k);
 
