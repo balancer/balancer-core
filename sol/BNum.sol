@@ -118,7 +118,7 @@ contract BNum is BBronze, BConst {
         int result = iBONE + acc;
 
         for( uint k = 0; k < K; k++ ) {
-            int bigK = iBONE * k;
+            int bigK = iBONE * int256(k);
 
             // result += acc*(a-(k-1))*x / k
             int boo = a - (bigK - iBONE);
