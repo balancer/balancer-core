@@ -40,7 +40,8 @@ contract BConst is BBronze
     string constant ERR_MUL_OVERFLOW       = "ERR_MUL_OVERFLOW";
     string constant ERR_DIV_ZERO           = "ERR_DIV_ZERO";
     string constant ERR_DIV_INTERNAL       = "ERR_DIV_INTERNAL";
-    string constant ERR_BPOW_BASE          = "ERR_BPOW_BASE";
+    string constant ERR_BPOW_BASE_TOO_HIGH = "ERR_BPOW_BASE_TOO_HIGH";
+    string constant ERR_BPOW_BASE_TOO_LOW  = "ERR_BPOW_BASE_TOO_LOW";
 
     string constant ERR_CALC_PANIC         = "ERR_CALC_PANIC";
 

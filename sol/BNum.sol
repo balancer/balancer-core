@@ -83,16 +83,18 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        return bpowIterK(base, exp, APPROX_ITERATIONS);
+        return bpowK(base, exp, APPROX_ITERATIONS);
     }
 
     // Uses an approximation formula to compute b^(e.w)
     // by splitting it into (b^e)*(b^0.w).
-    function bpowIterK(uint base, uint exp, uint K)
+    function bpowK(uint base, uint exp, uint K)
       pure internal
         returns (uint)
     {
-        require(base <= BONE * 2, ERR_BPOW_BASE);
+        require(base <= BONE * 2, ERR_BPOW_BASE_TOO_HIGH);
+        require(base > 0, ERR_BPOW_BASE_TOO_LOW);
+
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);
 
@@ -117,11 +119,11 @@ contract BNum is BBronze, BConst {
 
         uint negatives = 0;
         for( uint i = 1; i < K; i++) {
-            uint k = i * BONE;
+            uint bigK = i * BONE;
             
-            (uint c, bool cneg) = bsubSign(a, bsub(k, BONE));
+            (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
             numer               = bmul(numer, bmul(c, x));
-            denom               = bmul(denom, k);
+            denom               = bmul(denom, bigK);
             if (xneg) negatives += 1;
             if (cneg) negatives += 1;
 

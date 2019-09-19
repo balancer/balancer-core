@@ -28,6 +28,11 @@ contract BTokenBase is BNum
     event Burn(uint amt);
     event Move(address indexed src, address indexed dst, uint amt);
 
+    function sub(uint a, uint b) internal returns (uint) {
+        require(a >= b, "ERR_BTOKEN_UNDERFLOW");
+        return a - b;
+    }
+
     function _mint(uint amt) internal {
         _balance[address(this)] = badd(_balance[address(this)], amt);
         _totalSupply   = badd(_totalSupply, amt);
@@ -35,13 +40,13 @@ contract BTokenBase is BNum
     }
 
     function _burn(uint amt) internal {
-        _balance[address(this)] = bsub(_balance[address(this)], amt);
-        _totalSupply   = bsub(_totalSupply, amt);
+        _balance[address(this)] = sub(_balance[address(this)], amt);
+        _totalSupply   = sub(_totalSupply, amt);
         emit Burn(amt);
     }
 
     function _move(address src, address dst, uint amt) internal {
-        _balance[src] = bsub(_balance[src], amt);
+        _balance[src] = sub(_balance[src], amt);
         _balance[dst] = badd(_balance[dst], amt);
         emit Move(src, dst, amt);
     }
@@ -105,7 +110,7 @@ contract BToken is BBronze, BTokenBase, ERC20
         _move(src, dst, wad);
         emit Transfer(src, dst, wad);
         if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
-            _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], wad);
+            _allowance[src][msg.sender] = sub(_allowance[src][msg.sender], wad);
         }
         return true;
     }

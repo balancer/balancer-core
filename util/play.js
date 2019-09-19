@@ -55,9 +55,9 @@ module.exports.scene0 = async () => {
   }
   env.web3.opts.from = env.Ali
 
-  env.initMKR = toWei('10')
-  env.initETH = toWei('40')
-  env.initDAI = toWei('5000')
+  env.initMKR = toWei('100')
+  env.initETH = toWei('400')
+  env.initDAI = toWei('50000')
 
   await env.MKR.mint(env.initMKR)
   await env.ETH.mint(env.initETH)
