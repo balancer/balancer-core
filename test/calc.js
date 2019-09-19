@@ -40,7 +40,15 @@ describe('calc2', async () => {
         bpow(toWei('2.0000001'), 0).catch((e) => {
             assert(-1 != e.message.indexOf("ERR_BPOW_BASE"));
         });
+    });
 
+    it('integer powers (btoi)', async () => {
+        assert.equal(toWei('4'), await bpow(toWei('2'), toWei('2')));
+        assert.equal(toWei('2'), await bpow(toWei('2'), toWei('1')));
+        assert.equal(toWei('1'), await bpow(toWei('2'), toWei('0')));
+        assert.equal(toWei('1024'), await bpow(toWei('2'), toWei('10')));
+        assert.equal(toWei('0.25'), await bpow(toWei('0.5'), toWei('2')));
+        assert.equal(toWei('0.125'), await bpow(toWei('0.5'), toWei('3')));
     });
 
 });

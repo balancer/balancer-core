@@ -92,8 +92,8 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        require(base != 0 || exp != 0, ERR_BPOW_BASE);
-        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE);
+        require(exp != 0 || base != 0, ERR_BPOW_BASE_TOO_LOW);
+        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE_TOO_HIGH);
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);
 
