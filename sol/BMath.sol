@@ -130,4 +130,34 @@ contract BMath is BBronze, BConst, BNum
         uint zar = bmul(zoo, poolBalance);
         return (poolOut = bsub(zar, poolBalance));
     }
+
+    function _calc_JoinPoolOut( uint balance, uint weight
+                              , uint poolBalance, uint totalWeight
+                              , uint pAo, uint fee)
+      public pure
+        returns (uint tokenIn)
+    {
+        revert('unimplemented');
+    }
+
+    function _calc_ExitExternOut( uint balance, uint weight
+                                , uint poolBalance, uint totalWeight
+                                , uint tAo, uint fee)
+      public pure
+        returns (uint poolIn)
+    {
+        revert('unimplemented');
+    }
+
+    function _calc_ExitPoolIn( uint balance, uint weight
+                             , uint poolBalance, uint totalWeight
+                             , uint pAi, uint fee)
+      public pure
+        returns (uint poolIn)
+    {
+        revert('unimplemented');
+    }
+
+
+
 }
