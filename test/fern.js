@@ -120,7 +120,7 @@ describe('joinswap / exitswap', async()=>{
     let checkP = async (p) => {
         assert.approx((await env.bpool.totalSupply()), toWei(p.toString()));
     }
- 
+
     await env.bpool.setParams(MKR, toWei('4'), toWei('10'));
     await env.bpool.setParams(DAI, toWei('12'), toWei('10'));
     await env.bpool.finalize(toWei('100'));

@@ -1,3 +1,4 @@
+const assert = require('assert');
 const Web3 = require('web3')
 const ganache = require('ganache-core')
 
@@ -15,9 +16,13 @@ const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 
 const slightly = require('../util/slightly.js');
+assert.approx = slightly.approx;
 
 let str = (n) => {
-    return n.toLocaleString('fullwide', {useGrouping:false});
+    console.log(n);
+    var wide = n.toString();//n.toLocaleString('fullwide', {useGrouping: false});
+//    console.log(wide);
+    return wide;
 }
 
 describe('bpow', async () => {
@@ -38,11 +43,20 @@ describe('bpow', async () => {
         return await fn.call();
     }
 
+    it('devpoint', async()=>{
+        let res1 = await bpow('1.000001', '0.05');
+        let res2 = await bpow('0.6666666666666666', '1.000001');
+        let res3 = await bpow('0.6666666666666666', '0.999999');
+        console.log(res1);
+        console.log(res2);
+        console.log(res3);
+    });
 
     for(var i = 0; i < 10; i++) {
       let exact = Math.pow(0.5, 0.5);
       it(`bpowK(0.5, 0.5, ${i}) overestimates`, async function() {
-        let res = await bpowK('0.5', '0.5', i);
+        let res = await bpow('0.5', '0.5', i);
+        //let res = await bpowK('0.5', '0.5', i);
         let resFloat = fromWei(res);
         assert(resFloat >= exact, 'result does not overestimate');
       });
@@ -51,7 +65,8 @@ describe('bpow', async () => {
     for(var i = 2; i < 10; i++) {
       let exact = Math.pow(1.5, 0.5);
       it(`bpowK(1.5, 0.5, ${i}) overestimates`, async function() {
-        let res = await bpowK('1.5', '0.5', i);
+        let res = await bpow('1.5', '0.5', i);
+        //let res = await bpowK('1.5', '0.5', i);
         let resFloat = fromWei(res);
         assert(resFloat >= exact, `result does not overestimate, result: ${resFloat}, exact: ${exact}`);
       });
@@ -90,15 +105,18 @@ describe('bpow', async () => {
           let last = 1234567
           let converged = false;
           let MAX = 60;
-          for(k = 1; k < MAX; k += 1) {
+          for(k = 1; k <= 1; k += 1) {
             let desc = `base exp k ${base} ${exp} ${k}\n`
-            let res = await bpowK(str(base), str(exp), k);
+            let res = await bpow(str(base), str(exp));
+            //let res = await bpowK(str(base), str(exp), k);
+/*
             if( res == last ) {
                 console.log(`bpow(${base},${exp}) converged to ${res} after ${k} iterations`);
                 converged = true;
                 break;
             }
             else last = res
+*/
             desc += `result is: ${res}\n`
             desc += `result is: ${fromWei(res)}\n`
             let actual = base**exp;
@@ -119,10 +137,11 @@ describe('bpow', async () => {
                 console.log('exception with (base exp k)', base, exp, k);
                 console.log('base exp actual', base, exp, actual);
                 console.log(e);
+                throw e;
             }
-            //console.log('pass base exp k result actual diff error', base, exp, k, res, actual, diff, error);
+            console.log('pass base exp k result actual diff error', base, exp, k, res, actual, diff, error);
           }
-          assert(converged, `bpow(${base},${exp}) didnt converge after ${MAX} iterations (last result: ${last})`);
+//          assert(converged, `bpow(${base},${exp}) didnt converge after ${MAX} iterations (last result: ${last})`);
         }
         } 
     });
