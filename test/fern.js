@@ -97,6 +97,50 @@ describe("fernando's test sequence", async () => {
     await checkTBW(MKR, 24, 10)
     await checkTBW(DAI, 2, 10);
 
-
   })
+
+});
+
+
+describe('joinswap / exitswap', async()=>{
+  let env;
+  it('is one long test', async function() {
+    this.timeout(0);
+    await play.stage(web3);
+    env = await play.scene0();
+    env.bpool.__log = console.log;
+    let MKR = env.MKR.__address;
+    let DAI = env.DAI.__address;
+
+    let checkTBW = async (t,b,w) => {
+        assert.approx((await env.bpool.getBalance(t)), toWei(b.toString()));
+        assert.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString()));
+    }
+
+    let checkP = async (p) => {
+        assert.approx((await env.bpool.totalSupply()), toWei(p.toString()));
+    }
+ 
+    await env.bpool.setParams(MKR, toWei('4'), toWei('10'));
+    await env.bpool.setParams(DAI, toWei('12'), toWei('10'));
+    await env.bpool.finalize(toWei('100'));
+
+    await checkTBW(MKR, 4, 10);
+    await checkTBW(DAI, 12, 10);
+    await checkP(100);
+
+    // 8
+    await env.bpool.joinPool(toWei('10'));
+    await checkTBW(MKR, 4.4, 10);
+    await checkTBW(DAI, 13.2, 10);
+    await checkP(110);
+
+    // 9
+    await env.bpool.exitPool(toWei('10'));
+    await checkTBW(MKR, 4, 10);
+    await checkTBW(DAI, 12, 10);
+    await checkP(100);
+  
+
+  });
 });

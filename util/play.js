@@ -48,16 +48,16 @@ module.exports.scene0 = async () => {
   env.bpool = await env.factory.newBPool()
 
   for (const user of [env.Ali, env.Bob, env.Cat]) {
-    for (const coin of [env.ETH, env.DAI, env.MKR]) {
+    for (const coin of [env.ETH, env.DAI, env.MKR, env.bpool]) {
       env.web3.opts.from = user
       await coin.approve(env.bpool.__address, env.MAX)
     }
   }
   env.web3.opts.from = env.Ali
 
-  env.initMKR = toWei('100')
-  env.initETH = toWei('400')
-  env.initDAI = toWei('50000')
+  env.initMKR = toWei('1000')
+  env.initETH = toWei('4000')
+  env.initDAI = toWei('500000')
 
   await env.MKR.mint(env.initMKR)
   await env.ETH.mint(env.initETH)
@@ -66,6 +66,11 @@ module.exports.scene0 = async () => {
   await env.bpool.bind(env.MKR.__address, env.initMKR, toWei('1.1'))
   await env.bpool.bind(env.ETH.__address, env.initETH, toWei('1.1'))
   await env.bpool.bind(env.DAI.__address, env.initDAI, toWei('1.1'))
+
+  await env.MKR.mint(env.initMKR)
+  await env.ETH.mint(env.initETH)
+  await env.DAI.mint(env.initDAI)
+
 
   await env.bpool.start()
   return env
