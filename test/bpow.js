@@ -48,23 +48,15 @@ describe('bpow', async () => {
       });
     }
 
-    for(var i = 2; i < 10; i += 2) {
-      let exact = Math.pow(1.5, 0.5);
-      it(`bpowK(0.5, 0.5, ${i}) overestimates`, async function() {
-        let res = await bpowK('1.5', '0.5', i);
+    for(var i = 0; i < 10; i++) {
+      let exact = Math.pow(1.6, 0.5);
+      it(`bpowK(0.5, 0.5, ${i}) underestimates`, async function() {
+        let res = await bpowK('0.5', '0.5', i);
         let resFloat = fromWei(res);
-        assert(resFloat >= exact, `result does not overestimate, result: ${resFloat}, exact: ${exact}`);
+        assert(resFloat <= exact, 'result does not underestimate');
       });
     }
 
-    for(var i = 1; i < 10; i += 2) {
-      let exact = Math.pow(1.5, 0.5);
-      it(`bpowK(0.5, 0.5, ${i}) underestimates`, async function() {
-        let res = await bpowK('1.5', '0.5', i);
-        let resFloat = fromWei(res);
-        assert(resFloat <= exact, `result does not underestimate, result ${resFloat}, exact: ${exact}`);
-      });
-    }
 
     it('hello', async function() {
         console.log("long test...");
@@ -73,16 +65,20 @@ describe('bpow', async () => {
 
         let bases = [
             2/3
+          , 0.9
           , 1 - eps
           , 1 + eps
+          , 1.1
           , 1.5
         ]
 
         let exps = [
             0.05
           , 0.05 + eps
+          , 0.99
           , 1 - eps
           , 1 + eps
+          , 1.01
           , 20 - eps
           , 20
         ]

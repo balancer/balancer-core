@@ -122,7 +122,7 @@ contract BNum is BBronze, BConst {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
 
-            term                = bmul(term, bmul(c, x));
+            term                = bmul(term, c * x) / BONE;
             term                = bdiv(term, bigK);
             if (term == 0) break;
 
