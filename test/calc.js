@@ -18,11 +18,6 @@ const slightly = require('../util/slightly.js');
 
 describe('calc', async () => {
     let stub;
-    before(async () => {
-        let acct0 = (await web3.eth.getAccounts())[0];
-        stub = await pkg.deploy(web3, acct0, 'BStub')
-    });
-
     let smallWeight = 1.0000001
     let midWeight = 50
     let bigWeight = 99.999999
@@ -34,6 +29,12 @@ describe('calc', async () => {
     let smallAmount;
     let midAmount;
     let bigAmount;
+
+    before(async () => {
+        let acct0 = (await web3.eth.getAccounts())[0];
+        stub = await pkg.deploy(web3, acct0, 'BStub')
+    });
+
 
     for(weightA of [smallWeight, midWeight, bigWeight]) {
     for(weightB of [smallWeight, midWeight, bigWeight]) {
