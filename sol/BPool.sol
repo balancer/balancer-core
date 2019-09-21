@@ -237,7 +237,6 @@ contract BPool is BBronze, BToken, BMath
         uint oldWeight = _records[token].weight;
         if (weight > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(weight, oldWeight));
-            require(_totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
         } else {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, weight));
         }        
@@ -288,8 +287,6 @@ contract BPool is BBronze, BToken, BMath
         _pullT(token, msg.sender, balance);
 
         _totalWeight = badd(_totalWeight, weight);
-
-        require(_totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
 
         _index.push(token);
         _records[token] = Record({
