@@ -110,7 +110,7 @@ contract BNum is BBronze, BConst {
         (uint x, bool xneg)  = bsubSign(base, BONE);
         uint term = BONE;
         uint sum   = term;
-        uint negatives = 0;
+        bool negative = false;
 
         // term(k) = numer / denom 
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
@@ -124,9 +124,9 @@ contract BNum is BBronze, BConst {
             term                = bdiv(term, bigK);
             if (term == 0) break;
 
-            if (xneg) negatives += 1;
-            if (cneg) negatives += 1;
-            if (negatives % 2 == 1) {
+            if (xneg) negative = !negative;
+            if (cneg) negative = !negative;
+            if (negative) {
                 sum      = bsub(sum, term);
             } else {
                 sum      = badd(sum, term);
