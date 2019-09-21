@@ -107,9 +107,6 @@ contract BNum is BBronze, BConst {
 
         // term 0:
         uint a     = remain;
-        uint numer = BONE;
-        uint denom = BONE;
-        uint sum   = BONE;
         (uint x, bool xneg)  = bsubSign(base, BONE);
 
         // term(k) = numer / denom 
@@ -117,25 +114,26 @@ contract BNum is BBronze, BConst {
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // keep a tally of negative signs in 'negatives' to determine this term's sign
 
+        uint term = BONE;
+        uint sum   = BONE;
         uint negatives = 0;
+
         for( uint i = 1; i < K; i++) {
             uint bigK = i * BONE;
-            
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
-            numer               = bmul(numer, bmul(c, x));
-            denom               = bmul(denom, bigK);
+            term                = bmul(term, bmul(c, x));
+            term                = bdiv(term, bigK);
+            if (term == 0) break;
             if (xneg) negatives += 1;
             if (cneg) negatives += 1;
-
             if (negatives % 2 == 1) {
-                sum      = bsub(sum, bdiv(numer, denom));
+                sum      = bsub(sum, term);
             } else {
-                sum      = badd(sum, bdiv(numer, denom));
+                sum      = badd(sum, term);
             }
         }
 
         return bmul(sum, wholePow);
     }
-
 
 }
