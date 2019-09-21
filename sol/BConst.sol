@@ -25,6 +25,7 @@ contract BConst is BBronze
 
     uint256 public constant MIN_WEIGHT        = BONE;
     uint256 public constant MAX_WEIGHT        = BONE * 50;
+    uint256 public constant MAX_TOTAL_WEIGHT  = BONE * 50;
     uint256 public constant MIN_BALANCE       = BONE / 10**6;
     uint256 public constant MAX_BALANCE       = BONE * 10**12;
 
