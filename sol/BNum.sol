@@ -115,15 +115,17 @@ contract BNum is BBronze, BConst {
         // keep a tally of negative signs in 'negatives' to determine this term's sign
 
         uint term = BONE;
-        uint sum   = BONE;
+        uint sum   = term;
         uint negatives = 0;
 
         for( uint i = 1; i < K; i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
+
             term                = bmul(term, bmul(c, x));
             term                = bdiv(term, bigK);
             if (term == 0) break;
+
             if (xneg) negatives += 1;
             if (cneg) negatives += 1;
             if (negatives % 2 == 1) {
@@ -133,7 +135,8 @@ contract BNum is BBronze, BConst {
             }
         }
 
-        return bmul(sum, wholePow);
+        uint result = bmul(sum, wholePow);
+        return result;
     }
 
 }

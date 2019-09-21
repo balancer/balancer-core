@@ -16,6 +16,10 @@ const fromWei = web3.utils.fromWei
 
 const slightly = require('../util/slightly.js');
 
+let str = (n) => {
+    return n.toLocaleString('fullwide', {useGrouping:false});
+}
+
 describe('bpow', async () => {
     let stub;
     before(async () => {
@@ -33,6 +37,7 @@ describe('bpow', async () => {
         let res = await fn.call();
         return await fn.call();
     }
+
 
     it('always overestimates when base < 1', async function() {
         this.timeout(0);
@@ -89,39 +94,41 @@ describe('bpow', async () => {
         for( base of bases ) {
         for( exp of exps) {
           let last = 1234567
-          for(k = 1; k < 60; k += 1) {
-            let str = `base exp k ${base} ${exp} ${k}\n`
-            let res = await bpowK(base.toString(), exp.toString(), k);
-            if( res == last ) { console.log(`CONVERGED AFTER ${k}`); break; }
+          let converged = false;
+          let MAX = 60;
+          for(k = 1; k < MAX; k += 1) {
+            let desc = `base exp k ${base} ${exp} ${k}\n`
+            let res = await bpowK(str(base), str(exp), k);
+            if( res == last ) {
+                console.log(`bpow(${base},${exp}) converged to ${res} after ${k} iterations`);
+                converged = true;
+                break;
+            }
             else last = res
-            str += `result is: ${res}\n`
-            //str += `result is: ${fromWei(res)}\n`
+            desc += `result is: ${res}\n`
+            desc += `result is: ${fromWei(res)}\n`
             let actual = base**exp;
             assert(actual < 10**58, 'actual < 10**58')
-            let rem = actual % 10**-18;
-            actual = actual - rem
             let diff;
             let error;
             try {
-                actual = toWei(actual.toString());
-                str += `actual is: ${actual}\n`
-                str += `actual is: ${fromWei(actual)}\n`
-                diff = fromWei(res) - fromWei(actual);
-                str += `diff: ${diff}\n`;
+                desc += `actual is: ${toWei(str(actual))}\n`
+                desc += `actual is: ${str(actual)}\n`
+                diff = Math.abs(fromWei(res) - actual);
+                desc += `diff: ${str(diff)}\n`;
                 error = diff / actual;
-                str += `err: ${error}\n`
+                desc += `err: ${str(error)}\n`
                 if( error > 10**-9 ) {
-                    console.log(str);
+                    //console.log(desc);
                 }
             } catch (e) {
                 console.log('exception with (base exp k)', base, exp, k);
-                if(typeof(actual) == 'string')
-                    actual = fromWei(actual)
                 console.log('base exp actual', base, exp, actual);
                 console.log(e);
             }
-            console.log('pass base exp k result actual diff error', base, exp, k, res, actual, diff, error);
+            //console.log('pass base exp k result actual diff error', base, exp, k, res, actual, diff, error);
           }
+          assert(converged, `bpow(${base},${exp}) didnt converge after ${MAX} iterations (last result: ${last})`);
         }
         } 
     });
