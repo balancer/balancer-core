@@ -140,7 +140,12 @@ describe('joinswap / exitswap', async()=>{
     await checkTBW(MKR, 4, 10);
     await checkTBW(DAI, 12, 10);
     await checkP(100);
-  
+ 
+    // 10
+    let res = await env.bpool.joinswap_ExternAmountIn(MKR, toWei('1.76')); 
+    await checkTBW(MKR, 5.76, 10);
+    await checkTBW(DAI, 12, 10);
+    await checkP(120);
 
   });
 });

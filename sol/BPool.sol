@@ -124,7 +124,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getDenormalizedWeight(address token)
-      public view _view_
+      public view
         returns (uint)
     {
         return _records[token].weight;
@@ -132,7 +132,6 @@ contract BPool is BBronze, BToken, BMath
 
     function getTotalDenormalizedWeight()
       public view 
-      _view_
       returns (uint)
     {
         uint res = 0;
@@ -145,7 +144,6 @@ contract BPool is BBronze, BToken, BMath
 
     function getNormalizedWeight(address token)
       public view
-      _view_
       returns (uint)
     {
         uint total = getTotalDenormalizedWeight();
@@ -165,6 +163,7 @@ contract BPool is BBronze, BToken, BMath
 
     function finalize(uint initSupply)
       _beep_
+      _lock_
       public
     {
         require(msg.sender == _manager, ERR_NOT_MANAGER);
@@ -176,13 +175,12 @@ contract BPool is BBronze, BToken, BMath
 
         _mint(initSupply);
         _push(msg.sender, initSupply);
-
     }
 
     function joinPool(uint poolAo)
-      _beep_
-      _lock_
       public
+        _beep_
+        _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
         uint poolTotal = totalSupply();
@@ -199,9 +197,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function exitPool(uint poolAi)
-      _beep_
-      _lock_
       public
+        _beep_
+        _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
 
@@ -507,6 +505,42 @@ contract BPool is BBronze, BToken, BMath
         _swap(Ti, Ai, To, Ao);
 
         return (Ai, Ao, Pafter);
+    }
+
+    function joinswap_ExternAmountIn(address Ti, uint256 tAi)
+      public
+        _beep_
+        _lock_
+        returns (uint poolAo)
+    {
+        require( isBound(Ti), ERR_NOT_BOUND );
+        uint oldPoolTotal = _totalSupply;
+
+        Record storage T = _records[Ti];
+
+        // Charge the trading fee for the proportion of tokenAi
+        ///  which is implicitly traded to the other pool tokens.
+        // That proportion is (1-T.normalizedWeight)
+        // tokenAiAfterFee = tAi - tAi * (1-T.normalizedWeight) * poolFee;
+        uint normalized = getNormalizedWeight(Ti);
+        uint boo = bsub(BONE, normalized);
+        uint bar = bmul(tAi, bmul(boo, _swapFee));
+        uint baz = bsub(tAi, bar);
+        uint tokenAiAfterFee = baz;
+
+        uint newBalTi = badd(T.balance, tokenAiAfterFee);
+        uint ratioTi = bdiv(newBalTi, T.balance);
+
+        // uint newPoolTotal = (ratioTi ^ T.weight) * oldPoolTotal;
+        uint zoo = bpow(ratioTi, normalized);
+        uint zar = bmul(zoo, oldPoolTotal);
+        poolAo = bsub(zar, oldPoolTotal);
+
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
+        _pullT(Ti, msg.sender, tAi);
+        T.balance = badd(T.balance, tAi);
+        return poolAo;
     }
 
     // ==
