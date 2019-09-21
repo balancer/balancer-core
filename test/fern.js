@@ -51,10 +51,10 @@ describe("fernando's test sequence", async () => {
         assert.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString()));
     }
 
-    await env.bpool.setParams(MKR, toWei('4'), toWei('100'));
-    await env.bpool.setParams(DAI, toWei('12'), toWei('100'));
-    await checkTBW(MKR, 4, 100)
-    await checkTBW(DAI, 12, 100);
+    await env.bpool.setParams(MKR, toWei('4'), toWei('10'));
+    await env.bpool.setParams(DAI, toWei('12'), toWei('10'));
+    await checkTBW(MKR, 4, 10)
+    await checkTBW(DAI, 12, 10);
 
     // 1
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
@@ -62,24 +62,40 @@ describe("fernando's test sequence", async () => {
     assert.sgte(res[1], toWei('0.75'));
     assert.equal(await env.bpool.getSpotPrice(MKR, DAI), toWei('0.75'));
     assert.equal(await env.bpool.getSpotPriceSansFee(MKR, DAI), toWei('0.75'));
-    await checkTBW(MKR, 6, 100)
-    await checkTBW(DAI, 8, 100);
+    await checkTBW(MKR, 6, 10)
+    await checkTBW(DAI, 8, 10);
 
     // 2
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
     assert.approx(res[0], toWei('2')); // TODO WARN  .slte
     assert.sgte(res[1], toWei((4/3).toString()));
     assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((4/3).toString()));
-    await checkTBW(MKR, 8, 100)
-    await checkTBW(DAI, 6, 100);
+    await checkTBW(MKR, 8, 10)
+    await checkTBW(DAI, 6, 10);
 
     // 3
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('4'), DAI, toWei('0'), MAX); // bad error
     assert.slte(res[0], toWei('2'));
     assert.sgte(res[1], toWei((3).toString()));
     assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((3).toString()));
-    await checkTBW(MKR, 12, 100)
-    await checkTBW(DAI, 4, 100);
+    await checkTBW(MKR, 12, 10)
+    await checkTBW(DAI, 4, 10);
+
+    // 4
+    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('1'), DAI, toWei('0'), MAX); // bad error
+    assert.slte(res[0], toWei('4'));
+    assert.sgte(res[1], toWei((16/3).toString()));
+    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((16/3).toString()));
+    await checkTBW(MKR, 16, 10)
+    await checkTBW(DAI, 3, 10);
+
+    // 5
+    res = await env.bpool.swap_ExactAmountIn(MKR, toWei('1'), DAI, toWei('0'), MAX); // bad error
+    assert.slte(res[0], toWei('8'));
+    assert.sgte(res[1], toWei((12).toString()));
+    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((12).toString()));
+    await checkTBW(MKR, 24, 10)
+    await checkTBW(DAI, 2, 10);
 
 
   })

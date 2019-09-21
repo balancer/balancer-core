@@ -39,37 +39,35 @@ describe('bpow', async () => {
     }
 
 
-    it('always overestimates when base < 1', async function() {
-        this.timeout(0);
-        let exact = Math.pow(0.5, 0.5);
-        for(var i = 0; i < 75; i++) {
-            let res = await bpowK('0.5', '0.5', i);
-            let resFloat = fromWei(res);
-            assert(resFloat >= exact);
-        }
-    });
+    for(var i = 0; i < 10; i++) {
+      let exact = Math.pow(0.5, 0.5);
+      it(`bpowK(0.5, 0.5, ${i}) overestimates`, async function() {
+        let res = await bpowK('0.5', '0.5', i);
+        let resFloat = fromWei(res);
+        assert(resFloat >= exact, 'result does not overestimate');
+      });
+    }
 
-    it('overestimates when base > 1, even terms (at least 2)', async function() {
-        this.timeout(0);
-        let exact = Math.pow(1.5, 0.5);
-        for(var i = 2; i < 75; i += 2) {
-            let res = await bpowK('1.5', '0.5', i);
-            let resFloat = fromWei(res);
-            assert(resFloat >= exact, 'result does not overestimate');
-        }
-    });
+    for(var i = 2; i < 10; i += 2) {
+      let exact = Math.pow(1.5, 0.5);
+      it(`bpowK(0.5, 0.5, ${i}) overestimates`, async function() {
+        let res = await bpowK('1.5', '0.5', i);
+        let resFloat = fromWei(res);
+        assert(resFloat >= exact, `result does not overestimate, result: ${resFloat}, exact: ${exact}`);
+      });
+    }
 
-    it('underestimates when base > 1, odd terms (at least 1)', async function() {
-        this.timeout(0);
-        let exact = Math.pow(1.5, 0.5);
-        for(var i = 1; i < 75; i += 2) {
-            let res = await bpowK('1.5', '0.5', i);
-            let resFloat = fromWei(res);
-            assert(resFloat <= exact, 'result does not underestimate');
-        }
-    });
+    for(var i = 1; i < 10; i += 2) {
+      let exact = Math.pow(1.5, 0.5);
+      it(`bpowK(0.5, 0.5, ${i}) underestimates`, async function() {
+        let res = await bpowK('1.5', '0.5', i);
+        let resFloat = fromWei(res);
+        assert(resFloat <= exact, `result does not underestimate, result ${resFloat}, exact: ${exact}`);
+      });
+    }
 
     it('hello', async function() {
+        console.log("long test...");
         this.timeout(0);
         let eps = 10 ** -6;
 
@@ -81,13 +79,14 @@ describe('bpow', async () => {
         ]
 
         let exps = [
-            0.02
-          , 0.02 + eps
+            0.05
+          , 0.05 + eps
           , 1 - eps
           , 1 + eps
-          , 50 - eps
-          , 50
+          , 20 - eps
+          , 20
         ]
+
         console.log('bases', bases);
         console.log('exps', exps);
        
