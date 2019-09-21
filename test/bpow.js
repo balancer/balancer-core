@@ -36,17 +36,33 @@ describe('bpow', async () => {
         return await fn.call();
     }
 
-    it('exists', async () => {
-        let res = await bpow('1', '1');
-    });
-
-    it('overestimates', async function() {
-        this.timeout(30000);
+    it('always overestimates when base < 1', async function() {
+        this.timeout(10000);
         let exact = Math.pow(0.5, 0.5);
-        for(var i = 0; i < 100; i++) {
+        for(var i = 0; i < 25; i++) {
             let res = await bpowK('0.5', '0.5', i);
             let resFloat = fromWei(res);
             assert(resFloat >= exact);
+        }
+    });
+
+    it('overestimates when base > 1, even terms (at least 2)', async function() {
+        this.timeout(10000);
+        let exact = Math.pow(1.5, 0.5);
+        for(var i = 2; i < 25; i += 2) {
+            let res = await bpowK('1.5', '0.5', i);
+            let resFloat = fromWei(res);
+            assert(resFloat >= exact, 'result does not overestimate');
+        }
+    });
+
+    it('underestimates when base > 1, odd terms (at least 1)', async function() {
+        this.timeout(10000);
+        let exact = Math.pow(1.5, 0.5);
+        for(var i = 1; i < 25; i += 2) {
+            let res = await bpowK('1.5', '0.5', i);
+            let resFloat = fromWei(res);
+            assert(resFloat <= exact, 'result does not underestimate');
         }
     });
 
