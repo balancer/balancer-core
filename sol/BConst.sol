@@ -22,12 +22,11 @@ contract BConst is BBronze
 
     uint256 public constant MIN_FEE           = BONE / 10000;
     uint256 public constant MAX_FEE           = BONE / 10;
-    uint256 public constant EXIT_FEE          = BONE / 1000;
     uint256 public constant MIN_WEIGHT        = BONE;
     uint256 public constant MAX_WEIGHT        = BONE * 100;
-    uint256 public constant MAX_TOTAL_WEIGHT  = BONE * 1000;
     uint256 public constant MIN_BALANCE       = BONE / 10**6;
     uint256 public constant MAX_BALANCE       = BONE * 10**12;
+
     uint256 constant MIN_POOL_SUPPLY   = BONE;
 
     uint256 constant MAX_TRADE_IN      = BONE * 9;
