@@ -104,4 +104,30 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
+    function _calc_JoinExternIn( uint balance, uint weight
+                               , uint poolBalance, uint totalWeight
+                               , uint tAi, uint fee)
+      public pure
+        returns (uint poolOut)
+    {
+        // Charge the trading fee for the proportion of tokenAi
+        ///  which is implicitly traded to the other pool tokens.
+        // That proportion is (1-T.normalizedWeight)
+        // tokenAiAfterFee = tAi - tAi * (1-T.normalizedWeight) * poolFee;
+
+        uint normalizedWeight = bdiv(weight, totalWeight);
+
+        uint boo = bsub(BONE, normalizedWeight);
+        uint bar = bmul(tAi, bmul(boo, fee));
+        uint baz = bsub(tAi, bar);
+        uint tokenAiAfterFee = baz;
+
+        uint newBalTi = badd(balance, tokenAiAfterFee);
+        uint ratioTi = bdiv(newBalTi, balance);
+
+        // uint newPoolTotal = (ratioTi ^ T.normalizedWeight) * oldPoolTotal;
+        uint zoo = bpow(ratioTi, normalizedWeight);
+        uint zar = bmul(zoo, poolBalance);
+        return (poolOut = bsub(zar, poolBalance));
+    }
 }

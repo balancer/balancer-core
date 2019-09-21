@@ -134,12 +134,7 @@ contract BPool is BBronze, BToken, BMath
       public view 
       returns (uint)
     {
-        uint res = 0;
-        for( uint i = 0; i < _index.length; i++ ) {
-            res = badd(res, _records[_index[i]].weight);
-        }
-        // TODO require(res != 0) ?
-        return res;
+        return _totalWeight;
     }
 
     function getNormalizedWeight(address token)
@@ -518,23 +513,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[Ti];
 
-        // Charge the trading fee for the proportion of tokenAi
-        ///  which is implicitly traded to the other pool tokens.
-        // That proportion is (1-T.normalizedWeight)
-        // tokenAiAfterFee = tAi - tAi * (1-T.normalizedWeight) * poolFee;
-        uint normalized = getNormalizedWeight(Ti);
-        uint boo = bsub(BONE, normalized);
-        uint bar = bmul(tAi, bmul(boo, _swapFee));
-        uint baz = bsub(tAi, bar);
-        uint tokenAiAfterFee = baz;
-
-        uint newBalTi = badd(T.balance, tokenAiAfterFee);
-        uint ratioTi = bdiv(newBalTi, T.balance);
-
-        // uint newPoolTotal = (ratioTi ^ T.weight) * oldPoolTotal;
-        uint zoo = bpow(ratioTi, normalized);
-        uint zar = bmul(zoo, oldPoolTotal);
-        poolAo = bsub(zar, oldPoolTotal);
+        poolAo = _calc_JoinExternIn(T.balance, T.weight, _totalSupply, _totalWeight, tAi, _swapFee);
 
         _mint(poolAo);
         _push(msg.sender, poolAo);
