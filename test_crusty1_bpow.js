@@ -19,10 +19,10 @@ const slightly = require('../util/slightly.js');
 assert.approx = slightly.approx;
 
 let str = (n) => {
-    console.log(n);
-    var wide = n.toString();//n.toLocaleString('fullwide', {useGrouping: false});
-//    console.log(wide);
-    return wide;
+    let big = n * 10**18;
+    big = big - (big % 10**18);
+    let bn = Web3.utils.toBN(big);
+    return bn.toString();
 }
 
 describe('bpow', async () => {
