@@ -575,6 +575,7 @@ contract BPool is BBronze, BToken, BMath
         _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
         _burn(poolAoBeforeFees);    
         _pushT(To, msg.sender, tAo);
+        T.balance = bsub(T.balance, tAo);
         return poolAoBeforeFees;
     }
 
