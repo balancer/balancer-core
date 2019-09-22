@@ -19,14 +19,7 @@ import "./BNum.sol";
 
 contract BMath is BBronze, BConst, BNum
 {
-    // Names
-    // Bi := Balance In
-    // Bo := Balance Out
-    // Wi := Weight In
-    // Wo := Weight Out
-    // Ai := Amount In
-    // Ao := Amount Out
-
+    // P = ((Bi/Wi)/(Bo/Wo)) * (1/(1-f))
     function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo, uint f) 
       public pure
         returns ( uint P )
@@ -38,6 +31,7 @@ contract BMath is BBronze, BConst, BNum
         return  (P = bmul(ratio, scale));
     }
 
+    // P = ((Bo/Wo)/(Bi/Wi)) * (1*(1-f))
     function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f)
       public pure
         returns ( uint R ) 
@@ -49,13 +43,15 @@ contract BMath is BBronze, BConst, BNum
         return  (R = bmul(ratio, scale));
     }
 
-    //  Ao = Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
-    function _calc_OutGivenIn( uint Bi, uint Wi
-                            , uint Bo, uint Wo
-                            , uint Ai
-                            , uint fee
-                            )
-      pure internal
+    // Ao = Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
+    function _calc_OutGivenIn
+      ( uint Bi, uint Wi
+      , uint Bo, uint Wo
+      , uint Ai
+      , uint fee
+      )
+        pure
+        internal
         returns ( uint Ao )
     {
         uint wRatio     = bdiv(Wi, Wo);
@@ -68,12 +64,12 @@ contract BMath is BBronze, BConst, BNum
         return Ao;
 	}
 
-    // Ai = ((Bi/(Bi + Ai))^(Wo/Wi) - 1) * Bo / (1 - fee)
+    // Ai = Bo * ((Bi/(Bi + Ai))^(Wo/Wi) - 1) / (1 - fee)
     function _calc_InGivenOut( uint Bi, uint Wi
-                            , uint Bo, uint Wo
-                            , uint Ao
-                            , uint fee
-                            )
+                             , uint Bo, uint Wo
+                             , uint Ao
+                             , uint fee
+                             )
       public pure
         returns ( uint Ai )
     {
@@ -88,9 +84,9 @@ contract BMath is BBronze, BConst, BNum
     }
 
     function _calc_InGivenPrice( uint Bi, uint Wi
-                              , uint Bo , uint Wo
-                              , uint SER1
-                              , uint fee)
+                               , uint Bo , uint Wo
+                               , uint SER1
+                               , uint fee)
       public pure
         returns ( uint Ai )
     {
@@ -105,8 +101,8 @@ contract BMath is BBronze, BConst, BNum
     }
 
     function _calc_PoolOutGivenSingleIn( uint balance, uint weight
-                               , uint poolBalance, uint totalWeight
-                               , uint tAi, uint fee)
+                                       , uint poolBalance, uint totalWeight
+                                       , uint tAi, uint fee )
       public pure
         returns (uint poolOut)
     {
@@ -132,8 +128,8 @@ contract BMath is BBronze, BConst, BNum
     }
 
     function _calc_SingleInGivenPoolOut( uint balance, uint weight
-                              , uint poolBalance, uint totalWeight
-                              , uint pAo, uint fee)
+                                       , uint poolBalance, uint totalWeight
+                                       , uint pAo, uint fee)
       public pure
         returns (uint tokenIn)
     {
