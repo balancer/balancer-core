@@ -515,7 +515,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[Ti];
 
-        poolAo = _calc_JoinExternIn(T.balance, T.weight, _totalSupply, _totalWeight, tAi, _swapFee);
+        poolAo = _calc_PoolOutGivenSingleIn(T.balance, T.weight, _totalSupply, _totalWeight, tAi, _swapFee);
 
         _mint(poolAo);
         _push(msg.sender, poolAo);
@@ -525,42 +525,27 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function joinswap_PoolAmountOut(uint pAo, address Ti)
+      public
         _beep_
         _lock_
-        public
         returns (uint tAi)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
 
-        uint newPoolTotal = _totalSupply + pAo;
-        uint poolRatio = bdiv(newPoolTotal, _totalSupply);
-
         Record storage T = _records[Ti];
-      
-        //uint newBalTi = poolRatio^(1/T.weight) * T.balance;
-        uint boo = bdiv(BONE, T.weight); 
-        uint bar = bpow(poolRatio, boo);
-        uint newBalTi = bmul(bar, T.balance);
-        uint tokenAi = bsub(newBalTi, T.balance);
 
-        // Do reverse order of fees charged in joinswap_ExternAmountIn, this way 
-        //     ``` pAo == joinswap_ExternAmountIn(Ti, joinswap_PoolAmountOut(pAo, Ti)) ```
-        //uint tokenAiBeforeFee = tokenAi / (1 - (1-T.weight) * _swapFee) ;
-        uint zoo = bsub(BONE, T.weight);
-        uint zar = bmul(zoo, _swapFee);
-        uint zaz = bsub(BONE, zar);
-        uint tokenAiBeforeFee = bdiv(tokenAi, zaz);
+        tAi = _calc_PoolInGivenSingleOut(T.balance, T.weight, _totalSupply, _totalWeight, pAo, _swapFee);
 
         _mint(pAo);
         _push(msg.sender, pAo);
-        _pullT(Ti, msg.sender, tokenAiBeforeFee);
-        return tokenAiBeforeFee;
+        _pullT(Ti, msg.sender, tAi);
+        return tAi;
     }
 
     function exitswap_PoolAmountIn(uint pAi, address To)
+      public
         _beep_
         _lock_
-        public
     {
         require( isBound(To), ERR_NOT_BOUND );
 
@@ -594,9 +579,10 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function exitswap_ExternAmountOut(address To, uint tAo)
+      public
         _beep_
         _lock_
-        public returns (uint pAo)
+        returns (uint pAo)
     {
         require( isBound(To), ERR_NOT_BOUND );
         uint oldPoolTotal = totalSupply();
