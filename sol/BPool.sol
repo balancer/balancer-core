@@ -534,7 +534,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[Ti];
 
-        tAi = _calc_PoolInGivenSingleOut(T.balance, T.weight, _totalSupply, _totalWeight, pAo, _swapFee);
+        tAi = _calc_SingleInGivenPoolOut(T.balance, T.weight, _totalSupply, _totalWeight, pAo, _swapFee);
 
         _mint(pAo);
         _push(msg.sender, pAo);
@@ -554,37 +554,25 @@ contract BPool is BBronze, BToken, BMath
 
         tAo = _calc_SingleOutGivenPoolIn(T.balance, T.weight, _totalSupply, _totalWeight, pAi, _swapFee);
 
-        revert('todo set balance/supply');
-        _pull(msg.sender, pAi); // Pull pAi, not only poolAiAfterFee
+        _pull(msg.sender, pAi); // Pull pAi, not just poolAiAfterFee
         _burn(pAi);
         _pushT(To, msg.sender, tAo);
+        T.balance = bsub(T.balance, tAo);
     }
 
     function exitswap_ExternAmountOut(address To, uint tAo)
       public
         _beep_
         _lock_
-        returns (uint pAo)
+        returns (uint pAi)
     {
         require( isBound(To), ERR_NOT_BOUND );
-        uint oldPoolTotal = totalSupply();
+
         Record storage T = _records[To];
-        uint newBalTo = T.balance - tAo;
-        uint ratioTo = bdiv(newBalTo, T.balance);
 
-        //uint newPoolTotal = (ratioTo ^ weightTo) * oldPoolTotal;
-        uint boo = bpow(ratioTo, T.weight);
-        uint bar = bmul(boo, oldPoolTotal);
-        uint newPoolTotal = bar;
-        uint poolAo = oldPoolTotal - newPoolTotal;
-
-        //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
-        uint zoo = (1 - T.weight);
-        uint zar = bmul(zoo, _swapFee); // poolAoBeforeTradingFees
-        uint poolAoBeforeFees = zar / (1-_exitFee);
-       
-        revert('todo set balance/supply'); 
-        _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not only poolAo 
+        uint poolAoBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.weight, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+     
+        _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
         _burn(poolAoBeforeFees);    
         _pushT(To, msg.sender, tAo);
         return poolAoBeforeFees;

@@ -131,7 +131,7 @@ contract BMath is BBronze, BConst, BNum
         return (poolOut = bsub(zar, poolBalance));
     }
 
-    function _calc_PoolInGivenSingleOut( uint balance, uint weight
+    function _calc_SingleInGivenPoolOut( uint balance, uint weight
                               , uint poolBalance, uint totalWeight
                               , uint pAo, uint fee)
       public pure
@@ -189,13 +189,25 @@ contract BMath is BBronze, BConst, BNum
         return tAo;
     }
 
-    function _calc_ExitExternOut( uint balance, uint weight
-                                , uint poolBalance, uint totalWeight
-                                , uint tAo, uint fee)
+    function _calc_PoolInGivenSingleOut( uint balance, uint weight
+                                       , uint poolBalance, uint totalWeight
+                                       , uint tAo, uint swapFee, uint exitFee)
       public pure
         returns (uint poolIn)
     {
-        revert('unimplemented');
+        uint newBalTo = balance - tAo;
+        uint ratioTo = bdiv(newBalTo, balance);
+
+        //uint newPoolTotal = (ratioTo ^ weightTo) * _totalSupply;
+        uint boo = bpow(ratioTo, weight);
+        uint bar = bmul(boo, poolBalance);
+        uint newPoolTotal = bar;
+        uint poolAo = poolBalance - newPoolTotal;
+
+        //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
+        uint zoo = bsub(BONE, weight);
+        uint zar = bmul(zoo, swapFee); // poolAoBeforeTradingFees
+        uint poolAoBeforeFees = bdiv(zar, bsub(BONE, exitFee));
     }
 
 
