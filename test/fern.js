@@ -21,21 +21,17 @@ const play = require('../util/play.js')
 
 const slightly = require('../util/slightly.js');
 
-assert.sgte = slightly.sgte;
-assert.slte = slightly.slte;
-assert.approx = slightly.approx;
-
 let MAX = web3.utils.toTwosComplement(-1);
 
 describe("fernando's test sequence", async () => {
   let env;
 
   it('cmp meta', async () => {
-    assert.approx(toWei('1.0000000001'), toWei('1'));
-    assert.sgte(toWei('1.0000000001'), toWei('1'));
+    assert(slightly.approx(toWei('1.0000000001'), toWei('1')));
+    assert(slightly.sgte(toWei('1.0000000001'), toWei('1')));
 
-    assert.approx(toWei('0.9999999999'), toWei('1'));
-    assert.slte(toWei('0.99999999999'), toWei('1'));
+    assert(slightly.approx(toWei('0.9999999999'), toWei('1')));
+    assert(slightly.slte(toWei('0.99999999999'), toWei('1')));
   }); 
  
   it('is one long test', async function() {
@@ -47,8 +43,8 @@ describe("fernando's test sequence", async () => {
     let DAI = env.DAI.__address;
 
     let checkTBW = async (t,b,w) => {
-        assert.approx((await env.bpool.getBalance(t)), toWei(b.toString()));
-        assert.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString()));
+        assert(slightly.approx((await env.bpool.getBalance(t)), toWei(b.toString())));
+        assert(slightly.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString())));
     }
 
     await env.bpool.setParams(MKR, toWei('4'), toWei('10'));
@@ -58,8 +54,8 @@ describe("fernando's test sequence", async () => {
 
     // 1
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
-    assert.slte(res[0], toWei('4'));
-    assert.sgte(res[1], toWei('0.75'));
+    assert(slightly.slte(res[0], toWei('4')));
+    assert(slightly.sgte(res[1], toWei('0.75')));
     assert.equal(await env.bpool.getSpotPrice(MKR, DAI), toWei('0.75'));
     assert.equal(await env.bpool.getSpotPriceSansFee(MKR, DAI), toWei('0.75'));
     await checkTBW(MKR, 6, 10)
@@ -67,33 +63,33 @@ describe("fernando's test sequence", async () => {
 
     // 2
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('2'), DAI, toWei('0'), MAX);
-    assert.approx(res[0], toWei('2')); // TODO WARN  .slte
-    assert.sgte(res[1], toWei((4/3).toString()));
-    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((4/3).toString()));
+    assert(slightly.approx(res[0], toWei('2'))); // TODO WARN  .slte
+    assert(slightly.sgte(res[1], toWei((4/3).toString())));
+    assert(slightly.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((4/3).toString())));
     await checkTBW(MKR, 8, 10)
     await checkTBW(DAI, 6, 10);
 
     // 3
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('4'), DAI, toWei('0'), MAX);
-    assert.slte(res[0], toWei('2'));
-    assert.sgte(res[1], toWei((3).toString()));
-    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((3).toString()));
+    assert(slightly.slte(res[0], toWei('2')));
+    assert(slightly.sgte(res[1], toWei((3).toString())));
+    assert(slightly.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((3).toString())));
     await checkTBW(MKR, 12, 10)
     await checkTBW(DAI, 4, 10);
 
     // 4
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('1'), DAI, toWei('0'), MAX);
-    assert.slte(res[0], toWei('4'));
-    assert.sgte(res[1], toWei((16/3).toString()));
-    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((16/3).toString()));
+    assert(slightly.slte(res[0], toWei('4')));
+    assert(slightly.sgte(res[1], toWei((16/3).toString())));
+    assert(slightly.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((16/3).toString())));
     await checkTBW(MKR, 16, 10)
     await checkTBW(DAI, 3, 10);
 
     // 5
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('1'), DAI, toWei('0'), MAX);
-    assert.slte(res[0], toWei('8'));
-    assert.sgte(res[1], toWei((12).toString()));
-    assert.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((12).toString()));
+    assert(slightly.slte(res[0], toWei('8')));
+    assert(slightly.sgte(res[1], toWei((12).toString())));
+    assert(slightly.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((12).toString())));
     await checkTBW(MKR, 24, 10)
     await checkTBW(DAI, 2, 10);
 
@@ -113,12 +109,12 @@ describe('joinswap / exitswap', async()=>{
     let DAI = env.DAI.__address;
 
     let checkTBW = async (t,b,w) => {
-        assert.approx((await env.bpool.getBalance(t)), toWei(b.toString()));
-        assert.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString()));
+        assert(slightly.approx((await env.bpool.getBalance(t)), toWei(b.toString())));
+        assert(slightly.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString())));
     }
 
     let checkP = async (p) => {
-        assert.approx((await env.bpool.totalSupply()), toWei(p.toString()));
+        assert(slightly.approx((await env.bpool.totalSupply()), toWei(p.toString())));
     }
 
     await env.bpool.setParams(MKR, toWei('4'), toWei('10'));

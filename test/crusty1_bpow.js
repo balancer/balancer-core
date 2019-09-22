@@ -15,9 +15,6 @@ const web3 = new Web3(ganache.provider({
 const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 
-const slightly = require('../util/slightly.js');
-assert.approx = slightly.approx;
-
 let str = (n) => {
     let big = n * 10**18;
     big = big - (big % 10**18);
