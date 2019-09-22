@@ -157,19 +157,25 @@ contract BMath is BBronze, BConst, BNum
         return tAi;
     }
 
-    function _calc_SingleOutGivenPoolIn( uint balance, uint weight
-                             , uint poolBalance, uint totalWeight
-                             , uint pAi, uint fee)
-      public pure
-        returns (uint tAo)
+    function _calc_SOGPI_helper(uint normalizedWeight, uint pAi, uint fee)
+      pure internal
+        returns (uint pAi_fee)
     {
-/*
-        uint normalizedWeight = bdiv(weight, totalWeight);
         // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
         uint boo = BONE - normalizedWeight;
         uint bar = bmul(pAi, boo);
         uint baz = bmul(bar, fee);
-        uint pAi_fee = pAi - baz;
+        pAi_fee = pAi - baz;
+    }
+
+    function _calc_SingleOutGivenPoolIn( uint balance, uint weight
+                                       , uint poolBalance, uint totalWeight
+                                       , uint pAi, uint fee)
+      public pure
+        returns (uint tAo)
+    {
+        uint normalizedWeight = bdiv(weight, totalWeight);
+        uint pAi_fee = _calc_SOGPI_helper(normalizedWeight, pAi, fee);
 
         uint newPoolTotal = poolBalance - pAi_fee;
         uint poolRatio = bdiv(newPoolTotal, poolBalance);
@@ -181,7 +187,6 @@ contract BMath is BBronze, BConst, BNum
 
         tAo = balance - newBalTo;
         return tAo;
-*/
     }
 
     function _calc_ExitExternOut( uint balance, uint weight
