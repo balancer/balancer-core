@@ -193,7 +193,7 @@ contract BMath is BBronze, BConst, BNum
                                        , uint poolBalance, uint totalWeight
                                        , uint tAo, uint swapFee, uint exitFee)
       public pure
-        returns (uint poolIn)
+        returns (uint pAi)
     {
         uint newBalTo = balance - tAo;
         uint ratioTo = bdiv(newBalTo, balance);
@@ -202,13 +202,13 @@ contract BMath is BBronze, BConst, BNum
         uint boo = bpow(ratioTo, weight);
         uint bar = bmul(boo, poolBalance);
         uint newPoolTotal = bar;
-        uint poolAo = poolBalance - newPoolTotal;
+        uint poolAi = bsub(newPoolTotal, poolBalance);
 
         //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
         uint zoo = bsub(BONE, weight);
         uint zar = bmul(zoo, swapFee); // poolAoBeforeTradingFees
-        uint poolAoBeforeFees = bdiv(zar, bsub(BONE, exitFee));
-        return poolAoBeforeFees;
+        uint pAi_beforeFees = bdiv(poolAi, bsub(BONE, exitFee));
+        return pAi_beforeFees;
     }
 
 
