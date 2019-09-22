@@ -103,8 +103,7 @@ contract BPool is BBronze, BToken, BMath
       public view _view_
         returns (address[] memory tokens)
     {
-        revert('unimplemented');
-        return (new address[](0));
+        return _index;
     }
 
     function getFinalTokens()
@@ -112,8 +111,7 @@ contract BPool is BBronze, BToken, BMath
         returns (address[] memory tokens)
     {
         require(_finalized, ERR_NOT_FINALIZED);
-        revert('unimplemented');
-        return (new address[](0));
+        return _index;
     }
 
     function getFee()
