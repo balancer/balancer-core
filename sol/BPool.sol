@@ -127,7 +127,9 @@ contract BPool is BBronze, BToken, BMath
       public view
         returns (uint)
     {
-        return _records[token].weight;
+        uint denorm = _records[token].weight;
+        require(denorm != 0, ERR_CLEARED);
+        return denorm;
     }
 
     function getTotalDenormalizedWeight()
@@ -141,19 +143,19 @@ contract BPool is BBronze, BToken, BMath
       public view
       returns (uint)
     {
-        uint total = getTotalDenormalizedWeight();
-        if (total == 0) {
-            return 0;
-        }
-        // TODO require(res != 0) ?
-        return bdiv(_records[token].weight, total);
+        uint denorm = _records[token].weight;
+        require(denorm != 0, ERR_CLEARED);
+        return bdiv(denorm, _totalWeight);
     }
 
     function getBalance(address token)
       public view
       _view_
-      returns (uint) {
-        return _records[token].balance;
+      returns (uint)
+    {
+        uint balance = _records[token].balance;
+        require(balance != 0, ERR_CLEARED);
+        return balance;
     }
 
     function finalize(uint initSupply)
