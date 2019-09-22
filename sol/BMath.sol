@@ -208,6 +208,7 @@ contract BMath is BBronze, BConst, BNum
         uint zoo = bsub(BONE, weight);
         uint zar = bmul(zoo, swapFee); // poolAoBeforeTradingFees
         uint poolAoBeforeFees = bdiv(zar, bsub(BONE, exitFee));
+        return poolAoBeforeFees;
     }
 
 
