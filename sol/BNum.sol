@@ -79,6 +79,9 @@ contract BNum is BBronze, BConst {
         return z;
     }
 
+    // Compute b^(e.w) by splitting it into (b^e)*(b^0.w).
+    // Use `bpowi` for `b^e` and `bpowK` for k iterations
+    // of approximation of b^0.w
     function bpow(uint base, uint exp)
       pure internal
         returns (uint)
@@ -99,8 +102,6 @@ contract BNum is BBronze, BConst {
         return bmul(wholePow, partialResult);
     }
 
-    // Uses an approximation formula to compute b^(e.w)
-    // by splitting it into (b^e)*(b^0.w).
     function bpowK(uint base, uint exp, uint K)
       pure internal
         returns (uint)

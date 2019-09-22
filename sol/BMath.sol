@@ -146,7 +146,6 @@ contract BMath is BBronze, BConst, BNum
         uint bar = bpow(poolRatio, boo);
         uint newBalTi = bmul(bar, balance);
         uint tokenAi = bsub(newBalTi, balance);
-
         // Do reverse order of fees charged in joinswap_ExternAmountIn, this way 
         //     ``` pAo == joinswap_ExternAmountIn(Ti, joinswap_PoolAmountOut(pAo, Ti)) ```
         //uint tokenAiBeforeFee = tokenAi / (1 - (1-T.weight) * _swapFee) ;
@@ -157,6 +156,8 @@ contract BMath is BBronze, BConst, BNum
         return tAi;
     }
 
+    // Temporary hack to avoid stack depth
+    // TODO actually fix it
     function _calc_SOGPI_helper(uint normalizedWeight, uint pAi, uint fee)
       pure internal
         returns (uint pAi_fee)
