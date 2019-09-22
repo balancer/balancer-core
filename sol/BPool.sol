@@ -546,31 +546,13 @@ contract BPool is BBronze, BToken, BMath
       public
         _beep_
         _lock_
+        returns (uint tAo)
     {
         require( isBound(To), ERR_NOT_BOUND );
 
         Record storage T = _records[To];
 
-        uint oldPoolTotal = totalSupply();
-
-        // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
-        uint boo = bsub(1, T.weight);
-        uint bar = bmul(pAi, boo);
-        uint baz = bmul(bar, _exitFee);
-        uint pAi_fee = bsub(pAi, baz);
-
-        uint newPoolTotal = bsub(oldPoolTotal, pAi_fee);
-        uint poolRatio = bdiv(newPoolTotal, oldPoolTotal);
-     
-        // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
-        uint zoo = bdiv(1, T.weight); 
-        uint zar = bpow(poolRatio, zoo);
-        uint newBalTo = bmul(zar, T.balance);
-
-        T.balance = newBalTo;
-        _totalSupply = newPoolTotal;
-
-        uint tAo = bsub(T.balance, newBalTo);
+        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.weight, _totalSupply, _totalWeight, pAi, _swapFee);
 
         revert('todo set balance/supply');
         _pull(msg.sender, pAi); // Pull pAi, not only poolAiAfterFee

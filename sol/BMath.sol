@@ -137,12 +137,12 @@ contract BMath is BBronze, BConst, BNum
       public pure
         returns (uint tokenIn)
     {
-        uint newPoolTotal = poolBalance + pAo;
+        uint normalizedWeight = bdiv(weight, totalWeight);
+        uint newPoolTotal = badd(poolBalance, pAo);
         uint poolRatio = bdiv(newPoolTotal, poolBalance);
-
       
         //uint newBalTi = poolRatio^(1/T.weight) * T.balance;
-        uint boo = bdiv(BONE, weight); 
+        uint boo = bdiv(BONE, normalizedWeight); 
         uint bar = bpow(poolRatio, boo);
         uint newBalTi = bmul(bar, balance);
         uint tokenAi = bsub(newBalTi, balance);
@@ -150,11 +150,38 @@ contract BMath is BBronze, BConst, BNum
         // Do reverse order of fees charged in joinswap_ExternAmountIn, this way 
         //     ``` pAo == joinswap_ExternAmountIn(Ti, joinswap_PoolAmountOut(pAo, Ti)) ```
         //uint tokenAiBeforeFee = tokenAi / (1 - (1-T.weight) * _swapFee) ;
-        uint zoo = bsub(BONE, weight);
+        uint zoo = bsub(BONE, normalizedWeight);
         uint zar = bmul(zoo, fee);
         uint zaz = bsub(BONE, zar);
         uint tAi = bdiv(tokenAi, zaz);
         return tAi;
+    }
+
+    function _calc_SingleOutGivenPoolIn( uint balance, uint weight
+                             , uint poolBalance, uint totalWeight
+                             , uint pAi, uint fee)
+      public pure
+        returns (uint tAo)
+    {
+/*
+        uint normalizedWeight = bdiv(weight, totalWeight);
+        // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
+        uint boo = BONE - normalizedWeight;
+        uint bar = bmul(pAi, boo);
+        uint baz = bmul(bar, fee);
+        uint pAi_fee = pAi - baz;
+
+        uint newPoolTotal = poolBalance - pAi_fee;
+        uint poolRatio = bdiv(newPoolTotal, poolBalance);
+     
+        // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
+        uint zoo = bdiv(BONE, normalizedWeight); 
+        uint zar = bpow(poolRatio, zoo);
+        uint newBalTo = bmul(zar, balance);
+
+        tAo = balance - newBalTo;
+        return tAo;
+*/
     }
 
     function _calc_ExitExternOut( uint balance, uint weight
@@ -166,13 +193,5 @@ contract BMath is BBronze, BConst, BNum
         revert('unimplemented');
     }
 
-    function _calc_ExitPoolIn( uint balance, uint weight
-                             , uint poolBalance, uint totalWeight
-                             , uint pAi, uint fee)
-      public pure
-        returns (uint poolIn)
-    {
-        revert('unimplemented');
-    }
 
 }
