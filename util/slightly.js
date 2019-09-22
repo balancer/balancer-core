@@ -52,4 +52,4 @@ module.exports.approx = (a, b, tolerance) => {
     return diff.abs().cmp(scaleA) <= 0;
 }
 
-
+module.exports.equal = module.exports.approx;

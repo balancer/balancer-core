@@ -552,7 +552,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.weight, _totalSupply, _totalWeight, pAi, _swapFee);
+        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.weight, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
 
         _pull(msg.sender, pAi); // Pull pAi, not just poolAiAfterFee
         _burn(pAi);

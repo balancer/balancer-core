@@ -171,7 +171,7 @@ contract BMath is BBronze, BConst, BNum
 
     function _calc_SingleOutGivenPoolIn( uint balance, uint weight
                                        , uint poolBalance, uint totalWeight
-                                       , uint pAi, uint fee)
+                                       , uint pAi, uint fee, uint exitFee)
       public pure
         returns (uint tAo)
     {
@@ -179,11 +179,11 @@ contract BMath is BBronze, BConst, BNum
         uint pAi_fee = _calc_SOGPI_helper(normalizedWeight, pAi, fee);
 
         uint newPoolTotal = poolBalance - pAi_fee;
-        uint poolRatio = bdiv(newPoolTotal, poolBalance);
+//        uint poolRatio = bdiv(newPoolTotal, poolBalance);
      
         // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
         uint zoo = bdiv(BONE, normalizedWeight); 
-        uint zar = bpow(poolRatio, zoo);
+        uint zar = bpow(bdiv(newPoolTotal, poolBalance), zoo);
         uint newBalTo = bmul(zar, balance);
 
         tAo = balance - newBalTo;

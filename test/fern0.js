@@ -17,6 +17,8 @@ const toBN = Web3.utils.toBN
 const toWei = Web3.utils.toWei
 const fromWei = Web3.utils.fromWei
 
+const slightly = require('../util/slightly.js');
+
 let args = function () { return [...arguments].map((x)=>toWei(x)) }
 
 describe('fern0 single point per function (fee and no fee)', async()=>{
@@ -29,7 +31,9 @@ describe('fern0 single point per function (fee and no fee)', async()=>{
   });
 
   it('OutGivenIn', async()=>{
-    res = await stub.methods.calc_OutGivenIn(...args('5', '10', '2.1', '2.5', '1', '0.05')).call();
+    res = await stub.methods.calc_OutGivenIn(...args('8', '10', '6', '10', '4', '0')).call();
+    assert(slightly.approx(res, toWei('2')));
   });
+
 
 });
