@@ -79,7 +79,7 @@ describe("fernando's test sequence", async () => {
 
     // 4
     res = await env.bpool.swap_ExactAmountIn(MKR, toWei('1'), DAI, toWei('0'), MAX);
-    assert(slightly.slte(res[0], toWei('4')));
+    assert(slightly.approx(res[0], toWei('4'))); // TODO warn .slte
     assert(slightly.sgte(res[1], toWei((16/3).toString())));
     assert(slightly.sgte(await env.bpool.getSpotPrice(MKR, DAI), toWei((16/3).toString())));
     await checkTBW(MKR, 16, 10)
@@ -109,8 +109,8 @@ describe('joinswap / exitswap', async()=>{
     let DAI = env.DAI.__address;
 
     let checkTBW = async (t,b,w) => {
-        assert(slightly.approx((await env.bpool.getBalance(t)), toWei(b.toString())));
-        assert(slightly.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString())));
+        assert(slightly.approx((await env.bpool.getBalance(t)), toWei(b.toString())), `check balance failed expected: ${b}`);
+        assert(slightly.approx((await env.bpool.getDenormalizedWeight(t)), toWei(w.toString())), `check weight failed expected: ${w}`);
     }
 
     let checkP = async (p) => {
@@ -136,7 +136,7 @@ describe('joinswap / exitswap', async()=>{
     await checkTBW(MKR, 4, 10);
     await checkTBW(DAI, 12, 10);
     await checkP(100);
- 
+
     // 10
     let res = await env.bpool.joinswap_ExternAmountIn(MKR, toWei('1.76')); 
     await checkTBW(MKR, 5.76, 10);

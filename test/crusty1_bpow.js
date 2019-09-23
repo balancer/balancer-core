@@ -54,17 +54,17 @@ describe('bpow', async () => {
         let res = await bpow('0.5', '0.5', i);
         //let res = await bpowK('0.5', '0.5', i);
         let resFloat = fromWei(res);
-        assert(resFloat >= exact, 'result does not overestimate');
+        assert(resFloat >= exact, `result does not overestimate, result: ${resFloat}, exact: ${exact}`);
       });
     }
 
     for(var i = 2; i < 10; i++) {
       let exact = Math.pow(1.5, 0.5);
-      it(`bpowK(1.5, 0.5, ${i}) overestimates`, async function() {
+      it(`bpowK(1.5, 0.5, ${i}) underesimates`, async function() {
         let res = await bpow('1.5', '0.5', i);
         //let res = await bpowK('1.5', '0.5', i);
         let resFloat = fromWei(res);
-        assert(resFloat >= exact, `result does not overestimate, result: ${resFloat}, exact: ${exact}`);
+        assert(resFloat <= exact, `result does not underestimate, result: ${resFloat}, exact: ${exact}`);
       });
     }
 
