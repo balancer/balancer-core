@@ -11,7 +11,6 @@ const web3 = new Web3(ganache.provider({
   debug: true
 }))
 
-
 const toWei = web3.utils.toWei
 const fromWei = web3.utils.fromWei
 

@@ -66,11 +66,22 @@ contract BStub is BBronze, BMath
         return _calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
     }
 
+
+
     function calc_bpow(uint base, uint exp)
       public pure
         returns (uint)
     {
         return bpow(base, exp);
+    }
+
+    function calc_PoolOutGivenSingleIn( uint balance, uint weight
+                                      , uint poolBalance, uint totalWeight
+                                      , uint tAi, uint fee )
+      public pure
+        returns (uint pAo)
+    {
+        return  _calc_PoolOutGivenSingleIn( balance, weight, poolBalance, totalWeight , tAi, fee );
     }
 
     function calc_bpowK(uint base, uint exp, uint K)

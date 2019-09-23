@@ -100,10 +100,11 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
+    // Pissued = Ptotal * ((1+(tAi/B))^W - 1)
     function _calc_PoolOutGivenSingleIn( uint balance, uint weight
                                        , uint poolBalance, uint totalWeight
                                        , uint tAi, uint fee )
-      public pure
+      internal pure
         returns (uint poolOut)
     {
         // Charge the trading fee for the proportion of tokenAi
