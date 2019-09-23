@@ -102,7 +102,7 @@ contract BMath is BBronze, BConst, BNum
 
     // Pissued = Ptotal * ((1+(tAi/B))^W - 1)
     function _calc_PoolOutGivenSingleIn( uint balance, uint weight
-                                       , uint poolBalance, uint totalWeight
+                                       , uint poolSupply, uint totalWeight
                                        , uint tAi, uint fee )
       internal pure
         returns (uint poolOut)
@@ -124,19 +124,19 @@ contract BMath is BBronze, BConst, BNum
 
         // uint newPoolTotal = (ratioTi ^ T.normalizedWeight) * oldPoolTotal;
         uint zoo = bpow(ratioTi, normalizedWeight);
-        uint zar = bmul(zoo, poolBalance);
-        return (poolOut = bsub(zar, poolBalance));
+        uint zar = bmul(zoo, poolSupply);
+        return (poolOut = bsub(zar, poolSupply));
     }
 
     function _calc_SingleInGivenPoolOut( uint balance, uint weight
-                                       , uint poolBalance, uint totalWeight
+                                       , uint poolSupply, uint totalWeight
                                        , uint pAo, uint fee)
       public pure
         returns (uint tokenIn)
     {
         uint normalizedWeight = bdiv(weight, totalWeight);
-        uint newPoolTotal = badd(poolBalance, pAo);
-        uint poolRatio = bdiv(newPoolTotal, poolBalance);
+        uint newPoolTotal = badd(poolSupply, pAo);
+        uint poolRatio = bdiv(newPoolTotal, poolSupply);
       
         //uint newBalTi = poolRatio^(1/T.weight) * T.balance;
         uint boo = bdiv(BONE, normalizedWeight); 
@@ -167,20 +167,20 @@ contract BMath is BBronze, BConst, BNum
     }
 
     function _calc_SingleOutGivenPoolIn( uint balance, uint weight
-                                       , uint poolBalance, uint totalWeight
+                                       , uint poolSupply, uint totalWeight
                                        , uint pAi, uint fee, uint exitFee)
-      public pure
+      internal pure
         returns (uint tAo)
     {
         uint normalizedWeight = bdiv(weight, totalWeight);
         uint pAi_fee = _calc_SOGPI_helper(normalizedWeight, pAi, fee);
 
-        uint newPoolTotal = poolBalance - pAi_fee;
-//        uint poolRatio = bdiv(newPoolTotal, poolBalance);
+        uint newPoolTotal = poolSupply - pAi_fee;
+//        uint poolRatio = bdiv(newPoolTotal, poolSupply);
      
         // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
         uint zoo = bdiv(BONE, normalizedWeight); 
-        uint zar = bpow(bdiv(newPoolTotal, poolBalance), zoo);
+        uint zar = bpow(bdiv(newPoolTotal, poolSupply), zoo);
         uint newBalTo = bmul(zar, balance);
 
         tAo = balance - newBalTo;
@@ -188,9 +188,9 @@ contract BMath is BBronze, BConst, BNum
     }
 
     function _calc_PoolInGivenSingleOut( uint balance, uint weight
-                                       , uint poolBalance, uint totalWeight
+                                       , uint poolSupply, uint totalWeight
                                        , uint tAo, uint swapFee, uint exitFee)
-      public pure
+      internal pure
         returns (uint pAi)
     {
         uint newBalTo = balance - tAo;
@@ -198,9 +198,9 @@ contract BMath is BBronze, BConst, BNum
 
         //uint newPoolTotal = (ratioTo ^ weightTo) * _totalSupply;
         uint boo = bpow(ratioTo, weight);
-        uint bar = bmul(boo, poolBalance);
+        uint bar = bmul(boo, poolSupply);
         uint newPoolTotal = bar;
-        uint poolAi = bsub(newPoolTotal, poolBalance);
+        uint poolAi = bsub(newPoolTotal, poolSupply);
 
         //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
         uint zoo = bsub(BONE, weight);
