@@ -21,7 +21,7 @@ contract BMath is BBronze, BConst, BNum
 {
     // P = ((Bi/Wi)/(Bo/Wo)) * (1/(1-f))
     function _calc_SpotPrice( uint Bi, uint Wi, uint Bo, uint Wo, uint f) 
-      public pure
+      internal pure
         returns ( uint P )
     {
         uint numer = bdiv(Bi, Wi);
@@ -33,7 +33,7 @@ contract BMath is BBronze, BConst, BNum
 
     // P = ((Bo/Wo)/(Bi/Wi)) * (1*(1-f))
     function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f)
-      public pure
+      internal pure
         returns ( uint R ) 
     {
         uint numer = bdiv(Bo, Wo);
@@ -70,7 +70,7 @@ contract BMath is BBronze, BConst, BNum
                              , uint Ao
                              , uint fee
                              )
-      public pure
+      internal pure
         returns ( uint Ai )
     {
         uint wRatio = bdiv(Wo, Wi);
@@ -87,7 +87,7 @@ contract BMath is BBronze, BConst, BNum
                                , uint Bo , uint Wo
                                , uint SER1
                                , uint fee)
-      public pure
+      internal pure
         returns ( uint Ai )
     {
         uint SER0    = _calc_SpotRate(Bi, Wi, Bo, Wo, 0);
@@ -131,7 +131,7 @@ contract BMath is BBronze, BConst, BNum
     function _calc_SingleInGivenPoolOut( uint balance, uint weight
                                        , uint poolSupply, uint totalWeight
                                        , uint pAo, uint fee)
-      public pure
+      internal pure
         returns (uint tokenIn)
     {
         uint normalizedWeight = bdiv(weight, totalWeight);
@@ -156,7 +156,7 @@ contract BMath is BBronze, BConst, BNum
     // Temporary hack to avoid stack depth
     // TODO actually fix it
     function _calc_SOGPI_helper(uint normalizedWeight, uint pAi, uint fee)
-      pure internal
+      internal pure
         returns (uint pAi_fee)
     {
         // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
