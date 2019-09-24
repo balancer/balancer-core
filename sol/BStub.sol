@@ -75,6 +75,34 @@ contract BStub is BBronze, BMath
         return  _calc_PoolOutGivenSingleIn( balance, weight, poolBalance, totalWeight , tAi, fee );
     }
 
+    function calc_SingleInGivenPoolOut( uint balance, uint weight
+                                      , uint poolSupply, uint totalWeight
+                                      , uint pAo, uint fee)
+      public pure
+        returns (uint tokenIn)
+    {
+        return _calc_SingleInGivenPoolOut( balance, weight, poolSupply, totalWeight, pAo, fee);
+    }
+
+    function calc_SingleOutGivenPoolIn( uint balance, uint weight
+                                       , uint poolSupply, uint totalWeight
+                                       , uint pAi, uint fee, uint exitFee)
+      public pure
+        returns (uint tAo)
+    {
+        return _calc_SingleOutGivenPoolIn( balance, weight, poolSupply, totalWeight, pAi, fee, exitFee);
+    }
+
+    function calc_PoolInGivenSingleOut( uint balance, uint weight
+                                      , uint poolSupply, uint totalWeight
+                                      , uint tAo, uint swapFee, uint exitFee)
+      public pure
+        returns (uint pAi)
+    {
+        return calc_PoolInGivenSingleOut( balance, weight, poolSupply, totalWeight, tAo, swapFee, exitFee);
+    }
+
+
     function calc_bpow(uint base, uint exp)
       public pure
         returns (uint)
