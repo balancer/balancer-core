@@ -156,61 +156,13 @@ contract BPool is BBronze, BToken, BMath
         return balance;
     }
 
-    function finalize(uint initSupply)
+    function setFee(uint tradeFee)
       _beep_
-      _lock_
       public
-    {
+    { 
         require(msg.sender == _manager, ERR_NOT_MANAGER);
-        require( !_finalized, ERR_IS_FINALIZED);
-        require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
-
-        _finalized = true;
-        _paused = false;
-
-        _mint(initSupply);
-        _push(msg.sender, initSupply);
-    }
-
-    function joinPool(uint poolAo)
-      public
-        _beep_
-        _lock_
-    {
-        require(_finalized, ERR_NOT_FINALIZED);
-        uint poolTotal = totalSupply();
-        uint ratio = bdiv(poolAo, poolTotal);
-        for( uint i = 0; i < _index.length; i++ ) {
-            address t = _index[i];
-            uint bal = _records[t].balance;
-            uint tAi = bmul(ratio, bal);
-            _records[t].balance = badd(_records[t].balance, tAi);
-            _pullT(t, msg.sender, tAi);
-        }
-        _mint(poolAo);
-        _push(msg.sender, poolAo);
-    }
-
-    function exitPool(uint poolAi)
-      public
-        _beep_
-        _lock_
-    {
-        require(_finalized, ERR_NOT_FINALIZED);
-
-        uint poolTotal = totalSupply();
-        uint ratio = bdiv(poolAi, poolTotal);
-       
-        _pull(msg.sender, poolAi); 
-        _burn(poolAi);
-
-        for( uint i = 0; i < _index.length; i++ ) {
-            address t = _index[i];
-            uint bal = _records[t].balance;
-            uint tAo = bmul(ratio, bal);
-            _records[t].balance = bsub(_records[t].balance, tAo);
-            _pushT(t, msg.sender, tAo);
-        }
+        require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
+        _swapFee = tradeFee;
     }
 
     function setParams(address token, uint balance, uint weight)
@@ -246,15 +198,6 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
-    function setFee(uint tradeFee)
-      _beep_
-      public
-    { 
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
-        require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
-        _swapFee = tradeFee;
-    }
-
     function setManager(address manager)
       _beep_
       public
@@ -262,6 +205,41 @@ contract BPool is BBronze, BToken, BMath
         require(msg.sender == _manager, ERR_NOT_MANAGER);
         _manager = manager;
     }
+
+    function pause()
+      _beep_
+      public
+    { 
+        require( ! _finalized, ERR_IS_FINALIZED);
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        _paused = true;
+    }
+
+    function start()
+      _beep_
+      public
+    {
+        // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        _paused = false;
+    }
+
+    function finalize(uint initSupply)
+      _beep_
+      _lock_
+      public
+    {
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require( !_finalized, ERR_IS_FINALIZED);
+        require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
+
+        _finalized = true;
+        _paused = false;
+
+        _mint(initSupply);
+        _push(msg.sender, initSupply);
+    }
+
 
     function bind(address token, uint balance, uint weight)
       _beep_
@@ -291,6 +269,7 @@ contract BPool is BBronze, BToken, BMath
         });
     }
 
+
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
       _beep_
@@ -312,23 +291,6 @@ contract BPool is BBronze, BToken, BMath
         return (collected = fees);
     }
 
-    function pause()
-      _beep_
-      public
-    { 
-        require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
-        _paused = true;
-    }
-
-    function start()
-      _beep_
-      public
-    {
-        // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
-        _paused = false;
-    }
 
     function getSpotPrice(address Ti, address To)
       public view
@@ -377,6 +339,47 @@ contract BPool is BBronze, BToken, BMath
         uint Bo = _records[To].balance;
         uint Wo = _records[To].weight;
         return (P = _calc_SpotRate(Bi, Wi, Bo, Wo, 0));
+    }
+
+    function joinPool(uint poolAo)
+      public
+        _beep_
+        _lock_
+    {
+        require(_finalized, ERR_NOT_FINALIZED);
+        uint poolTotal = totalSupply();
+        uint ratio = bdiv(poolAo, poolTotal);
+        for( uint i = 0; i < _index.length; i++ ) {
+            address t = _index[i];
+            uint bal = _records[t].balance;
+            uint tAi = bmul(ratio, bal);
+            _records[t].balance = badd(_records[t].balance, tAi);
+            _pullT(t, msg.sender, tAi);
+        }
+        _mint(poolAo);
+        _push(msg.sender, poolAo);
+    }
+
+    function exitPool(uint poolAi)
+      public
+        _beep_
+        _lock_
+    {
+        require(_finalized, ERR_NOT_FINALIZED);
+
+        uint poolTotal = totalSupply();
+        uint ratio = bdiv(poolAi, poolTotal);
+       
+        _pull(msg.sender, poolAi); 
+        _burn(poolAi);
+
+        for( uint i = 0; i < _index.length; i++ ) {
+            address t = _index[i];
+            uint bal = _records[t].balance;
+            uint tAo = bmul(ratio, bal);
+            _records[t].balance = bsub(_records[t].balance, tAo);
+            _pushT(t, msg.sender, tAo);
+        }
     }
 
 
