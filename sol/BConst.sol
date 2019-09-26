@@ -63,7 +63,7 @@ contract BConst is BBronze
     string constant ERR_IS_FINALIZED       = "ERR_IS_FINALIZED";
     string constant ERR_NOT_FINALIZED      = "ERR_NOT_FINALIZED";
 
-    string constant ERR_NOT_MANAGER        = "ERR_NOT_MANAGER";
+    string constant ERR_NOT_CONTROLLER     = "ERR_NOT_CONTROLLER";
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
 
     string constant ERR_REENTRY            = "ERR_REENTRY";

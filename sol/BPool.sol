@@ -59,7 +59,7 @@ contract BPool is BBronze, BToken, BMath
     bool                      _finalized;
 
     address                   _factory;
-    address                   _manager;
+    address                   _controller;
 
     uint                      _swapFee;
     uint                      _exitFee;
@@ -71,13 +71,13 @@ contract BPool is BBronze, BToken, BMath
     constructor() public {
         _paused = true;
         _finalized = false;
-        _manager = msg.sender;
+        _controller = msg.sender;
         _factory = msg.sender;
     }
 
-    function getManager()
+    function getController()
       public view returns (address) {
-        return _manager;
+        return _controller;
     }
 
     function isPaused()
@@ -162,7 +162,7 @@ contract BPool is BBronze, BToken, BMath
       _beep_
       public
     { 
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
         _swapFee = tradeFee;
     }
@@ -172,7 +172,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
         require( ! _finalized, ERR_IS_FINALIZED);
 
@@ -205,7 +205,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
         _pushT(token, msg.sender, _records[token].balance);
@@ -214,12 +214,12 @@ contract BPool is BBronze, BToken, BMath
         _records[token].denorm = 0;
     }
 
-    function setManager(address manager)
+    function setController(address manager)
       _beep_
       public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
-        _manager = manager;
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        _controller = manager;
     }
 
     function pause()
@@ -227,7 +227,7 @@ contract BPool is BBronze, BToken, BMath
       public
     { 
         require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         _paused = true;
     }
 
@@ -236,7 +236,7 @@ contract BPool is BBronze, BToken, BMath
       public
     {
         // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         _paused = false;
     }
 
@@ -245,7 +245,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( !_finalized, ERR_IS_FINALIZED);
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
 
@@ -262,7 +262,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( ! isBound(token), ERR_IS_BOUND);
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
@@ -281,7 +281,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public
     {
-        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
         require( ! isActive(token), ERR_IS_ACTIVE);
 

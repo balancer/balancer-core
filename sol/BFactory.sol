@@ -36,7 +36,7 @@ contract BFactory is BBronze
       public returns (BPool)
     {
         BPool bpool = new BPool();
-        bpool.setManager(msg.sender);
+        bpool.setController(msg.sender);
         _isBPool[address(bpool)] = true;
         emit LOG_NEW_POOL(msg.sender, address(bpool));
         return bpool;
