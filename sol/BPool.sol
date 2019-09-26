@@ -202,6 +202,20 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
+    function clear(address token)
+      _beep_
+      _lock_
+      public
+    {
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require( ! isFinalized(), ERR_IS_FINALIZED);
+
+        _pushT(token, msg.sender, _records[token].balance);
+
+        _records[token].balance = 0;
+        _records[token].weight = 0;
+    }
+
     function setManager(address manager)
       _beep_
       public
