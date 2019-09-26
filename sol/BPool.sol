@@ -278,6 +278,26 @@ contract BPool is BBronze, BToken, BMath
         });
     }
 
+    function unbind(address token)
+        _beep_
+        _lock_
+        public
+    {
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(isBound(token), ERR_NOT_BOUND);
+        require( ! isActive(token), ERR_IS_ACTIVE);
+
+        uint index = _records[token].indexPlusOne - 1;
+        uint last = _index.length - 1;
+        _index[index] = _index[last];
+        _index[index].indexPlusOne = index + 1;
+        _index.pop();
+        _records[token] = Record({
+            indexPlusOne: 0
+          , weight: 0, // redundant..
+          , balance: 0
+        });
+    }
 
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)

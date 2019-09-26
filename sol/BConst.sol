@@ -54,7 +54,8 @@ contract BConst is BBronze
     string constant ERR_MAX_TOTAL_WEIGHT   = "ERR_MAX_TOTAL_WEIGHT";
     string constant ERR_MIN_POOL_SUPPLY    = "ERR_MAX_BALANCE";
 
-    string constant ERR_CLEARED            = "ERR_CLEARED";
+    string constant ERR_IS_ACTIVE          = "ERR_IS_ACTIVE";
+    string constant ERR_NOT_ACTIVE         = "ERR_NOT_ACTIVE";
     string constant ERR_IS_BOUND           = "ERR_IS_BOUND";
     string constant ERR_NOT_BOUND          = "ERR_NOT_BOUND";
     string constant ERR_IS_PAUSED          = "ERR_IS_PAUSED";
