@@ -21,7 +21,7 @@ contract BPool is BBronze, BToken, BMath
 {
     struct Record {
         uint indexPlusOne;
-        uint weight;
+        uint denorm;
         uint balance;
     }
 
@@ -90,7 +90,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function isActive(address t) public view returns (bool) {
-        return _records[t].weight != 0; // implies balance != 0 as well
+        return _records[t].denorm != 0; // implies balance != 0 as well
     }
 
     function isFinalized()
@@ -130,7 +130,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint)
     {
         require( isActive(token), ERR_NOT_ACTIVE);
-        return _records[token].weight;
+        return _records[token].denorm;
     }
 
     function getTotalDenormalizedWeight()
@@ -145,7 +145,7 @@ contract BPool is BBronze, BToken, BMath
       returns (uint)
     {
         require( isActive(token), ERR_NOT_ACTIVE);
-        uint denorm = _records[token].weight;
+        uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
 
@@ -167,7 +167,7 @@ contract BPool is BBronze, BToken, BMath
         _swapFee = tradeFee;
     }
 
-    function setParams(address token, uint balance, uint weight)
+    function setParams(address token, uint balance, uint denorm)
       _beep_
       _lock_
       public
@@ -176,19 +176,19 @@ contract BPool is BBronze, BToken, BMath
         require(isBound(token), ERR_NOT_BOUND);
         require( ! _finalized, ERR_IS_FINALIZED);
 
-        require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
-        require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
+        require(denorm >= MIN_WEIGHT, ERR_MIN_WEIGHT);
+        require(denorm <= MAX_WEIGHT, ERR_MAX_WEIGHT);
         require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
         require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
 
-        uint oldWeight = _records[token].weight;
-        if (weight > oldWeight) {
-            _totalWeight = badd(_totalWeight, bsub(weight, oldWeight));
+        uint oldWeight = _records[token].denorm;
+        if (denorm > oldWeight) {
+            _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
             require( _totalWeight < MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
         } else {
-            _totalWeight = bsub(_totalWeight, bsub(oldWeight, weight));
+            _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
         }        
-        _records[token].weight = weight;
+        _records[token].denorm = denorm;
 
         uint oldBalance = _records[token].balance;
         _records[token].balance = balance;
@@ -211,7 +211,7 @@ contract BPool is BBronze, BToken, BMath
         _pushT(token, msg.sender, _records[token].balance);
 
         _records[token].balance = 0;
-        _records[token].weight = 0;
+        _records[token].denorm = 0;
     }
 
     function setManager(address manager)
@@ -271,7 +271,7 @@ contract BPool is BBronze, BToken, BMath
         _index.push(token);
         _records[token] = Record({
             indexPlusOne: _index.length // 1-indexed (0 is 'unbound' state)
-          , weight: 0
+          , denorm: 0
           , balance: 0
         });
     }
@@ -292,7 +292,7 @@ contract BPool is BBronze, BToken, BMath
         _index.pop();
         _records[token] = Record({
             indexPlusOne: 0
-          , weight: 0 // redundant..
+          , denorm: 0 // redundant..
           , balance: 0
         });
     }
@@ -325,9 +325,9 @@ contract BPool is BBronze, BToken, BMath
         returns (uint P)
     {
         uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].weight;
+        uint Wi = _records[Ti].denorm;
         uint Bo = _records[To].balance;
-        uint Wo = _records[To].weight;
+        uint Wo = _records[To].denorm;
         uint  f = _swapFee;
         return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
     }
@@ -337,9 +337,9 @@ contract BPool is BBronze, BToken, BMath
         returns (uint R)
     {
         uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].weight;
+        uint Wi = _records[Ti].denorm;
         uint Bo = _records[To].balance;
-        uint Wo = _records[To].weight;
+        uint Wo = _records[To].denorm;
         uint  f = _swapFee;
         return (R = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
     }
@@ -350,9 +350,9 @@ contract BPool is BBronze, BToken, BMath
         returns (uint P)
     {
         uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].weight;
+        uint Wi = _records[Ti].denorm;
         uint Bo = _records[To].balance;
-        uint Wo = _records[To].weight;
+        uint Wo = _records[To].denorm;
         return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0));
     }
 
@@ -362,9 +362,9 @@ contract BPool is BBronze, BToken, BMath
         returns (uint P)
     {
         uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].weight;
+        uint Wi = _records[Ti].denorm;
         uint Bo = _records[To].balance;
-        uint Wo = _records[To].weight;
+        uint Wo = _records[To].denorm;
         return (P = _calc_SpotRate(Bi, Wi, Bo, Wo, 0));
     }
 
@@ -425,15 +425,15 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
 
-        require( LP >= _calc_SpotPrice(I.balance, I.weight, O.balance, O.weight, _swapFee )
+        require( LP >= _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee )
                , ERR_LIMIT_PRICE);
 
-        Ao = _calc_OutGivenIn(I.balance, I.weight, O.balance, O.weight, Ai, _swapFee);
+        Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_FAILED );
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotPrice(Iafter, I.weight, Oafter, O.weight, _swapFee);
+        uint Pafter = _calc_SpotPrice(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
         require(Pafter <= LP, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -454,14 +454,14 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
-        require(PL < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee), ERR_OUT_OF_RANGE );
+        require(PL < _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee), ERR_OUT_OF_RANGE );
 
-        Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _swapFee);
+        Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_FAILED);
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = badd(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
+        uint Pafter = _calc_SpotRate(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
         require( Pafter >= PL, ERR_LIMIT_FAILED);
 
         _swap(Ti, Ai, To, Ao);
@@ -483,10 +483,10 @@ contract BPool is BBronze, BToken, BMath
 
         // TODO error names
         require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
-        require(MP < _calc_SpotRate(I.balance, I.weight, O.balance, O.weight, _swapFee), ERR_OUT_OF_RANGE);
+        require(MP < _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee), ERR_OUT_OF_RANGE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.weight, O.balance, O.weight, MP, _swapFee );
-        Ao = _calc_OutGivenIn( I.balance, I.weight, O.balance, O.weight, Ai, _swapFee );
+        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
+        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
 
         require( Ai <= Li, ERR_LIMIT_FAILED);
         require( Ao >= Lo, ERR_LIMIT_FAILED);
@@ -509,23 +509,23 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         // TODO error names
-        uint Pbefore = _calc_SpotRate( I.balance, I.weight, O.balance, O.weight, _swapFee);
+        uint Pbefore = _calc_SpotRate( I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require( PL <= Pbefore, ERR_OUT_OF_RANGE);
 
-        Ai = _calc_InGivenPrice(I.balance, I.weight, O.balance, O.weight, PL, _swapFee);
+        Ai = _calc_InGivenPrice(I.balance, I.denorm, O.balance, O.denorm, PL, _swapFee);
         if( Ai > Li ) {
             Ai = Li;
         }
 
-        Ao = _calc_OutGivenIn(I.balance, I.weight, Ai, O.balance, O.weight, _swapFee);
+        Ao = _calc_OutGivenIn(I.balance, I.denorm, Ai, O.balance, O.denorm, _swapFee);
         if( Ao < Lo ) {
             Ao = Lo;
-            Ai = _calc_InGivenOut(I.balance, I.weight, O.balance, O.weight, Ao, _swapFee);
+            Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         }
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.weight, Oafter, O.weight, _swapFee);
+        uint Pafter = _calc_SpotRate(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
     
         require( Pafter >= PL, ERR_LIMIT_PRICE );
 
@@ -545,7 +545,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[Ti];
 
-        poolAo = _calc_PoolOutGivenSingleIn(T.balance, T.weight, _totalSupply, _totalWeight, tAi, _swapFee);
+        poolAo = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tAi, _swapFee);
 
         _mint(poolAo);
         _push(msg.sender, poolAo);
@@ -564,7 +564,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[Ti];
 
-        tAi = _calc_SingleInGivenPoolOut(T.balance, T.weight, _totalSupply, _totalWeight, pAo, _swapFee);
+        tAi = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, pAo, _swapFee);
 
         _mint(pAo);
         _push(msg.sender, pAo);
@@ -582,7 +582,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.weight, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
+        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
 
         _pull(msg.sender, pAi); // Pull pAi, not just poolAiAfterFee
         _burn(pAi);
@@ -600,7 +600,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        uint poolAoBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.weight, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+        uint poolAoBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
      
         _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
         _burn(poolAoBeforeFees);    
