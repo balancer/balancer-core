@@ -294,7 +294,7 @@ contract BPool is BBronze, BToken, BMath
         _index.pop();
         _records[token] = Record({
             indexPlusOne: 0
-          , weight: 0, // redundant..
+          , weight: 0 // redundant..
           , balance: 0
         });
     }
