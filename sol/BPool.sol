@@ -20,7 +20,7 @@ import "./BMath.sol";
 contract BPool is BBronze, BToken, BMath
 {
     struct Record {
-        uint index;
+        uint indexPlusOne;
         uint weight;
         uint balance;
     }
@@ -86,7 +86,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function isBound(address t) public view returns (bool) {
-        return _records[t].weight != 0;
+        return _records[t].indexPlusOne != 0;
     }
 
     function isFinalized()
@@ -254,7 +254,7 @@ contract BPool is BBronze, BToken, BMath
 
         _index.push(token);
         _records[token] = Record({
-            index: _index.length - 1
+            indexPlusOne: _index.length // 1-indexed (0 is 'unbound' state)
           , weight: 0
           , balance: 0
         });

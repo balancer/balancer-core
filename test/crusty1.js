@@ -60,7 +60,8 @@ describe('crusty bpool tests', () => {
         await coin.methods.approve(bpool._address, MAX256)
           .send({ from: user })
       }
-      await bpool.methods.bind(coin._address, toWei('1'), toWei('1')).send({ from: acct0, gas: 0xffffffff })
+      await bpool.methods.bind(coin._address).send({ from: acct0, gas: 0xffffffff });
+      await bpool.methods.setParams(coin._address, toWei('1'), toWei('1')).send({ from: acct0, gas: 0xffffffff })
     }
     await bpool.methods.start().send({ from: acct0 })
   })
