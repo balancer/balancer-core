@@ -89,6 +89,10 @@ contract BPool is BBronze, BToken, BMath
         return _records[t].indexPlusOne != 0;
     }
 
+    function isActive(address t) public view returns (bool) {
+        return _records[t].weight != 0; // implies balance != 0 as well
+    }
+
     function isFinalized()
       public view returns (bool) {
         return _finalized;
