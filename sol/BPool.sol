@@ -241,7 +241,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function bind(address token, uint balance, uint weight)
+    function bind(address token)
       _beep_
       _lock_
       public
@@ -251,21 +251,12 @@ contract BPool is BBronze, BToken, BMath
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
-        require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
-        require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
-        require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
-        require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
-
-        _pullT(token, msg.sender, balance);
-
-        _totalWeight = badd(_totalWeight, weight);
-        require( _totalWeight < MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
 
         _index.push(token);
         _records[token] = Record({
             index: _index.length - 1
-          , weight: weight
-          , balance: balance
+          , weight: 0
+          , balance: 0
         });
     }
 
