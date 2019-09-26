@@ -129,9 +129,8 @@ contract BPool is BBronze, BToken, BMath
       public view
         returns (uint)
     {
-        uint denorm = _records[token].weight;
-        require(denorm != 0, ERR_CLEARED);
-        return denorm;
+        require( isActive(token), ERR_NOT_ACTIVE);
+        return _records[token].weight;
     }
 
     function getTotalDenormalizedWeight()
@@ -145,8 +144,8 @@ contract BPool is BBronze, BToken, BMath
       public view
       returns (uint)
     {
+        require( isActive(token), ERR_NOT_ACTIVE);
         uint denorm = _records[token].weight;
-        require(denorm != 0, ERR_CLEARED);
         return bdiv(denorm, _totalWeight);
     }
 
@@ -155,9 +154,8 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint)
     {
-        uint balance = _records[token].balance;
-        require(balance != 0, ERR_CLEARED);
-        return balance;
+        require( isActive(token), ERR_NOT_ACTIVE);
+        return _records[token].balance;
     }
 
     function setFee(uint tradeFee)
@@ -290,7 +288,7 @@ contract BPool is BBronze, BToken, BMath
         uint index = _records[token].indexPlusOne - 1;
         uint last = _index.length - 1;
         _index[index] = _index[last];
-        _index[index].indexPlusOne = index + 1;
+        _records[_index[index]].indexPlusOne = index + 1;
         _index.pop();
         _records[token] = Record({
             indexPlusOne: 0
