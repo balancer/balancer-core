@@ -68,6 +68,7 @@ describe('Calc', async () => {
             for(amount of [smallAmount, midAmount, bigAmount]) {
                 console.log(`calc_OutGivenIn(${balanceI}, ${weightI}, ${balanceO}, ${weightO}, 0, 0)`)
                 let res = await stub.methods.calc_OutGivenIn(balanceI, weightI, balanceO, weightO, amount, 0).call();
+                console.log("WARN: not testing anything");
                 console.log(res);
                 // calc_ExactAmountIn
                 // calc_ExactAmountOut
