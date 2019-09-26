@@ -63,9 +63,13 @@ module.exports.scene0 = async () => {
   await env.ETH.mint(env.initETH)
   await env.DAI.mint(env.initDAI)
 
-  await env.bpool.bind(env.MKR.__address, env.initMKR, toWei('1.1'))
-  await env.bpool.bind(env.ETH.__address, env.initETH, toWei('1.1'))
-  await env.bpool.bind(env.DAI.__address, env.initDAI, toWei('1.1'))
+  await env.bpool.bind(env.MKR.__address);
+  await env.bpool.bind(env.ETH.__address);
+  await env.bpool.bind(env.DAI.__address);
+
+  await env.bpool.setParams(env.MKR.__address, env.initMKR, toWei('1.1'))
+  await env.bpool.setParams(env.ETH.__address, env.initETH, toWei('1.1'))
+  await env.bpool.setParams(env.DAI.__address, env.initDAI, toWei('1.1'))
 
   await env.MKR.mint(env.initMKR)
   await env.ETH.mint(env.initETH)

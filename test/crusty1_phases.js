@@ -58,12 +58,20 @@ module.exports.phase2 = async (web3) => {
   env.initWeight = web3.utils.toWei('10')
   env.initBalance = web3.utils.toWei('10')
 
-  await env.bpool.methods.bind(env.acoin._address, env.initBalance, env.initWeight)
+  await env.bpool.methods.bind(env.acoin._address)
     .send({ from: env.admin, gas: 0xffffffff })
-  await env.bpool.methods.bind(env.bcoin._address, env.initBalance, env.initWeight)
+  await env.bpool.methods.bind(env.bcoin._address)
     .send({ from: env.admin, gas: 0xffffffff })
-  await env.bpool.methods.bind(env.ccoin._address, env.initBalance, env.initWeight)
+  await env.bpool.methods.bind(env.ccoin._address)
     .send({ from: env.admin, gas: 0xffffffff })
+
+  await env.bpool.methods.setParams(env.acoin._address, env.initBalance, env.initWeight)
+    .send({ from: env.admin, gas: 0xffffffff })
+  await env.bpool.methods.setParams(env.bcoin._address, env.initBalance, env.initWeight)
+    .send({ from: env.admin, gas: 0xffffffff })
+  await env.bpool.methods.setParams(env.ccoin._address, env.initBalance, env.initWeight)
+    .send({ from: env.admin, gas: 0xffffffff })
+
 
   await env.bpool.methods.start()
     .send({ from: env.admin, gas: 0xffffffff })

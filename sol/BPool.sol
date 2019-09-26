@@ -20,7 +20,7 @@ import "./BMath.sol";
 contract BPool is BBronze, BToken, BMath
 {
     struct Record {
-        uint index;
+        uint indexPlusOne;
         uint weight;
         uint balance;
     }
@@ -86,7 +86,11 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function isBound(address t) public view returns (bool) {
-        return _records[t].weight != 0;
+        return _records[t].indexPlusOne != 0;
+    }
+
+    function isActive(address t) public view returns (bool) {
+        return _records[t].weight != 0; // implies balance != 0 as well
     }
 
     function isFinalized()
@@ -125,9 +129,8 @@ contract BPool is BBronze, BToken, BMath
       public view
         returns (uint)
     {
-        uint denorm = _records[token].weight;
-        require(denorm != 0, ERR_CLEARED);
-        return denorm;
+        require( isActive(token), ERR_NOT_ACTIVE);
+        return _records[token].weight;
     }
 
     function getTotalDenormalizedWeight()
@@ -141,8 +144,8 @@ contract BPool is BBronze, BToken, BMath
       public view
       returns (uint)
     {
+        require( isActive(token), ERR_NOT_ACTIVE);
         uint denorm = _records[token].weight;
-        require(denorm != 0, ERR_CLEARED);
         return bdiv(denorm, _totalWeight);
     }
 
@@ -151,9 +154,8 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint)
     {
-        uint balance = _records[token].balance;
-        require(balance != 0, ERR_CLEARED);
-        return balance;
+        require( isActive(token), ERR_NOT_ACTIVE);
+        return _records[token].balance;
     }
 
     function setFee(uint tradeFee)
@@ -196,6 +198,20 @@ contract BPool is BBronze, BToken, BMath
         } else if( balance < oldBalance) {
             _pushT(token, msg.sender, bsub(oldBalance, balance));
         }
+    }
+
+    function clear(address token)
+      _beep_
+      _lock_
+      public
+    {
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require( ! isFinalized(), ERR_IS_FINALIZED);
+
+        _pushT(token, msg.sender, _records[token].balance);
+
+        _records[token].balance = 0;
+        _records[token].weight = 0;
     }
 
     function setManager(address manager)
@@ -241,7 +257,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function bind(address token, uint balance, uint weight)
+    function bind(address token)
       _beep_
       _lock_
       public
@@ -251,24 +267,35 @@ contract BPool is BBronze, BToken, BMath
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
         require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
-        require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
-        require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
-        require(weight >= MIN_WEIGHT, ERR_MIN_WEIGHT);
-        require(weight <= MAX_WEIGHT, ERR_MAX_WEIGHT);
-
-        _pullT(token, msg.sender, balance);
-
-        _totalWeight = badd(_totalWeight, weight);
-        require( _totalWeight < MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
 
         _index.push(token);
         _records[token] = Record({
-            index: _index.length - 1
-          , weight: weight
-          , balance: balance
+            indexPlusOne: _index.length // 1-indexed (0 is 'unbound' state)
+          , weight: 0
+          , balance: 0
         });
     }
 
+    function unbind(address token)
+        _beep_
+        _lock_
+        public
+    {
+        require(msg.sender == _manager, ERR_NOT_MANAGER);
+        require(isBound(token), ERR_NOT_BOUND);
+        require( ! isActive(token), ERR_IS_ACTIVE);
+
+        uint index = _records[token].indexPlusOne - 1;
+        uint last = _index.length - 1;
+        _index[index] = _index[last];
+        _records[_index[index]].indexPlusOne = index + 1;
+        _index.pop();
+        _records[token] = Record({
+            indexPlusOne: 0
+          , weight: 0 // redundant..
+          , balance: 0
+        });
+    }
 
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
