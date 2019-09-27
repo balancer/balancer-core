@@ -510,26 +510,11 @@ contract BPool is BBronze, BToken, BMath
         uint Pbefore = getSpotRate( Ti, To );
         require( PL <= Pbefore, ERR_ARG_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice(I.balance, I.denorm, O.balance, O.denorm, PL, _swapFee);
-        if( Ai > Li ) {
-            Ai = Li;
-        }
-
-        Ao = _calc_OutGivenIn(I.balance, I.denorm, Ai, O.balance, O.denorm, _swapFee);
-        if( Ao < Lo ) {
-            Ao = Lo;
-            Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
-        }
-
-        uint Iafter = badd(I.balance, Ai);
-        uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = getSpotRate(Ti, To);
-    
-        require( Pafter >= PL, ERR_LIMIT_PRICE );
+        (Ai, Ao, MP) = _calc_ThreeLimitMaximize(I.balance, I.denorm, Li, O.balance, O.denorm, Lo, PL, _swapFee);
 
         _swap(Ti, Ai, To, Ao);
 
-        return (Ai, Ao, Pafter);
+        return (Ai, Ao, MP);
     }
 
     function joinswap_ExternAmountIn(address Ti, uint256 tAi)

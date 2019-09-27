@@ -100,6 +100,33 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
+    function _calc_ThreeLimitMaximize( uint Bi, uint Wi, uint Li
+                                     , uint Bo, uint Wo, uint Lo
+                                     , uint LP
+                                     , uint fee
+                                     )
+        internal pure
+        returns (uint Ai, uint Ao, uint MP)
+    {
+        Ai = _calc_InGivenPrice(Bi, Wi, Bo, Wo, LP, fee);
+        if( Ai > Li ) {
+            Ai = Li;
+        }
+        Ao = _calc_OutGivenIn(Bi, Wi, Ai, Bo, Wo, fee);
+        if( Ao < Lo ) {
+            Ao = Lo;
+            Ai = _calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
+        }
+
+        uint Iafter = badd(Bi, Ai);
+        uint Oafter = bsub(Bo, Ao);
+        uint Pafter = _calc_SpotRate(Iafter, Wi, Oafter, Wo, fee);
+    
+        require( Pafter >= LP, ERR_NO_SOLUTION );
+
+        return (Ai, Ao, MP);
+    }
+
     // Pissued = Ptotal * ((1+(tAi/B))^W - 1)
     function _calc_PoolOutGivenSingleIn( uint balance, uint weight
                                        , uint poolSupply, uint totalWeight
