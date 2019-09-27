@@ -432,10 +432,16 @@ contract BPool is BBronze, BToken, BMath
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_OUT );
 
-        _swap(Ti, Ai, To, Ao);
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
 
         uint Pafter = getSpotPrice(Ti, To);
         require(Pafter <= LP, ERR_LIMIT_PRICE);
+
+        _pullT(Ti, msg.sender, Ai);
+        _pushT(To, msg.sender, Ao);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
         return (Ao, Pafter);
     }
@@ -458,10 +464,16 @@ contract BPool is BBronze, BToken, BMath
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_IN);
 
-        _swap(Ti, Ai, To, Ao);
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
 
         uint Pafter = getSpotRate(Ti, To);
         require( Pafter >= PL, ERR_LIMIT_PRICE);
+
+        _pullT(Ti, msg.sender, Ai);
+        _pushT(To, msg.sender, Ao);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
         return (Ai, Pafter);
     }
@@ -487,7 +499,13 @@ contract BPool is BBronze, BToken, BMath
         require( Ai <= Li, ERR_LIMIT_IN);
         require( Ao >= Lo, ERR_LIMIT_OUT);
 
-        _swap(Ti, Ai, To, Ao);
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
+
+        _pullT(Ti, msg.sender, Ai);
+        _pushT(To, msg.sender, Ao);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
         return (Ai, Ao);
     }
@@ -509,7 +527,13 @@ contract BPool is BBronze, BToken, BMath
 
         (Ai, Ao, MP) = _calc_ThreeLimitMaximize(I.balance, I.denorm, Li, O.balance, O.denorm, Lo, PL, _swapFee);
 
-        _swap(Ti, Ai, To, Ao);
+        I.balance = badd(I.balance, Ai);
+        O.balance = bsub(O.balance, Ao);
+
+        _pullT(Ti, msg.sender, Ai);
+        _pushT(To, msg.sender, Ao);
+
+        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
         return (Ai, Ao, MP);
     }
@@ -592,22 +616,6 @@ contract BPool is BBronze, BToken, BMath
     // ==
     // Internal token-manipulation functions are NOT locked
     // You must `_lock_` or otherwise ensure reentry-safety
-    // Note that `_swap` changes record balances, but `_push` and `_pull` do not
-
-    function _swap(address Ti, uint Ai, address To, uint Ao)
-      internal
-    {
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
-
-        I.balance = badd(I.balance, Ai);
-        O.balance = bsub(O.balance, Ao);
-
-        _pullT(Ti, msg.sender, Ai);
-        _pushT(To, msg.sender, Ao);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
-    }
 
     function _pullT(address erc20, address from, uint amt)
       internal
