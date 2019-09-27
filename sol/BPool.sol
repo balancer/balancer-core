@@ -85,17 +85,17 @@ contract BPool is BBronze, BToken, BMath
         return _paused;
     }
 
+    function isFinalized()
+      public view returns (bool) {
+        return _finalized;
+    }
+
     function isBound(address t) public view returns (bool) {
         return _records[t].indexPlusOne != 0;
     }
 
-    function isTrading(address t) public view returns (bool) {
+    function isFunded(address t) public view returns (bool) {
         return _records[t].denorm != 0; // implies balance != 0 as well
-    }
-
-    function isFinalized()
-      public view returns (bool) {
-        return _finalized;
     }
 
     function getNumTokens()
@@ -129,7 +129,7 @@ contract BPool is BBronze, BToken, BMath
       public view
         returns (uint)
     {
-        require( isTrading(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_TRADING);
         return _records[token].denorm;
     }
 
@@ -144,7 +144,7 @@ contract BPool is BBronze, BToken, BMath
       public view
       returns (uint)
     {
-        require( isTrading(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_TRADING);
         uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
@@ -154,7 +154,7 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint)
     {
-        require( isTrading(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_TRADING);
         return _records[token].balance;
     }
 
@@ -286,7 +286,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! isTrading(token), ERR_IS_TRADING);
+        require( ! isFunded(token), ERR_IS_TRADING);
 
         uint index = _records[token].indexPlusOne - 1;
         uint last = _tokens.length - 1;
@@ -306,7 +306,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(isTrading(token), ERR_NOT_TRADING);
+        require(isFunded(token), ERR_NOT_TRADING);
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
@@ -418,8 +418,8 @@ contract BPool is BBronze, BToken, BMath
         public returns (uint Ao, uint MP)
     {
         
-        require( isTrading(Ti), ERR_NOT_TRADING );
-        require( isTrading(To), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_TRADING );
+        require( isFunded(To), ERR_NOT_TRADING );
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -451,8 +451,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_ 
         public returns (uint Ai, uint MP)
     {
-        require( isTrading(Ti), ERR_NOT_TRADING);
-        require( isTrading(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_TRADING);
+        require( isFunded(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -483,8 +483,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao)
     {
-        require( isTrading(Ti), ERR_NOT_TRADING);
-        require( isTrading(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_TRADING);
+        require( isFunded(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -515,8 +515,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao, uint MP)
     {
-        require( isTrading(Ti), ERR_NOT_TRADING);
-        require( isTrading(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_TRADING);
+        require( isFunded(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -544,7 +544,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint poolAo)
     {
-        require( isTrading(Ti), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_TRADING );
         uint oldPoolTotal = _totalSupply;
 
         Record storage T = _records[Ti];
@@ -564,7 +564,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAi)
     {
-        require( isTrading(Ti), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_TRADING );
 
         Record storage T = _records[Ti];
 
@@ -582,7 +582,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAo)
     {
-        require( isTrading(To), ERR_NOT_TRADING );
+        require( isFunded(To), ERR_NOT_TRADING );
 
         Record storage T = _records[To];
 
@@ -600,7 +600,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint pAi)
     {
-        require( isTrading(To), ERR_NOT_TRADING );
+        require( isFunded(To), ERR_NOT_TRADING );
 
         Record storage T = _records[To];
 
