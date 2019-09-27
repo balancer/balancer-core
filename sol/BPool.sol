@@ -197,9 +197,9 @@ contract BPool is BBronze, BToken, BMath
         _records[token].balance = balance;
 
         if (balance > oldBalance) {
-            _pullT(token, msg.sender, bsub(balance, oldBalance));
+            _pullToken(token, msg.sender, bsub(balance, oldBalance));
         } else if( balance < oldBalance) {
-            _pushT(token, msg.sender, bsub(oldBalance, balance));
+            _pushToken(token, msg.sender, bsub(oldBalance, balance));
         }
     }
 
@@ -211,7 +211,7 @@ contract BPool is BBronze, BToken, BMath
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
-        _pushT(token, msg.sender, _records[token].balance);
+        _pushToken(token, msg.sender, _records[token].balance);
 
         _records[token].balance = 0;
         _records[token].denorm = 0;
@@ -383,7 +383,7 @@ contract BPool is BBronze, BToken, BMath
             uint bal = _records[t].balance;
             uint tAi = bmul(ratio, bal);
             _records[t].balance = badd(_records[t].balance, tAi);
-            _pullT(t, msg.sender, tAi);
+            _pullToken(t, msg.sender, tAi);
         }
         _mint(poolAo);
         _push(msg.sender, poolAo);
@@ -407,7 +407,7 @@ contract BPool is BBronze, BToken, BMath
             uint bal = _records[t].balance;
             uint tAo = bmul(ratio, bal);
             _records[t].balance = bsub(_records[t].balance, tAo);
-            _pushT(t, msg.sender, tAo);
+            _pushToken(t, msg.sender, tAo);
         }
     }
 
@@ -438,8 +438,8 @@ contract BPool is BBronze, BToken, BMath
         uint Pafter = getSpotPrice(Ti, To);
         require(Pafter <= LP, ERR_LIMIT_PRICE);
 
-        _pullT(Ti, msg.sender, Ai);
-        _pushT(To, msg.sender, Ao);
+        _pullToken(Ti, msg.sender, Ai);
+        _pushToken(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
@@ -470,8 +470,8 @@ contract BPool is BBronze, BToken, BMath
         uint Pafter = getSpotRate(Ti, To);
         require( Pafter >= PL, ERR_LIMIT_PRICE);
 
-        _pullT(Ti, msg.sender, Ai);
-        _pushT(To, msg.sender, Ao);
+        _pullToken(Ti, msg.sender, Ai);
+        _pushToken(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
@@ -502,8 +502,8 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        _pullT(Ti, msg.sender, Ai);
-        _pushT(To, msg.sender, Ao);
+        _pullToken(Ti, msg.sender, Ai);
+        _pushToken(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
@@ -530,8 +530,8 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        _pullT(Ti, msg.sender, Ai);
-        _pushT(To, msg.sender, Ao);
+        _pullToken(Ti, msg.sender, Ai);
+        _pushToken(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
@@ -553,7 +553,7 @@ contract BPool is BBronze, BToken, BMath
 
         _mint(poolAo);
         _push(msg.sender, poolAo);
-        _pullT(Ti, msg.sender, tAi);
+        _pullToken(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
         return poolAo;
     }
@@ -572,7 +572,7 @@ contract BPool is BBronze, BToken, BMath
 
         _mint(pAo);
         _push(msg.sender, pAo);
-        _pullT(Ti, msg.sender, tAi);
+        _pullToken(Ti, msg.sender, tAi);
         return tAi;
     }
 
@@ -590,7 +590,7 @@ contract BPool is BBronze, BToken, BMath
 
         _pull(msg.sender, pAi); // Pull pAi, not just poolAiAfterFee
         _burn(pAi);
-        _pushT(To, msg.sender, tAo);
+        _pushToken(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
     }
 
@@ -608,7 +608,7 @@ contract BPool is BBronze, BToken, BMath
      
         _pull(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
         _burn(poolAoBeforeFees);    
-        _pushT(To, msg.sender, tAo);
+        _pushToken(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
         return poolAoBeforeFees;
     }
@@ -617,14 +617,14 @@ contract BPool is BBronze, BToken, BMath
     // Internal token-manipulation functions are NOT locked
     // You must `_lock_` or otherwise ensure reentry-safety
 
-    function _pullT(address erc20, address from, uint amt)
+    function _pullToken(address erc20, address from, uint amt)
       internal
     {
         bool xfer = ERC20(erc20).transferFrom(from, address(this), amt);
         require(xfer, ERR_ERC20_FALSE);
     }
 
-    function _pushT(address erc20, address to, uint amt)
+    function _pushToken(address erc20, address to, uint amt)
       internal
     {
         bool xfer = ERC20(erc20).transfer(to, amt);
