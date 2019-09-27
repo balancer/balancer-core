@@ -304,7 +304,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(isTrading(token), ERR_NOT_BOUND);
+        require(isTrading(token), ERR_NOT_TRADING);
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
@@ -322,7 +322,6 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPrice(address Ti, address To)
       public view
-        _view_
         returns (uint P)
     {
         uint Bi = _records[Ti].balance;
@@ -417,8 +416,8 @@ contract BPool is BBronze, BToken, BMath
         public returns (uint Ao, uint MP)
     {
         
-        require( isTrading(Ti), ERR_NOT_BOUND );
-        require( isTrading(To), ERR_NOT_BOUND );
+        require( isTrading(Ti), ERR_NOT_TRADING );
+        require( isTrading(To), ERR_NOT_TRADING );
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -431,12 +430,10 @@ contract BPool is BBronze, BToken, BMath
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_OUT );
 
-        uint Iafter = badd(I.balance, Ai);
-        uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotPrice(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
-        require(Pafter <= LP, ERR_LIMIT_PRICE);
-
         _swap(Ti, Ai, To, Ao);
+
+        uint Pafter = getSpotPrice(Ti, To);
+        require(Pafter <= LP, ERR_LIMIT_PRICE);
 
         return (Ao, Pafter);
     }
@@ -446,8 +443,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_ 
         public returns (uint Ai, uint MP)
     {
-        require( isTrading(Ti), ERR_NOT_BOUND);
-        require( isTrading(To), ERR_NOT_BOUND);
+        require( isTrading(Ti), ERR_NOT_TRADING);
+        require( isTrading(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -472,8 +469,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao)
     {
-        require( isTrading(Ti), ERR_NOT_BOUND);
-        require( isTrading(To), ERR_NOT_BOUND);
+        require( isTrading(Ti), ERR_NOT_TRADING);
+        require( isTrading(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -498,8 +495,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao, uint MP)
     {
-        require( isTrading(Ti), ERR_NOT_BOUND);
-        require( isTrading(To), ERR_NOT_BOUND);
+        require( isTrading(Ti), ERR_NOT_TRADING);
+        require( isTrading(To), ERR_NOT_TRADING);
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -521,7 +518,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint poolAo)
     {
-        require( isTrading(Ti), ERR_NOT_BOUND );
+        require( isTrading(Ti), ERR_NOT_TRADING );
         uint oldPoolTotal = _totalSupply;
 
         Record storage T = _records[Ti];
@@ -541,7 +538,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAi)
     {
-        require( isTrading(Ti), ERR_NOT_BOUND );
+        require( isTrading(Ti), ERR_NOT_TRADING );
 
         Record storage T = _records[Ti];
 
@@ -559,7 +556,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAo)
     {
-        require( isTrading(To), ERR_NOT_BOUND );
+        require( isTrading(To), ERR_NOT_TRADING );
 
         Record storage T = _records[To];
 
@@ -577,7 +574,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint pAi)
     {
-        require( isTrading(To), ERR_NOT_BOUND );
+        require( isTrading(To), ERR_NOT_TRADING );
 
         Record storage T = _records[To];
 
