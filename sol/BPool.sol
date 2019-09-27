@@ -482,13 +482,13 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
-        require(MP < _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee), ERR_OUT_OF_RANGE);
+        require(MP < getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
 
-        require( Ai <= Li, ERR_LIMIT_FAILED);
-        require( Ao >= Lo, ERR_LIMIT_FAILED);
+        require( Ai <= Li, ERR_LIMIT_IN);
+        require( Ao >= Lo, ERR_LIMIT_OUT);
 
         _swap(Ti, Ai, To, Ao);
 
