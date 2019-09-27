@@ -507,9 +507,8 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
 
-        // TODO error names
-        uint Pbefore = _calc_SpotRate( I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( PL <= Pbefore, ERR_OUT_OF_RANGE);
+        uint Pbefore = getSpotRate( Ti, To );
+        require( PL <= Pbefore, ERR_ARG_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice(I.balance, I.denorm, O.balance, O.denorm, PL, _swapFee);
         if( Ai > Li ) {
@@ -524,7 +523,7 @@ contract BPool is BBronze, BToken, BMath
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
-        uint Pafter = _calc_SpotRate(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
+        uint Pafter = getSpotRate(Ti, To);
     
         require( Pafter >= PL, ERR_LIMIT_PRICE );
 
