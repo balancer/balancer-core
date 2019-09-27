@@ -31,8 +31,8 @@ contract BConst is BBronze
 
     uint256 constant MIN_POOL_SUPPLY   = BONE;
 
-    uint256 constant MAX_TRADE_IN      = BONE * 9;
-    uint256 constant MAX_TRADE_OUT     = BONE / 2;
+    uint256 constant MAX_IN_RATIO      = BONE / 2;
+    uint256 constant MAX_OUT_RATIO     = BONE / 2;
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
     uint256 constant APPROX_ITERATIONS = 20;
@@ -71,15 +71,23 @@ contract BConst is BBronze
     
     string constant ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 
-// bad error names
-    string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
+    string constant ERR_MAX_IN_RATIO       = "ERR_MAX_IN_RATIO";
+    string constant ERR_MAX_OUT_RATIO      = "ERR_MAX_OUT_RATIO";
 
-    string constant ERR_MAX_TRADE          = "ERR_MAX_TRADE";
-    string constant ERR_LIMIT_FAILED       = "ERR___TODO_LIMIT";
     string constant ERR_LIMIT_IN           = "ERR_LIMIT_IN";
     string constant ERR_LIMIT_OUT          = "ERR_LIMIT_OUT";
     string constant ERR_LIMIT_PRICE        = "ERR_LIMIT_PRICE";
-    string constant ERR_MAX_IN             = "ERR_MAX_IN";
+
+    string constant ERR_ARG_LIMIT_IN       = "ERR_ARG_LIMIT_IN";
+    string constant ERR_ARG_LIMIT_OUT      = "ERR_ARG_LIMIT_OUT";
+    string constant ERR_ARG_LIMIT_PRICE    = "ERR_ARG_LIMIT_PRICE";
+
+
+// bad error names -- factoring out
+    string constant ERR_LIMIT_FAILED    = "ERR_LIMIT_FAILED";
+    string constant ERR_MAX_TRADE_OUT    = "ERR_MAX_TRADE_OUT";
+    string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
+
     string constant ERR_OUT_OF_RANGE       = "ERR____TODO_RANGE";
 // 
 

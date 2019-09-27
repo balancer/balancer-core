@@ -424,18 +424,17 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
 
-        require( Ai <= bmul(I.balance, MAX_TRADE_IN), ERR_MAX_IN );
+        require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
-        require( LP >= _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee )
-               , ERR_LIMIT_PRICE);
+        require( LP >= getSpotPrice(Ti, To), ERR_ARG_LIMIT_IN);
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
-        require( Ao >= Lo, ERR_LIMIT_FAILED );
+        require( Ao >= Lo, ERR_LIMIT_OUT );
 
         uint Iafter = badd(I.balance, Ai);
         uint Oafter = bsub(O.balance, Ao);
         uint Pafter = _calc_SpotPrice(Iafter, I.denorm, Oafter, O.denorm, _swapFee);
-        require(Pafter <= LP, ERR_LIMIT_FAILED);
+        require(Pafter <= LP, ERR_LIMIT_PRICE);
 
         _swap(Ti, Ai, To, Ao);
 
@@ -454,7 +453,7 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
 
-        require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE );
+        require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
         require(PL < _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee), ERR_OUT_OF_RANGE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
@@ -482,8 +481,7 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
 
-        // TODO error names
-        require(Ao <= bmul(O.balance, MAX_TRADE_OUT), ERR_OUT_OF_RANGE);
+        require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
         require(MP < _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee), ERR_OUT_OF_RANGE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
