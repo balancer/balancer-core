@@ -118,11 +118,11 @@ contract BPool is BBronze, BToken, BMath
         return _index;
     }
 
-    function getFee()
+    function getFees()
       public view
-        returns (uint)
+        returns (uint,uint)
     {
-        return _swapFee;
+        return (_swapFee,_exitFee);
     }
 
     function getDenormalizedWeight(address token)
@@ -158,13 +158,14 @@ contract BPool is BBronze, BToken, BMath
         return _records[token].balance;
     }
 
-    function setFee(uint tradeFee)
+    function setFees(uint swapFee, uint exitFee)
       _beep_
       public
     { 
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        require(tradeFee <= MAX_FEE, ERR_MAX_FEE);
-        _swapFee = tradeFee;
+        require(swapFee <= MAX_FEE, ERR_MAX_FEE);
+        _swapFee = swapFee;
+        _exitFee = exitFee;
     }
 
     function setParams(address token, uint balance, uint denorm)

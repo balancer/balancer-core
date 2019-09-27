@@ -79,7 +79,7 @@ describe('crusty bpool tests', () => {
       await bpool.methods.setParams(bcoin._address, Bo, Wo).send({ from: acct0, gas: 0xffffffff })
       await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
         .send({ from: acct0, gas: 0xffffffff })
-      await bpool.methods.setFee(fee).send({ from: acct0, gas: 0xffffffff })
+      await bpool.methods.setFees(fee, 0).send({ from: acct0, gas: 0xffffffff })
       var abefore = await acoin.methods.balanceOf(acct0).call()
       var bbefore = await bcoin.methods.balanceOf(acct0).call()
       var resultStatic = await bpool.methods.swap_ExactAmountOut(acoin._address, MAX256, bcoin._address, Ao, '0')
@@ -111,7 +111,7 @@ describe('crusty bpool tests', () => {
         await bpool.methods.setParams(bcoin._address, Bo, Wo).send({ from: acct0, gas: 0xffffffff })
         await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
           .send({ from: acct0, gas: 0xffffffff })
-        await bpool.methods.setFee(fee).send({ from: acct0, gas: 0xffffffff })
+        await bpool.methods.setFees(fee, 0).send({ from: acct0, gas: 0xffffffff })
         var abefore = await acoin.methods.balanceOf(acct0).call()
         var bbefore = await bcoin.methods.balanceOf(acct0).call()
         var resultStatic = await bpool.methods.swap_ExactAmountIn(acoin._address, Ai, bcoin._address, Lo, MAX256)
@@ -142,7 +142,7 @@ describe('crusty bpool tests', () => {
       await bpool.methods.setParams(bcoin._address, Bo, Wo).send({ from: acct0, gas: 0xffffffff })
       await bpool.methods.setParams(ccoin._address, toWei('10'), toWei('1')) // shouldn't impact calc
         .send({ from: acct0, gas: 0xffffffff })
-      await bpool.methods.setFee(fee).send({ from: acct0, gas: 0xffffffff })
+      await bpool.methods.setFees(fee, 0).send({ from: acct0, gas: 0xffffffff })
       var abefore = await acoin.methods.balanceOf(acct0).call()
       var bbefore = await bcoin.methods.balanceOf(acct0).call()
       var resultStatic = await bpool.methods.swap_ExactAmountOut(acoin._address, MAX256, bcoin._address, Ao, '0')

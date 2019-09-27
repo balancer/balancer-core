@@ -46,7 +46,7 @@ describe('swaps', () => {
           .send({ from: env.admin, gas: 0xffffffff })
         await env.bpool.methods.setParams(env.bcoin._address, toWei(Bo), toWei(Wo))
           .send({ from: env.admin, gas: 0xffffffff })
-        await env.bpool.methods.setFee(toWei(fee))
+        await env.bpool.methods.setFees(toWei(fee), 0)
           .send({ from: env.admin, gas: 0xffffffff })
 
         const res = await env.bpool.methods
