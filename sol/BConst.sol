@@ -85,11 +85,8 @@ contract BConst is BBronze
 
 
 // bad error names -- factoring out
-    string constant ERR_LIMIT_FAILED    = "ERR_LIMIT_FAILED";
-    string constant ERR_MAX_TRADE_OUT    = "ERR_MAX_TRADE_OUT";
     string constant ERR_BAD_CALLER         = "ERR_BAD_CALLER";
 
-    string constant ERR_OUT_OF_RANGE       = "ERR____TODO_RANGE";
 // 
 
 
