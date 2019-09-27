@@ -37,7 +37,7 @@ describe('a play about balancer', async () => {
 
     env.web3.opts.from = env.Bob
     let err = await env.bpool.CATCH_setParams(env.DAI.__address, toWei('100'), toWei('1.5'))
-    assert.equal(err, 'ERR_NOT_MANAGER')
+    assert.equal(err, 'ERR_NOT_CONTROLLER')
     env.web3.opts.from = env.Ali
 
     const bal = await env.DAI.balanceOf(env.bpool.__address)
