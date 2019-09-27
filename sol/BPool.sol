@@ -129,7 +129,7 @@ contract BPool is BBronze, BToken, BMath
       public view
         returns (uint)
     {
-        require( isFunded(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_FUNDED);
         return _records[token].denorm;
     }
 
@@ -144,7 +144,7 @@ contract BPool is BBronze, BToken, BMath
       public view
       returns (uint)
     {
-        require( isFunded(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_FUNDED);
         uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
@@ -154,7 +154,7 @@ contract BPool is BBronze, BToken, BMath
       _view_
       returns (uint)
     {
-        require( isFunded(token), ERR_NOT_TRADING);
+        require( isFunded(token), ERR_NOT_FUNDED);
         return _records[token].balance;
     }
 
@@ -286,7 +286,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! isFunded(token), ERR_IS_TRADING);
+        require( ! isFunded(token), ERR_IS_FUNDED);
 
         uint index = _records[token].indexPlusOne - 1;
         uint last = _tokens.length - 1;
@@ -306,7 +306,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(isFunded(token), ERR_NOT_TRADING);
+        require(isFunded(token), ERR_NOT_FUNDED);
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
@@ -418,8 +418,8 @@ contract BPool is BBronze, BToken, BMath
         public returns (uint Ao, uint MP)
     {
         
-        require( isFunded(Ti), ERR_NOT_TRADING );
-        require( isFunded(To), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_FUNDED );
+        require( isFunded(To), ERR_NOT_FUNDED );
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -451,8 +451,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_ 
         public returns (uint Ai, uint MP)
     {
-        require( isFunded(Ti), ERR_NOT_TRADING);
-        require( isFunded(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_FUNDED);
+        require( isFunded(To), ERR_NOT_FUNDED);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -483,8 +483,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao)
     {
-        require( isFunded(Ti), ERR_NOT_TRADING);
-        require( isFunded(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_FUNDED);
+        require( isFunded(To), ERR_NOT_FUNDED);
         require( ! isPaused(), ERR_IS_PAUSED);
 
         Record storage I = _records[address(Ti)];
@@ -515,8 +515,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao, uint MP)
     {
-        require( isFunded(Ti), ERR_NOT_TRADING);
-        require( isFunded(To), ERR_NOT_TRADING);
+        require( isFunded(Ti), ERR_NOT_FUNDED);
+        require( isFunded(To), ERR_NOT_FUNDED);
         require( ! isPaused(), ERR_IS_PAUSED );
 
         Record storage I = _records[address(Ti)];
@@ -544,7 +544,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint poolAo)
     {
-        require( isFunded(Ti), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_FUNDED );
         uint oldPoolTotal = _totalSupply;
 
         Record storage T = _records[Ti];
@@ -564,7 +564,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAi)
     {
-        require( isFunded(Ti), ERR_NOT_TRADING );
+        require( isFunded(Ti), ERR_NOT_FUNDED );
 
         Record storage T = _records[Ti];
 
@@ -582,7 +582,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAo)
     {
-        require( isFunded(To), ERR_NOT_TRADING );
+        require( isFunded(To), ERR_NOT_FUNDED );
 
         Record storage T = _records[To];
 
@@ -600,7 +600,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint pAi)
     {
-        require( isFunded(To), ERR_NOT_TRADING );
+        require( isFunded(To), ERR_NOT_FUNDED );
 
         Record storage T = _records[To];
 
