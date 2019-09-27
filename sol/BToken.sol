@@ -106,7 +106,7 @@ contract BToken is BBronze, BTokenBase, ERC20
     }
 
     function transferFrom(address src, address dst, uint wad) public returns (bool) {
-        require(msg.sender == src || wad <= _allowance[src][msg.sender], ERR_BAD_CALLER);
+        require(msg.sender == src || wad <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
         _move(src, dst, wad);
         emit Transfer(src, dst, wad);
         if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
