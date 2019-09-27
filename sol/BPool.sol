@@ -64,7 +64,7 @@ contract BPool is BBronze, BToken, BMath
     uint                      _swapFee;
     uint                      _exitFee;
 
-    address[]                 _index;
+    address[]                 _tokens;
     mapping(address=>Record)  _records;
     uint                      _totalWeight;
 
@@ -100,14 +100,14 @@ contract BPool is BBronze, BToken, BMath
 
     function getNumTokens()
       public view returns (uint) {
-        return _index.length;
+        return _tokens.length;
     }
 
     function getCurrentTokens()
       public view _view_
         returns (address[] memory tokens)
     {
-        return _index;
+        return _tokens;
     }
 
     function getFinalTokens()
@@ -115,7 +115,7 @@ contract BPool is BBronze, BToken, BMath
         returns (address[] memory tokens)
     {
         require(_finalized, ERR_NOT_FINALIZED);
-        return _index;
+        return _tokens;
     }
 
     function getFees()
@@ -269,11 +269,11 @@ contract BPool is BBronze, BToken, BMath
         require( ! isBound(token), ERR_IS_BOUND);
         require( ! isFinalized(), ERR_IS_FINALIZED);
 
-        require(_index.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
+        require(_tokens.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
 
-        _index.push(token);
+        _tokens.push(token);
         _records[token] = Record({
-            indexPlusOne: _index.length // 1-indexed (0 is 'unbound' state)
+            indexPlusOne: _tokens.length // 1-indexed (0 is 'unbound' state)
           , denorm: 0
           , balance: 0
         });
@@ -289,10 +289,10 @@ contract BPool is BBronze, BToken, BMath
         require( ! isTrading(token), ERR_IS_TRADING);
 
         uint index = _records[token].indexPlusOne - 1;
-        uint last = _index.length - 1;
-        _index[index] = _index[last];
-        _records[_index[index]].indexPlusOne = index + 1;
-        _index.pop();
+        uint last = _tokens.length - 1;
+        _tokens[index] = _tokens[last];
+        _records[_tokens[index]].indexPlusOne = index + 1;
+        _tokens.pop();
         _records[token] = Record({
             indexPlusOne: 0
           , denorm: 0 // redundant..
@@ -378,8 +378,8 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
-        for( uint i = 0; i < _index.length; i++ ) {
-            address t = _index[i];
+        for( uint i = 0; i < _tokens.length; i++ ) {
+            address t = _tokens[i];
             uint bal = _records[t].balance;
             uint tAi = bmul(ratio, bal);
             _records[t].balance = badd(_records[t].balance, tAi);
@@ -402,8 +402,8 @@ contract BPool is BBronze, BToken, BMath
         _pullPoolShare(msg.sender, poolAi); 
         _burnPoolShare(poolAi);
 
-        for( uint i = 0; i < _index.length; i++ ) {
-            address t = _index[i];
+        for( uint i = 0; i < _tokens.length; i++ ) {
+            address t = _tokens[i];
             uint bal = _records[t].balance;
             uint tAo = bmul(ratio, bal);
             _records[t].balance = bsub(_records[t].balance, tAo);
