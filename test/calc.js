@@ -46,18 +46,20 @@ describe('Calc', async () => {
         bigBalance = await stub.methods.MAX_BALANCE().call();
     });
 
-    it('meta', async()=>{
+    it('fast / meta', async()=>{
         assert(smallWeight > 0);
     });
 
-    it('devpoint', async()=>{
+    it('fast / devpoint', async()=>{
         let res = await stub.methods.calc_PoolOutGivenSingleIn(...args('100', '10', '500', '50', '10', '0')).call();
         console.log(res);
     });
 
-    it('a long test of many extremes', async function() {
+    it('slow / a long test of many extremes', async function() {
         this.timeout(0);
         for(weightI of [smallWeight, midWeight, bigWeight]) {
+        console.log("WARN: skipping");
+        break;
         for(weightO of [smallWeight, midWeight, bigWeight]) {
           for(balanceI of [smallBalance, midBalance, bigBalance]) {
           for(balanceO of [smallBalance, midBalance, bigBalance]) {
