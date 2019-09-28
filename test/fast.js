@@ -77,4 +77,46 @@ describe('fast', async () => {
         let res = await pool.getBalance(DAI.__address);
         assert.equal(res, toWei('1000000'))
     });
+
+    it('newBPool', async () => {
+    });
+
+    it('bind getNumTokens isBound', async () => {
+        throw 'unimplemented';
+    });
+
+    it('bind ERR_NOT_CONTROLLER', async () => {
+        throw 'unimplemented';
+    });
+
+    it('bind ERR_IS_BOUND', async () => {
+        throw 'unimplemented';
+    });
+
+    it('bind ERR_IS_FINALIZED', async () => {
+        throw 'unimplemented';
+    });
+
+    it('bind ERR_MAX_TOKENS', async () => {
+        throw 'unimplemented';
+    });
+
+    it('unbind getNumTokens isBound', async()=>{
+        throw 'unimplemented';
+    });
+
+    it('unbind ERR_NOT_CONTROLLER', async () => {
+        throw 'unimplemented';
+    });
+
+    it('unbind ERR_NOT_BOUND', async () => {
+        throw 'unimplemented';
+    });
+
+    it('unbind ERR_IS_FUNDED', async () => {
+        throw 'unimplemented';
+    });
+
+
+
 });
