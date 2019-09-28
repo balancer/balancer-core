@@ -98,9 +98,9 @@ describe("fernando's test sequence", async () => {
 });
 
 
-describe('joinswap / exitswap', async()=>{
+describe('fast joinswap / exitswap', async()=>{
   let env;
-  it('is one long test', async function() {
+  it('fast / is one long test', async function() {
     this.timeout(0);
     await play.stage(web3);
     env = await play.scene0();
@@ -114,7 +114,7 @@ describe('joinswap / exitswap', async()=>{
     }
 
     let checkP = async (p) => {
-        assert(slightly.approx((await env.bpool.totalSupply()), toWei(p.toString())));
+        assert(slightly.approx((await env.bpool.totalSupply()), toWei(p.toString())), `check price failed expected: ${p}`);
     }
 
     await env.bpool.setParams(MKR, toWei('4'), toWei('10'));

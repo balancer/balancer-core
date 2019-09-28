@@ -21,7 +21,7 @@ const slightly = require('../util/slightly.js');
 
 let args = function () { return [...arguments].map((x)=>toWei(x)) }
 
-describe('fern0 single point per function (fee and no fee)', async()=>{
+describe('fast fern0 single point per function (fee and no fee)', async()=>{
   let acct0;
   let stub;
   before(async () => {
