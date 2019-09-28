@@ -117,6 +117,53 @@ describe('fast', async () => {
         throw 'unimplemented';
     });
 
+    it('clear getBalance getWeight getNumTokens isBound isFunded', async () => {
+        throw 'unimplemented';
+    });
+
+    it('clear ERR_NOT_CONTROLLER', async () => {
+        throw 'unimplemented';
+    });
+
+    it('clear ERR_IS_FINALIZED', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams getBalance getWeight getSpotPrice', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_NOT_CONTROLLER', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_NOT_BOUND', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_IS_FINALIZED', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_MIN_WEIGHT ERR_MAX_WEIGHT ERR_MIN_BALANCE ERR_MAX_BALANCE', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_MAX_TOTAL_WEIGHT', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_BTOKEN_UNDERFLOW', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setParams ERR_ERC20_FALSE', async () => {
+        throw 'unimplemented';
+    });
+
+    it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE getFees', async () => {
+        throw 'unimplemented';
+    });
 
 
 });

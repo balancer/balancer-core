@@ -29,7 +29,7 @@ contract BTokenBase is BNum
     event Move(address indexed src, address indexed dst, uint amt);
 
     function sub(uint a, uint b) internal returns (uint) {
-        require(a >= b, "ERR_BTOKEN_UNDERFLOW");
+        require(a >= b, "ERR_BTOKEN_UNDERFLOW"); // TODO report 'insufficient balance' if that's the case
         return a - b;
     }
 
