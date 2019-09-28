@@ -1,3 +1,4 @@
+const assert = require('chai').assert;
 const t = require('../util/twrap.js')
 
 const Web3 = require('web3')

@@ -98,9 +98,9 @@ describe("fernando's test sequence", async () => {
 });
 
 
-describe('fast joinswap / exitswap', async()=>{
+describe('joinswap / exitswap', async()=>{
   let env;
-  it('fast / is one long test', async function() {
+  it('is one long test', async function() {
     this.timeout(0);
     await play.stage(web3);
     env = await play.scene0();
