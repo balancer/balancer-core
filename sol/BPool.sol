@@ -75,11 +75,6 @@ contract BPool is BBronze, BToken, BMath
         _factory = msg.sender;
     }
 
-    function getController()
-      public view returns (address) {
-        return _controller;
-    }
-
     function isPaused()
       public view returns (bool) {
         return _paused;
@@ -118,13 +113,6 @@ contract BPool is BBronze, BToken, BMath
         return _tokens;
     }
 
-    function getFees()
-      public view
-        returns (uint,uint)
-    {
-        return (_swapFee,_exitFee);
-    }
-
     function getDenormalizedWeight(address token)
       public view
         returns (uint)
@@ -156,6 +144,18 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isFunded(token), ERR_NOT_FUNDED);
         return _records[token].balance;
+    }
+
+    function getFees()
+      public view
+        returns (uint,uint)
+    {
+        return (_swapFee, _exitFee);
+    }
+
+    function getController()
+      public view returns (address) {
+        return _controller;
     }
 
     function setFees(uint swapFee, uint exitFee)
@@ -321,29 +321,22 @@ contract BPool is BBronze, BToken, BMath
         return (collected = fees);
     }
 
-
     function getSpotPrice(address Ti, address To)
       public view
         returns (uint P)
     {
-        uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].denorm;
-        uint Bo = _records[To].balance;
-        uint Wo = _records[To].denorm;
-        uint  f = _swapFee;
-        return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
+        Record storage I = _records[Ti];
+        Record storage O = _records[To];
+        return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
     }
 
     function getSpotRate(address Ti, address To)
       public view
         returns (uint R)
     {
-        uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].denorm;
-        uint Bo = _records[To].balance;
-        uint Wo = _records[To].denorm;
-        uint  f = _swapFee;
-        return (R = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
+        Record storage I = _records[Ti];
+        Record storage O = _records[To];
+        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
     }
 
     function getSpotPriceSansFee(address Ti, address To)
@@ -351,11 +344,9 @@ contract BPool is BBronze, BToken, BMath
         _view_
         returns (uint P)
     {
-        uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].denorm;
-        uint Bo = _records[To].balance;
-        uint Wo = _records[To].denorm;
-        return (P = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0));
+        Record storage I = _records[Ti];
+        Record storage O = _records[To];
+        return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, 0);
     }
 
     function getSpotRateSansFee(address Ti, address To)
@@ -363,11 +354,9 @@ contract BPool is BBronze, BToken, BMath
         _view_
         returns (uint P)
     {
-        uint Bi = _records[Ti].balance;
-        uint Wi = _records[Ti].denorm;
-        uint Bo = _records[To].balance;
-        uint Wo = _records[To].denorm;
-        return (P = _calc_SpotRate(Bi, Wi, Bo, Wo, 0));
+        Record storage I = _records[Ti];
+        Record storage O = _records[To];
+        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, 0);
     }
 
     function joinPool(uint poolAo)
