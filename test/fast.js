@@ -63,14 +63,14 @@ describe('fast', async () => {
         await pool.bind(DAI.__address);
         await pool.bind(MKR.__address);
         console.log('tokens bound');
+        await pool.start();
+        console.log('started');
     });
 
     beforeEach(async () => {
         await pool.setParams(DAI.__address, toWei('1000000'), toWei('2.5')) // 1 million balance
         await pool.setParams(MKR.__address, toWei('1000'), toWei('3.5')) // 1 thousand balance
         console.log('reset params')
-        await pool.start();
-        console.log('started');
     });
 
     it('correct setup', async () => {
