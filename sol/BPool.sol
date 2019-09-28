@@ -534,6 +534,7 @@ contract BPool is BBronze, BToken, BMath
         _mintPoolShare(pAo);
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
+        T.balance = badd(T.balance, tAi);
         return tAi;
     }
 
@@ -553,6 +554,7 @@ contract BPool is BBronze, BToken, BMath
         _burnPoolShare(pAi);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
+        return tAo;
     }
 
     function exitswap_ExternAmountOut(address To, uint tAo)
