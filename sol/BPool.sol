@@ -510,34 +510,6 @@ contract BPool is BBronze, BToken, BMath
         return (Ai, Ao);
     }
 
-    function swap_ThreeLimitMaximize(address Ti, uint Li, address To, uint Lo, uint PL)
-        _beep_
-        _lock_
-        public returns (uint Ai, uint Ao, uint MP)
-    {
-        require( isFunded(Ti), ERR_NOT_FUNDED);
-        require( isFunded(To), ERR_NOT_FUNDED);
-        require( ! isPaused(), ERR_IS_PAUSED );
-
-        Record storage I = _records[address(Ti)];
-        Record storage O = _records[address(To)];
-
-        uint Pbefore = getSpotRate( Ti, To );
-        require( PL <= Pbefore, ERR_ARG_LIMIT_PRICE);
-
-        (Ai, Ao, MP) = _calc_ThreeLimitMaximize(I.balance, I.denorm, Li, O.balance, O.denorm, Lo, PL, _swapFee);
-
-        I.balance = badd(I.balance, Ai);
-        O.balance = bsub(O.balance, Ao);
-
-        _pullUnderlying(Ti, msg.sender, Ai);
-        _pushUnderlying(To, msg.sender, Ao);
-
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
-
-        return (Ai, Ao, MP);
-    }
-
     function joinswap_ExternAmountIn(address Ti, uint256 tAi)
       public
         _beep_
