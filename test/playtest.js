@@ -23,7 +23,7 @@ describe('a play about balancer', async () => {
     await play.stage(web3)
   })
 
-  it('fast scene0', async () => {
+  it('scene0', async () => {
     const env = await play.scene0()
     assert.exists(env.Ali)
     assert.exists(env.Bob)
