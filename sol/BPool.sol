@@ -36,7 +36,7 @@ contract BPool is BBronze, BToken, BMath
                   , bytes           data
                   ) anonymous;
 
-    modifier _beep_() {
+    modifier _log_call_() {
         emit LOG_CALL(msg.sig, msg.sender, msg.data);
         _;
     }
@@ -159,7 +159,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setFees(uint swapFee, uint exitFee)
-      _beep_
+      _log_call_
       _lock_
       public
     { 
@@ -172,7 +172,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setParams(address token, uint balance, uint denorm)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -205,7 +205,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function clear(address token)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -219,7 +219,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setController(address manager)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -228,7 +228,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function pause()
-      _beep_
+      _log_call_
       _lock_
       public
     { 
@@ -238,7 +238,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function start()
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -248,7 +248,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function finalize(uint initSupply)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -265,7 +265,7 @@ contract BPool is BBronze, BToken, BMath
 
 
     function bind(address token)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -284,7 +284,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function unbind(address token)
-        _beep_
+        _log_call_
         _lock_
         public
     {
@@ -306,7 +306,7 @@ contract BPool is BBronze, BToken, BMath
 
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
-      _beep_
+      _log_call_
       _lock_
       public
     {
@@ -315,7 +315,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function collect()
-      _beep_
+      _log_call_
       _lock_
       public returns (uint collected)
     {
@@ -377,7 +377,7 @@ contract BPool is BBronze, BToken, BMath
 
     function joinPool(uint poolAo)
       public
-        _beep_
+        _log_call_
         _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
@@ -396,7 +396,7 @@ contract BPool is BBronze, BToken, BMath
 
     function exitPool(uint poolAi)
       public
-        _beep_
+        _log_call_
         _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
@@ -418,7 +418,7 @@ contract BPool is BBronze, BToken, BMath
 
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
-        _beep_
+        _log_call_
         _lock_
         public returns (uint Ao, uint MP)
     {
@@ -452,7 +452,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
-        _beep_
+        _log_call_
         _lock_ 
         public returns (uint Ai, uint MP)
     {
@@ -484,7 +484,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
-        _beep_
+        _log_call_
         _lock_
         public returns (uint Ai, uint Ao)
     {
@@ -517,7 +517,7 @@ contract BPool is BBronze, BToken, BMath
 
     function joinswap_ExternAmountIn(address Ti, uint256 tAi)
       public
-        _beep_
+        _log_call_
         _lock_
         returns (uint poolAo)
     {
@@ -537,7 +537,7 @@ contract BPool is BBronze, BToken, BMath
 
     function joinswap_PoolAmountOut(uint pAo, address Ti)
       public
-        _beep_
+        _log_call_
         _lock_
         returns (uint tAi)
     {
@@ -556,7 +556,7 @@ contract BPool is BBronze, BToken, BMath
 
     function exitswap_PoolAmountIn(uint pAi, address To)
       public
-        _beep_
+        _log_call_
         _lock_
         returns (uint tAo)
     {
@@ -575,7 +575,7 @@ contract BPool is BBronze, BToken, BMath
 
     function exitswap_ExternAmountOut(address To, uint tAo)
       public
-        _beep_
+        _log_call_
         _lock_
         returns (uint pAi)
     {
