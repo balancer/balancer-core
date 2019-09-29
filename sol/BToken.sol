@@ -13,7 +13,7 @@
 
 pragma solidity ^0.5.11;
 
-import "./BNum.sol";
+import "sol/BNum.sol";
 
 // Highly opinionated token implementation
 
