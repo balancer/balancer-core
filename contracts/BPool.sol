@@ -13,9 +13,9 @@
 
 pragma solidity ^0.5.11;
 
-import "sol/BColor.sol";
-import "sol/BToken.sol";
-import "sol/BMath.sol";
+import "contracts/BColor.sol";
+import "contracts/BToken.sol";
+import "contracts/BMath.sol";
 
 contract BPool is BBronze, BToken, BMath
 {

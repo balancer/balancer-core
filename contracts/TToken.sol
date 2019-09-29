@@ -13,7 +13,7 @@
 
 pragma solidity ^0.5.11;
 
-import "sol/BToken.sol";
+import "contracts/BToken.sol";
 
 // TToken is a test token with public `mint` and `burn`.
 
