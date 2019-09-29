@@ -323,7 +323,14 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPrice(address Ti, address To)
       public view
+        _view_
         returns (uint P)
+    {
+        return _getSpotPrice(Ti, To);
+    }
+
+    function _getSpotPrice(address Ti, address To)
+      internal view returns (uint P)
     {
         Record storage I = _records[Ti];
         Record storage O = _records[To];
@@ -331,8 +338,15 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getSpotRate(address Ti, address To)
-      public view
+      internal view
+        _view_
         returns (uint R)
+    {
+        return _getSpotRate(Ti, To);
+    }
+
+    function _getSpotRate(address Ti, address To)
+      internal view returns (uint R)
     {
         Record storage I = _records[Ti];
         Record storage O = _records[To];
@@ -416,7 +430,7 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
-        require( LP >= getSpotPrice(Ti, To), ERR_ARG_LIMIT_IN);
+        require( LP >= _getSpotPrice(Ti, To), ERR_ARG_LIMIT_IN);
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_OUT );
@@ -424,7 +438,7 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint Pafter = getSpotPrice(Ti, To);
+        uint Pafter = _getSpotPrice(Ti, To);
         require(Pafter <= LP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
@@ -448,7 +462,7 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
-        require(PL < getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE );
+        require(PL < _getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -456,7 +470,7 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint Pafter = getSpotRate(Ti, To);
+        uint Pafter = _getSpotRate(Ti, To);
         require( Pafter >= PL, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
@@ -480,7 +494,7 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
-        require(MP < getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE);
+        require(MP < _getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
