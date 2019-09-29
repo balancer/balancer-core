@@ -114,7 +114,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getDenormalizedWeight(address token)
-      public view
+      public view _view_
         returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -122,14 +122,14 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getTotalDenormalizedWeight()
-      public view 
+      public view _view_
       returns (uint)
     {
         return _totalWeight;
     }
 
     function getNormalizedWeight(address token)
-      public view
+      public view _view_
       returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -138,8 +138,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getBalance(address token)
-      public view
-      _view_
+      public view _view_
       returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -147,19 +146,21 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getFees()
-      public view
+      public view _view_
         returns (uint,uint)
     {
         return (_swapFee, _exitFee);
     }
 
     function getController()
-      public view returns (address) {
+      public view _view_
+        returns (address) {
         return _controller;
     }
 
     function setFees(uint swapFee, uint exitFee)
       _beep_
+      _lock_
       public
     { 
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -219,6 +220,7 @@ contract BPool is BBronze, BToken, BMath
 
     function setController(address manager)
       _beep_
+      _lock_
       public
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -227,6 +229,7 @@ contract BPool is BBronze, BToken, BMath
 
     function pause()
       _beep_
+      _lock_
       public
     { 
         require( ! _finalized, ERR_IS_FINALIZED);
@@ -236,6 +239,7 @@ contract BPool is BBronze, BToken, BMath
 
     function start()
       _beep_
+      _lock_
       public
     {
         // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
@@ -328,7 +332,6 @@ contract BPool is BBronze, BToken, BMath
     {
         return _getSpotPrice(Ti, To);
     }
-
     function _getSpotPrice(address Ti, address To)
       internal view returns (uint P)
     {
@@ -338,13 +341,12 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getSpotRate(address Ti, address To)
-      internal view
+      public view
         _view_
         returns (uint R)
     {
         return _getSpotRate(Ti, To);
     }
-
     function _getSpotRate(address Ti, address To)
       internal view returns (uint R)
     {
