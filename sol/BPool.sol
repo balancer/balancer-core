@@ -204,6 +204,17 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
+    function batchSetParams(bytes32[3][] memory TBWs)
+      public
+    {
+        for(uint i = 0; i < TBWs.length; i++) {
+            address T = address(bytes20(TBWs[i][0]));
+            uint256 B = uint256(TBWs[i][1]);
+            uint256 W = uint256(TBWs[i][2]);
+            setParams(T, B, W);
+        }
+    }
+
     function clear(address token)
       _logs_
       _lock_
@@ -281,6 +292,14 @@ contract BPool is BBronze, BToken, BMath
           , denorm: 0
           , balance: 0
         });
+    }
+
+    function batchBind(address[] memory tokens)
+      public
+    {
+        for(uint i = 0; i < tokens.length; i++) {
+            bind(tokens[i]);
+        }
     }
 
     function unbind(address token)
