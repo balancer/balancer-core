@@ -48,7 +48,7 @@ contract BPool is BBronze, BToken, BMath
         _mutex = false;
     }
 
-    modifier _view_() {
+    modifier _viewlock_() {
         require( !_mutex, ERR_REENTRY);
         _;
     }
@@ -99,14 +99,14 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getCurrentTokens()
-      public view _view_
+      public view _viewlock_
         returns (address[] memory tokens)
     {
         return _tokens;
     }
 
     function getFinalTokens()
-      public view _view_
+      public view _viewlock_
         returns (address[] memory tokens)
     {
         require(_finalized, ERR_NOT_FINALIZED);
@@ -114,7 +114,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getDenormalizedWeight(address token)
-      public view _view_
+      public view _viewlock_
         returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -122,14 +122,14 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getTotalDenormalizedWeight()
-      public view _view_
+      public view _viewlock_
       returns (uint)
     {
         return _totalWeight;
     }
 
     function getNormalizedWeight(address token)
-      public view _view_
+      public view _viewlock_
       returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -138,7 +138,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getBalance(address token)
-      public view _view_
+      public view _viewlock_
       returns (uint)
     {
         require( isFunded(token), ERR_NOT_FUNDED);
@@ -146,14 +146,14 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getFees()
-      public view _view_
+      public view _viewlock_
         returns (uint,uint)
     {
         return (_swapFee, _exitFee);
     }
 
     function getController()
-      public view _view_
+      public view _viewlock_
         returns (address) {
         return _controller;
     }
@@ -327,7 +327,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPrice(address Ti, address To)
       public view
-        _view_
+        _viewlock_
         returns (uint P)
     {
         return _getSpotPrice(Ti, To);
@@ -342,7 +342,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotRate(address Ti, address To)
       public view
-        _view_
+        _viewlock_
         returns (uint R)
     {
         return _getSpotRate(Ti, To);
@@ -357,7 +357,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotPriceSansFee(address Ti, address To)
       public view
-        _view_
+        _viewlock_
         returns (uint P)
     {
         Record storage I = _records[Ti];
@@ -367,7 +367,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getSpotRateSansFee(address Ti, address To)
       public view
-        _view_
+        _viewlock_
         returns (uint P)
     {
         Record storage I = _records[Ti];
