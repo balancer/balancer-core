@@ -34,7 +34,8 @@ contract BPool is BBronze, BToken, BMath
     event LOG_CALL( bytes4  indexed sig
                   , address indexed caller
                   , bytes           data
-                  ) anonymous;
+                  )
+          anonymous;
 
     modifier _logs_() {
         emit LOG_CALL(msg.sig, msg.sender, msg.data);

@@ -78,17 +78,12 @@ contract ERC20 {
 
 contract BToken is BBronze, BTokenBase, ERC20
 {
-    //==  ERC20 is underspecified and bad for the Ethereum ecosystem ==//
-    //--                          @realDonaldTrump (Oct 16, 2016)    --//
-
     function allowance(address src, address guy) public view returns (uint) {
         return _allowance[src][guy];
     }
-
     function balanceOf(address whom) public view returns (uint) {
         return _balance[whom];
     }
-
     function totalSupply() public view returns (uint) {
         return _totalSupply;
     }
