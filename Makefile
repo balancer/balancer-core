@@ -9,10 +9,10 @@ build:
 	--overwrite\
 		/=/ \
 	-o out/tmp/ \
-	sol/BFactory.sol \
-	sol/BStub.sol \
-	sol/BPool.sol \
-	sol/TToken.sol
+	contracts/BFactory.sol \
+	contracts/BStub.sol \
+	contracts/BPool.sol \
+	contracts/TToken.sol
 dist:
 	solc \
 	--optimize \

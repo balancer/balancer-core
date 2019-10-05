@@ -9,16 +9,20 @@
     "email": "mail@nikolai.fyi",
     "url": "https://nikolai.fyi"
   },
-  "contributors": [{
+  "contributors": [
+    {
       "name": "Kevin Bravo",
       "email": "kbravo@pm.me"
-    },{
+    },
+    {
       "name": "Fernando Martinelli",
       "email": "fernando@balancer.finance"
-  }],
+    }
+  ],
   "main": "pkg.js",
   "scripts": {
     "build": "truffle build",
+    "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
     "test": "truffle test",
     "fmt": "yarn run standard util/*"
   },
@@ -36,5 +40,9 @@
     "mocha": "^6.2.0",
     "standard": "^14.0.2",
     "web3": "^1.2.0"
+  },
+  "dependencies": {
+    "ganache-cli": "^6.7.0",
+    "global": "^4.4.0"
   }
 }
