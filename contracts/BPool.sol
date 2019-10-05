@@ -211,20 +211,6 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
-    function clear(address token)
-      _logs_
-      _lock_
-      public
-    {
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        require( ! isFinalized(), ERR_IS_FINALIZED);
-
-        _pushUnderlying(token, msg.sender, _records[token].balance);
-
-        _records[token].balance = 0;
-        _records[token].denorm = 0;
-    }
-
     function setController(address manager)
       _logs_
       _lock_
@@ -234,7 +220,7 @@ contract BPool is BBronze, BToken, BMath
         _controller = manager;
     }
 
-    function setSwapAccess(bool public_)
+    function setSwapPermission(bool public_)
         _logs_
         _lock_
         public
@@ -244,7 +230,7 @@ contract BPool is BBronze, BToken, BMath
         _publicSwap = public_;
     }
 
-    function setJoinAccess(bool public_)
+    function setJoinPermission(bool public_)
         _logs_
         _lock_
         public
