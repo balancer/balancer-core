@@ -17,28 +17,28 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.11+commit.c082d0b4\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"getColor\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"contracts/BColor.sol\":\"BBronze\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"contracts/BColor.sol\":{\"keccak256\":\"0x8b3fcdbd4ebd9b05f597ee6dfe302d7593c32c27586c310a5569219dea7ee5bb\",\"urls\":[\"bzz-raw://a9d46d6e7134a1f52b7f2b3c391fa5696e5c6a4de4bbcb3ba6eda2bd6f37f59e\",\"dweb:/ipfs/QmR56KWkVU2rrvzdv7a3TQMieDED7igkcyssnHikqrKNwj\"]}},\"version\":1}",
-  "bytecode": "0x6080604052348015600f57600080fd5b5060ba8061001e6000396000f3fe6080604052348015600f57600080fd5b50600436106044577c010000000000000000000000000000000000000000000000000000000060003504639a86139b81146049575b600080fd5b604f6061565b60408051918252519081900360200190f35b7f42524f4e5a4500000000000000000000000000000000000000000000000000009056fea265627a7a72315820a83f90956caab3c0c4587a35123f075d940c92fb18bb6466af1b58cfdb7951f564736f6c634300050b0032",
-  "deployedBytecode": "0x6080604052348015600f57600080fd5b50600436106044577c010000000000000000000000000000000000000000000000000000000060003504639a86139b81146049575b600080fd5b604f6061565b60408051918252519081900360200190f35b7f42524f4e5a4500000000000000000000000000000000000000000000000000009056fea265627a7a72315820a83f90956caab3c0c4587a35123f075d940c92fb18bb6466af1b58cfdb7951f564736f6c634300050b0032",
-  "sourceMap": "753:134:10:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;753:134:10;;;;;;;",
-  "deployedSourceMap": "753:134:10:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;753:134:10;;;;;;;;;;;;;;;;;;;784:101;;;:::i;:::-;;;;;;;;;;;;;;;;;861:17;784:101;:::o",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.11+commit.c082d0b4\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"getColor\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/admin/desk/balancer/core/contracts/BColor.sol\":\"BBronze\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/admin/desk/balancer/core/contracts/BColor.sol\":{\"keccak256\":\"0x8b3fcdbd4ebd9b05f597ee6dfe302d7593c32c27586c310a5569219dea7ee5bb\",\"urls\":[\"bzz-raw://a9d46d6e7134a1f52b7f2b3c391fa5696e5c6a4de4bbcb3ba6eda2bd6f37f59e\",\"dweb:/ipfs/QmR56KWkVU2rrvzdv7a3TQMieDED7igkcyssnHikqrKNwj\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b5060ba8061001e6000396000f3fe6080604052348015600f57600080fd5b50600436106044577c010000000000000000000000000000000000000000000000000000000060003504639a86139b81146049575b600080fd5b604f6061565b60408051918252519081900360200190f35b7f42524f4e5a4500000000000000000000000000000000000000000000000000009056fea265627a7a72315820d85faf7d95db76d3efc44d5daf6577404fdb23542ab147a0530609b0abef713a64736f6c634300050b0032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b50600436106044577c010000000000000000000000000000000000000000000000000000000060003504639a86139b81146049575b600080fd5b604f6061565b60408051918252519081900360200190f35b7f42524f4e5a4500000000000000000000000000000000000000000000000000009056fea265627a7a72315820d85faf7d95db76d3efc44d5daf6577404fdb23542ab147a0530609b0abef713a64736f6c634300050b0032",
+  "sourceMap": "753:134:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;753:134:0;;;;;;;",
+  "deployedSourceMap": "753:134:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;753:134:0;;;;;;;;;;;;;;;;;;;784:101;;;:::i;:::-;;;;;;;;;;;;;;;;;861:17;784:101;:::o",
   "source": "// This program is free software: you can redistribute it and/or modify\n// it under the terms of the GNU General Public License as published by\n// the Free Software Foundation, either version 3 of the License, or\n// (at your option) any later version.\n\n// This program is distributed in the hope that it will be useful,\n// but WITHOUT ANY WARRANTY; without even the implied warranty of\n// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n// GNU General Public License for more details.\n\n// You should have received a copy of the GNU General Public License\n// along with this program.  If not, see <http://www.gnu.org/licenses/>.\n\npragma solidity ^0.5.11;\n\ncontract BColor {\n  function getColor()\n    public view\n      returns (bytes32);\n}\n\ncontract BBronze is BColor {\n  function getColor()\n    public view\n      returns (bytes32) {\n        return bytes32(\"BRONZE\");\n    }\n}\n\n\n",
-  "sourcePath": "contracts/BColor.sol",
+  "sourcePath": "/Users/admin/desk/balancer/core/contracts/BColor.sol",
   "ast": {
-    "absolutePath": "contracts/BColor.sol",
+    "absolutePath": "/Users/admin/desk/balancer/core/contracts/BColor.sol",
     "exportedSymbols": {
       "BBronze": [
-        4578
+        20
       ],
       "BColor": [
-        4565
+        7
       ]
     },
-    "id": 4579,
+    "id": 21,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4559,
+        "id": 1,
         "literals": [
           "solidity",
           "^",
@@ -46,7 +46,7 @@
           ".11"
         ],
         "nodeType": "PragmaDirective",
-        "src": "643:24:10"
+        "src": "643:24:0"
       },
       {
         "baseContracts": [],
@@ -54,9 +54,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 4565,
+        "id": 7,
         "linearizedBaseContracts": [
-          4565
+          7
         ],
         "name": "BColor",
         "nodeType": "ContractDefinition",
@@ -64,29 +64,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 4564,
+            "id": 6,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getColor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4560,
+              "id": 2,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "706:2:10"
+              "src": "706:2:0"
             },
             "returnParameters": {
-              "id": 4563,
+              "id": 5,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4562,
+                  "id": 4,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4564,
-                  "src": "740:7:10",
+                  "scope": 6,
+                  "src": "740:7:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -94,10 +94,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 4561,
+                    "id": 3,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "740:7:10",
+                    "src": "740:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -107,17 +107,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "739:9:10"
+              "src": "739:9:0"
             },
-            "scope": 4565,
-            "src": "689:60:10",
+            "scope": 7,
+            "src": "689:60:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 4579,
-        "src": "669:82:10"
+        "scope": 21,
+        "src": "669:82:0"
       },
       {
         "baseContracts": [
@@ -125,40 +125,40 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 4566,
+              "id": 8,
               "name": "BColor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4565,
-              "src": "773:6:10",
+              "referencedDeclaration": 7,
+              "src": "773:6:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BColor_$4565",
+                "typeIdentifier": "t_contract$_BColor_$7",
                 "typeString": "contract BColor"
               }
             },
-            "id": 4567,
+            "id": 9,
             "nodeType": "InheritanceSpecifier",
-            "src": "773:6:10"
+            "src": "773:6:0"
           }
         ],
         "contractDependencies": [
-          4565
+          7
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 4578,
+        "id": 20,
         "linearizedBaseContracts": [
-          4578,
-          4565
+          20,
+          7
         ],
         "name": "BBronze",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 4576,
+              "id": 18,
               "nodeType": "Block",
-              "src": "844:41:10",
+              "src": "844:41:0",
               "statements": [
                 {
                   "expression": {
@@ -167,14 +167,14 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "42524f4e5a45",
-                        "id": 4573,
+                        "id": 15,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "869:8:10",
+                        "src": "869:8:0",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_4163e3f7a99fc80b57ec838b307c7a27558a888bb048d8e4d5cc03e3134dee47",
@@ -190,20 +190,20 @@
                           "typeString": "literal_string \"BRONZE\""
                         }
                       ],
-                      "id": 4572,
+                      "id": 14,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "lValueRequested": false,
                       "nodeType": "ElementaryTypeNameExpression",
-                      "src": "861:7:10",
+                      "src": "861:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_type$_t_bytes32_$",
                         "typeString": "type(bytes32)"
                       },
                       "typeName": "bytes32"
                     },
-                    "id": 4574,
+                    "id": 16,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -211,43 +211,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "861:17:10",
+                    "src": "861:17:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 4571,
-                  "id": 4575,
+                  "functionReturnParameters": 13,
+                  "id": 17,
                   "nodeType": "Return",
-                  "src": "854:24:10"
+                  "src": "854:24:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 4577,
+            "id": 19,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getColor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4568,
+              "id": 10,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "801:2:10"
+              "src": "801:2:0"
             },
             "returnParameters": {
-              "id": 4571,
+              "id": 13,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4570,
+                  "id": 12,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4577,
-                  "src": "835:7:10",
+                  "scope": 19,
+                  "src": "835:7:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -255,10 +255,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 4569,
+                    "id": 11,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "835:7:10",
+                    "src": "835:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -268,36 +268,36 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "834:9:10"
+              "src": "834:9:0"
             },
-            "scope": 4578,
-            "src": "784:101:10",
+            "scope": 20,
+            "src": "784:101:0",
             "stateMutability": "view",
-            "superFunction": 4564,
+            "superFunction": 6,
             "visibility": "public"
           }
         ],
-        "scope": 4579,
-        "src": "753:134:10"
+        "scope": 21,
+        "src": "753:134:0"
       }
     ],
-    "src": "643:247:10"
+    "src": "643:247:0"
   },
   "legacyAST": {
-    "absolutePath": "contracts/BColor.sol",
+    "absolutePath": "/Users/admin/desk/balancer/core/contracts/BColor.sol",
     "exportedSymbols": {
       "BBronze": [
-        4578
+        20
       ],
       "BColor": [
-        4565
+        7
       ]
     },
-    "id": 4579,
+    "id": 21,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 4559,
+        "id": 1,
         "literals": [
           "solidity",
           "^",
@@ -305,7 +305,7 @@
           ".11"
         ],
         "nodeType": "PragmaDirective",
-        "src": "643:24:10"
+        "src": "643:24:0"
       },
       {
         "baseContracts": [],
@@ -313,9 +313,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 4565,
+        "id": 7,
         "linearizedBaseContracts": [
-          4565
+          7
         ],
         "name": "BColor",
         "nodeType": "ContractDefinition",
@@ -323,29 +323,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 4564,
+            "id": 6,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "getColor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4560,
+              "id": 2,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "706:2:10"
+              "src": "706:2:0"
             },
             "returnParameters": {
-              "id": 4563,
+              "id": 5,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4562,
+                  "id": 4,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4564,
-                  "src": "740:7:10",
+                  "scope": 6,
+                  "src": "740:7:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -353,10 +353,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 4561,
+                    "id": 3,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "740:7:10",
+                    "src": "740:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -366,17 +366,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "739:9:10"
+              "src": "739:9:0"
             },
-            "scope": 4565,
-            "src": "689:60:10",
+            "scope": 7,
+            "src": "689:60:0",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 4579,
-        "src": "669:82:10"
+        "scope": 21,
+        "src": "669:82:0"
       },
       {
         "baseContracts": [
@@ -384,40 +384,40 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 4566,
+              "id": 8,
               "name": "BColor",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4565,
-              "src": "773:6:10",
+              "referencedDeclaration": 7,
+              "src": "773:6:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_BColor_$4565",
+                "typeIdentifier": "t_contract$_BColor_$7",
                 "typeString": "contract BColor"
               }
             },
-            "id": 4567,
+            "id": 9,
             "nodeType": "InheritanceSpecifier",
-            "src": "773:6:10"
+            "src": "773:6:0"
           }
         ],
         "contractDependencies": [
-          4565
+          7
         ],
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 4578,
+        "id": 20,
         "linearizedBaseContracts": [
-          4578,
-          4565
+          20,
+          7
         ],
         "name": "BBronze",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 4576,
+              "id": 18,
               "nodeType": "Block",
-              "src": "844:41:10",
+              "src": "844:41:0",
               "statements": [
                 {
                   "expression": {
@@ -426,14 +426,14 @@
                       {
                         "argumentTypes": null,
                         "hexValue": "42524f4e5a45",
-                        "id": 4573,
+                        "id": 15,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
                         "kind": "string",
                         "lValueRequested": false,
                         "nodeType": "Literal",
-                        "src": "869:8:10",
+                        "src": "869:8:0",
                         "subdenomination": null,
                         "typeDescriptions": {
                           "typeIdentifier": "t_stringliteral_4163e3f7a99fc80b57ec838b307c7a27558a888bb048d8e4d5cc03e3134dee47",
@@ -449,20 +449,20 @@
                           "typeString": "literal_string \"BRONZE\""
                         }
                       ],
-                      "id": 4572,
+                      "id": 14,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
                       "lValueRequested": false,
                       "nodeType": "ElementaryTypeNameExpression",
-                      "src": "861:7:10",
+                      "src": "861:7:0",
                       "typeDescriptions": {
                         "typeIdentifier": "t_type$_t_bytes32_$",
                         "typeString": "type(bytes32)"
                       },
                       "typeName": "bytes32"
                     },
-                    "id": 4574,
+                    "id": 16,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": true,
@@ -470,43 +470,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "861:17:10",
+                    "src": "861:17:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
                     }
                   },
-                  "functionReturnParameters": 4571,
-                  "id": 4575,
+                  "functionReturnParameters": 13,
+                  "id": 17,
                   "nodeType": "Return",
-                  "src": "854:24:10"
+                  "src": "854:24:0"
                 }
               ]
             },
             "documentation": null,
-            "id": 4577,
+            "id": 19,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getColor",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 4568,
+              "id": 10,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "801:2:10"
+              "src": "801:2:0"
             },
             "returnParameters": {
-              "id": 4571,
+              "id": 13,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 4570,
+                  "id": 12,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 4577,
-                  "src": "835:7:10",
+                  "scope": 19,
+                  "src": "835:7:0",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -514,10 +514,10 @@
                     "typeString": "bytes32"
                   },
                   "typeName": {
-                    "id": 4569,
+                    "id": 11,
                     "name": "bytes32",
                     "nodeType": "ElementaryTypeName",
-                    "src": "835:7:10",
+                    "src": "835:7:0",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes32",
                       "typeString": "bytes32"
@@ -527,20 +527,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "834:9:10"
+              "src": "834:9:0"
             },
-            "scope": 4578,
-            "src": "784:101:10",
+            "scope": 20,
+            "src": "784:101:0",
             "stateMutability": "view",
-            "superFunction": 4564,
+            "superFunction": 6,
             "visibility": "public"
           }
         ],
-        "scope": 4579,
-        "src": "753:134:10"
+        "scope": 21,
+        "src": "753:134:0"
       }
     ],
-    "src": "643:247:10"
+    "src": "643:247:0"
   },
   "compiler": {
     "name": "solc",
@@ -548,7 +548,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.16",
-  "updatedAt": "2019-09-29T15:19:21.503Z",
+  "updatedAt": "2019-10-05T03:04:43.182Z",
   "devdoc": {
     "methods": {}
   },

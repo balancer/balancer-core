@@ -58,13 +58,15 @@ contract BConst is BBronze
     string constant ERR_NOT_FUNDED         = "ERR_NOT_FUNDED";
     string constant ERR_IS_BOUND           = "ERR_IS_BOUND";
     string constant ERR_NOT_BOUND          = "ERR_NOT_BOUND";
-    string constant ERR_IS_PAUSED          = "ERR_IS_PAUSED";
-    string constant ERR_NOT_PAUSED         = "ERR_NOT_PAUSED";
+
     string constant ERR_IS_FINALIZED       = "ERR_IS_FINALIZED";
     string constant ERR_NOT_FINALIZED      = "ERR_NOT_FINALIZED";
 
     string constant ERR_NOT_CONTROLLER     = "ERR_NOT_CONTROLLER";
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
+
+    string constant ERR_SWAP_NOT_PUBLIC    = "ERR_SWAP_NOT_PUBLIC";
+    string constant ERR_JOIN_NOT_PUBLIC    = "ERR_JOIN_NOT_PUBLIC";
 
     string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";

@@ -20,7 +20,7 @@ import "contracts/BMath.sol";
 contract BPool is BBronze, BToken, BMath
 {
     struct Record {
-        uint indexPlusOne;
+        uint index; // private and 1-indexed; 0 is "unbound" state.
         uint denorm;
         uint balance;
     }
@@ -55,7 +55,8 @@ contract BPool is BBronze, BToken, BMath
 
     bool                      _mutex;
 
-    bool                      _paused;
+    bool                      _publicSwap;
+    bool                      _publicJoin;
     bool                      _finalized;
 
     address                   _factory;
@@ -69,15 +70,21 @@ contract BPool is BBronze, BToken, BMath
     uint                      _totalWeight;
 
     constructor() public {
-        _paused = true;
-        _finalized = false;
         _controller = msg.sender;
         _factory = msg.sender;
+        _publicSwap = false;
+        _publicJoin = false;
+        _finalized = false;
     }
 
-    function isPaused()
+    function isSwapPublic()
       public view returns (bool) {
-        return _paused;
+        return _publicSwap;
+    }
+
+    function isJoinPublic()
+      public view returns (bool) {
+        return _publicJoin;
     }
 
     function isFinalized()
@@ -86,7 +93,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function isBound(address t) public view returns (bool) {
-        return _records[t].indexPlusOne != 0;
+        return _records[t].index != 0;
     }
 
     function isFunded(address t) public view returns (bool) {
@@ -204,17 +211,6 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
-    function batchSetParams(bytes32[3][] memory TBWs)
-      public
-    {
-        for(uint i = 0; i < TBWs.length; i++) {
-            address T = address(bytes20(TBWs[i][0]));
-            uint256 B = uint256(TBWs[i][1]);
-            uint256 W = uint256(TBWs[i][2]);
-            setParams(T, B, W);
-        }
-    }
-
     function clear(address token)
       _logs_
       _lock_
@@ -238,24 +234,24 @@ contract BPool is BBronze, BToken, BMath
         _controller = manager;
     }
 
-    function pause()
-      _logs_
-      _lock_
-      public
-    { 
+    function setSwapAccess(bool public_)
+        _logs_
+        _lock_
+        public
+    {
         require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _paused = true;
+        _publicSwap = public_;
     }
 
-    function start()
-      _logs_
-      _lock_
-      public
+    function setJoinAccess(bool public_)
+        _logs_
+        _lock_
+        public
     {
-        // require( ! _finalized, ERR_IS_FINALIZED);   finalize must set _paused = false
+        require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _paused = false;
+        _publicJoin = public_;
     }
 
     function finalize(uint initSupply)
@@ -268,7 +264,8 @@ contract BPool is BBronze, BToken, BMath
         require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
 
         _finalized = true;
-        _paused = false;
+        _publicSwap = true;
+        _publicJoin = true;
 
         _mintPoolShare(initSupply);
         _pushPoolShare(msg.sender, initSupply);
@@ -286,20 +283,12 @@ contract BPool is BBronze, BToken, BMath
 
         require(_tokens.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
 
-        _tokens.push(token);
+        uint length = _tokens.push(token);
         _records[token] = Record({
-            indexPlusOne: _tokens.length // 1-indexed (0 is 'unbound' state)
+            index: length // 1-indexed (0 is 'unbound' state)
           , denorm: 0
           , balance: 0
         });
-    }
-
-    function batchBind(address[] memory tokens)
-      public
-    {
-        for(uint i = 0; i < tokens.length; i++) {
-            bind(tokens[i]);
-        }
     }
 
     function unbind(address token)
@@ -311,14 +300,16 @@ contract BPool is BBronze, BToken, BMath
         require(isBound(token), ERR_NOT_BOUND);
         require( ! isFunded(token), ERR_IS_FUNDED);
 
-        uint index = _records[token].indexPlusOne - 1;
+        // Swap the token-to-unbind with the last token,
+        // then delete the last token
+        uint index = _records[token].index - 1;
         uint last = _tokens.length - 1;
         _tokens[index] = _tokens[last];
-        _records[_tokens[index]].indexPlusOne = index + 1;
+        _records[_tokens[index]].index = index + 1;
         _tokens.pop();
         _records[token] = Record({
-            indexPlusOne: 0
-          , denorm: 0 // redundant..
+            index: 0
+          , denorm: 0
           , balance: 0
         });
     }
@@ -444,7 +435,7 @@ contract BPool is BBronze, BToken, BMath
         
         require( isFunded(Ti), ERR_NOT_FUNDED );
         require( isFunded(To), ERR_NOT_FUNDED );
-        require( ! isPaused(), ERR_IS_PAUSED );
+        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -477,7 +468,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isFunded(Ti), ERR_NOT_FUNDED);
         require( isFunded(To), ERR_NOT_FUNDED);
-        require( ! isPaused(), ERR_IS_PAUSED);
+        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -509,7 +500,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isFunded(Ti), ERR_NOT_FUNDED);
         require( isFunded(To), ERR_NOT_FUNDED);
-        require( ! isPaused(), ERR_IS_PAUSED);
+        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];

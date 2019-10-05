@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "balancer-core",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
   "author": {
@@ -18,9 +18,8 @@
   }],
   "main": "pkg.js",
   "scripts": {
-    "build": "make build",
-    "test": "make build && mocha",
-    "dist": "make dist && yarn run standard util/*",
+    "build": "truffle build",
+    "test": "truffle test",
     "fmt": "yarn run standard util/*"
   },
   "repository": {
