@@ -96,10 +96,6 @@ contract BPool is BBronze, BToken, BMath
         return _records[t].index != 0;
     }
 
-    function isFunded(address t) public view returns (bool) {
-        return _records[t].denorm != 0; // implies balance != 0 as well
-    }
-
     function getNumTokens()
       public view returns (uint) {
         return _tokens.length;
@@ -124,7 +120,7 @@ contract BPool is BBronze, BToken, BMath
       public view _viewlock_
         returns (uint)
     {
-        require( isFunded(token), ERR_NOT_FUNDED);
+        require( isBound(token), ERR_NOT_BOUND);
         return _records[token].denorm;
     }
 
@@ -139,7 +135,7 @@ contract BPool is BBronze, BToken, BMath
       public view _viewlock_
       returns (uint)
     {
-        require( isFunded(token), ERR_NOT_FUNDED);
+        require( isBound(token), ERR_NOT_BOUND);
         uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
@@ -148,7 +144,7 @@ contract BPool is BBronze, BToken, BMath
       public view _viewlock_
       returns (uint)
     {
-        require( isFunded(token), ERR_NOT_FUNDED);
+        require( isBound(token), ERR_NOT_BOUND);
         return _records[token].balance;
     }
 
@@ -178,7 +174,74 @@ contract BPool is BBronze, BToken, BMath
         _exitFee = exitFee;
     }
 
-    function setParams(address token, uint balance, uint denorm)
+    function setController(address manager)
+      _logs_
+      _lock_
+      public
+    {
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        _controller = manager;
+    }
+
+    function setSwapAccess(bool public_)
+        _logs_
+        _lock_
+        public
+    {
+        require( ! _finalized, ERR_IS_FINALIZED);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        _publicSwap = public_;
+    }
+
+    function setJoinAccess(bool public_)
+        _logs_
+        _lock_
+        public
+    {
+        require( ! _finalized, ERR_IS_FINALIZED);
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        _publicJoin = public_;
+    }
+
+    function finalize(uint initSupply)
+      _logs_
+      _lock_
+      public
+    {
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        require( !_finalized, ERR_IS_FINALIZED);
+        require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
+
+        _finalized = true;
+        _publicSwap = true;
+        _publicJoin = true;
+
+        _mintPoolShare(initSupply);
+        _pushPoolShare(msg.sender, initSupply);
+    }
+
+
+    function bind(address token, uint balance, uint denorm)
+      _logs_
+      _lock_
+      public
+    {
+        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
+        require( ! isBound(token), ERR_IS_BOUND);
+        require( ! isFinalized(), ERR_IS_FINALIZED);
+
+        require(_tokens.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
+
+        uint length = _tokens.push(token);
+        _records[token] = Record({
+            index: length // 1-indexed (0 is 'unbound' state)
+          , denorm: 0    // balance and denorm will be validated
+          , balance: 0   // and set by `rebind`
+        });
+        rebind(token, balance, denorm);
+    }
+
+    function rebind(address token, uint balance, uint denorm)
       _logs_
       _lock_
       public
@@ -211,72 +274,6 @@ contract BPool is BBronze, BToken, BMath
         }
     }
 
-    function setController(address manager)
-      _logs_
-      _lock_
-      public
-    {
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _controller = manager;
-    }
-
-    function setSwapPermission(bool public_)
-        _logs_
-        _lock_
-        public
-    {
-        require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _publicSwap = public_;
-    }
-
-    function setJoinPermission(bool public_)
-        _logs_
-        _lock_
-        public
-    {
-        require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _publicJoin = public_;
-    }
-
-    function finalize(uint initSupply)
-      _logs_
-      _lock_
-      public
-    {
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        require( !_finalized, ERR_IS_FINALIZED);
-        require(initSupply >= MIN_POOL_SUPPLY, ERR_MIN_POOL_SUPPLY);
-
-        _finalized = true;
-        _publicSwap = true;
-        _publicJoin = true;
-
-        _mintPoolShare(initSupply);
-        _pushPoolShare(msg.sender, initSupply);
-    }
-
-
-    function bind(address token)
-      _logs_
-      _lock_
-      public
-    {
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        require( ! isBound(token), ERR_IS_BOUND);
-        require( ! isFinalized(), ERR_IS_FINALIZED);
-
-        require(_tokens.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
-
-        uint length = _tokens.push(token);
-        _records[token] = Record({
-            index: length // 1-indexed (0 is 'unbound' state)
-          , denorm: 0
-          , balance: 0
-        });
-    }
-
     function unbind(address token)
         _logs_
         _lock_
@@ -284,7 +281,9 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
-        require( ! isFunded(token), ERR_IS_FUNDED);
+
+        _pushUnderlying(token, msg.sender, _records[token].balance);
+        _totalWeight = bsub(_totalWeight, _records[token].denorm);
 
         // Swap the token-to-unbind with the last token,
         // then delete the last token
@@ -306,7 +305,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     {
-        require(isFunded(token), ERR_NOT_FUNDED);
+        require(isBound(token), ERR_NOT_BOUND);
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
@@ -419,8 +418,8 @@ contract BPool is BBronze, BToken, BMath
         public returns (uint Ao, uint MP)
     {
         
-        require( isFunded(Ti), ERR_NOT_FUNDED );
-        require( isFunded(To), ERR_NOT_FUNDED );
+        require( isBound(Ti), ERR_NOT_BOUND );
+        require( isBound(To), ERR_NOT_BOUND );
         require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
@@ -452,8 +451,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_ 
         public returns (uint Ai, uint MP)
     {
-        require( isFunded(Ti), ERR_NOT_FUNDED);
-        require( isFunded(To), ERR_NOT_FUNDED);
+        require( isBound(Ti), ERR_NOT_BOUND);
+        require( isBound(To), ERR_NOT_BOUND);
         require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
@@ -484,8 +483,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ai, uint Ao)
     {
-        require( isFunded(Ti), ERR_NOT_FUNDED);
-        require( isFunded(To), ERR_NOT_FUNDED);
+        require( isBound(Ti), ERR_NOT_BOUND);
+        require( isBound(To), ERR_NOT_BOUND);
         require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
@@ -517,7 +516,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint poolAo)
     {
-        require( isFunded(Ti), ERR_NOT_FUNDED );
+        require( isBound(Ti), ERR_NOT_BOUND );
         uint oldPoolTotal = _totalSupply;
 
         Record storage T = _records[Ti];
@@ -537,7 +536,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAi)
     {
-        require( isFunded(Ti), ERR_NOT_FUNDED );
+        require( isBound(Ti), ERR_NOT_BOUND );
 
         Record storage T = _records[Ti];
 
@@ -556,7 +555,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint tAo)
     {
-        require( isFunded(To), ERR_NOT_FUNDED );
+        require( isBound(To), ERR_NOT_BOUND );
 
         Record storage T = _records[To];
 
@@ -575,7 +574,7 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         returns (uint pAi)
     {
-        require( isFunded(To), ERR_NOT_FUNDED );
+        require( isBound(To), ERR_NOT_BOUND );
 
         Record storage T = _records[To];
 
