@@ -224,7 +224,7 @@ contract BPool is BBronze, BToken, BMath
 
     function bind(address token, uint balance, uint denorm)
       _logs_
-      _lock_
+      // _lock_  Bind does not lock because it calls `rebind`
       public
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
