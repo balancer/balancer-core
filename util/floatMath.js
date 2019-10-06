@@ -130,6 +130,7 @@ module.exports.floatMath = {
   amountUpToPrice: function () {
     return module.exports.floatMath.amountUpToPriceApprox(...arguments)
   },
+
   amountUpToPriceApprox: function (Bi, Wi, Bo, Wo, SER1, fee) {
     var SER0 = this.spotRate(Bi, Wi, Bo, Wo)
     var exponent = Wo / (Wo + Wi)
@@ -163,33 +164,6 @@ module.exports.floatMath = {
     }
 
     return sum * wholePow
-  },
-
-  getValue: function (tokenList) {
-    if (tokenList.length === 0) return 0
-    let res = 1
-    for (const token of tokenList) {
-      res *= Math.pow(token[0], token[1])
-    }
-    return res
-  },
-
-  getRefSpotPrice: function (Bo, Wo, tokens) {
-    return (Bo / Wo) / this.getValue(tokens)
-  },
-
-  getTotalWeight: function (tokens) {
-    let res = 0
-    for (const token of tokens) {
-      res += token[1]
-    }
-    return res
-  },
-
-  getNormalizedWeight: function (W, tokens) {
-    const totalWeight = this.getTotalWeight(tokens)
-    if (totalWeight === 0) return 0
-    return W / totalWeight
   }
 
 }
