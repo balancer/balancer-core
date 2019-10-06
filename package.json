@@ -4,22 +4,6 @@
   "version": "0.0.7",
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
-  "author": {
-    "name": "Nikolai Mushegian",
-    "email": "mail@nikolai.fyi",
-    "url": "https://nikolai.fyi"
-  },
-  "contributors": [
-    {
-      "name": "Kevin Bravo",
-      "email": "kbravo@pm.me"
-    },
-    {
-      "name": "Fernando Martinelli",
-      "email": "fernando@balancer.finance"
-    }
-  ],
-  "main": "pkg.js",
   "scripts": {
     "build": "truffle build",
     "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
