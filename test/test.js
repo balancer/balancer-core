@@ -3,8 +3,8 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 
-contract('bpool basic lifecycle / truffle meta tests', async (accts) => {
-  const admin = accts[0];
+contract('bpool basic lifecycle / truffle meta tests', async (accounts) => {
+  const admin = accounts[0];
   const toHex = web3.utils.toHex;
   const toWei = web3.utils.toWei;
   const fromWei = web3.utils.fromWei;
@@ -45,20 +45,19 @@ contract('bpool basic lifecycle / truffle meta tests', async (accts) => {
   beforeEach(async () => {
   });
 
-  it('runs a test', async () => {
-    console.log('hello');
-  });
-
-  it('deployed via fractory from accts[0], which is now controller', async () => {
+  it('admin == accounts[0] == controller and factory.isBPool(pool)', async () => {
+    assert.equal(admin, accounts[0])
     const controller = await pool.getController.call();
     assert.equal(admin, controller);
     const isPool = await factory.isBPool(POOL);
     assert(isPool);
   });
 
-  it('we have test tokens available', async()=>{
-    const bal = await dirt.balanceOf(admin);
+  it('admin has DIRT and admin approves POOL to use DIRT', async()=>{
+    const bal = await dirt.balanceOf.call(admin);
     assert(bal.gt(0));
-
+    const allowance = await dirt.allowance.call(admin, POOL);
+    assert(allowance.gt(0));
   });
+
 });
