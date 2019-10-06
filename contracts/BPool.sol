@@ -78,12 +78,12 @@ contract BPool is BBronze, BToken, BMath
         _finalized = false;
     }
 
-    function isSwapPublic()
+    function isPublicSwap()
       public view returns (bool) {
         return _publicSwap;
     }
 
-    function isJoinPublic()
+    function isPublicJoin()
       public view returns (bool) {
         return _publicJoin;
     }
@@ -184,7 +184,7 @@ contract BPool is BBronze, BToken, BMath
         _controller = manager;
     }
 
-    function setSwapAccess(bool public_)
+    function setPublicSwap(bool public_)
         _logs_
         _lock_
         public
@@ -194,7 +194,7 @@ contract BPool is BBronze, BToken, BMath
         _publicSwap = public_;
     }
 
-    function setJoinAccess(bool public_)
+    function setPublicJoin(bool public_)
         _logs_
         _lock_
         public
@@ -421,7 +421,7 @@ contract BPool is BBronze, BToken, BMath
         
         require( isBound(Ti), ERR_NOT_BOUND );
         require( isBound(To), ERR_NOT_BOUND );
-        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -454,7 +454,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
-        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
@@ -486,7 +486,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
-        require( isSwapPublic(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
