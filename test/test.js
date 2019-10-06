@@ -9,43 +9,58 @@ contract('bpool basic lifecycle / truffle meta tests', async (accts) => {
   const toWei = web3.utils.toWei;
   const fromWei = web3.utils.fromWei;
 
-  const MAX = toWei(web3.utils.toTwosComplement(-1));
+  const MAX = web3.utils.toTwosComplement(-1);
 
   let tokens;           // token factory / registry
   let DIRT, ROCK, SAND; // addresses
   let dirt, rock, sand; // TTokens
   let factory;          // BPool factory
   let pool;             // first pool w/ defaults
+  let POOL;             //   pool address
+
+  const dirtBalance = toWei('10')
+  const dirtDenorm = toWei('1.1');
 
   before(async () => {
-    const tokens = await TTokenFactory.deployed();
-    const bpool = await BPool.deployed();
-    
-    ROCK = await tokens.get.call(toHex("ROCK"));
-    rock = await TToken.at(ROCK);
+    console.log('before all');
+    tokens = await TTokenFactory.deployed();
+    console.log("token factory", tokens);
+    factory = await BFactory.deployed();
 
+    POOL = await factory.newBPool.call(); // this works fine in clean room
+    await factory.newBPool();
+    pool = await BPool.at(POOL);
+    console.log("POOL", POOL);
+
+    await tokens.build(toHex("DIRT"));
     DIRT = await tokens.get.call(toHex("DIRT"));
+    console.log("DIRT", DIRT);
     dirt = await TToken.at(DIRT);
 
-    SAND = await tokens.get.call(toHex("SAND"));
-    sand = await TToken.at(SAND);
+    await dirt.approve(POOL, MAX);
 
-    await rock.approve(pool, MAX);
+    await pool.bind(POOL, dirtBalance, dirtDenorm);
+
   });
 
   beforeEach(async () => {
+    console.log('before each');
   });
 
+  it('runs a test', async () => {
+    console.log('hello');
+  });
+
+/*
   it('deployed with accts[0], which is now controller', async () => {
-    const bpool = await BPool.deployed();
-    const controller = await bpool.getController.call();
+    const controller = await pool.getController.call();
     assert.equal(admin, controller);
   });
+
   it('we have test tokens available', async()=>{
-    const tokens = await TTokenFactory.deployed();
-    const ROCK = await tokens.get.call(web3.utils.toHex("ROCK"));
-    const rock = await TToken.at(ROCK);
     const bal = await rock.balanceOf(admin);
     assert(bal.gt(0));
+
   });
+*/
 });
