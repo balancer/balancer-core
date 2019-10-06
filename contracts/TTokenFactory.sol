@@ -17,23 +17,11 @@ import "contracts/TToken.sol";
 
 contract TTokenFactory {
     mapping(bytes32=>TToken) tokens;
-    constructor() public {
-        build("DIRT");
-        build("ROCK");
-        build("SAND");
-
-        get("DIRT").mint(100 ether);
-        get("ROCK").mint(100 ether);
-        get("SAND").mint(100 ether);
-
-        get("DIRT").transfer(msg.sender, 100 ether);
-        get("ROCK").transfer(msg.sender, 100 ether);
-        get("SAND").transfer(msg.sender, 100 ether);
-    }
     function get(bytes32 name) public returns (TToken) {
         return tokens[name];
     }
-    function build(bytes32 name) public {
+    function build(bytes32 name) public returns (TToken) {
         tokens[name] = new TToken();
+        return tokens[name];
     }
 }
