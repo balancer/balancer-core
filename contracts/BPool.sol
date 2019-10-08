@@ -229,7 +229,7 @@ contract BPool is BBronze, BToken, BMath
 
     function bind(address token, uint balance, uint denorm)
       _logs_
-      // _lock_  Bind does not lock because it calls `rebind`
+      // _lock_  Bind does not lock because it jumps to `rebind`, which does
       public
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -331,11 +331,6 @@ contract BPool is BBronze, BToken, BMath
         _viewlock_
         returns (uint P)
     {
-        return _getSpotPrice(Ti, To);
-    }
-    function _getSpotPrice(address Ti, address To)
-      internal view returns (uint P)
-    {
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
@@ -345,11 +340,6 @@ contract BPool is BBronze, BToken, BMath
       public view
         _viewlock_
         returns (uint R)
-    {
-        return _getSpotRate(Ti, To);
-    }
-    function _getSpotRate(address Ti, address To)
-      internal view returns (uint R)
     {
         Record storage I = _records[Ti];
         Record storage O = _records[To];
@@ -433,7 +423,8 @@ contract BPool is BBronze, BToken, BMath
 
         require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
-        require( LP >= _getSpotPrice(Ti, To), ERR_ARG_LIMIT_IN);
+        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require( LP >= SP0, ERR_ARG_LIMIT_IN);
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= Lo, ERR_LIMIT_OUT );
@@ -441,15 +432,15 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint Pafter = _getSpotPrice(Ti, To);
-        require(Pafter <= LP, ERR_LIMIT_PRICE);
+        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 <= LP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
-        return (Ao, Pafter);
+        return (Ao, SP1);
     }
 
     function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
@@ -465,7 +456,9 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
-        require(PL < _getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE );
+
+        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(PL < SR0, ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -473,15 +466,15 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint Pafter = _getSpotRate(Ti, To);
-        require( Pafter >= PL, ERR_LIMIT_PRICE);
+        uint SR1 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require( SR1 >= PL, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
-        return (Ai, Pafter);
+        return (Ai, SR1);
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
@@ -497,7 +490,9 @@ contract BPool is BBronze, BToken, BMath
         Record storage O = _records[address(To)];
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
-        require(MP < _getSpotRate(Ti, To), ERR_ARG_LIMIT_PRICE);
+
+        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(MP < SR0, ERR_ARG_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
