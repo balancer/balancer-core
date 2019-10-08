@@ -107,6 +107,9 @@ contract BMath is BBronze, BConst, BNum
       internal pure
         returns (uint poolOut)
     {
+
+        //=== REDO this block ===
+
         // Charge the trading fee for the proportion of tokenAi
         ///  which is implicitly traded to the other pool tokens.
         // That proportion is (1-T.normalizedWeight)
@@ -126,6 +129,8 @@ contract BMath is BBronze, BConst, BNum
         uint zoo = bpow(ratioTi, normalizedWeight);
         uint zar = bmul(zoo, poolSupply);
         return (poolOut = bsub(zar, poolSupply));
+
+        //=== ===
     }
 
     function _calc_SingleInGivenPoolOut( uint balance, uint weight
@@ -134,6 +139,9 @@ contract BMath is BBronze, BConst, BNum
       internal pure
         returns (uint tokenIn)
     {
+
+        //=== REDO this block ===
+
         uint normalizedWeight = bdiv(weight, totalWeight);
         uint newPoolTotal = badd(poolSupply, pAo);
         uint poolRatio = bdiv(newPoolTotal, poolSupply);
@@ -151,6 +159,8 @@ contract BMath is BBronze, BConst, BNum
         uint zaz = bsub(BONE, zar);
         uint tAi = bdiv(tokenAi, zaz);
         return tAi;
+
+        //=== ===
     }
 
     // Temporary hack to avoid stack depth
@@ -172,6 +182,9 @@ contract BMath is BBronze, BConst, BNum
       internal pure
         returns (uint tAo)
     {
+
+        // === REDO this block ===
+
         uint normalizedWeight = bdiv(weight, totalWeight);
         uint pAi_fee = _calc_SOGPI_helper(normalizedWeight, pAi, fee);
 
@@ -185,6 +198,8 @@ contract BMath is BBronze, BConst, BNum
 
         tAo = balance - newBalTo;
         return tAo;
+
+        //=== ===
     }
 
     function _calc_PoolInGivenSingleOut( uint balance, uint weight
@@ -193,6 +208,9 @@ contract BMath is BBronze, BConst, BNum
       internal pure
         returns (uint pAi)
     {
+
+        // === REDO this block ===
+
         uint newBalTo = balance - tAo;
         uint ratioTo = bdiv(newBalTo, balance);
 
@@ -207,6 +225,8 @@ contract BMath is BBronze, BConst, BNum
         uint zar = bmul(zoo, swapFee); // poolAoBeforeTradingFees
         uint pAi_beforeFees = bdiv(poolAi, bsub(BONE, exitFee));
         return pAi_beforeFees;
+
+        //=== ===
     }
 
 

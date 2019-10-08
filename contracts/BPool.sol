@@ -19,9 +19,12 @@ import "contracts/BMath.sol";
 
 contract BPool is BBronze, BToken, BMath
 {
+    // Invariant: if any one field of a Record is zero, then the rest are zero
+    // Invariant: MIN_WEIGHT < denorm < MAX_WEIGHT
+    // Invariant: MIN_BALANCE < balance < MAX_BALANCE
     struct Record {
-        uint index; // private and 1-indexed; 0 is "unbound" state.
-        uint denorm;
+        uint index;   // private and off-by-one to maintain invariant
+        uint denorm;  // denormalized weight
         uint balance;
     }
 
@@ -54,17 +57,19 @@ contract BPool is BBronze, BToken, BMath
         _;
     }
 
-    bool                      _mutex;
+    bool                      _mutex; // TODO: consider  messageNonce
 
-    bool                      _publicSwap;
-    bool                      _publicJoin;
-    bool                      _finalized;
+    // Emulates a rudimentary role-based access control system
+    address                   _factory;    // has FACTORY role
+    address                   _controller; // has CONTROL role
+    bool                      _publicSwap; // true if PUBLIC can call SWAP functions
+    bool                      _publicJoin; // true if PUBLIC can call JOIN functions
 
-    address                   _factory;
-    address                   _controller;
-
+    // `setFees` and `finalize` require CONTROL
+    // `finalize` sets `PUBLIC can SWAP`, `PUBLIC can JOIN`, and sets `_controller` to NULL
     uint                      _swapFee;
     uint                      _exitFee;
+    bool                      _finalized;
 
     address[]                 _tokens;
     mapping(address=>Record)  _records;
