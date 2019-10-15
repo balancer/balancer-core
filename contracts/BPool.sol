@@ -380,6 +380,8 @@ contract BPool is BBronze, BToken, BMath
         _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
+        require(isPublicJoin(), ERR_JOIN_NOT_PUBLIC);
+
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAo, poolTotal);
         for( uint i = 0; i < _tokens.length; i++ ) {
@@ -526,6 +528,8 @@ contract BPool is BBronze, BToken, BMath
         returns (uint poolAo)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
+
         uint oldPoolTotal = _totalSupply;
 
         Record storage T = _records[Ti];
@@ -546,6 +550,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint tAi)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[Ti];
 
@@ -565,6 +570,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint tAo)
     {
         require( isBound(To), ERR_NOT_BOUND );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[To];
 
@@ -584,6 +590,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint pAi)
     {
         require( isBound(To), ERR_NOT_BOUND );
+        require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[To];
 

@@ -80,4 +80,19 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log(` -> ( ${ret[0]} , ${ret[1]} )`);
   });
 
+  it('swap_ExactAmountOut');
+  it('swap_ExactAmountOut ERR_MAX_OUT_RATIO ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
+
+  it('swap_ExactMarginalPrice');
+  it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_ARG_LIMIT_PRICE ERR_LIMIT_OUT ERR_LIMIT_PRICE');
+
+  it('joinPool');
+  it('exitPool');
+
+  it('joinswap_ExternAmountIn');
+  it('joinswap_PoolAmountOut');
+  it('exitswap_PoolAmountIn');
+  it('exitswap_ExternAmountOut');
+
+
 });

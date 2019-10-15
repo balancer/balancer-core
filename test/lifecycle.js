@@ -126,4 +126,17 @@ contract('BPool lifecycle', async (accounts) => {
   it('gulp');
 
   it('testtesttest');
+
+  it('swap_ExactAmountIn ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
+  it('swap_ExactAmountOut ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
+  it('swap_ExactMarginalPrice ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
+
+  it('joinPool ERR_NOT_BOUND ERR_NOT_FINALIZED ERR_JOIN_NOT_PUBLIC');
+  it('exitPool ERR_NOT_BOUND ERR_NOT_FINALIZED');
+  it('joinswap_ExternAmountIn ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC ERR_JOIN_NOT_PUBLIC');
+  it('joinswap_PoolAmountOut ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC ERR_JOIN_NOT_PUBLIC');
+  it('exitswap_ExternAmountOut ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
+  it('exitswap_PoolAmountIn ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
+
+
 });
