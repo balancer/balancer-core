@@ -331,6 +331,8 @@ contract BPool is BBronze, BToken, BMath
         _viewlock_
         returns (uint P)
     {
+        require(isBound(Ti), ERR_NOT_BOUND);
+        require(isBound(To), ERR_NOT_BOUND);
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
@@ -341,6 +343,8 @@ contract BPool is BBronze, BToken, BMath
         _viewlock_
         returns (uint R)
     {
+        require(isBound(Ti), ERR_NOT_BOUND);
+        require(isBound(To), ERR_NOT_BOUND);
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
@@ -351,6 +355,8 @@ contract BPool is BBronze, BToken, BMath
         _viewlock_
         returns (uint P)
     {
+        require(isBound(Ti), ERR_NOT_BOUND);
+        require(isBound(To), ERR_NOT_BOUND);
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, 0);
@@ -361,6 +367,8 @@ contract BPool is BBronze, BToken, BMath
         _viewlock_
         returns (uint P)
     {
+        require(isBound(Ti), ERR_NOT_BOUND);
+        require(isBound(To), ERR_NOT_BOUND);
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, 0);

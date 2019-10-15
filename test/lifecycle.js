@@ -5,8 +5,6 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 
-const todo = async () => { throw 'unimplemented' };
-
 contract('BPool lifecycle', async (accounts) => {
 
   const admin = accounts[0];
@@ -61,11 +59,13 @@ contract('BPool lifecycle', async (accounts) => {
     assert.equal(1, numTokens);
   });
 
-  it('bind getTotalDenormalizedWeight getTotalNormalizedWeight', todo);
+  it('bind getTotalDenormalizedWeight getTotalNormalizedWeight');
 
-  it('bind ERR_NOT_CONTROLLER ERR_IS_BOUND ERR_IS_FINALIZED', todo);
+  it('bind getGetCurrentTokens');
 
-  it('bind ERR_MAX_TOKENS', todo);
+  it('bind ERR_NOT_CONTROLLER ERR_IS_BOUND ERR_IS_FINALIZED');
+
+  it('bind ERR_MAX_TOTAL_WEIGHT ERR_MAX_TOKENS');
 
   it('unbind getNumTokens isBound', async () => {
     let isBoundBefore = await pool.isBound.call(DIRT);
@@ -78,7 +78,7 @@ contract('BPool lifecycle', async (accounts) => {
     assert.equal(numTokensAfter, numTokensBefore - 1);
   });
 
-  it('unbind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FUNDED', todo);
+  it('unbind ERR_NOT_CONTROLLER ERR_NOT_BOUND');
 
   it('rebind getBalance getWeight', async () => {
     await pool.bind(DIRT, toWei('10'), toWei('1.2'));
@@ -91,32 +91,39 @@ contract('BPool lifecycle', async (accounts) => {
 
   });
 
-  it('rebind getTotalDenormalizedWeight getTotalNormalizedWeight', todo);
+  it('ERR_NOT_BOUND getters')
 
-  it('rebind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FINALIZED', todo);
+  it('rebind getTotalDenormalizedWeight getTotalNormalizedWeight');
 
-  it('rebind ERR_MIN_WEIGHT ERR_MAX_WEIGHT ERR_MIN_BALANCE ERR_MAX_BALANCE', todo);
+  it('rebind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FINALIZED');
 
-  it('rebind ERR_MAX_TOTAL_WEIGHT', todo);
+  it('rebind ERR_MIN_WEIGHT ERR_MAX_WEIGHT ERR_MIN_BALANCE ERR_MAX_BALANCE');
 
-  it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE', todo);
+  it('rebind ERR_MAX_TOTAL_WEIGHT ERR_MAX_TOKENS');
 
-  it('setFees getFees' todo);
+  it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE');
 
-  it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED', todo);
+  it('setFees getFees');
+
+  it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED');
 
   it('setController getController');
 
-  it('setController ERR_NOT_CONTROLLER ERR_FINALIZED', todo);
+  it('setController ERR_NOT_CONTROLLER ERR_FINALIZED');
 
-  it('setPublicJoin setPublicSwap isPublicJoin isPublicSwap', todo);
+  it('setPublicJoin setPublicSwap isPublicJoin isPublicSwap');
 
-  it('setPublicJoin setPublicSwap ERR_NOT_CONTROLLER ERR_IS_FINALIZED', todo);
+  it('setPublicJoin setPublicSwap ERR_NOT_CONTROLLER ERR_IS_FINALIZED');
 
-  it('collect', todo);
+  it('finalize isFinalized getCurrentTokens getFinalTokens');
 
-  it('collect ERR_NOT_FACTORY', todo);
+  it('finalize ERR_NOT_CONTROLLER ERR_IS_FINALIZED ERR_MIN_POOL_SUPPLY');
 
-  it('gulp', todo);
+  it('collect');
 
+  it('collect ERR_NOT_FACTORY');
+
+  it('gulp');
+
+  it('testtesttest');
 });
