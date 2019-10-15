@@ -1,3 +1,5 @@
+const assert = require('chai').assert;
+
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
@@ -74,15 +76,22 @@ contract('BPool lifecycle', async (accounts) => {
     let isBoundAfter = await pool.isBound.call(DIRT);
     assert(!isBoundAfter);
     let numTokensAfter = await pool.getNumTokens.call();
-    assert(numTokensAfter == numTokensBefore - 1);
+    assert.equal(numTokensAfter, numTokensBefore - 1);
   });
 
   it('unbind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FUNDED', async () => {
       throw 'unimplemented';
   });
 
-  it('rebind getBalance getWeight getSpotPrice', async () => {
-      throw 'unimplemented';
+  it('rebind getBalance getWeight', async () => {
+    await pool.bind(DIRT, toWei('10'), toWei('1.2'));
+    assert.equal(toWei('10'), await pool.getBalance.call(DIRT));
+    assert.equal(toWei('1.2'), await pool.getDenormalizedWeight.call(DIRT));
+
+    await pool.rebind(DIRT, toWei('12'), toWei('1.1'));
+    assert.equal(toWei('12'), await pool.getBalance.call(DIRT));
+    assert.equal(toWei('1.1'), await pool.getDenormalizedWeight.call(DIRT));
+
   });
 
   it('rebind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FINALIZED', async () => {
