@@ -22,8 +22,11 @@ contract('math tests from canonical setup', async (accounts) => {
   const dirtBalance = toWei('10')
   const dirtDenorm = toWei('1.1');
 
-  const rockBalance = toWei('50')
+  const rockBalance = toWei('55')
   const rockDenorm = toWei('2.4');
+
+  const sandBalance = toWei('101')
+  const sandDenorm = toWei('3.7');
 
   before(async () => {
     tokens = await TTokenFactory.deployed();
@@ -44,6 +47,11 @@ contract('math tests from canonical setup', async (accounts) => {
     rock = await TToken.at(ROCK);
     console.log(`rock := tokens.build('ROCK')`);
 
+    await tokens.build(toHex("SAND"));
+    SAND = await tokens.get.call(toHex("SAND"));
+    sand = await TToken.at(SAND);
+    console.log(`sand := tokens.build('SAND')`);
+
     await dirt.mint(MAX);
     console.log("dirt.mint(MAX);");
     await dirt.approve(POOL, MAX);
@@ -54,11 +62,19 @@ contract('math tests from canonical setup', async (accounts) => {
     await rock.approve(POOL, MAX);
     console.log("rock.approve(POOL, MAX);");
 
+    await sand.mint(MAX);
+    console.log("sand.mint(MAX);");
+    await sand.approve(POOL, MAX);
+    console.log("sand.approve(POOL, MAX);");
+
     await pool.bind(DIRT, dirtBalance, dirtDenorm);
     console.log(`pool.bind(DIRT, ${dirtBalance}, ${dirtDenorm})`);
 
     await pool.bind(ROCK, rockBalance, rockDenorm);
     console.log(`pool.bind(ROCK, ${rockBalance}, ${rockDenorm})`);
+
+    await pool.bind(SAND, sandBalance, sandDenorm);
+    console.log(`pool.bind(SAND, ${sandBalance}, ${sandDenorm})`);
 
     await pool.setPublicSwap(true);
     console.log('pool.setPublicSwap(true);');
@@ -74,10 +90,10 @@ contract('math tests from canonical setup', async (accounts) => {
   });
 
   it('swap_ExactAmountIn', async () => {
-    let ret = await pool.swap_ExactAmountIn.call(DIRT, toWei('2.5'), ROCK, '0', MAX);
-    await pool.swap_ExactAmountIn(DIRT, toWei('2.5'), ROCK, '0', MAX);
-    console.log(`pool.swap_ExactAmountIn(DIRT, ${toWei('2.5')}, ROCK, 0, MAX);`);
-    console.log(` -> ( ${ret[0]} , ${ret[1]} )`);
+    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('2.5'), ROCK, '0', MAX);
+    let amountOut = result[0];
+    let newPrice = result[1];
+    assert.equal(toWei('5.346987789318917995'), result[0].toString()); // copy/pasted example - recheck result
   });
 
   it('swap_ExactAmountOut');
