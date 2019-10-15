@@ -5,6 +5,8 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 
+const todo = async () => { throw 'unimplemented' };
+
 contract('BPool lifecycle', async (accounts) => {
 
   const admin = accounts[0];
@@ -59,14 +61,11 @@ contract('BPool lifecycle', async (accounts) => {
     assert.equal(1, numTokens);
   });
 
+  it('bind getTotalDenormalizedWeight getTotalNormalizedWeight', todo);
 
-  it('bind ERR_NOT_CONTROLLER ERR_IS_BOUND ERR_IS_FINALIZED', async () => {
-      throw 'unimplemented';
-  });
+  it('bind ERR_NOT_CONTROLLER ERR_IS_BOUND ERR_IS_FINALIZED', todo);
 
-  it('bind ERR_MAX_TOKENS', async () => {
-      throw 'unimplemented';
-  });
+  it('bind ERR_MAX_TOKENS', todo);
 
   it('unbind getNumTokens isBound', async () => {
     let isBoundBefore = await pool.isBound.call(DIRT);
@@ -79,9 +78,7 @@ contract('BPool lifecycle', async (accounts) => {
     assert.equal(numTokensAfter, numTokensBefore - 1);
   });
 
-  it('unbind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FUNDED', async () => {
-      throw 'unimplemented';
-  });
+  it('unbind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FUNDED', todo);
 
   it('rebind getBalance getWeight', async () => {
     await pool.bind(DIRT, toWei('10'), toWei('1.2'));
@@ -94,27 +91,32 @@ contract('BPool lifecycle', async (accounts) => {
 
   });
 
-  it('rebind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FINALIZED', async () => {
-      throw 'unimplemented';
-  });
+  it('rebind getTotalDenormalizedWeight getTotalNormalizedWeight', todo);
 
-  it('rebind ERR_MIN_WEIGHT ERR_MAX_WEIGHT ERR_MIN_BALANCE ERR_MAX_BALANCE', async () => {
-      throw 'unimplemented';
-  });
+  it('rebind ERR_NOT_CONTROLLER ERR_NOT_BOUND ERR_IS_FINALIZED', todo);
 
-  it('rebind ERR_MAX_TOTAL_WEIGHT', async () => {
-      throw 'unimplemented';
-  });
+  it('rebind ERR_MIN_WEIGHT ERR_MAX_WEIGHT ERR_MIN_BALANCE ERR_MAX_BALANCE', todo);
 
-  it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE', async () => {
-      throw 'unimplemented';
-  });
+  it('rebind ERR_MAX_TOTAL_WEIGHT', todo);
 
-  it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE getFees', async () => {
-      throw 'unimplemented';
-  });
+  it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE', todo);
 
-  it('setController getController ERR_NOT_CONTROLLER', async () => {
-      throw 'unimplemented'
-  });
+  it('setFees getFees' todo);
+
+  it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED', todo);
+
+  it('setController getController');
+
+  it('setController ERR_NOT_CONTROLLER ERR_FINALIZED', todo);
+
+  it('setPublicJoin setPublicSwap isPublicJoin isPublicSwap', todo);
+
+  it('setPublicJoin setPublicSwap ERR_NOT_CONTROLLER ERR_IS_FINALIZED', todo);
+
+  it('collect', todo);
+
+  it('collect ERR_NOT_FACTORY', todo);
+
+  it('gulp', todo);
+
 });
