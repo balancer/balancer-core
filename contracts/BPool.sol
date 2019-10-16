@@ -172,6 +172,7 @@ contract BPool is BBronze, BToken, BMath
       _lock_
       public
     { 
+        require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         // TODO min fees
         require(swapFee <= MAX_FEE, ERR_MAX_FEE);
