@@ -28,6 +28,9 @@ contract('math tests from canonical setup', async (accounts) => {
   const sandBalance = toWei('101')
   const sandDenorm = toWei('3.7');
 
+  const swapFee = toWei('0.01');
+  const exitFee = toWei('0.01');
+
   before(async () => {
     tokens = await TTokenFactory.deployed();
     factory = await BFactory.deployed();
@@ -87,13 +90,17 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log(`pool.rebind(DIRT, ${dirtBalance}, ${dirtDenorm})`);
     await pool.rebind(ROCK, rockBalance, rockDenorm);
     console.log(`pool.rebind(ROCK, ${rockBalance}, ${rockDenorm})`);
+    await pool.rebind(SAND, sandBalance, sandDenorm);
+    console.log(`pool.rebind(SAND, ${sandBalance}, ${sandDenorm})`);
+    await pool.setFees(swapFee, exitFee);
+    console.log(`pool.setFees(${swapFee},${exitFee})`);
   });
 
   it('swap_ExactAmountIn', async () => {
     let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('2.5'), ROCK, '0', MAX);
     let amountOut = result[0];
     let newPrice = result[1];
-    assert.equal(toWei('5.346987789318917995'), result[0].toString()); // copy/pasted example - recheck result
+    assert.equal(amountOut, toWei('5.301406042731197960')); // copy/pasted example - recheck result
   });
 
   it('swap_ExactAmountOut');
