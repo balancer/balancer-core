@@ -243,6 +243,7 @@ contract BPool is BBronze, BToken, BMath
         _finalized = true;
         _publicSwap = true;
         _publicJoin = true;
+        _publicExit = true;
 
         _mintPoolShare(initSupply);
         _pushPoolShare(msg.sender, initSupply);
