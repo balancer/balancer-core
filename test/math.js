@@ -38,66 +38,53 @@ contract('math tests from canonical setup', async (accounts) => {
     POOL = await factory.newBPool.call(); // this works fine in clean room
     await factory.newBPool();
     pool = await BPool.at(POOL);
-    console.log(`pool := factory.newBPool()`);
 
     await tokens.build(toHex("DIRT"));
-    DIRT = await tokens.get.call(toHex("DIRT"));
-    dirt = await TToken.at(DIRT);
-    console.log(`dirt := tokens.build('DIRT')`);
-
     await tokens.build(toHex("ROCK"));
-    ROCK = await tokens.get.call(toHex("ROCK"));
-    rock = await TToken.at(ROCK);
-    console.log(`rock := tokens.build('ROCK')`);
-
     await tokens.build(toHex("SAND"));
+
+    DIRT = await tokens.get.call(toHex("DIRT"));
+    ROCK = await tokens.get.call(toHex("ROCK"));
     SAND = await tokens.get.call(toHex("SAND"));
+
+    dirt = await TToken.at(DIRT);
+    rock = await TToken.at(ROCK);
     sand = await TToken.at(SAND);
-    console.log(`sand := tokens.build('SAND')`);
 
     await dirt.mint(MAX);
-    console.log("dirt.mint(MAX);");
-    await dirt.approve(POOL, MAX);
-    console.log("dirt.approve(POOL, MAX);");
-
     await rock.mint(MAX);
-    console.log("rock.mint(MAX);");
-    await rock.approve(POOL, MAX);
-    console.log("rock.approve(POOL, MAX);");
-
     await sand.mint(MAX);
-    console.log("sand.mint(MAX);");
+
+    await dirt.approve(POOL, MAX);
+    await rock.approve(POOL, MAX);
     await sand.approve(POOL, MAX);
-    console.log("sand.approve(POOL, MAX);");
 
     await pool.bind(DIRT, dirtBalance, dirtDenorm);
-    console.log(`pool.bind(DIRT, ${dirtBalance}, ${dirtDenorm})`);
-
     await pool.bind(ROCK, rockBalance, rockDenorm);
-    console.log(`pool.bind(ROCK, ${rockBalance}, ${rockDenorm})`);
-
     await pool.bind(SAND, sandBalance, sandDenorm);
-    console.log(`pool.bind(SAND, ${sandBalance}, ${sandDenorm})`);
+
+    await pool.setFees(swapFee, exitFee);
 
     await pool.setPublicSwap(true);
-    console.log('pool.setPublicSwap(true);');
     await pool.setPublicJoin(true);
-    console.log('pool.setPublicJoin(true);');
+    await pool.setPublicExit(true);
   });
 
   beforeEach(async () => {
     await pool.rebind(DIRT, dirtBalance, dirtDenorm);
-    console.log(`pool.rebind(DIRT, ${dirtBalance}, ${dirtDenorm})`);
     await pool.rebind(ROCK, rockBalance, rockDenorm);
-    console.log(`pool.rebind(ROCK, ${rockBalance}, ${rockDenorm})`);
     await pool.rebind(SAND, sandBalance, sandDenorm);
+    console.log(`pool.rebind(DIRT, ${dirtBalance}, ${dirtDenorm})`);
+    console.log(`pool.rebind(ROCK, ${rockBalance}, ${rockDenorm})`);
     console.log(`pool.rebind(SAND, ${sandBalance}, ${sandDenorm})`);
+
     await pool.setFees(swapFee, exitFee);
     console.log(`pool.setFees(${swapFee},${exitFee})`);
   });
 
   it('swap_ExactAmountIn', async () => {
     let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('2.5'), ROCK, '0', MAX);
+    console.log(`pool.swap_ExactAmountIn(DIRT, 2.5, ROCK, 0, MAX) -> (${result[0]}, ${result[1]})`);
     let amountOut = result[0];
     let newPrice = result[1];
     assert.equal(amountOut, toWei('5.301406042731197960')); // copy/pasted example - recheck result

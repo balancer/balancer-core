@@ -24,6 +24,16 @@ contract('BPool lifecycle', async (accounts) => {
   const dirtBalance = toWei('10')
   const dirtDenorm = toWei('1.1');
 
+  const rockBalance = toWei('55')
+  const rockDenorm = toWei('2.4');
+
+  const sandBalance = toWei('101')
+  const sandDenorm = toWei('3.7');
+
+  const swapFee = toWei('0.01');
+  const exitFee = toWei('0.01');
+
+
   before(async () => {
     tokens = await TTokenFactory.deployed();
     factory = await BFactory.deployed();
@@ -31,17 +41,26 @@ contract('BPool lifecycle', async (accounts) => {
     POOL = await factory.newBPool.call(); // this works fine in clean room
     await factory.newBPool();
     pool = await BPool.at(POOL);
-    console.log("pool is ", POOL);
 
     await tokens.build(toHex("DIRT"));
+    await tokens.build(toHex("ROCK"));
+    await tokens.build(toHex("SAND"));
+
     DIRT = await tokens.get.call(toHex("DIRT"));
+    ROCK = await tokens.get.call(toHex("ROCK"));
+    SAND = await tokens.get.call(toHex("SAND"));
+
     dirt = await TToken.at(DIRT);
-    console.log("dirt is ", DIRT);
+    rock = await TToken.at(ROCK);
+    sand = await TToken.at(SAND);
 
     await dirt.mint(MAX);
-    console.log("dirt.mint(MAX);");
+    await rock.mint(MAX);
+    await sand.mint(MAX);
+
     await dirt.approve(POOL, MAX);
-    console.log("dirt.approve(POOL, MAX);");
+    await rock.approve(POOL, MAX);
+    await sand.approve(POOL, MAX);
   });
 
   it('bind getNumTokens isBound', async () => {
@@ -51,7 +70,6 @@ contract('BPool lifecycle', async (accounts) => {
     assert.equal(0, numTokens);
 
     await pool.bind(DIRT, dirtBalance, dirtDenorm);
-    console.log("pool.bind(DIRT, dirtBalance, dirtDenorm);");
 
     isBound = await pool.isBound.call(DIRT);
     numTokens = await pool.getNumTokens.call();
@@ -91,7 +109,9 @@ contract('BPool lifecycle', async (accounts) => {
 
   });
 
-  it('ERR_NOT_BOUND getters')
+  it('get* ERR_NOT_BOUND')
+
+  it('get* ERR_NOT_FINALIZED')
 
   it('rebind getTotalDenormalizedWeight getTotalNormalizedWeight');
 
@@ -126,8 +146,6 @@ contract('BPool lifecycle', async (accounts) => {
   it('collect ERR_NOT_FACTORY');
 
   it('gulp');
-
-  it('testtesttest');
 
   it('swap_ExactAmountIn ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
   it('swap_ExactAmountOut ERR_NOT_BOUND ERR_SWAP_NOT_PUBLIC');
