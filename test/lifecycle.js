@@ -115,6 +115,8 @@ contract('BPool lifecycle', async (accounts) => {
 
   it('setPublicJoin setPublicSwap ERR_NOT_CONTROLLER ERR_IS_FINALIZED');
 
+  it('setPublicExit ERR_EXIT_ALWAYS_PUBLIC');
+
   it('finalize isFinalized getCurrentTokens getFinalTokens');
 
   it('finalize ERR_NOT_CONTROLLER ERR_IS_FINALIZED ERR_MIN_POOL_SUPPLY');
