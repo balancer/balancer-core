@@ -110,11 +110,11 @@ contract BStub is BBronze, BMath
         return bpow(base, exp);
     }
 
-    function calc_bpowK(uint base, uint exp, uint K)
+    function calc_bpowK(uint base, uint exp)
       public pure
         returns (uint)
     {
-        return bpowK(base, exp, K);
+        return bpowK(base, exp);
     }
 
 }
