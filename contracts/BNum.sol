@@ -98,11 +98,11 @@ contract BNum is BBronze, BConst {
             return wholePow;
         }
 
-        uint partialResult = bpowK(base, remain, APPROX_ITERATIONS);
+        uint partialResult = bpowK(base, remain);
         return bmul(wholePow, partialResult);
     }
 
-    function bpowK(uint base, uint exp, uint K)
+    function bpowK(uint base, uint exp)
       pure internal
         returns (uint)
     {
@@ -117,7 +117,8 @@ contract BNum is BBronze, BConst {
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // keep a tally of negative signs in 'negatives' to determine this term's sign
-        for( uint i = 1; i <= K; i++) {
+        // loop until term is less than precision 
+        for( uint i = 1; (term > BONE/10**APPROX_PRECISION_NUM_DEC); i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
 

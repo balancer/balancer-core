@@ -35,7 +35,8 @@ contract BConst is BBronze
     uint256 constant MAX_OUT_RATIO     = BONE / 3 + 1; // +1 avoids rounding error of 333333333333... 
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
-    uint256 constant APPROX_ITERATIONS = 20;
+    // uint256 constant APPROX_ITERATIONS = 20;
+    uint256 constant APPROX_PRECISION_NUM_DEC = 10;
 
     string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
     string constant ERR_SUB_UNDERFLOW      = "ERR_SUB_UNDERFLOW";
