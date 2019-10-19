@@ -120,7 +120,7 @@ contract('math tests from canonical setup', async (accounts) => {
 
   it('swap_ExactAmountOut', async () => {
     console.log(`swap_ExactAmountOut`);
-    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2'), '0'); // Weirdly 2 
+    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2'), MAX); 
     let amountIn = result[0];
     let newPrice = result[1];
 
@@ -171,8 +171,12 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
+ it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
+    console.log(`swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE`);
+    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.5')); //0.666 -> 1.001  increase of more than 1.5 
+  });
 
-  it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_ARG_LIMIT_PRICE ERR_LIMIT_OUT ERR_LIMIT_PRICE');
+  it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_LIMIT_OUT ERR_LIMIT_PRICE');
 
   it('joinPool', async () => {
     console.log(`joinPool`);
