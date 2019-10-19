@@ -32,7 +32,7 @@ contract BConst is BBronze
     uint256 constant MIN_POOL_SUPPLY   = BONE;
 
     uint256 constant MAX_IN_RATIO      = BONE / 2;
-    uint256 constant MAX_OUT_RATIO     = BONE / 2;
+    uint256 constant MAX_OUT_RATIO     = BONE / 3 + 1; // +1 avoids rounding error of 333333333333... 
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
     uint256 constant APPROX_ITERATIONS = 20;

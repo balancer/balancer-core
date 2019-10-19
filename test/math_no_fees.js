@@ -113,9 +113,14 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
+  it('swap_ExactAmountIn ERR_MAX_IN_RATIO', async () => {
+    console.log(`swap_ExactAmountIn ERR_MAX_IN_RATIO`);
+    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('3.00001'), ROCK, '0', MAX); // Slightly over 3 which is the limit
+  });
+
   it('swap_ExactAmountOut', async () => {
     console.log(`swap_ExactAmountOut`);
-    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2'), '0'); 
+    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2'), '0'); // Weirdly 2 
     let amountIn = result[0];
     let newPrice = result[1];
 
@@ -130,17 +135,22 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
-  it('swap_ExactAmountOut ERR_MAX_OUT_RATIO ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
+  it('swap_ExactAmountOut ERR_MAX_OUT_RATIO', async () => {
+    console.log(`swap_ExactAmountOut ERR_MAX_OUT_RATIO`);
+    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2.0001'), '0'); // Slightly over 2 which is the limit
+  });
+
+  it('swap_ExactAmountOut ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
 
   it('swap_ExactMarginalPrice', async () => {
     console.log(`swap_ExactMarginalPrice`);
-    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.75')); 
+    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('1')); 
     let amountIn = result[0];
     let amountOut = result[1];
     //assert.equal(toWei('2'), result[0].toString()); 
     //assert.equal(toWei('2'), result[1].toString()); 
 
-    let expected = parseInt(toWei('2'));
+    let expected = parseInt(toWei(String(48**0.5-6))); // 48 is the multiplication of balances that stays constant
     let actual = amountIn;
     let relDif = calcRelativeDiff(expected,actual);
     console.log(`amountIn`);
@@ -150,7 +160,7 @@ contract('math tests from canonical setup', async (accounts) => {
   
     assert.equal(relDif<MaxError, true); 
 
-    expected = parseInt(toWei('2'));
+    expected = parseInt(toWei(String(8-48**0.5))); // 48 is the multiplication of balances that stays constant
     actual = amountOut;
     relDif = calcRelativeDiff(expected,actual);
     console.log(`amountOut`);
@@ -352,16 +362,6 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
     // TODO: add checks of the balances of DIRT and ROCK to make sure joinPool is pulling tokens correctly 
   });
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -86,8 +86,8 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        require(base <= BONE * 2, ERR_BPOW_BASE_TOO_HIGH);
-        require(base > 0, ERR_BPOW_BASE_TOO_LOW);
+        require(base <= bmul(BONE,bdiv(BONE,bsub(BONE,MAX_OUT_RATIO))), ERR_BPOW_BASE_TOO_HIGH);
+        require(base >= bmul(BONE,bdiv(BONE,badd(BONE,MAX_IN_RATIO))), ERR_BPOW_BASE_TOO_LOW);
 
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);
