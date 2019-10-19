@@ -418,7 +418,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
+    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint MinAo, uint MaxP)
         _logs_
         _lock_
         public returns (uint Ao, uint MP)
@@ -434,16 +434,16 @@ contract BPool is BBronze, BToken, BMath
         require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( LP >= SP0, ERR_ARG_LIMIT_IN);
+        require( SP0 <= MaxP, ERR_ARG_LIMIT_IN);
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
-        require( Ao >= Lo, ERR_LIMIT_OUT );
+        require( Ao >= MinAo, ERR_LIMIT_OUT );
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 <= LP, ERR_LIMIT_PRICE);
+        require(SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -453,7 +453,7 @@ contract BPool is BBronze, BToken, BMath
         return (Ao, SP1);
     }
 
-    function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+    function swap_ExactAmountOut(address Ti, uint MaxAi, address To, uint Ao, uint MaxP)
         _logs_
         _lock_ 
         public returns (uint Ai, uint MP)
@@ -468,16 +468,16 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(PL > SP0, ERR_ARG_LIMIT_PRICE );
+        require(SP0 <= MaxP, ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
-        require( Ai <= Li, ERR_LIMIT_IN);
+        require( Ai <= MaxAi, ERR_LIMIT_IN);
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SP1 <= PL, ERR_LIMIT_PRICE);
+        require( SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -487,7 +487,7 @@ contract BPool is BBronze, BToken, BMath
         return (Ai, SP1);
     }
 
-    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MarP)
         _logs_
         _lock_
         public returns (uint Ai, uint Ao)
@@ -502,9 +502,9 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(MP > SP0, ERR_ARG_LIMIT_PRICE);
+        require(MarP > SP0, ERR_ARG_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
+        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MarP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
 
         require( Ai <= Li, ERR_LIMIT_IN);
