@@ -361,18 +361,6 @@ contract BPool is BBronze, BToken, BMath
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
     }
 
-    function getSpotRate(address Ti, address To)
-      public view
-        _viewlock_
-        returns (uint R)
-    {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
-        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-    }
-
     function getSpotPriceSansFee(address Ti, address To)
       public view
         _viewlock_
@@ -383,18 +371,6 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, 0);
-    }
-
-    function getSpotRateSansFee(address Ti, address To)
-      public view
-        _viewlock_
-        returns (uint P)
-    {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
-        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, 0);
     }
 
     function joinPool(uint poolAo)
@@ -491,8 +467,8 @@ contract BPool is BBronze, BToken, BMath
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
-        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(PL < SR0, ERR_ARG_LIMIT_PRICE );
+        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(PL > SR0, ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -500,8 +476,8 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint SR1 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SR1 >= PL, ERR_LIMIT_PRICE);
+        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require( SP1 <= PL, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -525,8 +501,8 @@ contract BPool is BBronze, BToken, BMath
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
-        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(MP < SR0, ERR_ARG_LIMIT_PRICE);
+        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(MP > SP0, ERR_ARG_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );

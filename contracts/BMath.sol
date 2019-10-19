@@ -31,18 +31,6 @@ contract BMath is BBronze, BConst, BNum
         return  (P = bmul(ratio, scale));
     }
 
-    // P = ((Bo/Wo)/(Bi/Wi)) * (1*(1-f))
-    function _calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f)
-      internal pure
-        returns ( uint R ) 
-    {
-        uint numer = bdiv(Bo, Wo);
-        uint denom = bdiv(Bi, Wi);
-        uint ratio = bdiv(numer, denom);
-        uint scale = bmul(BONE, bsub(BONE, f));
-        return  (R = bmul(ratio, scale));
-    }
-
     // Ao = Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
     function _calc_OutGivenIn
       ( uint Bi, uint Wi
@@ -85,13 +73,13 @@ contract BMath is BBronze, BConst, BNum
 
     function _calc_InGivenPrice( uint Bi, uint Wi
                                , uint Bo , uint Wo
-                               , uint SER1
+                               , uint SP1
                                , uint fee)
       internal pure
         returns ( uint Ai )
     {
-        uint SER0    = _calc_SpotRate(Bi, Wi, Bo, Wo, 0);
-        uint base    = bdiv(SER0, SER1);
+        uint SP0    = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0);
+        uint base    = bdiv(SP1, SP0);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
         Ai           = bsub(bpow(base, exp), BONE);
         Ai           = bmul(Ai, Bi);
