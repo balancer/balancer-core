@@ -468,7 +468,7 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(PL > SR0, ERR_ARG_LIMIT_PRICE );
+        require(PL > SP0, ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -484,7 +484,7 @@ contract BPool is BBronze, BToken, BMath
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
-        return (Ai, SR1);
+        return (Ai, SP1);
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
