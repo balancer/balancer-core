@@ -206,24 +206,25 @@ contract BMath is BBronze, BConst, BNum
                                        , uint poolSupply, uint totalWeight
                                        , uint tAo, uint swapFee, uint exitFee)
       internal pure
-        returns (uint pAi)
+        returns (uint pAi_beforeFees)
     {
 
         // === REDO this block ===
-
-        uint newBalTo = balance - tAo;
+        uint normalizedWeight = bdiv(weight, totalWeight);
+        uint newBalTo = bsub(balance,tAo);
         uint ratioTo = bdiv(newBalTo, balance);
 
         //uint newPoolTotal = (ratioTo ^ weightTo) * _totalSupply;
-        uint boo = bpow(ratioTo, weight);
-        uint bar = bmul(boo, poolSupply);
-        uint newPoolTotal = bar;
-        uint poolAi = bsub(newPoolTotal, poolSupply);
+        uint boo = bpow(ratioTo, normalizedWeight);
+        uint newPoolTotal = bmul(boo, poolSupply);
+        uint poolAi = bsub(poolSupply,newPoolTotal);
 
-        //uint poolAoBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
-        uint zoo = bsub(BONE, weight);
-        uint zar = bmul(zoo, swapFee); // poolAoBeforeTradingFees
-        uint pAi_beforeFees = bdiv(poolAi, bsub(BONE, exitFee));
+        //uint poolAiBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
+        uint zoo = bsub(BONE, normalizedWeight);
+        uint zar = bmul(zoo, swapFee); 
+        uint poolAiBeforeTradingFee = bdiv(poolAi, bsub(BONE, zar));
+
+        uint pAi_beforeFees = bdiv(poolAiBeforeTradingFee, bsub(BONE, exitFee));
         return pAi_beforeFees;
 
         //=== ===

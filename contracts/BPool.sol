@@ -578,6 +578,10 @@ contract BPool is BBronze, BToken, BMath
         tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
 
         _pullPoolShare(msg.sender, pAi);
+        // @Nikolai:
+        // TODO: transfer to Balancer multisig pAi_exitFee
+        uint pAiExitFee = bmul(pAi,bsub(BONE,_exitFee)); 
+        //_burnPoolShare(bsub(pAi,pAiExitFee));
         _burnPoolShare(pAi);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
@@ -588,20 +592,25 @@ contract BPool is BBronze, BToken, BMath
       public
         _logs_
         _lock_
-        returns (uint pAi)
+        returns (uint poolAiBeforeFees)
     {
         require( isBound(To), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[To];
 
-        uint poolAoBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+        uint poolAiBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
      
-        _pullPoolShare(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
-        _burnPoolShare(poolAoBeforeFees);    
+
+        _pullPoolShare(msg.sender, poolAiBeforeFees);  
+        // @Nikolai:
+        // TODO: transfer to Balancer multisig pAi_exitFee
+        uint pAiExitFee = bmul(poolAiBeforeFees,bsub(BONE,_exitFee)); 
+        //_burnPoolShare(bsub(poolAiBeforeFees,pAiExitFee));    
+        _burnPoolShare(poolAiBeforeFees);    
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
-        return poolAoBeforeFees;
+        return poolAiBeforeFees;
     }
 
 
