@@ -361,18 +361,6 @@ contract BPool is BBronze, BToken, BMath
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
     }
 
-    function getSpotRate(address Ti, address To)
-      public view
-        _viewlock_
-        returns (uint R)
-    {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
-        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-    }
-
     function getSpotPriceSansFee(address Ti, address To)
       public view
         _viewlock_
@@ -383,18 +371,6 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[Ti];
         Record storage O = _records[To];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, 0);
-    }
-
-    function getSpotRateSansFee(address Ti, address To)
-      public view
-        _viewlock_
-        returns (uint P)
-    {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
-        return _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, 0);
     }
 
     function joinPool(uint poolAo)
@@ -442,7 +418,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint Lo, uint LP)
+    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint MinAo, uint MaxP)
         _logs_
         _lock_
         public returns (uint Ao, uint MP)
@@ -458,16 +434,16 @@ contract BPool is BBronze, BToken, BMath
         require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( LP >= SP0, ERR_ARG_LIMIT_IN);
+        require( SP0 <= MaxP, ERR_ARG_LIMIT_IN);
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
-        require( Ao >= Lo, ERR_LIMIT_OUT );
+        require( Ao >= MinAo, ERR_LIMIT_OUT );
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 <= LP, ERR_LIMIT_PRICE);
+        require(SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -477,7 +453,7 @@ contract BPool is BBronze, BToken, BMath
         return (Ao, SP1);
     }
 
-    function swap_ExactAmountOut(address Ti, uint Li, address To, uint Ao, uint PL)
+    function swap_ExactAmountOut(address Ti, uint MaxAi, address To, uint Ao, uint MaxP)
         _logs_
         _lock_ 
         public returns (uint Ai, uint MP)
@@ -491,27 +467,27 @@ contract BPool is BBronze, BToken, BMath
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
-        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(PL < SR0, ERR_ARG_LIMIT_PRICE );
+        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP0 <= MaxP, ERR_ARG_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
-        require( Ai <= Li, ERR_LIMIT_IN);
+        require( Ai <= MaxAi, ERR_LIMIT_IN);
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint SR1 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SR1 >= PL, ERR_LIMIT_PRICE);
+        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require( SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
 
         emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
 
-        return (Ai, SR1);
+        return (Ai, SP1);
     }
 
-    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MP)
+    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MarP)
         _logs_
         _lock_
         public returns (uint Ai, uint Ao)
@@ -525,10 +501,10 @@ contract BPool is BBronze, BToken, BMath
 
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
-        uint SR0 = _calc_SpotRate(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(MP < SR0, ERR_ARG_LIMIT_PRICE);
+        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(MarP > SP0, ERR_ARG_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MP, _swapFee );
+        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MarP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
 
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -602,6 +578,10 @@ contract BPool is BBronze, BToken, BMath
         tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
 
         _pullPoolShare(msg.sender, pAi);
+        // @Nikolai:
+        // TODO: transfer `pAi_exitFee` to _balance[_factory]
+        uint pAiExitFee = bmul(pAi,bsub(BONE,_exitFee)); 
+        //_burnPoolShare(bsub(pAi,pAiExitFee));
         _burnPoolShare(pAi);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
@@ -612,7 +592,7 @@ contract BPool is BBronze, BToken, BMath
       public
         _logs_
         _lock_
-        returns (uint pAi)
+        returns (uint poolAiBeforeFees)
     {
         require( isBound(To), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
@@ -620,13 +600,18 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        uint poolAoBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+        uint poolAiBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
      
-        _pullPoolShare(msg.sender, poolAoBeforeFees );  // Pull poolAoBeforeFees , not just poolAo 
-        _burnPoolShare(poolAoBeforeFees);    
+
+        _pullPoolShare(msg.sender, poolAiBeforeFees);  
+        // @Nikolai:
+        // TODO: transfer `pAi_exitFee` to _balance[_factory]
+        uint pAiExitFee = bmul(poolAiBeforeFees,bsub(BONE,_exitFee)); 
+        //_burnPoolShare(bsub(poolAiBeforeFees,pAiExitFee));    
+        _burnPoolShare(poolAiBeforeFees);    
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
-        return poolAoBeforeFees;
+        return poolAiBeforeFees;
     }
 
 

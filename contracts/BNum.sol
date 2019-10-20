@@ -86,8 +86,8 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        require(base <= BONE * 2, ERR_BPOW_BASE_TOO_HIGH);
-        require(base > 0, ERR_BPOW_BASE_TOO_LOW);
+        require(base <= bmul(BONE,bdiv(BONE,bsub(BONE,MAX_OUT_RATIO))), ERR_BPOW_BASE_TOO_HIGH);
+        require(base >= bmul(BONE,bdiv(BONE,badd(BONE,MAX_IN_RATIO))), ERR_BPOW_BASE_TOO_LOW);
 
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);
@@ -98,11 +98,12 @@ contract BNum is BBronze, BConst {
             return wholePow;
         }
 
-        uint partialResult = bpowK(base, remain, APPROX_ITERATIONS);
+        uint partialResult = bpowK(base, remain);
         return bmul(wholePow, partialResult);
     }
 
-    function bpowK(uint base, uint exp, uint K)
+    // TODO pull precision arg back into argument, merge with `bpow`
+    function bpowK(uint base, uint exp)
       pure internal
         returns (uint)
     {
@@ -113,11 +114,14 @@ contract BNum is BBronze, BConst {
         uint sum   = term;
         bool negative = false;
 
+
         // term(k) = numer / denom 
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // keep a tally of negative signs in 'negatives' to determine this term's sign
-        for( uint i = 1; i <= K; i++) {
+        // loop until term is less than precision 
+      // TODO fix constant so we can write `term > CONSTANT`
+        for( uint i = 1; (term > BONE/10**APPROX_PRECISION_NUM_DEC); i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
 

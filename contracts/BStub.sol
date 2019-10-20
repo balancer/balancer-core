@@ -27,13 +27,6 @@ contract BStub is BBronze, BMath
         return (price = _calc_SpotPrice(Bi, Wi, Bo, Wo, f));
     }
 
-    function calc_SpotRate( uint Bi, uint Wi, uint Bo, uint Wo, uint f )
-      public pure
-        returns ( uint rate ) 
-    {
-        return (rate = _calc_SpotRate(Bi, Wi, Bo, Wo, f));
-    }
-
     function calc_OutGivenIn( uint Bi, uint Wi
                             , uint Bo, uint Wo
                             , uint Ai
@@ -110,11 +103,12 @@ contract BStub is BBronze, BMath
         return bpow(base, exp);
     }
 
-    function calc_bpowK(uint base, uint exp, uint K)
+    // TODO pull precision arg back into argument, merge with `bpow`
+    function calc_bpowK(uint base, uint exp)
       public pure
         returns (uint)
     {
-        return bpowK(base, exp, K);
+        return bpowK(base, exp);
     }
 
 }

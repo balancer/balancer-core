@@ -82,13 +82,8 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log(`pool.setFees(${swapFee},${exitFee})`);
   });
 
-  it('swap_ExactAmountIn', async () => {
-    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('2.5'), ROCK, '0', MAX);
-    console.log(`pool.swap_ExactAmountIn(DIRT, 2.5, ROCK, 0, MAX) -> (${result[0]}, ${result[1]})`);
-    let amountOut = result[0];
-    let newPrice = result[1];
-    assert.equal(amountOut, toWei('5.301406042731197960')); // copy/pasted example - recheck result
-  });
+
+  it('swap_ExactAmountIn');
 
   it('swap_ExactAmountOut');
   it('swap_ExactAmountOut ERR_MAX_OUT_RATIO ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
