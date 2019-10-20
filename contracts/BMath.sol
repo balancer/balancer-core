@@ -52,7 +52,7 @@ contract BMath is BBronze, BConst, BNum
         return Ao;
 	}
 
-    // Ai = Bo * ((Bi/(Bi + Ai))^(Wo/Wi) - 1) / (1 - fee)
+    // Ai = Bi * ((Bo/(Bo - Ao))^(Wo/Wi) - 1) / (1 - fee)
     function _calc_InGivenOut( uint Bi, uint Wi
                              , uint Bo, uint Wo
                              , uint Ao
