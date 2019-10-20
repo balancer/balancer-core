@@ -1513,14 +1513,6 @@ caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-chai-almost@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/chai-almost/-/chai-almost-1.0.1.tgz#43d026cf3be79a1cd513cf15af840a81243a4b60"
-  integrity sha1-Q9AmzzvnmhzVE88Vr4QKgSQ6S2A=
-  dependencies:
-    deep-eql "^2.0.2"
-    type-detect "^4.0.3"
-
 chai@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.2.0.tgz#760aa72cf20e3795e84b12877ce0e83737aa29e5"
@@ -2055,13 +2047,6 @@ decompress@^4.0.0:
     make-dir "^1.0.0"
     pify "^2.3.0"
     strip-dirs "^2.0.0"
-
-deep-eql@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/deep-eql/-/deep-eql-2.0.2.tgz#b1bac06e56f0a76777686d50c9feb75c2ed7679a"
-  integrity sha1-sbrAblbwp2d3aG1Qyf63XC7XZ5o=
-  dependencies:
-    type-detect "^3.0.0"
 
 deep-eql@^3.0.1:
   version "3.0.1"
@@ -7529,12 +7514,7 @@ type-check@~0.3.2:
   dependencies:
     prelude-ls "~1.1.2"
 
-type-detect@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-3.0.0.tgz#46d0cc8553abb7b13a352b0d6dea2fd58f2d9b55"
-  integrity sha1-RtDMhVOrt7E6NSsNbeov1Y8tm1U=
-
-type-detect@^4.0.0, type-detect@^4.0.3, type-detect@^4.0.5:
+type-detect@^4.0.0, type-detect@^4.0.5:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/type-detect/-/type-detect-4.0.8.tgz#7646fb5f18871cfbb7749e69bd39a6388eb7450c"
   integrity sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==
