@@ -579,7 +579,7 @@ contract BPool is BBronze, BToken, BMath
 
         _pullPoolShare(msg.sender, pAi);
         // @Nikolai:
-        // TODO: transfer to Balancer multisig pAi_exitFee
+        // TODO: transfer `pAi_exitFee` to _balance[_factory]
         uint pAiExitFee = bmul(pAi,bsub(BONE,_exitFee)); 
         //_burnPoolShare(bsub(pAi,pAiExitFee));
         _burnPoolShare(pAi);
@@ -605,7 +605,7 @@ contract BPool is BBronze, BToken, BMath
 
         _pullPoolShare(msg.sender, poolAiBeforeFees);  
         // @Nikolai:
-        // TODO: transfer to Balancer multisig pAi_exitFee
+        // TODO: transfer `pAi_exitFee` to _balance[_factory]
         uint pAiExitFee = bmul(poolAiBeforeFees,bsub(BONE,_exitFee)); 
         //_burnPoolShare(bsub(poolAiBeforeFees,pAiExitFee));    
         _burnPoolShare(poolAiBeforeFees);    

@@ -103,6 +103,7 @@ contract BStub is BBronze, BMath
         return bpow(base, exp);
     }
 
+    // TODO pull precision arg back into argument, merge with `bpow`
     function calc_bpowK(uint base, uint exp)
       public pure
         returns (uint)
