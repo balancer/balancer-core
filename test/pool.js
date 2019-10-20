@@ -233,7 +233,7 @@ contract('BPool', async (accounts) => {
       // ETH -> 1 MKR
       // Bi * ((Bo/(Bo - Ao))^(Wo/Wi) - 1) / (1 - fee)
       let amountIn = 55 * ((21/(21 - 1))**(5/5) - 1) / (1 - 0.003)
-      let txr = await pool.swap_ExactAmountOut(WETH, toWei('3'), MKR, toWei('1.0'), toWei('0.20'), { from: user2 })
+      let txr = await pool.swap_ExactAmountOut(WETH, toWei('3'), MKR, toWei('1.0'), toWei('500'), { from: user2 })
       let log = txr.logs[4]
       assert.equal(log.event, 'LOG_SWAP');
       // 2.758274824473420261
