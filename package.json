@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "ganache-cli": "^6.7.0",
-    "global": "^4.4.0"
+    "global": "^4.4.0",
+    "truffle-assertions": "^0.9.1"
   }
 }

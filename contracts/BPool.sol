@@ -310,6 +310,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
+        require( ! _finalized, ERR_IS_FINALIZED);
 
         _pushUnderlying(token, msg.sender, _records[token].balance);
         _totalWeight = bsub(_totalWeight, _records[token].denorm);
