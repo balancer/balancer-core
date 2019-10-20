@@ -1,4 +1,4 @@
-const { assertThrow } = require('../lib/tests/assertThrow')
+const { assertThrow } = require('../lib/tests/assertThrow');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
