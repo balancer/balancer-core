@@ -405,11 +405,15 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
+        uint fee = bmul(poolAi, _exitFee);
+        uint pAi_sans_fee = bsub(poolAi, fee);
+
         uint poolTotal = totalSupply();
-        uint ratio = bdiv(poolAi, poolTotal);
-       
+        uint ratio = bdiv(pAi_sans_fee, poolTotal);
+      
         _pullPoolShare(msg.sender, poolAi); 
-        _burnPoolShare(poolAi);
+        _pushPoolShare(_factory, fee);
+        _burnPoolShare(pAi_sans_fee);
 
         for( uint i = 0; i < _tokens.length; i++ ) {
             address t = _tokens[i];
@@ -418,6 +422,7 @@ contract BPool is BBronze, BToken, BMath
             _records[t].balance = bsub(_records[t].balance, tAo);
             _pushUnderlying(t, msg.sender, tAo);
         }
+
     }
 
 
