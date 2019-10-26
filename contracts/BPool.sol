@@ -348,7 +348,6 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _factory, ERR_NOT_FACTORY);
         uint fees = _balance[_factory];
-        _pushPoolShare(_factory, fees);
         return (collected = fees);
     }
 
