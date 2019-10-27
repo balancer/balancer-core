@@ -405,9 +405,6 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
-        uint fee = bmul(poolAi, _exitFee);
-        uint pAi_sans_fee = bsub(poolAi, fee);
-
         uint poolTotal = totalSupply();
         uint pAiExitFee = bmul(pAi, _exitFee);
         uint pAiAfterExitFee = bsub(pAi, pAiExitFee);

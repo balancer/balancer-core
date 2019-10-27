@@ -160,10 +160,6 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
-  it('swap_ExactAmountIn ERR_MAX_IN_RATIO', async () => {
-    console.log(`swap_ExactAmountIn ERR_MAX_IN_RATIO`);
-    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('3.00001'), ROCK, '0', MAX); // Slightly over 3 which is the limit
-  });
 
   it('swap_ExactAmountOut', async () => {
         //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
@@ -197,15 +193,8 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
-  it('swap_ExactAmountOut ERR_MAX_OUT_RATIO', async () => {
-    console.log(`swap_ExactAmountOut ERR_MAX_OUT_RATIO`);
-    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2.0001'), '0'); // Slightly over 2 which is the limit
-  });
-
-  it('swap_ExactAmountOut ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
-
-  it('swap_ExactMarginalPrice', async () => {
-    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+  it('swap_ExactMarginalPrice'); /*, async () => {
+    /* //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactMarginalPrice`, 
                     [DIRT, MAX, ROCK, '0', toWei(String(0.48))], // This price happens when Bdirt = 4.8+fee and Brock = 10 
                     [toWei(String((48/10-4))),toWei(String(12-10))], 
@@ -234,14 +223,7 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log(`actual  : ${actual})`);
     console.log(`relDif  : ${relDif})`);  
     assert.equal(relDif<MaxError, true); 
-  });
-
-  it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
-    console.log(`swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE`);
-    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.2')); // 0.2 < 0.3333
-  });
-
-  it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_LIMIT_OUT ERR_LIMIT_PRICE');
+  });*/
 
   it('joinPool', async () => {
     console.log(`joinPool`);
@@ -391,13 +373,6 @@ contract('math tests from canonical setup', async (accounts) => {
     await logAndAssertCurrentBalances();
   });
 
-
-  it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))', async () => {
-    console.log(`pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))`);
-  });
-
-
-  it('tAo = exitswap_PoolAmountIn(exitswap_ExternAmountOut(tAo))', async () => {
-    console.log(`pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))`);
-  });
+  it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))');
+  it('tAo = exitswap_PoolAmountIn(exitswap_ExternAmountOut(tAo))');
 });
