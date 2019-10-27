@@ -2,7 +2,7 @@ const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
-const MaxError = 10**-3;
+const MaxError = 10**-9;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -206,72 +206,34 @@ contract('math tests from canonical setup', async (accounts) => {
 
  it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
     console.log(`swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE`);
-    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.5')); //0.666 -> 1.001  increase of more than 1.5 
+    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.5')); //0.5< 0.75
   });
 
   it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_LIMIT_OUT ERR_LIMIT_PRICE');
 
   it('joinPool', async () => {
+    console.log(`joinPool`);
+
     await pool.finalize(toWei('100'));
+    let totalSupplyBeforeJoin = await pool.totalSupply.call();
+    let result2 = await pool.joinPool(toWei('1'));
 
-    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
-    let test = [`swap_ExactMarginalPrice`, 
-                    [toWei('1')],  
-                    0, 
-                    [toWei('0.06'), toWei('0.8'), toWei('0.24')], //deltaAccountBalances, 
-                    [toWei('0.06'), toWei('0.8'), toWei('0.24')], //deltaPoolBalances, 
-                    toWei('1')]; //deltaPoolSupply];
+    let totalSupplyAfterJoin = await pool.totalSupply.call(); 
 
-    console.log(test[0]);
-
-    let dirtAccountBalanceBefore = await dirt.balanceOf(admin);
-    let rockAccountBalanceBefore = await rock.balanceOf(admin);
-    let sandAccountBalanceBefore = await sand.balanceOf(admin);
-
-    let dirtPoolBalanceBefore = await dirt.balanceOf(POOL);
-    let rockPoolBalanceBefore = await rock.balanceOf(POOL);
-    let sandPoolBalanceBefore = await sand.balanceOf(POOL);
-
-    let poolSupplyBefore = await pool.totalSupply.call();
-
-    let output = await pool.joinPool(test[1][0]);
-
-    let dirtAccountBalanceAfter = await dirt.balanceOf(admin);
-    let rockAccountBalanceAfter = await rock.balanceOf(admin);
-    let sandAccountBalanceAfter = await sand.balanceOf(admin);
-
-    let dirtPoolBalanceAfter = await dirt.balanceOf(POOL);
-    let rockPoolBalanceAfter = await rock.balanceOf(POOL);
-    let sandPoolBalanceAfter = await sand.balanceOf(POOL);
-
-    let poolSupplyAfter = await pool.totalSupply.call();
-
-
-    // comparing deltaAccountBalances
-    let expected = parseInt(test[3][0]);
-    let actual = dirtAccountBalanceAfter - dirtAccountBalanceBefore;
+    let expected = parseInt(toWei('100'));
+    let actual = totalSupplyBeforeJoin;
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`Delta Dirt Account Balance`);
+    console.log(`totalSupplyBeforeJoin`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
     console.log(`relDif  : ${relDif})`);
   
     assert.equal(relDif<MaxError, true); 
 
-    expected = parseInt(test[3][1]);
-    actual = rockAccountBalanceAfter - rockAccountBalanceBefore;
+    expected = parseInt(toWei('101'));
+    actual = totalSupplyAfterJoin;
     relDif = calcRelativeDiff(expected,actual);
-    console.log(`Delta Rock Account Balance`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
-  
-    assert.equal(relDif<MaxError, true); 
-
-    expected = parseInt(test[3][2]);
-    actual = sandAccountBalanceAfter - sandAccountBalanceBefore;
-    relDif = calcRelativeDiff(expected,actual);
-    console.log(`Delta Sand Account Balance`);
+    console.log(`totalSupplyAfterJoin`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
     console.log(`relDif  : ${relDif})`);
