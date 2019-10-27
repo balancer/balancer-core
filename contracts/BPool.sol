@@ -407,7 +407,7 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(msg.sender, poolAo);
     }
 
-    function exitPool(uint poolAi)
+    function exitPool(uint pAi)
       public
         _logs_
         _lock_
@@ -415,15 +415,14 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
-        uint fee = bmul(poolAi, _exitFee);
-        uint pAi_sans_fee = bsub(poolAi, fee);
-
         uint poolTotal = totalSupply();
-        uint ratio = bdiv(pAi_sans_fee, poolTotal);
-      
-        _pullPoolShare(msg.sender, poolAi); 
-        _pushPoolShare(_factory, fee);
-        _burnPoolShare(pAi_sans_fee);
+        uint pAiExitFee = bmul(pAi, _exitFee);
+        uint pAiAfterExitFee = bsub(pAi, pAiExitFee);
+        uint ratio = bdiv(pAiAfterExitFee, poolTotal);
+       
+        _pullPoolShare(msg.sender, pAi);
+        _pushPoolShare(_factory, pAiExitFee);
+        _burnPoolShare(pAiAfterExitFee);
 
         for( uint i = 0; i < _tokens.length; i++ ) {
             address t = _tokens[i];
@@ -544,26 +543,24 @@ contract BPool is BBronze, BToken, BMath
       public
         _logs_
         _lock_
-        returns (uint poolAo)
+        returns (uint pAo)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
         require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
-        uint oldPoolTotal = _totalSupply;
-
         Record storage T = _records[Ti];
 
-        poolAo = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tAi, _swapFee);
+        pAo = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tAi, _swapFee);
 
-        _mintPoolShare(poolAo);
-        _pushPoolShare(msg.sender, poolAo);
+        _mintPoolShare(pAo);
+        _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
-
+        
         emit LOG_JOIN(msg.sender, Ti, tAi);
 
-        return poolAo;
+        return pAo;
     }
 
     function joinswap_PoolAmountOut(uint pAo, address Ti)
@@ -605,11 +602,9 @@ contract BPool is BBronze, BToken, BMath
         tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
 
         _pullPoolShare(msg.sender, pAi);
-        // @Nikolai:
-        // TODO: transfer `pAi_exitFee` to _balance[_factory]
-        uint pAiExitFee = bmul(pAi,bsub(BONE,_exitFee)); 
-        //_burnPoolShare(bsub(pAi,pAiExitFee));
-        _burnPoolShare(pAi);
+        uint pAiExitFee = bmul(pAi,_exitFee);
+        _burnPoolShare(bsub(pAi,pAiExitFee));
+        _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
 
@@ -622,7 +617,7 @@ contract BPool is BBronze, BToken, BMath
       public
         _logs_
         _lock_
-        returns (uint poolAiBeforeFees)
+        returns (uint pAi)
     {
         require( isBound(To), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
@@ -630,21 +625,19 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        uint poolAiBeforeFees = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
      
 
-        _pullPoolShare(msg.sender, poolAiBeforeFees);  
-        // @Nikolai:
-        // TODO: transfer `pAi_exitFee` to _balance[_factory]
-        uint pAiExitFee = bmul(poolAiBeforeFees,bsub(BONE,_exitFee)); 
-        //_burnPoolShare(bsub(poolAiBeforeFees,pAiExitFee));    
-        _burnPoolShare(poolAiBeforeFees);    
+        _pullPoolShare(msg.sender, pAi);
+        uint pAiExitFee = bmul(pAi,_exitFee);
+        _burnPoolShare(bsub(pAi,pAiExitFee));
+        _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
 
         emit LOG_EXIT(msg.sender, To, tAo);
 
-        return poolAiBeforeFees;
+        return pAi;
     }
 
 
