@@ -28,10 +28,12 @@
     "ganache-core": "^2.6.1",
     "mocha": "^6.2.0",
     "standard": "^14.0.2",
+    "truffle": "^5.0.41",
     "web3": "^1.2.0"
   },
   "dependencies": {
     "ganache-cli": "^6.7.0",
-    "global": "^4.4.0"
+    "global": "^4.4.0",
+    "truffle-assertions": "^0.9.1"
   }
 }

@@ -17,8 +17,12 @@ import "contracts/BColor.sol";
 
 contract BConst is BBronze
 {
-    uint8   constant MAX_BOUND_TOKENS  = 8;
     uint256 constant BONE              = 10**18;
+
+    uint256 constant MAX_BOUND_TOKENS  = 8;
+    uint256 constant BPOW_PRECISION    = BONE / 10**10;
+
+// TODO check carefully inclusive vs exlusive ranges
 
     uint256 constant MIN_FEE           = BONE / 10000;
     uint256 constant MAX_FEE           = BONE / 10;
@@ -31,14 +35,13 @@ contract BConst is BBronze
 
     uint256 constant MIN_POOL_SUPPLY   = BONE;
 
-    // TODO restore MAX_BPOW_BASE vs bpool-level constraints
+    uint constant MIN_BPOW_BASE        = 1 wei;
+    uint constant MAX_BPOW_BASE        = (2 * BONE) - 1 wei;
+
     uint256 constant MAX_IN_RATIO      = BONE / 2;
-    uint256 constant MAX_OUT_RATIO     = BONE / 3 + 1; // +1 avoids rounding error of 333333333333... 
+    uint256 constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
     uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
-    // TODO fix constant so that we can do `term > CONSTANT` in `bpow`
-    // uint256 constant APPROX_ITERATIONS = 20;
-    uint256 constant APPROX_PRECISION_NUM_DEC = 10;
 
     string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
     string constant ERR_SUB_UNDERFLOW      = "ERR_SUB_UNDERFLOW";

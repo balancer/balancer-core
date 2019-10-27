@@ -1,3 +1,4 @@
+const { assertThrow } = require('../lib/tests/assertThrow');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
@@ -129,8 +130,8 @@ contract('math tests from canonical setup', async (accounts) => {
   });
 
   it('swap_ExactAmountIn ERR_MAX_IN_RATIO', async () => {
-    console.log(`swap_ExactAmountIn ERR_MAX_IN_RATIO`);
-    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('3.00001'), ROCK, '0', MAX); // Slightly over 3 which is the limit
+    await assertThrow( pool.swap_ExactAmountIn(DIRT, toWei('3.00001'), ROCK, '0', MAX)
+                     , 'ERR_MAX_IN_RATIO' );
   });
 
   it('swap_ExactAmountOut', async () => {
@@ -166,8 +167,8 @@ contract('math tests from canonical setup', async (accounts) => {
   });
 
   it('swap_ExactAmountOut ERR_MAX_OUT_RATIO', async () => {
-    console.log(`swap_ExactAmountOut ERR_MAX_OUT_RATIO`);
-    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2.0001'), '0'); // Slightly over 2 which is the limit
+    await assertThrow( pool.swap_ExactAmountOut(ROCK, MAX, DIRT, toWei('2.0001'), '0')
+                     , 'ERR_MAX_OUT_RATIO' );
   });
 
   it('swap_ExactAmountOut ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
@@ -204,9 +205,10 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
- it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
-    console.log(`swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE`);
-    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('0.5')); //0.5< 0.75
+  it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
+    await assertThrow( pool.swap_ExactMarginalPrice(DIRT, MAX, ROCK, '0', toWei('0.5'))
+                     , 'ERR_ARG_LIMIT_PRICE' ); //0.666 -> 1.001  increase of more than 1.5 
+
   });
 
   it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_LIMIT_OUT ERR_LIMIT_PRICE');

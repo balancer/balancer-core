@@ -142,14 +142,14 @@ contract BPool is BBronze, BToken, BMath
 
     function getTotalDenormalizedWeight()
       public view _viewlock_
-      returns (uint)
+        returns (uint)
     {
         return _totalWeight;
     }
 
     function getNormalizedWeight(address token)
       public view _viewlock_
-      returns (uint)
+        returns (uint)
     {
         require( isBound(token), ERR_NOT_BOUND);
         uint denorm = _records[token].denorm;
@@ -158,7 +158,7 @@ contract BPool is BBronze, BToken, BMath
 
     function getBalance(address token)
       public view _viewlock_
-      returns (uint)
+        returns (uint)
     {
         require( isBound(token), ERR_NOT_BOUND);
         return _records[token].balance;
@@ -173,7 +173,8 @@ contract BPool is BBronze, BToken, BMath
 
     function getController()
       public view _viewlock_
-        returns (address) {
+        returns (address)
+    {
         return _controller;
     }
 
@@ -284,6 +285,7 @@ contract BPool is BBronze, BToken, BMath
         require(balance >= MIN_BALANCE, ERR_MIN_BALANCE);
         require(balance <= MAX_BALANCE, ERR_MAX_BALANCE);
 
+        // Adjust the denorm and totalWeight
         uint oldWeight = _records[token].denorm;
         if (denorm > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
@@ -293,9 +295,9 @@ contract BPool is BBronze, BToken, BMath
         }        
         _records[token].denorm = denorm;
 
+        // Adjust the balance record and actual token balance
         uint oldBalance = _records[token].balance;
         _records[token].balance = balance;
-
         if (balance > oldBalance) {
             _pullUnderlying(token, msg.sender, bsub(balance, oldBalance));
         } else if( balance < oldBalance) {
@@ -310,6 +312,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
+        require( ! _finalized, ERR_IS_FINALIZED);
 
         _pushUnderlying(token, msg.sender, _records[token].balance);
         _totalWeight = bsub(_totalWeight, _records[token].denorm);
@@ -402,6 +405,9 @@ contract BPool is BBronze, BToken, BMath
         require(_finalized, ERR_NOT_FINALIZED);
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
+        uint fee = bmul(poolAi, _exitFee);
+        uint pAi_sans_fee = bsub(poolAi, fee);
+
         uint poolTotal = totalSupply();
         uint pAiExitFee = bmul(pAi, _exitFee);
         uint pAiAfterExitFee = bsub(pAi, pAiExitFee);
@@ -410,7 +416,6 @@ contract BPool is BBronze, BToken, BMath
         _pullPoolShare(msg.sender, pAi);
         _pushPoolShare(_factory, pAiExitFee);
         _burnPoolShare(pAiAfterExitFee);
-        //_transferPoolShare(bsub(pAi,pAiAfterExitFee), msg.sender, BLABS) // move fee from user to BLABS
 
         for( uint i = 0; i < _tokens.length; i++ ) {
             address t = _tokens[i];
@@ -419,6 +424,7 @@ contract BPool is BBronze, BToken, BMath
             _records[t].balance = bsub(_records[t].balance, tAo);
             _pushUnderlying(t, msg.sender, tAo);
         }
+
     }
 
 
@@ -427,7 +433,6 @@ contract BPool is BBronze, BToken, BMath
         _lock_
         public returns (uint Ao, uint MP)
     {
-        
         require( isBound(Ti), ERR_NOT_BOUND );
         require( isBound(To), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
@@ -532,6 +537,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint pAo)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[Ti];
@@ -552,6 +558,7 @@ contract BPool is BBronze, BToken, BMath
         returns (uint tAi)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
         Record storage T = _records[Ti];

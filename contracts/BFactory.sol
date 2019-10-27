@@ -14,7 +14,6 @@
 pragma solidity ^0.5.11;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
-// Grants access to BPool internal math utils, for use as a library
 
 import 'contracts/BColor.sol';
 import 'contracts/BPool.sol';

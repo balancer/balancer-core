@@ -18,6 +18,7 @@ contract('BPool lifecycle', async (accounts) => {
   let DIRT, ROCK, SAND; // addresses
   let dirt, rock, sand; // TTokens
   let factory;          // BPool factory
+  let FACTORY;          // factory address
   let pool;             // first pool w/ defaults
   let POOL;             //   pool address
 
@@ -37,6 +38,7 @@ contract('BPool lifecycle', async (accounts) => {
   before(async () => {
     tokens = await TTokenFactory.deployed();
     factory = await BFactory.deployed();
+    FACTORY = factory.address;
 
     POOL = await factory.newBPool.call(); // this works fine in clean room
     await factory.newBPool();
@@ -141,7 +143,44 @@ contract('BPool lifecycle', async (accounts) => {
 
   it('finalize ERR_NOT_CONTROLLER ERR_IS_FINALIZED ERR_MIN_POOL_SUPPLY');
 
-  it('collect');
+  it('collect', async () => {
+    await pool.finalize(toWei('100'));
+    console.log('finalize')
+    var dirtBal = await dirt.balanceOf.call(POOL);
+    console.log('pool dirt', fromWei(dirtBal));
+    var shares = await pool.balanceOf.call(admin);
+    console.log('admin shares', fromWei(shares));
+    var factoryShares = await pool.balanceOf.call(FACTORY);
+    console.log('factory shares', fromWei(factoryShares));
+
+    await pool.joinPool(toWei('1'));
+    console.log('joinPool(1)')
+    dirtBal = await dirt.balanceOf.call(POOL);
+    console.log('pool dirt', fromWei(dirtBal));
+    shares = await pool.balanceOf.call(admin);
+    console.log('admin shares', fromWei(shares));
+    factoryShares = await pool.balanceOf.call(FACTORY);
+    console.log('factory shares', fromWei(factoryShares));
+
+    await pool.exitPool(toWei('1'));
+    console.log('exitPool(1)')
+    dirtBal = await dirt.balanceOf.call(POOL);
+    console.log('pool dirt', fromWei(dirtBal));
+    shares = await pool.balanceOf.call(admin);
+    console.log('admin shares', fromWei(shares));
+    factoryShares = await pool.balanceOf.call(FACTORY);
+    console.log('factory shares', fromWei(factoryShares));
+    
+    await factory.collect(POOL, admin);
+    console.log('collect(POOL, self)')
+    dirtBal = await dirt.balanceOf.call(POOL);
+    console.log('pool dirt', fromWei(dirtBal));
+    shares = await pool.balanceOf.call(admin);
+    console.log('admin shares', fromWei(shares));
+    factoryShares = await pool.balanceOf.call(FACTORY);
+    console.log('factory shares', fromWei(factoryShares));
+ 
+  });
 
   it('collect ERR_NOT_FACTORY');
 
