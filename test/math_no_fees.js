@@ -3,7 +3,7 @@ const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
-const MaxError = 10**-3;
+const MaxError = 10**-9;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -98,19 +98,34 @@ contract('math tests from canonical setup', async (accounts) => {
   // TODO: swap parameters of all asserts -> correct order is (actual, expected)
 
   it('swap_ExactAmountIn', async () => {
-    console.log(`swap_ExactAmountIn`);
-    let result = await pool.swap_ExactAmountIn.call(DIRT, toWei('2'), ROCK, '0', MAX);
-    let amountOut = result[0];
-    let newPrice = result[1];
+    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+    let test = [`swap_ExactAmountIn`, 
+                    [DIRT, toWei('2'), ROCK, '0', MAX],  
+                    [toWei('2'),toWei('1.333333333333333333')], 
+                    0, //deltaAccountBalances, 
+                    0, //deltaPoolBalances, 
+                    0]; //deltaPoolSupply];
 
-    let expected = parseInt(toWei('2'));
-    let actual = amountOut;
+    console.log(test[0]);
+    let output = await pool.swap_ExactAmountIn.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
+
+    // Checking outputs
+    let expected = parseInt(test[2][0]);
+    let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`amountOut`);
+    console.log(`output[0]`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
-  
+    console.log(`relDif  : ${relDif})`);  
+    assert.equal(relDif<MaxError, true);
+
+    expected = parseInt(test[2][1]);
+    actual = output[1];
+    relDif = calcRelativeDiff(expected,actual);
+    console.log(`output[1]`);
+    console.log(`expected: ${expected})`);
+    console.log(`actual  : ${actual})`);
+    console.log(`relDif  : ${relDif})`);  
     assert.equal(relDif<MaxError, true); 
   });
 
@@ -120,19 +135,34 @@ contract('math tests from canonical setup', async (accounts) => {
   });
 
   it('swap_ExactAmountOut', async () => {
-    console.log(`swap_ExactAmountOut`);
-    let result = await pool.swap_ExactAmountOut.call(ROCK, MAX, DIRT, toWei('2'), MAX); 
-    let amountIn = result[0];
-    let newPrice = result[1];
+        //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+    let test = [`swap_ExactAmountOut`, 
+                    [ROCK, MAX, DIRT, toWei('2'), MAX],  
+                    [toWei('4'),toWei('3')], 
+                    0, //deltaAccountBalances, 
+                    0, //deltaPoolBalances, 
+                    0]; //deltaPoolSupply];
 
-    let expected = parseInt(toWei('4'));
-    let actual = amountIn;
+    console.log(test[0]);
+    let output = await pool.swap_ExactAmountOut.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
+
+    // Checking outputs
+    let expected = parseInt(test[2][0]);
+    let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`amountIn`);
+    console.log(`output[0]`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
-  
+    console.log(`relDif  : ${relDif})`);  
+    assert.equal(relDif<MaxError, true);
+
+    expected = parseInt(test[2][1]);
+    actual = output[1];
+    relDif = calcRelativeDiff(expected,actual);
+    console.log(`output[1]`);
+    console.log(`expected: ${expected})`);
+    console.log(`actual  : ${actual})`);
+    console.log(`relDif  : ${relDif})`);  
     assert.equal(relDif<MaxError, true); 
   });
 
@@ -144,37 +174,41 @@ contract('math tests from canonical setup', async (accounts) => {
   it('swap_ExactAmountOut ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
 
   it('swap_ExactMarginalPrice', async () => {
-    console.log(`swap_ExactMarginalPrice`);
-    let result = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei('1')); 
-    let amountIn = result[0];
-    let amountOut = result[1];
-    //assert.equal(toWei('2'), result[0].toString()); 
-    //assert.equal(toWei('2'), result[1].toString()); 
+    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+    let test = [`swap_ExactMarginalPrice`, 
+                    [DIRT, MAX, ROCK, '0', toWei('1')],  
+                    [toWei(String(48**0.5-6)),toWei(String(8-48**0.5))], 
+                    0, //deltaAccountBalances, 
+                    0, //deltaPoolBalances, 
+                    0]; //deltaPoolSupply];
 
-    let expected = parseInt(toWei(String(48**0.5-6))); // 48 is the multiplication of balances that stays constant
-    let actual = amountIn;
+    console.log(test[0]);
+    let output = await pool.swap_ExactMarginalPrice.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
+
+    // Checking outputs
+    let expected = parseInt(test[2][0]);
+    let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`amountIn`);
+    console.log(`output[0]`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
-  
-    assert.equal(relDif<MaxError, true); 
+    console.log(`relDif  : ${relDif})`);  
+    assert.equal(relDif<MaxError, true);
 
-    expected = parseInt(toWei(String(8-48**0.5))); // 48 is the multiplication of balances that stays constant
-    actual = amountOut;
+    expected = parseInt(test[2][1]);
+    actual = output[1];
     relDif = calcRelativeDiff(expected,actual);
-    console.log(`amountOut`);
+    console.log(`output[1]`);
     console.log(`expected: ${expected})`);
     console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
-  
+    console.log(`relDif  : ${relDif})`);  
     assert.equal(relDif<MaxError, true); 
   });
 
   it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
     await assertThrow( pool.swap_ExactMarginalPrice(DIRT, MAX, ROCK, '0', toWei('0.5'))
                      , 'ERR_ARG_LIMIT_PRICE' ); //0.666 -> 1.001  increase of more than 1.5 
+
   });
 
   it('swap_ExactMarginalPrice ERR_MAX_OUT_RATIO ERR_LIMIT_OUT ERR_LIMIT_PRICE');

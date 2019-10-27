@@ -89,133 +89,105 @@ contract BMath is BBronze, BConst, BNum
     }
 
     // Pissued = Ptotal * ((1+(tAi/B))^W - 1)
-    function _calc_PoolOutGivenSingleIn( uint balance, uint weight
+    function _calc_PoolOutGivenSingleIn( uint balTi, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint tAi, uint fee )
+                                       , uint tAi, uint swapFee )
       internal pure
-        returns (uint poolOut)
+        returns (uint pAo)
     {
-
-        //=== REDO this block ===
-
         // Charge the trading fee for the proportion of tokenAi
         ///  which is implicitly traded to the other pool tokens.
-        // That proportion is (1-T.normalizedWeight)
-        // tokenAiAfterFee = tAi - tAi * (1-T.normalizedWeight) * poolFee;
-
+        // That proportion is (1- weightTi)
+        // tokenAiAfterFee = tAi * (1 - (1-weightTi) * poolFee);
         uint normalizedWeight = bdiv(weight, totalWeight);
+        uint zaz = bmul(bsub(BONE, normalizedWeight), swapFee); 
+        uint tAiAfterFee = bmul(tAi, bsub(BONE, zaz));
 
-        uint boo = bsub(BONE, normalizedWeight);
-        uint bar = bmul(tAi, bmul(boo, fee));
-        uint baz = bsub(tAi, bar);
-        uint tokenAiAfterFee = baz;
+        uint newBalTi = badd(balTi, tAiAfterFee);
+        uint TiRatio = bdiv(newBalTi, balTi);
 
-        uint newBalTi = badd(balance, tokenAiAfterFee);
-        uint ratioTi = bdiv(newBalTi, balance);
-
-        // uint newPoolTotal = (ratioTi ^ T.normalizedWeight) * oldPoolTotal;
-        uint zoo = bpow(ratioTi, normalizedWeight);
-        uint zar = bmul(zoo, poolSupply);
-        return (poolOut = bsub(zar, poolSupply));
-
-        //=== ===
+        // uint newPoolSupply = (ratioTi ^ weightTi) * poolSupply;
+        uint poolRatio = bpow(TiRatio, normalizedWeight);
+        uint newPoolSupply = bmul(poolRatio, poolSupply);
+        pAo = bsub(newPoolSupply, poolSupply);
+        return pAo;
     }
 
-    function _calc_SingleInGivenPoolOut( uint balance, uint weight
+    function _calc_SingleInGivenPoolOut( uint balTi, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint pAo, uint fee)
+                                       , uint pAo, uint swapFee)
       internal pure
-        returns (uint tokenIn)
+        returns (uint tAi)
     {
-
-        //=== REDO this block ===
-
         uint normalizedWeight = bdiv(weight, totalWeight);
-        uint newPoolTotal = badd(poolSupply, pAo);
-        uint poolRatio = bdiv(newPoolTotal, poolSupply);
+        uint newPoolSupply = badd(poolSupply, pAo);
+        uint poolRatio = bdiv(newPoolSupply, poolSupply);
       
-        //uint newBalTi = poolRatio^(1/T.weight) * T.balance;
+        //uint newBalTi = poolRatio^(1/weightTi) * balTi;
         uint boo = bdiv(BONE, normalizedWeight); 
-        uint bar = bpow(poolRatio, boo);
-        uint newBalTi = bmul(bar, balance);
-        uint tokenAi = bsub(newBalTi, balance);
+        uint TiRatio = bpow(poolRatio, boo);
+        uint newBalTi = bmul(TiRatio, balTi);
+        uint tAiAfterFee = bsub(newBalTi, balTi);
         // Do reverse order of fees charged in joinswap_ExternAmountIn, this way 
         //     ``` pAo == joinswap_ExternAmountIn(Ti, joinswap_PoolAmountOut(pAo, Ti)) ```
-        //uint tokenAiBeforeFee = tokenAi / (1 - (1-T.weight) * _swapFee) ;
-        uint zoo = bsub(BONE, normalizedWeight);
-        uint zar = bmul(zoo, fee);
-        uint zaz = bsub(BONE, zar);
-        uint tAi = bdiv(tokenAi, zaz);
+        //uint tAi = tAiAfterFee / (1 - (1-weightTi) * swapFee) ;
+        uint zar = bmul(bsub(BONE, normalizedWeight), swapFee);
+        tAi = bdiv(tAiAfterFee, bsub(BONE, zar));
         return tAi;
-
-        //=== ===
     }
 
-    // Temporary hack to avoid stack depth
-    // TODO actually fix it
-    function _calc_SOGPI_helper(uint normalizedWeight, uint pAi, uint fee)
-      internal pure
-        returns (uint pAi_fee)
-    {
-        // pAi_fee = poolAi - poolAi * (1-weightTo) * poolFee
-        uint boo = BONE - normalizedWeight;
-        uint bar = bmul(pAi, boo);
-        uint baz = bmul(bar, fee);
-        pAi_fee = pAi - baz;
-    }
-
-    function _calc_SingleOutGivenPoolIn( uint balance, uint weight
+    function _calc_SingleOutGivenPoolIn( uint balTo, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint pAi, uint fee, uint exitFee)
+                                       , uint pAi, uint swapFee, uint exitFee)
       internal pure
         returns (uint tAo)
     {
-
-        // === REDO this block ===
-
         uint normalizedWeight = bdiv(weight, totalWeight);
-        uint pAi_fee = _calc_SOGPI_helper(normalizedWeight, pAi, fee);
-
-        uint newPoolTotal = poolSupply - pAi_fee;
-//        uint poolRatio = bdiv(newPoolTotal, poolSupply);
+        // charge exit fee on the pool token side
+        // pAiAfterExitFee = pAi*(1-exitFee)
+        uint pAiAfterExitFee = bmul(pAi, bsub(BONE, exitFee));
+        uint newPoolSupply = bsub(poolSupply,pAiAfterExitFee);
+        uint poolRatio = bdiv(newPoolSupply, poolSupply);
      
-        // newBalTo = poolRatio^(1/weightTo) * oldBalTo;
-        uint zoo = bdiv(BONE, normalizedWeight); 
-        uint zar = bpow(bdiv(newPoolTotal, poolSupply), zoo);
-        uint newBalTo = bmul(zar, balance);
+        // newBalTo = poolRatio^(1/weightTo) * balTo;
+        uint ToRatio = bpow(poolRatio, bdiv(BONE, normalizedWeight));
+        uint newBalTo = bmul(ToRatio, balTo);
 
-        tAo = balance - newBalTo;
+        uint tAoBeforeSwapFee = bsub(balTo,newBalTo);
+
+        // charge swap fee on the output token side 
+        //uint tAo = tAoBeforeSwapFee * (1 - (1-weightTo) * swapFee)
+        uint zaz = bmul(bsub(BONE, normalizedWeight), swapFee); 
+        tAo = bmul(tAoBeforeSwapFee, bsub(BONE, zaz));
         return tAo;
-
-        //=== ===
     }
 
-    function _calc_PoolInGivenSingleOut( uint balance, uint weight
+    function _calc_PoolInGivenSingleOut( uint balTo, uint weight
                                        , uint poolSupply, uint totalWeight
                                        , uint tAo, uint swapFee, uint exitFee)
       internal pure
-        returns (uint pAi_beforeFees)
+        returns (uint pAi)
     {
 
-        // === REDO this block ===
+        // charge swap fee on the output token side 
         uint normalizedWeight = bdiv(weight, totalWeight);
-        uint newBalTo = bsub(balance,tAo);
-        uint ratioTo = bdiv(newBalTo, balance);
-
-        //uint newPoolTotal = (ratioTo ^ weightTo) * _totalSupply;
-        uint boo = bpow(ratioTo, normalizedWeight);
-        uint newPoolTotal = bmul(boo, poolSupply);
-        uint poolAi = bsub(poolSupply,newPoolTotal);
-
-        //uint poolAiBeforeTradingFee = poolAo / (1 - (1-weightTo) * poolTradingFee) ;
+        //uint tAoBeforeSwapFee = tAo / (1 - (1-weightTo) * swapFee) ;
         uint zoo = bsub(BONE, normalizedWeight);
         uint zar = bmul(zoo, swapFee); 
-        uint poolAiBeforeTradingFee = bdiv(poolAi, bsub(BONE, zar));
+        uint tAoBeforeSwapFee = bdiv(tAo, bsub(BONE, zar));
 
-        uint pAi_beforeFees = bdiv(poolAiBeforeTradingFee, bsub(BONE, exitFee));
-        return pAi_beforeFees;
+        uint newBalTo = bsub(balTo,tAoBeforeSwapFee);
+        uint ToRatio = bdiv(newBalTo, balTo);
 
-        //=== ===
+        //uint newPoolSupply = (ratioTo ^ weightTo) * poolSupply;
+        uint poolRatio = bpow(ToRatio, normalizedWeight);
+        uint newPoolSupply = bmul(poolRatio, poolSupply);
+        uint pAiAfterExitFee = bsub(poolSupply,newPoolSupply);
+
+        // charge exit fee on the pool token side
+        // pAi = pAiAfterExitFee/(1-exitFee)
+        pAi = bdiv(pAiAfterExitFee, bsub(BONE, exitFee));
+        return pAi;
     }
 
 
