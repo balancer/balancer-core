@@ -34,6 +34,14 @@ contract BPool is BBronze, BToken, BMath
                   , uint256         amountIn
                   , uint256         amountOut );
 
+    event JOIN_POOL( address indexed caller
+                   , address indexed tokenIn
+                   , uint256         amountIn);
+
+    event EXIT_POOL( address indexed caller
+                   , address indexed tokenOut
+                   , uint256         amountOut);
+
     event LOG_CALL( bytes4  indexed sig
                   , address indexed caller
                   , bytes           data
@@ -392,6 +400,8 @@ contract BPool is BBronze, BToken, BMath
             uint tAi = bmul(ratio, bal);
             _records[t].balance = badd(_records[t].balance, tAi);
             _pullUnderlying(t, msg.sender, tAi);
+
+            emit JOIN_POOL(msg.sender, t, tAi);
         }
         _mintPoolShare(poolAo);
         _pushPoolShare(msg.sender, poolAo);
@@ -421,6 +431,8 @@ contract BPool is BBronze, BToken, BMath
             uint tAo = bmul(ratio, bal);
             _records[t].balance = bsub(_records[t].balance, tAo);
             _pushUnderlying(t, msg.sender, tAo);
+
+            emit EXIT_POOL(msg.sender, t, tAo);
         }
 
     }
