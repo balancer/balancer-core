@@ -102,7 +102,6 @@ contract BNum is BBronze, BConst {
         return bmul(wholePow, partialResult);
     }
 
-    // TODO pull precision arg back into argument, merge with `bpow`
     function bpowApprox(uint base, uint exp, uint precision)
       pure internal
         returns (uint)
@@ -118,9 +117,8 @@ contract BNum is BBronze, BConst {
         // term(k) = numer / denom 
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
-        // keep a tally of negative signs in 'negatives' to determine this term's sign
-        // loop until term is less than precision 
-        for( uint i = 1; term > precision; i++) {
+        // continue until term is less than precision
+        for( uint i = 1; term >= precision; i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
 
