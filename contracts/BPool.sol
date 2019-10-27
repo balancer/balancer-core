@@ -560,6 +560,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(msg.sender, poolAo);
         _pullUnderlying(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
+
+        emit JOIN_POOL(msg.sender, Ti, tAi);
+
         return poolAo;
     }
 
@@ -581,6 +584,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
+
+        emit JOIN_POOL(msg.sender, Ti, tAi);
+
         return tAi;
     }
 
@@ -606,6 +612,9 @@ contract BPool is BBronze, BToken, BMath
         _burnPoolShare(pAi);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
+
+        emit EXIT_POOL(msg.sender, To, tAo);
+
         return tAo;
     }
 
@@ -632,6 +641,9 @@ contract BPool is BBronze, BToken, BMath
         _burnPoolShare(poolAiBeforeFees);    
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
+
+        emit EXIT_POOL(msg.sender, To, tAo);
+
         return poolAiBeforeFees;
     }
 
