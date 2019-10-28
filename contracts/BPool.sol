@@ -34,6 +34,14 @@ contract BPool is BBronze, BToken, BMath
                   , uint256         amountIn
                   , uint256         amountOut );
 
+    event LOG_JOIN( address indexed caller
+                  , address indexed tokenIn
+                  , uint256         amountIn);
+
+    event LOG_EXIT( address indexed caller
+                  , address indexed tokenOut
+                  , uint256         amountOut);
+
     event LOG_CALL( bytes4  indexed sig
                   , address indexed caller
                   , bytes           data
@@ -392,6 +400,8 @@ contract BPool is BBronze, BToken, BMath
             uint tAi = bmul(ratio, bal);
             _records[t].balance = badd(_records[t].balance, tAi);
             _pullUnderlying(t, msg.sender, tAi);
+
+            emit LOG_JOIN(msg.sender, t, tAi);
         }
         _mintPoolShare(poolAo);
         _pushPoolShare(msg.sender, poolAo);
@@ -420,6 +430,8 @@ contract BPool is BBronze, BToken, BMath
             uint tAo = bmul(ratio, bal);
             _records[t].balance = bsub(_records[t].balance, tAo);
             _pushUnderlying(t, msg.sender, tAo);
+
+            emit LOG_EXIT(msg.sender, t, tAo);
         }
 
     }
@@ -545,6 +557,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
+        
+        emit LOG_JOIN(msg.sender, Ti, tAi);
+
         return pAo;
     }
 
@@ -566,6 +581,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
         T.balance = badd(T.balance, tAi);
+
+        emit LOG_JOIN(msg.sender, Ti, tAi);
+
         return tAi;
     }
 
@@ -589,6 +607,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
+
+        emit LOG_EXIT(msg.sender, To, tAo);
+
         return tAo;
     }
 
@@ -613,6 +634,9 @@ contract BPool is BBronze, BToken, BMath
         _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
         T.balance = bsub(T.balance, tAo);
+
+        emit LOG_EXIT(msg.sender, To, tAo);
+
         return pAi;
     }
 
