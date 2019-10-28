@@ -289,7 +289,7 @@ contract BPool is BBronze, BToken, BMath
         uint oldWeight = _records[token].denorm;
         if (denorm > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
-            require( _totalWeight < MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
+            require( _totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
         } else {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
         }        

@@ -5,6 +5,7 @@ const TTokenFactory = artifacts.require('TTokenFactory');
 const MaxError = 10**-9;
 const swapFee = 0.001;
 const exitFee = 0.01;
+const verbose = false;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -48,30 +49,36 @@ contract('math tests from canonical setup', async (accounts) => {
     let expected = currentPoolBalance*10**18;
     let actual = await pool.totalSupply.call();
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`Pool Balance`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
+    if(verbose){
+        console.log(`Pool Balance`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
 
     assert.equal(relDif<MaxError, true); 
 
     expected = currentDirtBalance*10**18; 
     actual = await pool.getBalance.call(DIRT);
-    relDif = calcRelativeDiff(expected,actual);    
-    console.log(`Dirt Balance`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
+    relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`Dirt Balance`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
 
     assert.equal(relDif<MaxError, true); 
 
     expected = currentRockBalance*10**18; 
     actual = await pool.getBalance.call(ROCK);
-    relDif = calcRelativeDiff(expected,actual);    
-    console.log(`Rock Balance`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);
+    relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`Rock Balance`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
 
     assert.equal(relDif<MaxError, true);
   }
@@ -137,26 +144,30 @@ contract('math tests from canonical setup', async (accounts) => {
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
 
-    console.log(test[0]);
     let output = await pool.swap_ExactAmountIn.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
 
     // Checking outputs
     let expected = parseInt(test[2][0]);
     let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[0]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[0]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+  
     assert.equal(relDif<MaxError, true);
 
     expected = parseInt(test[2][1]);
     actual = output[1];
     relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[1]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[1]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    } 
     assert.equal(relDif<MaxError, true); 
   });
 
@@ -170,26 +181,30 @@ contract('math tests from canonical setup', async (accounts) => {
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
 
-    console.log(test[0]);
     let output = await pool.swap_ExactAmountOut.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
 
     // Checking outputs
     let expected = parseInt(test[2][0]);
     let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[0]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[0]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+  
     assert.equal(relDif<MaxError, true);
 
     expected = parseInt(test[2][1]);
     actual = output[1];
     relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[1]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[1]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    } 
     assert.equal(relDif<MaxError, true); 
   });
 
@@ -202,41 +217,48 @@ contract('math tests from canonical setup', async (accounts) => {
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
 
-    console.log(test[0]);
     let output = await pool.swap_ExactMarginalPrice.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
 
     // Checking outputs
     let expected = parseInt(test[2][0]);
     let actual = output[0];
     let relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[0]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[0]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+  
     assert.equal(relDif<MaxError, true);
 
     expected = parseInt(test[2][1]);
     actual = output[1];
     relDif = calcRelativeDiff(expected,actual);
-    console.log(`output[1]`);
-    console.log(`expected: ${expected})`);
-    console.log(`actual  : ${actual})`);
-    console.log(`relDif  : ${relDif})`);  
+    if(verbose){
+        console.log(`output[1]`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    } 
     assert.equal(relDif<MaxError, true); 
   });*/
 
   it('joinPool', async () => {
-    console.log(`joinPool`);
     currentPoolBalance = 100;
     await pool.finalize(toWei(String(currentPoolBalance)));
 
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
     let pAo = 1;
-    console.log(`pAo: ${pAo})`);        
+    if(verbose){
+        console.log(`pAo: ${pAo})`); 
+    }       
     await pool.joinPool(toWei(String(pAo)));
 
     //// Update balance states
@@ -249,20 +271,25 @@ contract('math tests from canonical setup', async (accounts) => {
     currentRockBalance += pAo/previousPoolBalance * previousRockBalance; 
 
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances();        
   });
 
   it('exitPool', async () => {
-    console.log(`exitPool`);
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
     let pAi = 1/(1-exitFee); // so that the balances of all tokens will go back exactly to what they were before joinPool()
     let pAiAfterExitFee = pAi*(1-exitFee)
-    console.log(`pAi: ${pAi})`);
+    if(verbose){
+        console.log(`pAi: ${pAi})`);
+    }
     await pool.exitPool(toWei(String(pAi)));
 
     //// Update balance states
@@ -275,22 +302,29 @@ contract('math tests from canonical setup', async (accounts) => {
     currentRockBalance -= pAiAfterExitFee/previousPoolBalance * previousRockBalance; 
 
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances();    
   });
 
 
   it('joinswap_ExternAmountIn', async () => {
-    console.log(`joinswap_ExternAmountIn`);
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
     let poolRatio = 1.1;
-    let tAi = 1/(1-swapFee*(1-dirtNorm))*currentDirtBalance*(poolRatio**2-1); // increase tbalance by 1.1^2 after swap fee
-    console.log(`tAi: ${tAi})`);
-    let pAo = await pool.joinswap_ExternAmountIn(DIRT, toWei(String(tAi))); 
+    let tAi = 1/(1-swapFee*(1-dirtNorm))*currentDirtBalance*(poolRatio**(1/dirtNorm)-1); // increase tbalance by 1.1^2 after swap fee
+    if(verbose){
+        console.log(`tAi: ${tAi})`);
+    }
+    let pAo = await pool.joinswap_ExternAmountIn.call(DIRT, toWei(String(tAi))); 
+    // Execute txn called above
+    await pool.joinswap_ExternAmountIn(DIRT, toWei(String(tAi))); 
 
     //// Update balance states
     previousDirtBalance = currentDirtBalance;
@@ -298,81 +332,234 @@ contract('math tests from canonical setup', async (accounts) => {
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance *= poolRatio; // increase by 1.1
 
+    // Check pAo 
+    let expected = (currentPoolBalance-previousPoolBalance)*10**18; // poolRatio = 1.1
+    let actual = pAo;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`pAo`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+    assert.equal(relDif<MaxError, true); 
+
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances(); 
   });
 
 
   it('joinswap_PoolAmountOut', async () => {
-    console.log(`joinswap_PoolAmountOut`);
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
     let poolRatio = 1.1;
     let pAo = currentPoolBalance*(poolRatio-1);
-    console.log(`pAo: ${pAo})`);
-    let tAi = await pool.joinswap_PoolAmountOut(toWei(String(pAo)), ROCK); // 10% of current supply
+    if(verbose){
+        console.log(`pAo: ${pAo})`);
+    }
+    let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)), ROCK); // 10% of current supply
+    await pool.joinswap_PoolAmountOut(toWei(String(pAo)), ROCK); 
+
     //// Update balance states
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance *= poolRatio; // increase by 1.1
     previousRockBalance = currentRockBalance;
-    currentRockBalance += previousRockBalance*(poolRatio**2-1)*1/(1-swapFee*(1-rockNorm)); // (21% + swap fees) addition to current Rock supply ;
+    currentRockBalance += previousRockBalance*(poolRatio**(1/rockNorm)-1)*1/(1-swapFee*(1-rockNorm)); // (21% + swap fees) addition to current Rock supply ;
+
+    // Check tAi
+    let expected = (currentRockBalance-previousRockBalance)*10**18; // 0.4641 -> 1.1^4 - 1 = 0.4641
+    let actual = tAi;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`tAi`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances(); 
   });
 
 
   it('exitswap_PoolAmountIn', async () => {
-    console.log(`exitswap_PoolAmountIn`);
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
     let poolRatioAfterExitFee = 0.9;
     let pAi = currentPoolBalance * (1-poolRatioAfterExitFee)*(1/(1-exitFee));;    
-    console.log(`pAi: ${pAi})`);
-    let tAo = await pool.exitswap_PoolAmountIn(toWei(String(pAi)),DIRT);
+    if(verbose){
+        console.log(`pAi: ${pAi})`);
+    }
+    let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
+    await pool.exitswap_PoolAmountIn(toWei(String(pAi)),DIRT);
 
     //// Update balance states
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance -= pAi*(1-exitFee); 
     previousDirtBalance = currentDirtBalance;
-    currentDirtBalance -= previousDirtBalance*(1-poolRatioAfterExitFee**2)*(1-swapFee*(1-dirtNorm));
+    currentDirtBalance -= previousDirtBalance*(1-poolRatioAfterExitFee**(1/dirtNorm))*(1-swapFee*(1-dirtNorm));
+
+    // Check tAo
+    let expected = (previousDirtBalance-currentDirtBalance)*10**18; // 0.4641 -> 1.1^4 - 1 = 0.4641
+    let actual = tAo;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`tAo`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances();
   });
 
 
   it('exitswap_ExternAmountOut', async () => {
-    console.log(`exitswap_ExternAmountOut`);
     //// Print current balances prior to operation
-    console.log(`BEFORE`);
+    if(verbose){
+        console.log(`BEFORE`);
+    }
     await logAndAssertCurrentBalances();
 
     //// Call function 
-    let tokenRatioBeforeSwapFee = 0.9**2;
+    let poolRatioAfterExitFee = 0.9;
+    let tokenRatioBeforeSwapFee = poolRatioAfterExitFee**(1/rockNorm);
     let tAo = currentRockBalance * (1-tokenRatioBeforeSwapFee)*(1-swapFee*(1-rockNorm));
-    console.log(`tAo: ${tAo})`);
-    let pAi = await pool.exitswap_ExternAmountOut(ROCK, toWei(String(tAo)));
+    if(verbose){
+        console.log(`tAo: ${tAo})`);
+    }
+    let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(String(tAo)));
+    await pool.exitswap_ExternAmountOut(ROCK, toWei(String(tAo)));
+
     //// Update balance states
     previousRockBalance = currentRockBalance;
     currentRockBalance -= tAo
     previousPoolBalance = currentPoolBalance;
-    currentPoolBalance -= previousPoolBalance*(1-tokenRatioBeforeSwapFee**0.5);
+    currentPoolBalance -= previousPoolBalance*(1-poolRatioAfterExitFee);
+
+    // check pAi
+    let expected = (previousPoolBalance-currentPoolBalance)/(1-exitFee)*10**18; // Notice the (1-exitFee) term since only pAi*(1-exitFee) is burned
+    let actual = pAi;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`pAi`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
-    console.log(`AFTER`);
+    if(verbose){
+        console.log(`AFTER`);
+    }
     await logAndAssertCurrentBalances();
   });
 
-  it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))');
-  it('tAo = exitswap_PoolAmountIn(exitswap_ExternAmountOut(tAo))');
+
+  it('pAo = joinswap_ExternAmountIn(joinswap_PoolAmountOut(pAo))', async () => {
+    //// Print current balances prior to operation
+    let pAo = 10;
+    let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)),DIRT);
+    let calculatedPAo = await pool.joinswap_ExternAmountIn.call(DIRT, String(tAi)); // NO toWei since tAo is already in wei
+    
+    let expected = pAo*10**18;
+    let actual = calculatedPAo;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`tAi: ${tAi})`);
+        console.log(`pAo`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+    assert.equal(relDif<MaxError, true); 
+  });
+
+
+  it('tAi = joinswap_PoolAmountOut(joinswap_ExternAmountIn(tAi))', async () => {
+    //// Print current balances prior to operation
+    let tAi = 1;
+    let pAo = await pool.joinswap_ExternAmountIn.call(ROCK, toWei(String(tAi)));
+    let calculatedtAi = await pool.joinswap_PoolAmountOut.call(String(pAo), ROCK); // NO toWei since pAi is already in wei
+    
+    let expected = tAi*10**18;
+    let actual = calculatedtAi;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`pAo: ${pAo})`);
+        console.log(`tAi`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+    assert.equal(relDif<MaxError, true); 
+  });
+
+
+  it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))', async () => {
+    //// Print current balances prior to operation
+    let pAi = 10;
+    let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
+    let calculatedPAi = await pool.exitswap_ExternAmountOut.call(DIRT, String(tAo)); // NO toWei since tAo is already in wei
+    
+    let expected = pAi*10**18;
+    let actual = calculatedPAi;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`tAo: ${tAo})`);
+        console.log(`pAi`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+    assert.equal(relDif<MaxError, true); 
+  });
+
+
+  it('tAo = exitswap_PoolAmountIn(exitswap_ExternAmountOut(tAo))', async () => {
+    //// Print current balances prior to operation
+    let tAo = 1;
+    let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(String(tAo)));
+    let calculatedtAo = await pool.exitswap_PoolAmountIn.call(String(pAi), ROCK); // NO toWei since pAi is already in wei
+    
+    let expected = tAo*10**18;
+    let actual = calculatedtAo;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`pAi: ${pAi})`);
+        console.log(`tAo`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+    assert.equal(relDif<MaxError, true); 
+  });
 });
