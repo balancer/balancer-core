@@ -26,6 +26,7 @@ contract BConst is BBronze
 
     uint256 constant MIN_FEE           = BONE / 10000;
     uint256 constant MAX_FEE           = BONE / 10;
+    uint256 constant EXIT_FEE           = BONE / 10000;
 
     uint256 constant MIN_WEIGHT        = BONE;
     uint256 constant MAX_WEIGHT        = BONE * 50;
