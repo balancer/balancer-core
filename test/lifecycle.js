@@ -125,7 +125,9 @@ contract('BPool lifecycle', async (accounts) => {
 
   it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE');
 
-  it('setFees getFees');
+  it('setFees getFees', async () => {
+    await pool.setFees(swapFee, exitFee);
+  });
 
   it('setFees ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED');
 
@@ -171,7 +173,7 @@ contract('BPool lifecycle', async (accounts) => {
     factoryShares = await pool.balanceOf.call(FACTORY);
     console.log('factory shares', fromWei(factoryShares));
     
-    await factory.collect(POOL, admin);
+    await factory.collect(POOL);
     console.log('collect(POOL, self)')
     dirtBal = await dirt.balanceOf.call(POOL);
     console.log('pool dirt', fromWei(dirtBal));
