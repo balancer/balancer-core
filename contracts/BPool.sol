@@ -349,16 +349,6 @@ contract BPool is BBronze, BToken, BMath
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
-    function collect()
-      _logs_
-      _lock_
-      public returns (uint collected)
-    {
-        require(msg.sender == _factory, ERR_NOT_FACTORY);
-        uint fees = _balance[_factory];
-        return (collected = fees);
-    }
-
     function getSpotPrice(address Ti, address To)
       public view
         _viewlock_

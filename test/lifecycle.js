@@ -173,7 +173,7 @@ contract('BPool lifecycle', async (accounts) => {
     factoryShares = await pool.balanceOf.call(FACTORY);
     console.log('factory shares', fromWei(factoryShares));
     
-    await factory.collect(POOL, admin);
+    await factory.collect(POOL);
     console.log('collect(POOL, self)')
     dirtBal = await dirt.balanceOf.call(POOL);
     console.log('pool dirt', fromWei(dirtBal));
