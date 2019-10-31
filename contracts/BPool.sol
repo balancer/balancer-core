@@ -175,7 +175,7 @@ contract BPool is BBronze, BToken, BMath
       public view _viewlock_
         returns (uint)
     {
-        return (_swapFee);
+        return _swapFee;
     }
 
     function getController()
