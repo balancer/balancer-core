@@ -171,7 +171,7 @@ contract BPool is BBronze, BToken, BMath
         return _records[token].balance;
     }
 
-    function getFee()
+    function getSwapFee()
       public view _viewlock_
         returns (uint)
     {
