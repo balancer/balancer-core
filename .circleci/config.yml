@@ -23,7 +23,7 @@ jobs:
   build:
     docker:
       - image: circleci/node:11
-      - image: ethereum/solc:0.5.3
+      - image: ethereum/solc:0.5.11
     working_directory: ~/balancer
     steps:
       - restore_cache:
@@ -57,7 +57,7 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Fetch solc version
-          command: docker pull ethereum/solc:0.5.3
+          command: docker pull ethereum/solc:0.5.11
       - restore_cache:
           key: balancer-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
