@@ -50,7 +50,7 @@ jobs:
   
   coverage:
     docker:
-      - image: trufflesuite/ganache-cli
+      - image: circleci/node:11
     working_directory: ~/balancer
     steps:
       - setup_remote_docker:

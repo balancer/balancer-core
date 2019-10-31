@@ -2,6 +2,15 @@
 <img width="128px" src="https://balancer-labs.github.io/pebbles/images/pebbles-pad.256w.png" alt="balancer pebbles logo"/>
 </p>
 
+<p align="center">
+  <a href="https://circleci.com/gh/balancer-labs/balancer-core">
+    <img src="https://circleci.com/gh/balancer-labs/balancer-core.svg?style=svg&circle-token=2f432d0cf2690bec7f215a7738bd1142b97bd9b4" />
+  </a>
+  <a href="https://coveralls.io/github/balancer-labs/balancer-core">
+    <img src="https://coveralls.io/repos/github/balancer-labs/balancer-core/badge.svg?t=7avwwt" />
+  </a>
+</p>
+
 <h1 align=center><code>balancer</code></h1>
 
 **Balancer** is an automated **portfolio manager**, **liquidity provider**, and **price sensor**.
