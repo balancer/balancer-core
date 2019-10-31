@@ -122,8 +122,8 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log('pool.setPublicSwap(true);');
     await pool.setPublicJoin(true);
     console.log('pool.setPublicJoin(true);');
-    await pool.setFee(String(swapFee*10**18));
-    console.log('setFee(swapFee)');
+    await pool.setSwapFee(String(swapFee*10**18));
+    console.log('setSwapFee(swapFee)');
   });
 
   beforeEach(async () => {

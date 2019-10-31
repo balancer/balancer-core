@@ -78,8 +78,8 @@ contract('math tests from canonical setup', async (accounts) => {
     console.log(`pool.rebind(ROCK, ${rockBalance}, ${rockDenorm})`);
     console.log(`pool.rebind(SAND, ${sandBalance}, ${sandDenorm})`);
 
-    await pool.setFees(swapFee, exitFee);
-    console.log(`pool.setFees(${swapFee},${exitFee})`);
+    await pool.setSwapFee(swapFee, exitFee);
+    console.log(`pool.setSwapFee(${swapFee},${exitFee})`);
   });
 
 
