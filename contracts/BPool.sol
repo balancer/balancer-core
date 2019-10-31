@@ -75,7 +75,7 @@ contract BPool is BBronze, BToken, BMath
     bool                      _publicExit; // true if PUBLIC can call Exit functions
                                            //   always true for bronze pools!
 
-    // `setFee` and `finalize` require CONTROL
+    // `setSwapFee` and `finalize` require CONTROL
     // `finalize` sets `PUBLIC can SWAP`, `PUBLIC can JOIN`, and sets `_controller` to NULL
     uint                      _swapFee;
     bool                      _finalized;
