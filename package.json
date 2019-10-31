@@ -5,7 +5,7 @@
   "license": "GPL-3.0-only",
   "description": "Balancer Core Contracts and ABI",
   "scripts": {
-    "build": "truffle build",
+    "compile": "truffle compile",
     "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
     "test": "truffle test",
     "coverage": "yarn solidity-coverage"

@@ -37,7 +37,7 @@ Most users will want to consume the ABI definitions for BFactory and BPool.
 This project follows the standard Truffle project structure. 
 
 ```
-yarn build   # build artifacts to `build/contracts`
+yarn compile   # build artifacts to `build/contracts`
 yarn testrpc # run ganache
 yarn test    # run the tests
 ```
