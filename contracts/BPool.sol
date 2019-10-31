@@ -454,6 +454,8 @@ contract BPool is BBronze, BToken, BMath
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 >= SP0, ERR_MATH_APPROX);
+        
         require(SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
@@ -488,6 +490,8 @@ contract BPool is BBronze, BToken, BMath
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 >= SP0, ERR_MATH_APPROX);
+
         require( SP1 <= MaxP, ERR_LIMIT_PRICE);
 
         _pullUnderlying(Ti, msg.sender, Ai);
@@ -523,6 +527,9 @@ contract BPool is BBronze, BToken, BMath
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
+
+        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 >= SP0, ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
