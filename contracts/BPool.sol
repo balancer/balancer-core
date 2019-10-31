@@ -185,7 +185,7 @@ contract BPool is BBronze, BToken, BMath
         return _controller;
     }
 
-    function setFee(uint swapFee)
+    function setSwapFee(uint swapFee)
       _logs_
       _lock_
       public

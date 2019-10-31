@@ -125,11 +125,11 @@ contract('BPool lifecycle', async (accounts) => {
 
   it('rebind ERR_BTOKEN_UNDERFLOW ERR_ERC20_FALSE');
 
-  it('setFee getFee', async () => {
-    await pool.setFee(swapFee);
+  it('setSwapFee getSwapFee', async () => {
+    await pool.setSwapFee(swapFee);
   });
 
-  it('setFee ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED');
+  it('setSwapFee ERR_NOT_CONTROLLER ERR_MAX_FEE ERR_FINALIZED');
 
   it('setController getController');
 
