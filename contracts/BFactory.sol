@@ -15,9 +15,9 @@ pragma solidity ^0.5.11;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
 
-import 'contracts/BColor.sol';
-import 'contracts/BPool.sol';
-import 'contracts/BStub.sol';
+import './BColor.sol';
+import './BPool.sol';
+import './BStub.sol';
 
 contract BFactory is BBronze
 {
