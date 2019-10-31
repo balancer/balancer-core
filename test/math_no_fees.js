@@ -4,7 +4,7 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 const MaxError = 10**-9;
-const verbose = false;
+const verbose = true;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -96,7 +96,7 @@ contract('math tests from canonical setup', async (accounts) => {
     //console.log(`pool.rebind(ROCK, ${rockBalance}, ${rockDenorm})`);
   });
 
-  // TODO: swap parameters of all asserts -> correct order is (actual, expected)
+  /*
 
   it('swap_ExactAmountIn', async () => {
     //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
@@ -182,6 +182,8 @@ contract('math tests from canonical setup', async (accounts) => {
 
   it('swap_ExactAmountOut ERR_ARG_LIMIT_IN ERR_LIMIT_OUT ERR_LIMIT_PRICE');
 
+  */
+
   it('swap_ExactMarginalPrice', async () => {
     //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactMarginalPrice`, 
@@ -218,6 +220,7 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true);  
   });
 
+  /*
   it('swap_ExactMarginalPrice ERR_ARG_LIMIT_PRICE', async () => {
     await assertThrow( pool.swap_ExactMarginalPrice(DIRT, MAX, ROCK, '0', toWei('0.5'))
                      , 'ERR_ARG_LIMIT_PRICE' ); //0.666 -> 1.001  increase of more than 1.5 
@@ -484,7 +487,7 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
     // TODO: add checks of the balances of DIRT and ROCK to make sure joinPool is pulling tokens correctly 
   });
-
+*/
 
 
 });

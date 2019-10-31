@@ -136,12 +136,12 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails setting crazy swap fees', async () => {
-      await assertThrow(pool.setFees(toWei('0.11'), toWei('0.11')), 'ERR_MAX_FEE');
+      await assertThrow(pool.setFee(toWei('0.11')), 'ERR_MAX_FEE');
     });
 
     it('Admin sets swap fees', async () => {
-      await pool.setFees(toWei('0.003'), toWei('0.001'));
-      let fees = await pool.getFees();
+      await pool.setFee(toWei('0.003'));
+      let fees = await pool.getFee();
       assert.equal(0.003, fromWei(fees[0]));
       assert.equal(0.001, fromWei(fees[1]));
     });

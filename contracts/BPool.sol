@@ -586,7 +586,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, EXIT_FEE);
+        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee);
 
         _pullPoolShare(msg.sender, pAi);
         uint pAiExitFee = bmul(pAi,EXIT_FEE);
@@ -609,7 +609,7 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, EXIT_FEE);
+        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee);
      
 
         _pullPoolShare(msg.sender, pAi);

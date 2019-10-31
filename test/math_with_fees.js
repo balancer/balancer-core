@@ -4,8 +4,8 @@ const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 const MaxError = 10**-9;
 const swapFee = 0.001;
-const exitFee = 0.01;
-const verbose = false;
+const exitFee = 0.0001;
+const verbose = true;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);

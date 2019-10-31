@@ -63,7 +63,7 @@ contract('math tests from canonical setup', async (accounts) => {
     await pool.bind(ROCK, rockBalance, rockDenorm);
     await pool.bind(SAND, sandBalance, sandDenorm);
 
-    await pool.setFees(swapFee, exitFee);
+    await pool.setFee(swapFee);
 
     await pool.setPublicSwap(true);
     await pool.setPublicJoin(true);

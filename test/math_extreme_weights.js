@@ -6,7 +6,7 @@ const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 const MaxError = 10**-8;
 const swapFee = 0.001; //0.001;
-const exitFee = 0.01; //0.01;
+const exitFee = 0.0001; //0.01;
 const verbose = false;
 
 function calcRelativeDiff(_expected, _actual) {
@@ -125,7 +125,7 @@ contract('math tests from canonical setup', async (accounts) => {
     await pool.setPublicJoin(true);
     console.log('pool.setPublicJoin(true);');
     await pool.setFee(String(swapFee*10**18));
-    console.log('setFee(swapFee);
+    console.log('setFee(swapFee');
   });
 
   beforeEach(async () => {
