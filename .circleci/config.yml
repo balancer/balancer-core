@@ -30,7 +30,7 @@ jobs:
           key: balancer-{{ .Environment.CIRCLE_SHA1 }}
       - run:
           name: Compile contracts
-          command: yarn build
+          command: yarn compile
       - save_cache:
           key: balancer-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
           paths:
