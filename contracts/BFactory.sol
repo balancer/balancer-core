@@ -52,11 +52,11 @@ contract BFactory is BBronze
         require(msg.sender == _blabs);
         _blabs = b;
     }
-    function collect(BPool pool, address to)
+    function collect(BPool pool)
       public 
     {
         require(msg.sender == _blabs, "ERR_NOT_BLABS");
-        uint collected = pool.collect();
-        pool.transfer(to, collected);
+        uint collected = ERC20(pool).balanceOf(address(this));
+        pool.transfer(_blabs, collected);
     }
 }
