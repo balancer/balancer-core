@@ -138,14 +138,14 @@ contract BMath is BBronze, BConst, BNum
 
     function _calc_SingleOutGivenPoolIn( uint balTo, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint pAi, uint swapFee, uint exitFee)
+                                       , uint pAi, uint swapFee)
       internal pure
         returns (uint tAo)
     {
         uint normalizedWeight = bdiv(weight, totalWeight);
         // charge exit fee on the pool token side
         // pAiAfterExitFee = pAi*(1-exitFee)
-        uint pAiAfterExitFee = bmul(pAi, bsub(BONE, exitFee));
+        uint pAiAfterExitFee = bmul(pAi, bsub(BONE, EXIT_FEE));
         uint newPoolSupply = bsub(poolSupply,pAiAfterExitFee);
         uint poolRatio = bdiv(newPoolSupply, poolSupply);
      
@@ -164,7 +164,7 @@ contract BMath is BBronze, BConst, BNum
 
     function _calc_PoolInGivenSingleOut( uint balTo, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint tAo, uint swapFee, uint exitFee)
+                                       , uint tAo, uint swapFee)
       internal pure
         returns (uint pAi)
     {
@@ -186,7 +186,7 @@ contract BMath is BBronze, BConst, BNum
 
         // charge exit fee on the pool token side
         // pAi = pAiAfterExitFee/(1-exitFee)
-        pAi = bdiv(pAiAfterExitFee, bsub(BONE, exitFee));
+        pAi = bdiv(pAiAfterExitFee, bsub(BONE, EXIT_FEE));
         return pAi;
     }
 

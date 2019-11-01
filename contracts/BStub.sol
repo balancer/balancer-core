@@ -61,38 +61,38 @@ contract BStub is BBronze, BMath
 
     function calc_PoolOutGivenSingleIn( uint balance, uint weight
                                       , uint poolBalance, uint totalWeight
-                                      , uint tAi, uint fee )
+                                      , uint tAi, uint swapFee )
       public pure
         returns (uint pAo)
     {
-        return  _calc_PoolOutGivenSingleIn( balance, weight, poolBalance, totalWeight , tAi, fee );
+        return  _calc_PoolOutGivenSingleIn( balance, weight, poolBalance, totalWeight , tAi, swapFee);
     }
 
     function calc_SingleInGivenPoolOut( uint balance, uint weight
                                       , uint poolSupply, uint totalWeight
-                                      , uint pAo, uint fee)
+                                      , uint pAo, uint swapFee)
       public pure
         returns (uint tokenIn)
     {
-        return _calc_SingleInGivenPoolOut( balance, weight, poolSupply, totalWeight, pAo, fee);
+        return _calc_SingleInGivenPoolOut( balance, weight, poolSupply, totalWeight, pAo, swapFee);
     }
 
     function calc_SingleOutGivenPoolIn( uint balance, uint weight
                                        , uint poolSupply, uint totalWeight
-                                       , uint pAi, uint fee, uint exitFee)
+                                       , uint pAi, uint swapFee)
       public pure
         returns (uint tAo)
     {
-        return _calc_SingleOutGivenPoolIn( balance, weight, poolSupply, totalWeight, pAi, fee, exitFee);
+        return _calc_SingleOutGivenPoolIn( balance, weight, poolSupply, totalWeight, pAi, swapFee);
     }
 
     function calc_PoolInGivenSingleOut( uint balance, uint weight
                                       , uint poolSupply, uint totalWeight
-                                      , uint tAo, uint swapFee, uint exitFee)
+                                      , uint tAo, uint swapFee)
       public pure
         returns (uint pAi)
     {
-        return calc_PoolInGivenSingleOut( balance, weight, poolSupply, totalWeight, tAo, swapFee, exitFee);
+        return calc_PoolInGivenSingleOut( balance, weight, poolSupply, totalWeight, tAo, swapFee);
     }
 
 

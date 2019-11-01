@@ -75,10 +75,9 @@ contract BPool is BBronze, BToken, BMath
     bool                      _publicExit; // true if PUBLIC can call Exit functions
                                            //   always true for bronze pools!
 
-    // `setFees` and `finalize` require CONTROL
+    // `setSwapFee` and `finalize` require CONTROL
     // `finalize` sets `PUBLIC can SWAP`, `PUBLIC can JOIN`, and sets `_controller` to NULL
     uint                      _swapFee;
-    uint                      _exitFee;
     bool                      _finalized;
 
     address[]                 _tokens;
@@ -172,11 +171,11 @@ contract BPool is BBronze, BToken, BMath
         return _records[token].balance;
     }
 
-    function getFees()
+    function getSwapFee()
       public view _viewlock_
-        returns (uint,uint)
+        returns (uint)
     {
-        return (_swapFee, _exitFee);
+        return _swapFee;
     }
 
     function getController()
@@ -186,7 +185,7 @@ contract BPool is BBronze, BToken, BMath
         return _controller;
     }
 
-    function setFees(uint swapFee, uint exitFee)
+    function setSwapFee(uint swapFee)
       _logs_
       _lock_
       public
@@ -195,9 +194,7 @@ contract BPool is BBronze, BToken, BMath
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         // TODO min fees
         require(swapFee <= MAX_FEE, ERR_MAX_FEE);
-        require(exitFee <= MAX_FEE, ERR_MAX_FEE);
         _swapFee = swapFee;
-        _exitFee = exitFee;
     }
 
     function setController(address manager)
@@ -297,7 +294,7 @@ contract BPool is BBronze, BToken, BMath
         uint oldWeight = _records[token].denorm;
         if (denorm > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
-            require( _totalWeight < MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
+            require( _totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
         } else {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
         }        
@@ -309,7 +306,11 @@ contract BPool is BBronze, BToken, BMath
         if (balance > oldBalance) {
             _pullUnderlying(token, msg.sender, bsub(balance, oldBalance));
         } else if( balance < oldBalance) {
-            _pushUnderlying(token, msg.sender, bsub(oldBalance, balance));
+            // In this case liquidity is being withdrawn, so charge EXIT_FEE
+            uint tokenBalanceWithdrawn = bsub(oldBalance, balance);
+            uint tokenExitFee = bmul(tokenBalanceWithdrawn,EXIT_FEE);
+            _pushUnderlying(token, msg.sender, bsub(tokenBalanceWithdrawn,tokenExitFee));
+            _pushUnderlying(token, _factory, tokenExitFee);
         }
     }
 
@@ -322,7 +323,11 @@ contract BPool is BBronze, BToken, BMath
         require(isBound(token), ERR_NOT_BOUND);
         require( ! _finalized, ERR_IS_FINALIZED);
 
-        _pushUnderlying(token, msg.sender, _records[token].balance);
+        uint tokenBalance = _records[token].balance;
+        uint tokenExitFee = bmul(tokenBalance,EXIT_FEE);
+        _pushUnderlying(token, msg.sender, bsub(tokenBalance,tokenExitFee));
+        _pushUnderlying(token, _factory, tokenExitFee);
+
         _totalWeight = bsub(_totalWeight, _records[token].denorm);
 
         // Swap the token-to-unbind with the last token,
@@ -415,7 +420,7 @@ contract BPool is BBronze, BToken, BMath
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
-        uint pAiExitFee = bmul(pAi, _exitFee);
+        uint pAiExitFee = bmul(pAi, EXIT_FEE);
         uint pAiAfterExitFee = bsub(pAi, pAiExitFee);
         uint ratio = bdiv(pAiAfterExitFee, poolTotal);
        
@@ -460,7 +465,9 @@ contract BPool is BBronze, BToken, BMath
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 >= SP0, ERR_MATH_APPROX);     
         require(SP1 <= MaxP, ERR_LIMIT_PRICE);
+        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -494,7 +501,9 @@ contract BPool is BBronze, BToken, BMath
         O.balance = bsub(O.balance, Ao);
 
         uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SP1 <= MaxP, ERR_LIMIT_PRICE);
+        require(SP1 >= SP0, ERR_MATH_APPROX);
+        require(SP1 <= MaxP, ERR_LIMIT_PRICE);
+        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -529,6 +538,10 @@ contract BPool is BBronze, BToken, BMath
 
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
+
+        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP1 >= SP0, ERR_MATH_APPROX);
+        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);
         _pushUnderlying(To, msg.sender, Ao);
@@ -598,10 +611,10 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee, _exitFee);
+        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee);
 
         _pullPoolShare(msg.sender, pAi);
-        uint pAiExitFee = bmul(pAi,_exitFee);
+        uint pAiExitFee = bmul(pAi,EXIT_FEE);
         _burnPoolShare(bsub(pAi,pAiExitFee));
         _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
@@ -624,11 +637,11 @@ contract BPool is BBronze, BToken, BMath
 
         Record storage T = _records[To];
 
-        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee, _exitFee);
+        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee);
      
 
         _pullPoolShare(msg.sender, pAi);
-        uint pAiExitFee = bmul(pAi,_exitFee);
+        uint pAiExitFee = bmul(pAi,EXIT_FEE);
         _burnPoolShare(bsub(pAi,pAiExitFee));
         _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);

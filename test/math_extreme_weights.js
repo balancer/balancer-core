@@ -1,11 +1,13 @@
+// All test points have been calculated with Wolfram Mathematica. See here: https://www.wolframcloud.com/obj/fernando.martinel/Published/test_extreme_weights.nb
+
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
-const MaxError = 10**-9;
-const swapFee = 0.001;
-const exitFee = 0.0001;
-const verbose = true;
+const MaxError = 10**-8;
+const swapFee = 0.001; //0.001;
+const exitFee = 0.0001; //0.01;
+const verbose = false;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -27,15 +29,15 @@ contract('math tests from canonical setup', async (accounts) => {
   let pool;             // first pool w/ defaults
   let POOL;             //   pool address
 
-  const dirtBalance = toWei('4');
+  const dirtBalance = toWei('1000');
   let currentDirtBalance = parseInt(dirtBalance)/10**18;
   let previousDirtBalance = currentDirtBalance;
-  const dirtDenorm = toWei('10');
+  const dirtDenorm = toWei('1');
 
-  const rockBalance = toWei('12');
+  const rockBalance = toWei('1000');
   let currentRockBalance = parseInt(rockBalance)/10**18;;
   let previousRockBalance = currentRockBalance;
-  const rockDenorm = toWei('10');
+  const rockDenorm = toWei('49');
 
   let currentPoolBalance = 0;
   let previousPoolBalance = 0;
@@ -123,7 +125,7 @@ contract('math tests from canonical setup', async (accounts) => {
     await pool.setPublicJoin(true);
     console.log('pool.setPublicJoin(true);');
     await pool.setSwapFee(String(swapFee*10**18));
-    console.log('setSwapFee(swapFee)');
+    console.log('setSwapFee(swapFee');
   });
 
   beforeEach(async () => {
@@ -138,8 +140,8 @@ contract('math tests from canonical setup', async (accounts) => {
   it('swap_ExactAmountIn', async () => {
     //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactAmountIn`, 
-                    [DIRT, toWei('2'), ROCK, '0', MAX],  
-                    [toWei(String(12-48/(4+2*(1-swapFee)))),toWei(String(1/(1-swapFee)*(4+2)/(48/(4+2*(1-swapFee)))))], 
+                    [DIRT, toWei('500'), ROCK, '0', MAX],  
+                    [toWei(`8.23390841016124456`),toWei(`74.1844011380065814`)], 
                     0, //deltaAccountBalances, 
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
@@ -175,8 +177,8 @@ contract('math tests from canonical setup', async (accounts) => {
   it('swap_ExactAmountOut', async () => {
         //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactAmountOut`, 
-                    [ROCK, MAX, DIRT, toWei('1'), MAX],  
-                    [toWei(String((48/(4-1)-12)/(1-swapFee))),toWei(String(1/(1-swapFee)*(12+((48/(4-1)-12)/(1-swapFee)))/(4-1)))], 
+                    [DIRT, MAX, ROCK, toWei('333.333333333333333333'), MAX],  
+                    [toWei(`425506505648.348073`),toWei(`31306034272.9265099`)], 
                     0, //deltaAccountBalances, 
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
@@ -209,14 +211,15 @@ contract('math tests from canonical setup', async (accounts) => {
   });
 
   it('swap_ExactMarginalPrice'); /*, async () => {
-    /* //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactMarginalPrice`, 
-                    [DIRT, MAX, ROCK, '0', toWei(String(0.48))], // This price happens when Bdirt = 4.8+fee and Brock = 10 
-                    [toWei(String((48/10-4))),toWei(String(12-10))], 
+                    [DIRT, MAX, ROCK, '0', toWei(`74.1107209737620806`)], //
+                    [toWei(`500`),toWei(`8.24065622001300310`)], 
                     0, //deltaAccountBalances, 
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
 
+    console.log(test[0]);
     let output = await pool.swap_ExactMarginalPrice.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
 
     // Checking outputs
@@ -240,11 +243,12 @@ contract('math tests from canonical setup', async (accounts) => {
         console.log(`expected: ${expected})`);
         console.log(`actual  : ${actual})`);
         console.log(`relDif  : ${relDif})`);
-    } 
+    }  
     assert.equal(relDif<MaxError, true); 
-  });*/
+  }); */
 
   it('joinPool', async () => {
+
     currentPoolBalance = 100;
     await pool.finalize(toWei(String(currentPoolBalance)));
 
@@ -256,9 +260,7 @@ contract('math tests from canonical setup', async (accounts) => {
 
     //// Call function 
     let pAo = 1;
-    if(verbose){
-        console.log(`pAo: ${pAo})`); 
-    }       
+    console.log(`pAo: ${pAo})`);        
     await pool.joinPool(toWei(String(pAo)));
 
     //// Update balance states
@@ -287,9 +289,7 @@ contract('math tests from canonical setup', async (accounts) => {
     //// Call function 
     let pAi = 1/(1-exitFee); // so that the balances of all tokens will go back exactly to what they were before joinPool()
     let pAiAfterExitFee = pAi*(1-exitFee)
-    if(verbose){
-        console.log(`pAi: ${pAi})`);
-    }
+
     await pool.exitPool(toWei(String(pAi)));
 
     //// Update balance states
@@ -317,32 +317,15 @@ contract('math tests from canonical setup', async (accounts) => {
     await logAndAssertCurrentBalances();
 
     //// Call function 
-    let poolRatio = 1.1;
-    let tAi = 1/(1-swapFee*(1-dirtNorm))*currentDirtBalance*(poolRatio**(1/dirtNorm)-1); // increase tbalance by 1.1^2 after swap fee
-    if(verbose){
-        console.log(`tAi: ${tAi})`);
-    }
-    let pAo = await pool.joinswap_ExternAmountIn.call(DIRT, toWei(String(tAi))); 
-    // Execute txn called above
-    await pool.joinswap_ExternAmountIn(DIRT, toWei(String(tAi))); 
+    let tokenRatio = 1.1;
+    let tAi = 1/(1-swapFee*(1-dirtNorm))*currentDirtBalance*(tokenRatio-1); // increase tbalance by 1.1 after swap fee
+    let pAo = await pool.joinswap_ExternAmountIn(DIRT, toWei(String(tAi))); 
 
     //// Update balance states
     previousDirtBalance = currentDirtBalance;
     currentDirtBalance += tAi;
     previousPoolBalance = currentPoolBalance;
-    currentPoolBalance *= poolRatio; // increase by 1.1
-
-    // Check pAo 
-    let expected = (currentPoolBalance-previousPoolBalance)*10**18; // poolRatio = 1.1
-    let actual = pAo;
-    let relDif = calcRelativeDiff(expected,actual);
-    if(verbose){
-        console.log(`pAo`);
-        console.log(`expected: ${expected})`);
-        console.log(`actual  : ${actual})`);
-        console.log(`relDif  : ${relDif})`);
-    }
-    assert.equal(relDif<MaxError, true); 
+    currentPoolBalance *= tokenRatio**dirtNorm; // increase by 1.1**dirtNorm
 
     //// Print current balances prior to operation
     if(verbose){
@@ -362,29 +345,12 @@ contract('math tests from canonical setup', async (accounts) => {
     //// Call function 
     let poolRatio = 1.1;
     let pAo = currentPoolBalance*(poolRatio-1);
-    if(verbose){
-        console.log(`pAo: ${pAo})`);
-    }
-    let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)), ROCK); // 10% of current supply
-    await pool.joinswap_PoolAmountOut(toWei(String(pAo)), ROCK); 
-
+    let tAi = await pool.joinswap_PoolAmountOut(toWei(String(pAo)), ROCK); // 10% of current supply
     //// Update balance states
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance *= poolRatio; // increase by 1.1
     previousRockBalance = currentRockBalance;
     currentRockBalance += previousRockBalance*(poolRatio**(1/rockNorm)-1)*1/(1-swapFee*(1-rockNorm)); // (21% + swap fees) addition to current Rock supply ;
-
-    // Check tAi
-    let expected = (currentRockBalance-previousRockBalance)*10**18; // 0.4641 -> 1.1^4 - 1 = 0.4641
-    let actual = tAi;
-    let relDif = calcRelativeDiff(expected,actual);
-    if(verbose){
-        console.log(`tAi`);
-        console.log(`expected: ${expected})`);
-        console.log(`actual  : ${actual})`);
-        console.log(`relDif  : ${relDif})`);
-    }
-    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
     if(verbose){
@@ -403,30 +369,14 @@ contract('math tests from canonical setup', async (accounts) => {
 
     //// Call function 
     let poolRatioAfterExitFee = 0.9;
-    let pAi = currentPoolBalance * (1-poolRatioAfterExitFee)*(1/(1-exitFee));;    
-    if(verbose){
-        console.log(`pAi: ${pAi})`);
-    }
-    let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
-    await pool.exitswap_PoolAmountIn(toWei(String(pAi)),DIRT);
+    let pAi = currentPoolBalance * (1-poolRatioAfterExitFee)*(1/(1-exitFee));
+    let tAo = await pool.exitswap_PoolAmountIn(toWei(String(pAi)),DIRT);
 
     //// Update balance states
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance -= pAi*(1-exitFee); 
     previousDirtBalance = currentDirtBalance;
     currentDirtBalance -= previousDirtBalance*(1-poolRatioAfterExitFee**(1/dirtNorm))*(1-swapFee*(1-dirtNorm));
-
-    // Check tAo
-    let expected = (previousDirtBalance-currentDirtBalance)*10**18; // 0.4641 -> 1.1^4 - 1 = 0.4641
-    let actual = tAo;
-    let relDif = calcRelativeDiff(expected,actual);
-    if(verbose){
-        console.log(`tAo`);
-        console.log(`expected: ${expected})`);
-        console.log(`actual  : ${actual})`);
-        console.log(`relDif  : ${relDif})`);
-    }
-    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
     if(verbose){
@@ -447,30 +397,12 @@ contract('math tests from canonical setup', async (accounts) => {
     let poolRatioAfterExitFee = 0.9;
     let tokenRatioBeforeSwapFee = poolRatioAfterExitFee**(1/rockNorm);
     let tAo = currentRockBalance * (1-tokenRatioBeforeSwapFee)*(1-swapFee*(1-rockNorm));
-    if(verbose){
-        console.log(`tAo: ${tAo})`);
-    }
-    let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(String(tAo)));
-    await pool.exitswap_ExternAmountOut(ROCK, toWei(String(tAo)));
-
+    let pAi = await pool.exitswap_ExternAmountOut(ROCK, toWei(String(tAo)));
     //// Update balance states
     previousRockBalance = currentRockBalance;
     currentRockBalance -= tAo
     previousPoolBalance = currentPoolBalance;
     currentPoolBalance -= previousPoolBalance*(1-poolRatioAfterExitFee);
-
-    // check pAi
-    let expected = (previousPoolBalance-currentPoolBalance)/(1-exitFee)*10**18; // Notice the (1-exitFee) term since only pAi*(1-exitFee) is burned
-    let actual = pAi;
-    let relDif = calcRelativeDiff(expected,actual);
-    if(verbose){
-        console.log(`pAi`);
-        console.log(`expected: ${expected})`);
-        console.log(`actual  : ${actual})`);
-        console.log(`relDif  : ${relDif})`);
-    }
-
-    assert.equal(relDif<MaxError, true); 
 
     //// Print current balances prior to operation
     if(verbose){
@@ -479,10 +411,9 @@ contract('math tests from canonical setup', async (accounts) => {
     await logAndAssertCurrentBalances();
   });
 
-
   it('pAo = joinswap_ExternAmountIn(joinswap_PoolAmountOut(pAo))', async () => {
     //// Print current balances prior to operation
-    let pAo = 10;
+    let pAo = 0.1;
     let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)),DIRT);
     let calculatedPAo = await pool.joinswap_ExternAmountIn.call(DIRT, String(tAi)); // NO toWei since tAo is already in wei
     
@@ -524,7 +455,7 @@ contract('math tests from canonical setup', async (accounts) => {
 
   it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))', async () => {
     //// Print current balances prior to operation
-    let pAi = 10;
+    let pAi = 0.1;
     let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
     let calculatedPAi = await pool.exitswap_ExternAmountOut.call(DIRT, String(tAo)); // NO toWei since tAo is already in wei
     

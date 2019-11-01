@@ -102,7 +102,7 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.bind(WETH, toWei('51'), toWei('1')), 'ERR_BTOKEN_UNDERFLOW'); // TODO change error to insufficient balance
       await assertThrow(pool.bind(MKR, toWei('0.0000001'), toWei('1')), 'ERR_MIN_BALANCE');
       await assertThrow(pool.bind(DAI, toWei('1000'), toWei('0.99')), 'ERR_MIN_WEIGHT');
-      await assertThrow(pool.bind(WETH, toWei('5'), toWei('50')), 'ERR_MAX_TOTAL_WEIGHT');
+      await assertThrow(pool.bind(WETH, toWei('5'), toWei('50.01')), 'ERR_MAX_WEIGHT');
     });
 
     it('Admin binds tokens', async () => {
@@ -136,14 +136,13 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails setting crazy swap fees', async () => {
-      await assertThrow(pool.setFees(toWei('0.11'), toWei('0.11')), 'ERR_MAX_FEE');
+      await assertThrow(pool.setSwapFee(toWei('0.11')), 'ERR_MAX_FEE');
     });
 
     it('Admin sets swap fees', async () => {
-      await pool.setFees(toWei('0.003'), toWei('0.001'));
-      let fees = await pool.getFees();
-      assert.equal(0.003, fromWei(fees[0]));
-      assert.equal(0.001, fromWei(fees[1]));
+      await pool.setSwapFee(toWei('0.003'));
+      let swapFee = await pool.getSwapFee();
+      assert.equal(0.003, fromWei(swapFee));
     });
 
     it('Admin finalizes pool', async () => {

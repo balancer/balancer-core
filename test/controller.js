@@ -46,13 +46,13 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.setPublicJoin(true, { from: nonAdmin }), 'ERR_NOT_CONTROLLER');
     });
 
-    it('Cant setPublicSwap, setPublicJoin, setFees when finalized', async () => {
+    it('Cant setPublicSwap, setPublicJoin, setSwapFee when finalized', async () => {
       await pool.finalize(toWei('10'));
       let finalized = pool.isFinalized();
       assert(finalized);
       await assertThrow(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
       await assertThrow(pool.setPublicJoin(false), 'ERR_IS_FINALIZED');
-      await assertThrow(pool.setFees(toWei('0.01'), toWei('0.01')));
+      await assertThrow(pool.setSwapFee(toWei('0.01')));
     });
 
   });
