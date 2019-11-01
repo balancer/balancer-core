@@ -66,14 +66,10 @@ jobs:
 
   slither:
     docker:
-      - image: circleci/node:11
+      - image: trailofbits/eth-security-toolbox
     working_directory: ~/balancer
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Fetch slither image
-          command: docker pull trailofbits/eth-security-toolbox
+      - checkout
       - restore_cache:
           key: balancer-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
       - run:
