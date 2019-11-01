@@ -18,11 +18,11 @@ import "./BToken.sol";
 // TToken is a test token with public `mint` and `burn`.
 
 contract TToken is BToken {
-    function mint(uint amt) public {
+    function mint(uint amt) external {
         _mint(amt);
         _push(msg.sender, amt);
     }
-    function burn(uint amt) public {
+    function burn(uint amt) external {
         _pull(msg.sender, amt);
         _burn(amt);
     }

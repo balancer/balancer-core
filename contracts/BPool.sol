@@ -96,43 +96,57 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function isPublicSwap()
-      public view returns (bool) {
+        public view
+        returns (bool)
+    {
         return _publicSwap;
     }
 
     function isPublicJoin()
-      public view returns (bool) {
+        public view
+        returns (bool)
+    {
         return _publicJoin;
     }
 
     function isPublicExit()
-      public view returns (bool) {
+        public view
+        returns (bool)
+    {
         return _publicJoin;
     }
 
     function isFinalized()
-      public view returns (bool) {
+        public view
+        returns (bool)
+    {
         return _finalized;
     }
 
-    function isBound(address t) public view returns (bool) {
+    function isBound(address t)
+        public view
+        returns (bool)
+    {
         return _records[t].index != 0;
     }
 
     function getNumTokens()
-      public view returns (uint) {
+        external view
+        returns (uint) 
+    {
         return _tokens.length;
     }
 
     function getCurrentTokens()
-      public view _viewlock_
+      external view _viewlock_
         returns (address[] memory tokens)
     {
         return _tokens;
     }
 
     function getFinalTokens()
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (address[] memory tokens)
     {
         require(_finalized, ERR_NOT_FINALIZED);
@@ -140,7 +154,8 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getDenormalizedWeight(address token)
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (uint)
     {
         require( isBound(token), ERR_NOT_BOUND);
@@ -148,14 +163,16 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getTotalDenormalizedWeight()
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (uint)
     {
         return _totalWeight;
     }
 
     function getNormalizedWeight(address token)
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (uint)
     {
         require( isBound(token), ERR_NOT_BOUND);
@@ -164,7 +181,8 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getBalance(address token)
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (uint)
     {
         require( isBound(token), ERR_NOT_BOUND);
@@ -172,23 +190,25 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getSwapFee()
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (uint)
     {
         return _swapFee;
     }
 
     function getController()
-      public view _viewlock_
+        external view
+        _viewlock_
         returns (address)
     {
         return _controller;
     }
 
     function setSwapFee(uint swapFee)
-      _logs_
-      _lock_
-      public
+        external
+        _logs_
+        _lock_
     { 
         require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -198,18 +218,18 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setController(address manager)
-      _logs_
-      _lock_
-      public
+        external
+        _logs_
+        _lock_
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         _controller = manager;
     }
 
     function setPublicSwap(bool public_)
+        external
         _logs_
         _lock_
-        public
     {
         require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -217,9 +237,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setPublicJoin(bool public_)
+        external
         _logs_
         _lock_
-        public
     {
         require( ! _finalized, ERR_IS_FINALIZED);
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
@@ -227,9 +247,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function setPublicExit(bool public_)
+        external
         _logs_
         _lock_
-        public
     {
         require( public_, ERR_EXIT_ALWAYS_PUBLIC );
         require( ! _finalized, ERR_IS_FINALIZED);
@@ -238,9 +258,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function finalize(uint initSupply)
-      _logs_
-      _lock_
-      public
+        external
+        _logs_
+        _lock_
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( !_finalized, ERR_IS_FINALIZED);
@@ -257,9 +277,9 @@ contract BPool is BBronze, BToken, BMath
 
 
     function bind(address token, uint balance, uint denorm)
-      _logs_
-      // _lock_  Bind does not lock because it jumps to `rebind`, which does
-      public
+        external
+        _logs_
+        // _lock_  Bind does not lock because it jumps to `rebind`, which does
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require( ! isBound(token), ERR_IS_BOUND);
@@ -277,9 +297,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function rebind(address token, uint balance, uint denorm)
-      _logs_
-      _lock_
-      public
+        public
+        _logs_
+        _lock_
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
@@ -315,9 +335,9 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function unbind(address token)
+        external
         _logs_
         _lock_
-        public
     {
         require(msg.sender == _controller, ERR_NOT_CONTROLLER);
         require(isBound(token), ERR_NOT_BOUND);
@@ -325,8 +345,6 @@ contract BPool is BBronze, BToken, BMath
 
         uint tokenBalance = _records[token].balance;
         uint tokenExitFee = bmul(tokenBalance,EXIT_FEE);
-        _pushUnderlying(token, msg.sender, bsub(tokenBalance,tokenExitFee));
-        _pushUnderlying(token, _factory, tokenExitFee);
 
         _totalWeight = bsub(_totalWeight, _records[token].denorm);
 
@@ -342,30 +360,23 @@ contract BPool is BBronze, BToken, BMath
           , denorm: 0
           , balance: 0
         });
+
+        _pushUnderlying(token, msg.sender, bsub(tokenBalance,tokenExitFee));
+        _pushUnderlying(token, _factory, tokenExitFee);
     }
 
     // Absorb any tokens that have been sent to this contract into the pool
     function gulp(address token)
-      _logs_
-      _lock_
-      public
+        external
+        _logs_
+        _lock_
     {
         require(isBound(token), ERR_NOT_BOUND);
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
-    function collect()
-      _logs_
-      _lock_
-      public returns (uint collected)
-    {
-        require(msg.sender == _factory, ERR_NOT_FACTORY);
-        uint fees = _balance[_factory];
-        return (collected = fees);
-    }
-
     function getSpotPrice(address Ti, address To)
-      public view
+        external view
         _viewlock_
         returns (uint P)
     {
@@ -377,7 +388,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function getSpotPriceSansFee(address Ti, address To)
-      public view
+        external view
         _viewlock_
         returns (uint P)
     {
@@ -389,7 +400,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function joinPool(uint poolAo)
-      public
+        external
         _logs_
         _lock_
     {
@@ -412,7 +423,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function exitPool(uint pAi)
-      public
+        external
         _logs_
         _lock_
     {
@@ -442,9 +453,10 @@ contract BPool is BBronze, BToken, BMath
 
 
     function swap_ExactAmountIn(address Ti, uint Ai, address To, uint MinAo, uint MaxP)
+        external
         _logs_
         _lock_
-        public returns (uint Ao, uint MP)
+        returns (uint Ao, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
         require( isBound(To), ERR_NOT_BOUND );
@@ -478,9 +490,10 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function swap_ExactAmountOut(address Ti, uint MaxAi, address To, uint Ao, uint MaxP)
+        external
         _logs_
         _lock_ 
-        public returns (uint Ai, uint MP)
+        returns (uint Ai, uint MP)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
@@ -514,9 +527,10 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MarP)
+        external
         _logs_
         _lock_
-        public returns (uint Ai, uint Ao)
+        returns (uint Ai, uint Ao)
     {
         require( isBound(Ti), ERR_NOT_BOUND);
         require( isBound(To), ERR_NOT_BOUND);
@@ -552,7 +566,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function joinswap_ExternAmountIn(address Ti, uint256 tAi)
-      public
+        external
         _logs_
         _lock_
         returns (uint pAo)
@@ -564,11 +578,11 @@ contract BPool is BBronze, BToken, BMath
         Record storage T = _records[Ti];
 
         pAo = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tAi, _swapFee);
+        T.balance = badd(T.balance, tAi);
 
         _mintPoolShare(pAo);
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
-        T.balance = badd(T.balance, tAi);
         
         emit LOG_JOIN(msg.sender, Ti, tAi);
 
@@ -576,7 +590,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function joinswap_PoolAmountOut(uint pAo, address Ti)
-      public
+        external
         _logs_
         _lock_
         returns (uint tAi)
@@ -588,19 +602,19 @@ contract BPool is BBronze, BToken, BMath
         Record storage T = _records[Ti];
 
         tAi = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, pAo, _swapFee);
+        T.balance = badd(T.balance, tAi);
 
         _mintPoolShare(pAo);
         _pushPoolShare(msg.sender, pAo);
         _pullUnderlying(Ti, msg.sender, tAi);
-        T.balance = badd(T.balance, tAi);
-
+        
         emit LOG_JOIN(msg.sender, Ti, tAi);
 
         return tAi;
     }
 
     function exitswap_PoolAmountIn(uint pAi, address To)
-      public
+        external
         _logs_
         _lock_
         returns (uint tAo)
@@ -612,13 +626,13 @@ contract BPool is BBronze, BToken, BMath
         Record storage T = _records[To];
 
         tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee);
+        T.balance = bsub(T.balance, tAo);
 
         _pullPoolShare(msg.sender, pAi);
         uint pAiExitFee = bmul(pAi,EXIT_FEE);
         _burnPoolShare(bsub(pAi,pAiExitFee));
         _pushPoolShare(_factory, pAiExitFee);
         _pushUnderlying(To, msg.sender, tAo);
-        T.balance = bsub(T.balance, tAo);
 
         emit LOG_EXIT(msg.sender, To, tAo);
 
@@ -626,7 +640,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
     function exitswap_ExternAmountOut(address To, uint tAo)
-      public
+        external
         _logs_
         _lock_
         returns (uint pAi)
@@ -638,14 +652,13 @@ contract BPool is BBronze, BToken, BMath
         Record storage T = _records[To];
 
         pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee);
-     
+        T.balance = bsub(T.balance, tAo);
 
         _pullPoolShare(msg.sender, pAi);
         uint pAiExitFee = bmul(pAi,EXIT_FEE);
         _burnPoolShare(bsub(pAi,pAiExitFee));
         _pushPoolShare(_factory, pAiExitFee);
-        _pushUnderlying(To, msg.sender, tAo);
-        T.balance = bsub(T.balance, tAo);
+        _pushUnderlying(To, msg.sender, tAo);        
 
         emit LOG_EXIT(msg.sender, To, tAo);
 
