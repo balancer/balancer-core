@@ -70,8 +70,9 @@ jobs:
     working_directory: ~/balancer
     steps:
       - checkout
-      - restore_cache:
-          key: balancer-contracts-build-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Compile
+          command: truffle compile
       - run:
           name: Slither
           command: slither . --exclude=naming-convention,unused-state,solc-version
