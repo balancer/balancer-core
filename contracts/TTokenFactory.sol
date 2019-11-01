@@ -13,7 +13,7 @@
 
 pragma solidity ^0.5.11;
 
-import "contracts/TToken.sol";
+import "./TToken.sol";
 
 contract TTokenFactory {
     mapping(bytes32=>TToken) tokens;

@@ -13,8 +13,8 @@
 
 pragma solidity ^0.5.11;
 
-import "contracts/BColor.sol";
-import "contracts/BMath.sol";
+import "./BColor.sol";
+import "./BMath.sol";
 
 // BStub exposes BMath internal functions
 

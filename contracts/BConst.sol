@@ -13,7 +13,7 @@
 
 pragma solidity ^0.5.11;
 
-import "contracts/BColor.sol";
+import "./BColor.sol";
 
 contract BConst is BBronze
 {
