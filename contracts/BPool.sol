@@ -354,12 +354,12 @@ contract BPool is BBronze, BToken, BMath
         uint last = _tokens.length - 1;
         _tokens[index] = _tokens[last];
         _records[_tokens[index]].index = index + 1;
-        _tokens.pop();
         _records[token] = Record({
             index: 0
           , denorm: 0
           , balance: 0
         });
+        _tokens.pop();
 
         _pushUnderlying(token, msg.sender, bsub(tokenBalance,tokenExitFee));
         _pushUnderlying(token, _factory, tokenExitFee);
