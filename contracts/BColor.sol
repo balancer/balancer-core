@@ -14,16 +14,16 @@
 pragma solidity ^0.5.11;
 
 contract BColor {
-  function getColor()
-    public view
+    function getColor()
+      external view
       returns (bytes32);
 }
 
 contract BBronze is BColor {
-  function getColor()
-    public view
+    function getColor()
+      external view
       returns (bytes32) {
-        return bytes32("BRONZE");
+          return bytes32("BRONZE");
     }
 }
 

@@ -64,6 +64,19 @@ jobs:
           name: Coverage
           command: yarn coverage && cat coverage/lcov.info | ./node_modules/.bin/coveralls
 
+  slither:
+    docker:
+      - image: trailofbits/eth-security-toolbox
+    working_directory: ~/balancer
+    steps:
+      - checkout
+      - run:
+          name: Compile
+          command: truffle compile
+      - run:
+          name: Slither
+          command: slither . --exclude=naming-convention,unused-state,solc-version
+
 workflows:
   version: 2
   build_and_test:
@@ -76,6 +89,9 @@ workflows:
           requires:
             - build
       - coverage:
+          requires:
+            - build
+      - slither:
           requires:
             - build
       
