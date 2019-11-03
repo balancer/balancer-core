@@ -122,7 +122,17 @@ contract('BPool', async (accounts) => {
 
     it('Fails rebinding token or unbinding random token', async () => {
       await assertThrow(pool.bind(WETH, toWei('0'), toWei('1')), 'ERR_IS_BOUND');
+      await assertThrow(pool.rebind(XXX, toWei('0'), toWei('1')), 'ERR_NOT_BOUND');
       await assertThrow(pool.unbind(XXX), 'ERR_NOT_BOUND');
+    });
+
+    it('Get current tokens', async () => {
+      let currentTokens = await pool.getCurrentTokens();
+      assert.sameMembers(currentTokens, [WETH, MKR, DAI]);
+    });
+
+    it('Fails getting final tokens before finalized', async () => {
+      await assertThrow(pool.getFinalTokens(), 'ERR_NOT_FINALIZED');
     });
 
   });
@@ -145,6 +155,14 @@ contract('BPool', async (accounts) => {
       assert.equal(0.003, fromWei(swapFee));
     });
 
+    it('Fails nonadmin finalizes pool', async () => {
+      await assertThrow(pool.finalize(toWei('100'), { from: user1 }), 'ERR_NOT_CONTROLLER');
+    });
+
+    it('Fails setting supply below min supply', async () => {
+      await assertThrow(pool.finalize(toWei('0.99')), 'ERR_MIN_POOL_SUPPLY');
+    });
+
     it('Admin finalizes pool', async () => {
       let tx = await pool.finalize(toWei('100'));
       let adminBal = await pool.balanceOf(admin);
@@ -153,6 +171,19 @@ contract('BPool', async (accounts) => {
       truffleAssert.eventEmitted(tx, 'Move', (event) => {
         return event.dst === admin;
       });
+    });
+
+    it('Fails finalizing pool after finalized', async () => {
+      await assertThrow(pool.finalize(toWei('100')), 'ERR_IS_FINALIZED');
+    });
+
+    it('Fails binding new token after finalized', async () => {
+      await assertThrow(pool.bind(XXX, toWei('10'), toWei('5')), 'ERR_IS_FINALIZED');
+    });
+
+    it('Get final tokens', async () => {
+      let finalTokens = await pool.getFinalTokens();
+      assert.sameMembers(finalTokens, [WETH, MKR, DAI]);
     });
 
   });
@@ -237,6 +268,17 @@ contract('BPool', async (accounts) => {
       assert.equal(log.event, 'LOG_SWAP');
       // 2.758274824473420261
       assert.approximately(Number(amountIn), Number(fromWei(log.args[3])), errorDelta);
+    });
+
+    it('Fails calling any swap on unbond token', async () => {
+      await assertThrow(pool.swap_ExactAmountIn(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.swap_ExactAmountIn(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.swap_ExactAmountOut(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.swap_ExactAmountOut(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.swap_ExactMarginalPrice(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.joinswap_ExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
+      await assertThrow(pool.joinswap_PoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
     });
 
   });
