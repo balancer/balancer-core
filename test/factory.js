@@ -7,6 +7,7 @@ const TTokenFactory = artifacts.require('TTokenFactory');
 contract('BFactory', async (accounts) => {
   const admin = accounts[0];
   const nonAdmin = accounts[1];
+  const user2 = accounts[2];
   const toHex = web3.utils.toHex;
   const toBN = web3.utils.toBN;
   const toWei = web3.utils.toWei;
@@ -42,6 +43,16 @@ contract('BFactory', async (accounts) => {
     it('isBPool on pool returns true', async () => {
       let isBPool = await factory.isBPool(POOL);
       assert.isTrue(isBPool)
+    });
+
+    it('nonadmin cant set blabs address', async () => {
+      await assertThrow(factory.setBLabs(nonAdmin, { from: nonAdmin }), "ERR_NOT_BLABS");
+    });
+
+    it('admin changes blabs address', async () => {
+      await factory.setBLabs(user2);
+      let blab = await factory.getBLabs();
+      assert.equal(blab, user2);
     });
 
   });
