@@ -3,8 +3,7 @@ module.exports = {
   skipFiles: [
     'BStub.sol',
     'Migrations.sol',
-    'TToken.sol',
-    'TTokenFactory.sol'
+    'test'
   ],
   testrpcOptions: "-p 8555 -d --allowUnlimitedContractSize"
 };
