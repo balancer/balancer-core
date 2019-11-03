@@ -11,7 +11,7 @@ contract('TMath', async (accounts) => {
 
   const MAX = web3.utils.toTwosComplement(-1);
 
-  describe('Admin controller', () => {
+  describe('BMath', () => {
     let tmath;
     before(async () => {
       expect(admin).not.to.equal(nonAdmin);
@@ -23,7 +23,15 @@ contract('TMath', async (accounts) => {
     });
 
     it('bsub throws on underflow', async () => {
-      await assertThrow(tmath.NumBsub(1, MAX), 'ERR_SUB_UNDERFLOW');
+      await assertThrow(tmath.NumBsub(1, 2), 'ERR_SUB_UNDERFLOW');
+    });
+
+    it('bmul throws on overflow', async () => {
+      await assertThrow(tmath.NumBmul(2, MAX), 'ERR_MUL_OVERFLOW');
+    });
+
+    it('bdiv throws on div by 0', async () => {
+      await assertThrow(tmath.NumBdiv(1, 0), 'ERR_DIV_ZERO');
     });
 
   });
