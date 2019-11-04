@@ -83,8 +83,7 @@ contract BConst is BBronze
     string constant ERR_LIMIT_OUT          = "ERR_LIMIT_OUT";
     string constant ERR_LIMIT_PRICE        = "ERR_LIMIT_PRICE";
 
-    string constant ERR_ARG_LIMIT_IN       = "ERR_ARG_LIMIT_IN";
-    string constant ERR_ARG_LIMIT_PRICE    = "ERR_ARG_LIMIT_PRICE";
+    string constant ERR_BAD_LIMIT_PRICE    = "ERR_BAD_LIMIT_PRICE";
 
     string constant ERR_MATH_APPROX        = "ERR_MATH_APPROX";
 }
