@@ -572,8 +572,8 @@ contract BPool is BBronze, BToken, BMath
         returns (uint pAo)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[Ti];
 
@@ -596,8 +596,8 @@ contract BPool is BBronze, BToken, BMath
         returns (uint tAi)
     {
         require( isBound(Ti), ERR_NOT_BOUND );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[Ti];
 

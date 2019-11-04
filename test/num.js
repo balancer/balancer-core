@@ -34,6 +34,11 @@ contract('TMath', async (accounts) => {
       await assertThrow(tmath.NumBdiv(1, 0), 'ERR_DIV_ZERO');
     });
 
+    it('bpow throws on base outside range', async () => {
+      await assertThrow(tmath.NumBpow(0, 2), 'ERR_BPOW_BASE_TOO_LOW');
+      await assertThrow(tmath.NumBpow(MAX, 2), 'ERR_BPOW_BASE_TOO_HIGH');
+    });
+
   });
 
 });

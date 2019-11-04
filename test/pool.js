@@ -96,11 +96,13 @@ contract('BPool', async (accounts) => {
       await weth.approve(POOL, MAX);
       await mkr.approve(POOL, MAX);
       await dai.approve(POOL, MAX);
+      await xxx.approve(POOL, MAX);
     });
 
     it('Fails binding weights and balances outside MIX MAX', async () => {
       await assertThrow(pool.bind(WETH, toWei('51'), toWei('1')), 'ERR_BTOKEN_UNDERFLOW'); // TODO change error to insufficient balance
       await assertThrow(pool.bind(MKR, toWei('0.0000001'), toWei('1')), 'ERR_MIN_BALANCE');
+      await assertThrow(pool.bind(MKR, toWei('10000000000000000'), toWei('1')), 'ERR_MAX_BALANCE');
       await assertThrow(pool.bind(DAI, toWei('1000'), toWei('0.99')), 'ERR_MIN_WEIGHT');
       await assertThrow(pool.bind(WETH, toWei('5'), toWei('50.01')), 'ERR_MAX_WEIGHT');
     });
@@ -118,6 +120,10 @@ contract('BPool', async (accounts) => {
       assert.equal(0.333333333333333333, fromWei(wethNormWeight));
       let mkrBalance = await pool.getBalance(MKR);
       assert.equal(20, fromWei(mkrBalance));
+    });
+
+    it('Fails binding above MAX TOTAL WEIGHT', async () => {
+      await assertThrow(pool.bind(XXX, toWei('1'), toWei('40')), 'ERR_MAX_TOTAL_WEIGHT');
     });
 
     it('Fails rebinding token or unbinding random token', async () => {
@@ -144,6 +150,19 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.rebind(WETH, toWei('5'), toWei('5'), { from: user1 }), 'ERR_NOT_CONTROLLER');
       await assertThrow(pool.joinPool(toWei('1'), { from: user1 }), 'ERR_NOT_FINALIZED');
       await assertThrow(pool.unbind(DAI, { from: user1 }), 'ERR_NOT_CONTROLLER');
+    });
+
+    it('Fails calling any swap before finalizing', async () => {
+      await assertThrow(pool.swap_ExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.swap_ExactAmountIn(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.swap_ExactAmountOut(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.swap_ExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.swap_ExactMarginalPrice(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.joinswap_ExternAmountIn(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.joinswap_PoolAmountOut(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.exitswap_PoolAmountIn(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
+      await assertThrow(pool.exitswap_ExternAmountOut(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
     });
 
     it('Fails setting crazy swap fees', async () => {
@@ -185,6 +204,7 @@ contract('BPool', async (accounts) => {
 
     it('Fails binding new token after finalized', async () => {
       await assertThrow(pool.bind(XXX, toWei('10'), toWei('5')), 'ERR_IS_FINALIZED');
+      await assertThrow(pool.rebind(DAI, toWei('10'), toWei('5')), 'ERR_IS_FINALIZED');
     });
 
     it('Get final tokens', async () => {
@@ -226,6 +246,11 @@ contract('BPool', async (accounts) => {
 
     it('Fails admin unbinding token after finalized and others joined', async () => {
       await assertThrow(pool.unbind(DAI), 'ERR_IS_FINALIZED');
+    });
+
+    it('Fails trying to set publicExit', async () => {
+      await assertThrow(pool.setPublicExit(false), 'ERR_EXIT_ALWAYS_PUBLIC');
+      await assertThrow(pool.setPublicExit(true), 'ERR_IS_FINALIZED');
     });
 
     it('getSpotPriceSansFee and getSpotPrice', async () => {
@@ -285,6 +310,8 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await assertThrow(pool.joinswap_ExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
       await assertThrow(pool.joinswap_PoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.exitswap_PoolAmountIn(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.exitswap_ExternAmountOut(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
     });
 
     it('Fails calling weights, balances, spot prices on unbound token', async () => {
