@@ -26,6 +26,7 @@ contract('BPool', async (accounts) => {
   before(async () => {
     tokens = await TTokenFactory.deployed();
     factory = await BFactory.deployed();
+    FACTORY = factory.address;
 
     POOL = await factory.newBPool.call(); // this works fine in clean room
     await factory.newBPool();
@@ -98,15 +99,46 @@ contract('BPool', async (accounts) => {
       await pool.bind(DDD, toWei('50'), toWei('7'));
       await pool.bind(EEE, toWei('50'), toWei('10'));
       await pool.bind(FFF, toWei('50'), toWei('1.99'));
-      await pool.bind(GGG, toWei('50'), toWei('6'));
-      await pool.bind(HHH, toWei('50'), toWei('2.1'))
+      await pool.bind(GGG, toWei('40'), toWei('6'));
+      await pool.bind(HHH, toWei('70'), toWei('2.3'))
       
       let totalDernomWeight = await pool.getTotalDenormalizedWeight();
-      assert.equal(33.59, fromWei(totalDernomWeight));
+      assert.equal(33.79, fromWei(totalDernomWeight));
     });
 
     it('Fails binding more than 8 tokens', async () => {
       await assertThrow(pool.bind(ZZZ, toWei('50'), toWei('2')), 'ERR_MAX_TOKENS');
+    });
+
+    it('Fails setPublicExit from non controller', async() => {
+      await assertThrow(pool.setPublicExit(true, { from: user1 }), 'ERR_NOT_CONTROLLER');
+    });
+
+    it('Rebind token at a smaller balance', async () => {
+      await pool.rebind(HHH, toWei('50'), toWei('2.1'));
+      let balance = await pool.getBalance(HHH);
+      assert.equal(fromWei(balance), 50);
+
+      let adminBalance = await hhh.balanceOf(admin);
+      assert.equal(fromWei(adminBalance), 49.998)
+
+      let factoryBalance = await hhh.balanceOf(FACTORY);
+      assert.equal(fromWei(factoryBalance), 0.002);
+
+      let totalDernomWeight = await pool.getTotalDenormalizedWeight();
+      assert.equal(33.59, fromWei(totalDernomWeight));
+    });
+
+    it('Fails gulp on unbound token', async () => {
+      await assertThrow(pool.gulp(ZZZ), 'ERR_NOT_BOUND')
+    });
+
+    it('Pool can gulp tokens', async () => {
+      await ggg.transferFrom(admin, POOL, toWei('10'));
+
+      await pool.gulp(GGG);
+      let balance = await pool.getBalance(GGG);
+      assert.equal(fromWei(balance), 50);
     });
 
   });
