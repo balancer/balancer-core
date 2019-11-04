@@ -141,12 +141,18 @@ contract('BPool', async (accounts) => {
 
     it('Fails when other users interact before finalizing', async () => {
       await assertThrow(pool.bind(WETH, toWei('5'), toWei('5'), { from: user1 }), 'ERR_NOT_CONTROLLER');
+      await assertThrow(pool.rebind(WETH, toWei('5'), toWei('5'), { from: user1 }), 'ERR_NOT_CONTROLLER');
       await assertThrow(pool.joinPool(toWei('1'), { from: user1 }), 'ERR_NOT_FINALIZED');
       await assertThrow(pool.unbind(DAI, { from: user1 }), 'ERR_NOT_CONTROLLER');
     });
 
     it('Fails setting crazy swap fees', async () => {
       await assertThrow(pool.setSwapFee(toWei('0.11')), 'ERR_MAX_FEE');
+    });
+
+    it('Fails nonadmin sets fees or controller', async () => {
+      await assertThrow(pool.setSwapFee(toWei('0.003'), { from : user 1}), 'ERR_NOT_CONTROLLER');
+      await assertThrow(pool.setController(user1, { from: user1 }), 'ERR_NOT_CONTROLLER');
     });
 
     it('Admin sets swap fees', async () => {
@@ -270,7 +276,7 @@ contract('BPool', async (accounts) => {
       assert.approximately(Number(amountIn), Number(fromWei(log.args[3])), errorDelta);
     });
 
-    it('Fails calling any swap on unbond token', async () => {
+    it('Fails calling any swap on unbound token', async () => {
       await assertThrow(pool.swap_ExactAmountIn(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await assertThrow(pool.swap_ExactAmountIn(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await assertThrow(pool.swap_ExactAmountOut(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
@@ -279,6 +285,16 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await assertThrow(pool.joinswap_ExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
       await assertThrow(pool.joinswap_PoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
+    });
+
+    it('Fails calling weights, balances, spot prices on unbound token', async () => {
+      await assertThrow(pool.getDenormalizedWeight(XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getNormalizedWeight(XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getBalance(XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getSpotPrice(DAI, XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getSpotPrice(XXX, DAI), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getSpotPriceSansFee(DAI, XXX), 'ERR_NOT_BOUND');
+      await assertThrow(pool.getSpotPriceSansFee(XXX, DAI), 'ERR_NOT_BOUND');
     });
 
   });
