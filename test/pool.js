@@ -151,7 +151,7 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails nonadmin sets fees or controller', async () => {
-      await assertThrow(pool.setSwapFee(toWei('0.003'), { from : user 1}), 'ERR_NOT_CONTROLLER');
+      await assertThrow(pool.setSwapFee(toWei('0.003'), { from : user1 }), 'ERR_NOT_CONTROLLER');
       await assertThrow(pool.setController(user1, { from: user1 }), 'ERR_NOT_CONTROLLER');
     });
 
