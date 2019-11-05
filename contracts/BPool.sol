@@ -538,21 +538,24 @@ contract BPool is BBronze, BToken, BMath
                                         , O.denorm
                                         , bmul(MarP,bsub(BONE,_swapFee)));
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
-        // Calculate what new spot price would be with Ai and Ao as calculated above
-        uint SP1 = _calc_SpotPrice(badd(I.balance,Ai), I.denorm, bsub(O.balance,Ao), O.denorm, _swapFee);
+        
+        // If there is no fee, no need to add ExtraAi. This if clause is also *necessary*
+        // because due to a numeric approximation `require(MarP >= SP1, "MarP lower than SP1")` 
+        // fails for a zero swapFee
+        if(_swapFee!=0){
+            // Calculate what new spot price would be with Ai and Ao as calculated above
+            uint SP1 = _calc_SpotPrice(badd(I.balance,Ai), I.denorm, bsub(O.balance,Ao), O.denorm, _swapFee);
 
-        uint normWi = bdiv(I.denorm,_totalWeight);
-        uint normWo = bdiv(O.denorm,_totalWeight);
+            uint normWi = bdiv(I.denorm,_totalWeight);
+            uint normWo = bdiv(O.denorm,_totalWeight);
+            require(MarP >= SP1, "MarP lower than SP1");
 
-        emit LOG_DEBUG(MarP);
-        emit LOG_DEBUG(SP1);
-        require(MarP >= SP1, "MarP lower than SP1");
-
-        uint extraAi = _calc_ExtraAi(Ai, I.balance, normWi, normWo, SP1, MarP, _swapFee);
-            
-        // Update Ai by adding the extraAi and also Ao
-        Ai = badd(Ai, extraAi);
-        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
+            uint extraAi = _calc_ExtraAi(Ai, I.balance, normWi, normWo, SP1, MarP, _swapFee);
+                
+            // Update Ai by adding the extraAi and also Ao
+            Ai = badd(Ai, extraAi);
+            Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
+        }
 
         require( Ai <= Li, ERR_LIMIT_IN);
         require( Ao >= Lo, ERR_LIMIT_OUT);
