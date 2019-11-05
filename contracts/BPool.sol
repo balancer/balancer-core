@@ -28,6 +28,8 @@ contract BPool is BBronze, BToken, BMath
         uint balance;
     }
 
+    event LOG_DEBUG(uint256 value);
+
     event LOG_SWAP( address indexed caller
                   , address indexed tokenIn
                   , address indexed tokenOut
@@ -525,13 +527,32 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(Ti)];
         Record storage O = _records[address(To)];
 
-        require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
-
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(MarP > SP0, ERR_ARG_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MarP, _swapFee );
-        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
+        //uint MarPsansFee = bmul(MarP,bsub(BONE,_swapFee));
+        // Calculate what Ai and Ao to get price to MarP if there were no fees
+        Ai = _calc_InGivenPriceSansFee( I.balance
+                                        , I.denorm
+                                        , O.balance
+                                        , O.denorm
+                                        , bmul(MarP,bsub(BONE,_swapFee)));
+        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
+        // Calculate what new spot price would be with Ai and Ao as calculated above
+        uint SP1 = _calc_SpotPrice(badd(I.balance,Ai), I.denorm, bsub(O.balance,Ao), O.denorm, _swapFee);
+
+        uint normWi = bdiv(I.denorm,_totalWeight);
+        uint normWo = bdiv(O.denorm,_totalWeight);
+
+        emit LOG_DEBUG(MarP);
+        emit LOG_DEBUG(SP1);
+        require(MarP >= SP1, "MarP lower than SP1");
+
+        uint extraAi = _calc_ExtraAi(Ai, I.balance, normWi, normWo, SP1, MarP, _swapFee);
+            
+        // Update Ai by adding the extraAi and also Ao
+        Ai = badd(Ai, extraAi);
+        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
 
         require( Ai <= Li, ERR_LIMIT_IN);
         require( Ao >= Lo, ERR_LIMIT_OUT);
@@ -539,8 +560,8 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 >= SP0, ERR_MATH_APPROX);
+        uint SP2 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(SP2 >= SP0, ERR_MATH_APPROX);
         require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);

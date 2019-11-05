@@ -71,21 +71,95 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
-    function _calc_InGivenPrice( uint Bi, uint Wi
+    function _calc_InGivenPriceSansFee( uint Bi, uint Wi
                                , uint Bo , uint Wo
-                               , uint SP1
-                               , uint fee)
+                               , uint SP1)
       internal pure
         returns ( uint Ai )
     {
-        uint SP0    = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0);
+        uint SP0    = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0); // Calculate w/o fee
         uint base    = bdiv(SP1, SP0);
         uint exp     = bdiv(Wo, badd(Wo, Wi));
-        Ai           = bsub(bpow(base, exp), BONE);
-        Ai           = bmul(Ai, Bi);
-        uint foo     = bsub(BONE, fee);
-        Ai           = bdiv(Ai, foo);
+        uint foo     = bsub(bpow(base, exp), BONE);
+        Ai           = bmul(foo, Bi);
         return Ai;
+    }
+
+    function _calc_ExtraAi(uint Ai, uint Bi
+                                , uint Wi
+                                , uint Wo
+                                , uint SP1
+                                , uint MarP
+                                , uint swapFee)
+      internal pure
+        returns ( uint ExtraAi )
+    {
+        uint ExtraAiNumerator   = _calc_ExtraAiNumerator(Ai, Bi, SP1, MarP, swapFee);
+        uint ExtraAiDenominator = _calc_ExtraAiDenominator(Ai, Bi, Wi, Wo, SP1, swapFee);
+        ExtraAi = bdiv(ExtraAiNumerator, ExtraAiDenominator);
+        return ExtraAi;
+    }
+
+    function _calc_ExtraAiNumerator(uint Ai, uint Bi
+                                , uint SP1
+                                , uint MarP
+                                , uint swapFee)
+      internal pure
+        returns ( uint ExtraAiNumerator )
+    {
+        uint BONE_minus_swapFee = bsub(BONE, swapFee);
+        ExtraAiNumerator = 
+        bmul(
+            badd(
+                bmul(
+                    BONE_minus_swapFee
+                    , Ai
+                    )
+                , Bi
+                )
+            ,bsub(
+                MarP
+                , SP1
+                )
+            )
+        ;              
+        return ExtraAiNumerator;
+    }
+
+    function _calc_ExtraAiDenominator(uint Ai, uint Bi
+                                , uint Wi
+                                , uint Wo
+                                , uint SP1
+                                , uint swapFee)
+      internal pure
+        returns ( uint ExtraAiDenominator )
+    {
+        uint BONE_minus_swapFee = bsub(BONE, swapFee);
+        ExtraAiDenominator = 
+        bmul(
+            SP1
+            , badd(
+                bmul(
+                    BONE_minus_swapFee
+                    , badd(
+                        BONE
+                        , bdiv(Wi,Wo)
+                        ) 
+                    )
+                , bdiv(
+                    bmul(
+                        swapFee
+                        , Bi
+                        )
+                    , badd(
+                        Ai
+                        , Bi
+                        )
+                    )
+                )
+            )
+        ;
+        return ExtraAiDenominator;
     }
 
     // Pissued = Ptotal * ((1+(tAi/B))^W - 1)
