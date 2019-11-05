@@ -543,7 +543,7 @@ contract BPool is BBronze, BToken, BMath
         // because due to a numeric approximation `require(MarP >= SP1, "MarP lower than SP1")` 
         // fails for a zero swapFee
         if(_swapFee!=0){
-            // Calculate what new spot price would be with Ai and Ao as calculated above
+            // Calculate what new spot price would be with Ai and Ao as calculated above w/o fees
             uint SP1 = _calc_SpotPrice(badd(I.balance,Ai), I.denorm, bsub(O.balance,Ao), O.denorm, _swapFee);
 
             uint normWi = bdiv(I.denorm,_totalWeight);

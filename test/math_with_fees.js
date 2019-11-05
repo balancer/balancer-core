@@ -3,7 +3,7 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
 const MaxError = 10**-8;
-const swapFee = 0.001;
+const swapFee = 10**-8; //0.001;
 const exitFee = 0.0001;
 const verbose = false;
 
