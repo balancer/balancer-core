@@ -52,7 +52,6 @@ contract BConst is BBronze
 
     string constant ERR_MAX_TOKENS         = "ERR_MAX_TOKENS";
     string constant ERR_MAX_FEE            = "ERR_MAX_FEE";
-    string constant ERR_MIN_FEE            = "ERR_MIN_FEE";
     string constant ERR_MIN_WEIGHT         = "ERR_MIN_WEIGHT";
     string constant ERR_MAX_WEIGHT         = "ERR_MAX_WEIGHT";
     string constant ERR_MIN_BALANCE        = "ERR_MIN_BALANCE";
