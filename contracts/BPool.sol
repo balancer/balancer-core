@@ -113,7 +113,7 @@ contract BPool is BBronze, BToken, BMath
         public view
         returns (bool)
     {
-        return _publicJoin;
+        return _publicExit;
     }
 
     function isFinalized()
@@ -468,7 +468,7 @@ contract BPool is BBronze, BToken, BMath
         require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SP0 <= MaxP, ERR_ARG_LIMIT_IN);
+        require( SP0 <= MaxP, ERR_BAD_LIMIT_PRICE );
 
         Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
         require( Ao >= MinAo, ERR_LIMIT_OUT );
@@ -505,7 +505,7 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP0 <= MaxP, ERR_ARG_LIMIT_PRICE );
+        require(SP0 <= MaxP, ERR_BAD_LIMIT_PRICE );
 
         Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
         require( Ai <= MaxAi, ERR_LIMIT_IN);
@@ -542,7 +542,7 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(MarP > SP0, ERR_ARG_LIMIT_PRICE);
+        require(MarP > SP0, ERR_BAD_LIMIT_PRICE);
 
         Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MarP, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
