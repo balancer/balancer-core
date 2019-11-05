@@ -165,7 +165,7 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.exitswap_ExternAmountOut(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
     });
 
-    it('Fails setting crazy swap fees', async () => {
+    it('Fails setting high swap fees', async () => {
       await assertThrow(pool.setSwapFee(toWei('0.11')), 'ERR_MAX_FEE');
     });
 
