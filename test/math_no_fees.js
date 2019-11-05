@@ -469,6 +469,7 @@ contract('math tests from canonical setup', async (accounts) => {
     let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(String(3.7128))); // 3.7128 = 8*0.4641 -> 1.1^4 - 1 = 0.4641
     // Now execute same txn called above
     await pool.exitswap_ExternAmountOut(ROCK, toWei(String(3.7128))); // 3.7128 = 8*0.4641 -> 1.1^4 - 1 = 0.4641
+<<<<<<< HEAD
 
     let expected = 10*10**18; // poolRatio = 1.1
     let actual = pAi;
@@ -480,6 +481,19 @@ contract('math tests from canonical setup', async (accounts) => {
         console.log(`relDif  : ${relDif})`);
     }
 
+=======
+
+    let expected = 10*10**18; // poolRatio = 1.1
+    let actual = pAi;
+    let relDif = calcRelativeDiff(expected,actual);
+    if(verbose){
+        console.log(`pAi`);
+        console.log(`expected: ${expected})`);
+        console.log(`actual  : ${actual})`);
+        console.log(`relDif  : ${relDif})`);
+    }
+
+>>>>>>> 6c45e742fa39fae880ab923b661e0dcb428287e0
     assert.equal(relDif<MaxError, true); 
 
     let totalSupplyAfterExit = await pool.totalSupply.call(); 

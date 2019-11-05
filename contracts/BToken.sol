@@ -28,7 +28,7 @@ contract BTokenBase is BNum
     event Burn(uint amt);
     event Move(address indexed src, address indexed dst, uint amt);
 
-    function sub(uint a, uint b) internal returns (uint) {
+    function sub(uint a, uint b) internal pure returns (uint) {
         require(a >= b, "ERR_BTOKEN_UNDERFLOW"); // TODO report 'insufficient balance' if that's the case
         return a - b;
     }
@@ -66,41 +66,41 @@ contract ERC20 {
     event Transfer(address indexed src, address indexed dst, uint wad);
 
     function totalSupply() public view returns (uint);
-    function balanceOf(address guy) public view returns (uint);
-    function allowance(address src, address guy) public view returns (uint);
+    function balanceOf(address guy) external view returns (uint);
+    function allowance(address src, address guy) external view returns (uint);
 
-    function approve(address guy, uint wad) public returns (bool);
-    function transfer(address dst, uint wad) public returns (bool);
+    function approve(address guy, uint wad) external returns (bool);
+    function transfer(address dst, uint wad) external returns (bool);
     function transferFrom(
         address src, address dst, uint wad
-    ) public returns (bool);
+    ) external returns (bool);
 }
 
 contract BToken is BBronze, BTokenBase, ERC20
 {
-    function allowance(address src, address guy) public view returns (uint) {
+    function allowance(address src, address guy) external view returns (uint) {
         return _allowance[src][guy];
     }
-    function balanceOf(address whom) public view returns (uint) {
+    function balanceOf(address whom) external view returns (uint) {
         return _balance[whom];
     }
     function totalSupply() public view returns (uint) {
         return _totalSupply;
     }
 
-    function approve(address guy, uint wad) public returns (bool) {
+    function approve(address guy, uint wad) external returns (bool) {
         _allowance[msg.sender][guy] = wad;
         emit Approval(msg.sender, guy, wad);
         return true;
     }
 
-    function transfer(address dst, uint wad) public returns (bool) {
+    function transfer(address dst, uint wad) external returns (bool) {
         _move(msg.sender, dst, wad);
         emit Transfer(msg.sender, dst, wad);
         return true;
     }
 
-    function transferFrom(address src, address dst, uint wad) public returns (bool) {
+    function transferFrom(address src, address dst, uint wad) external returns (bool) {
         require(msg.sender == src || wad <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
         _move(src, dst, wad);
         emit Transfer(src, dst, wad);

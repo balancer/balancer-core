@@ -17,7 +17,6 @@ pragma solidity ^0.5.11;
 
 import './BColor.sol';
 import './BPool.sol';
-import './BStub.sol';
 
 contract BFactory is BBronze
 {
@@ -27,16 +26,16 @@ contract BFactory is BBronze
     mapping(address=>bool) _isBPool;
 
     function isBPool(address b)
-      public view returns (bool) {
+      external view returns (bool) {
         return _isBPool[b];
     }
 
     function newBPool()
-      public returns (BPool)
+      external returns (BPool)
     {
         BPool bpool = new BPool();
-        bpool.setController(msg.sender);
         _isBPool[address(bpool)] = true;
+        bpool.setController(msg.sender);
         emit LOG_NEW_POOL(msg.sender, address(bpool));
         return bpool;
     }
@@ -45,18 +44,19 @@ contract BFactory is BBronze
     constructor() public {
         _blabs = msg.sender;
     }
-    function getBLabs() public view returns (address) {
+    function getBLabs() external view returns (address) {
         return _blabs;
     }
-    function setBLabs(address b) public {
+    function setBLabs(address b) external {
         require(msg.sender == _blabs);
         _blabs = b;
     }
     function collect(BPool pool)
-      public 
+      external 
     {
         require(msg.sender == _blabs, "ERR_NOT_BLABS");
         uint collected = ERC20(pool).balanceOf(address(this));
-        pool.transfer(_blabs, collected);
+        bool xfer = pool.transfer(_blabs, collected);
+        require(xfer, "ERR_ERC20_FAILED");
     }
 }

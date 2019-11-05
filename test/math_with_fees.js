@@ -239,6 +239,7 @@ contract('math tests from canonical setup', async (accounts) => {
 
   });
 
+
   it('joinPool', async () => {
     currentPoolBalance = 100;
     await pool.finalize(toWei(String(currentPoolBalance)));

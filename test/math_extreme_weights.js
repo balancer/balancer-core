@@ -246,6 +246,7 @@ contract('math tests from canonical setup', async (accounts) => {
         console.log(`relDif  : ${relDif})`);
     }  
     assert.equal(relDif<MaxError, true); 
+
   });
 
   it('joinPool', async () => {

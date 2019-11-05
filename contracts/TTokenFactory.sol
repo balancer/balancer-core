@@ -17,10 +17,10 @@ import "./TToken.sol";
 
 contract TTokenFactory {
     mapping(bytes32=>TToken) tokens;
-    function get(bytes32 name) public returns (TToken) {
+    function get(bytes32 name) external view returns (TToken) {
         return tokens[name];
     }
-    function build(bytes32 name) public returns (TToken) {
+    function build(bytes32 name) external returns (TToken) {
         tokens[name] = new TToken();
         return tokens[name];
     }

@@ -40,7 +40,6 @@ contract BConst is BBronze
 
     uint256 constant MAX_IN_RATIO      = BONE / 2;
     uint256 constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
-    uint256 constant MIN_SLIP_PRICE    = BONE * 55 / 100;
 
 
     string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
@@ -77,8 +76,6 @@ contract BConst is BBronze
 
     string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
-    
-    string constant ERR_UNREACHABLE        = "ERR_UNREACHABLE";
 
     string constant ERR_MAX_IN_RATIO       = "ERR_MAX_IN_RATIO";
     string constant ERR_MAX_OUT_RATIO      = "ERR_MAX_OUT_RATIO";
@@ -86,11 +83,8 @@ contract BConst is BBronze
     string constant ERR_LIMIT_IN           = "ERR_LIMIT_IN";
     string constant ERR_LIMIT_OUT          = "ERR_LIMIT_OUT";
     string constant ERR_LIMIT_PRICE        = "ERR_LIMIT_PRICE";
-    string constant ERR_NO_SOLUTION        = "ERR_NO_SOLUTION";
 
-    string constant ERR_ARG_LIMIT_IN       = "ERR_ARG_LIMIT_IN";
-    string constant ERR_ARG_LIMIT_OUT      = "ERR_ARG_LIMIT_OUT";
-    string constant ERR_ARG_LIMIT_PRICE    = "ERR_ARG_LIMIT_PRICE";
+    string constant ERR_BAD_LIMIT_PRICE    = "ERR_BAD_LIMIT_PRICE";
 
     string constant ERR_MATH_APPROX        = "ERR_MATH_APPROX";
 }
