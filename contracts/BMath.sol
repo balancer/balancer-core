@@ -85,24 +85,60 @@ contract BMath is BBronze, BConst, BNum
         return Ai;
     }
 
-    function _calc_ExtraAi(uint Ai, uint Bi
-                                , uint Wi
-                                , uint Wo
-                                , uint SP1
-                                , uint MarP
-                                , uint swapFee)
+    function _calc_InGivenPrice( uint Bi, uint Wi
+                               , uint Bo , uint Wo
+                               , uint totalWeight, uint SP1, uint swapFee)
       internal pure
-        returns ( uint ExtraAi )
+        returns ( uint Ai )
     {
-        uint ExtraAiNumerator   = _calc_ExtraAiNumerator(Ai, Bi, SP1, MarP, swapFee);
-        uint ExtraAiDenominator = _calc_ExtraAiDenominator(Ai, Bi, Wi, Wo, SP1, swapFee);
-        ExtraAi = bdiv(ExtraAiNumerator, ExtraAiDenominator);
-        return ExtraAi;
+        // Calculate what Ai and Ao to get price to SP1 if there were no fees:
+        //uint SP1sansFee = bmul(SP1,bsub(BONE,_swapFee));
+        uint AiNF = _calc_InGivenPriceSansFee(Bi, Wi, Bo, Wo
+                                        , bmul(SP1, bsub(BONE, swapFee)));
+        uint AoNF = _calc_OutGivenIn(Bi, Wi, Bo, Wo, AiNF, swapFee);
+        
+        // Calculate what new spot price would be with Ai and Ao as calculated above
+        uint SPNF = _calc_SpotPrice(badd(Bi,AiNF), Wi, bsub(Bo,AoNF), Wo, swapFee);
+        // SPNF is always less or equal (in case of no fees) to SP1. When it's equal
+        // then rounding errors in SPNF may make it slightly (a few wei) greater than SP1
+        // In this case SPNF is considered to be SP1 and no extraAi is needed.
+        if(SPNF>SP1){
+            Ai = AiNF;
+            return Ai;
+        }
+        else{
+            // SPNF is below desired price SP1, we need extraAi to get closer to SP1
+            uint normWi = bdiv(Wi, totalWeight);
+            uint normWo = bdiv(Wo, totalWeight);
+
+            uint extraAi = _calc_ExtraAi(AiNF, Bi, normWi, normWo, SPNF, SP1, swapFee);
+                
+            // Update Ai by adding the extraAi and also Ao
+            Ai = badd(AiNF, extraAi);
+            //Ai = badd(AiNF, 0);
+            
+            return Ai;
+        }
     }
 
-    function _calc_ExtraAiNumerator(uint Ai, uint Bi
+    function _calc_ExtraAi(uint AiNF, uint Bi
+                                , uint normWi
+                                , uint normWo
+                                , uint SPNF
                                 , uint SP1
-                                , uint MarP
+                                , uint swapFee)
+      internal pure
+        returns ( uint extraAi )
+    {
+        uint extraAiNumerator   = _calc_ExtraAiNumerator(AiNF, Bi, SPNF, SP1, swapFee);
+        uint extraAiDenominator = _calc_ExtraAiDenominator(AiNF, Bi, normWi, normWo, SPNF, swapFee);
+        extraAi = bdiv(extraAiNumerator, extraAiDenominator);
+        return extraAi;
+    }
+
+    function _calc_ExtraAiNumerator(uint AiNF, uint Bi
+                                , uint SPNF
+                                , uint SP1
                                 , uint swapFee)
       internal pure
         returns ( uint ExtraAiNumerator )
@@ -113,23 +149,23 @@ contract BMath is BBronze, BConst, BNum
             badd(
                 bmul(
                     BONE_minus_swapFee
-                    , Ai
+                    , AiNF
                     )
                 , Bi
                 )
             ,bsub(
-                MarP
-                , SP1
+                SP1
+                , SPNF
                 )
             )
         ;              
         return ExtraAiNumerator;
     }
 
-    function _calc_ExtraAiDenominator(uint Ai, uint Bi
-                                , uint Wi
-                                , uint Wo
-                                , uint SP1
+    function _calc_ExtraAiDenominator(uint AiNF, uint Bi
+                                , uint normWi
+                                , uint normWo
+                                , uint SPNF
                                 , uint swapFee)
       internal pure
         returns ( uint ExtraAiDenominator )
@@ -137,13 +173,13 @@ contract BMath is BBronze, BConst, BNum
         uint BONE_minus_swapFee = bsub(BONE, swapFee);
         ExtraAiDenominator = 
         bmul(
-            SP1
+            SPNF
             , badd(
                 bmul(
                     BONE_minus_swapFee
                     , badd(
                         BONE
-                        , bdiv(Wi,Wo)
+                        , bdiv(normWi,normWo)
                         ) 
                     )
                 , bdiv(
@@ -152,7 +188,7 @@ contract BMath is BBronze, BConst, BNum
                         , Bi
                         )
                     , badd(
-                        Ai
+                        AiNF
                         , Bi
                         )
                     )
