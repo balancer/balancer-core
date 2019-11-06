@@ -52,7 +52,7 @@ contract('BPool', async (accounts) => {
       assert(finalized);
       await assertThrow(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
       await assertThrow(pool.setPublicJoin(false), 'ERR_IS_FINALIZED');
-      await assertThrow(pool.setSwapFee(toWei('0.01')));
+      await assertThrow(pool.setSwapFee(toWei('0.01')), 'ERR_IS_FINALIZED');
     });
 
   });
