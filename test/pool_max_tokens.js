@@ -143,20 +143,20 @@ contract('BPool', async (accounts) => {
 
     it('Fails swap_ExactAmountIn with limits', async () => {
       await pool.finalize(toWei('100'));
-      await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('0.9')), 'ERR_ARG_LIMIT_IN');
+      await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('0.9')), 'ERR_BAD_LIMIT_PRICE');
       await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('2'), toWei('3.5')), 'ERR_LIMIT_OUT');
       await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
     });
 
     it('Fails swap_ExactAmountOut with limits', async () => {
       await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('50'), BBB, toWei('40'), toWei('5')), 'ERR_MAX_OUT_RATIO');
-      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('1')), 'ERR_ARG_LIMIT_PRICE');
+      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
       await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('1'), BBB, toWei('1'), toWei('5')), 'ERR_LIMIT_IN');
       await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
     });
 
     it('Fails swap_ExactMarginalPrice with limits', async () => {
-      await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('50'), BBB, toWei('1'), toWei('1')), 'ERR_ARG_LIMIT_PRICE');
+      await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('50'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
       await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('0.1'), BBB, toWei('1'), toWei('4')), 'ERR_LIMIT_IN');
       await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('20'), BBB, toWei('20'), toWei('4')), 'ERR_LIMIT_OUT');
 
