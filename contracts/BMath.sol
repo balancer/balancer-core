@@ -99,103 +99,42 @@ contract BMath is BBronze, BConst, BNum
         
         // Calculate what new spot price would be with Ai and Ao as calculated above
         uint SPNF = _calc_SpotPrice(badd(Bi,AiNF), Wi, bsub(Bo,AoNF), Wo, swapFee);
+
+        uint extraAi;
+        uint normWi = bdiv(Wi, totalWeight);
+        uint normWo = bdiv(Wo, totalWeight);
+
         // SPNF is always less or equal (in case of no fees) to SP1. When it's equal
         // then rounding errors in SPNF may make it slightly (a few wei) greater than SP1
         // In this case SPNF is considered to be SP1 and no extraAi is needed.
-        if(SPNF>SP1){
-            Ai = AiNF;
-            return Ai;
-        }
-        else{
-            // SPNF is below desired price SP1, we need extraAi to get closer to SP1
-            uint normWi = bdiv(Wi, totalWeight);
-            uint normWo = bdiv(Wo, totalWeight);
 
-            uint extraAi = _calc_ExtraAi(AiNF, Bi, normWi, normWo, SPNF, SP1, swapFee);
+        SPNF > SP1 ? extraAi = 0 : extraAi = _calc_ExtraAi(AiNF, Bi, normWi, normWo, SPNF, SP1, swapFee);
                 
-            // Update Ai by adding the extraAi and also Ao
-            Ai = badd(AiNF, extraAi);
-            //Ai = badd(AiNF, 0);
+        // Update Ai by adding the extraAi and also Ao
+        Ai = badd(AiNF, extraAi);
             
-            return Ai;
-        }
+        return Ai;
     }
 
-    function _calc_ExtraAi(uint AiNF, uint Bi
-                                , uint normWi
-                                , uint normWo
-                                , uint SPNF
-                                , uint SP1
-                                , uint swapFee)
+    function _calc_ExtraAi(uint Ai, uint Bi
+                          , uint Wi
+                          , uint Wo
+                          , uint SP1
+                          , uint MarP
+                          , uint swapFee)
       internal pure
         returns ( uint extraAi )
     {
-        uint extraAiNumerator   = _calc_ExtraAiNumerator(AiNF, Bi, SPNF, SP1, swapFee);
-        uint extraAiDenominator = _calc_ExtraAiDenominator(AiNF, Bi, normWi, normWo, SPNF, swapFee);
-        extraAi = bdiv(extraAiNumerator, extraAiDenominator);
+        uint adjustedIn = bsub(BONE, swapFee);
+             adjustedIn = bmul(adjustedIn, Ai);
+        uint numer = badd(adjustedIn, Bi);
+             numer = bmul(numer, bsub(MarP, SP1));
+        uint ratio = bdiv(Wi, Wo);
+        uint bar = bmul(bsub(BONE, swapFee), badd(BONE, ratio));
+        uint zaz = bdiv(bmul(swapFee, Bi), badd(Ai, Bi));
+        uint denom = bmul(SP1, badd(bar, zaz));
+        extraAi = bdiv(numer, denom);
         return extraAi;
-    }
-
-    function _calc_ExtraAiNumerator(uint AiNF, uint Bi
-                                , uint SPNF
-                                , uint SP1
-                                , uint swapFee)
-      internal pure
-        returns ( uint ExtraAiNumerator )
-    {
-        uint BONE_minus_swapFee = bsub(BONE, swapFee);
-        ExtraAiNumerator = 
-        bmul(
-            badd(
-                bmul(
-                    BONE_minus_swapFee
-                    , AiNF
-                    )
-                , Bi
-                )
-            ,bsub(
-                SP1
-                , SPNF
-                )
-            )
-        ;              
-        return ExtraAiNumerator;
-    }
-
-    function _calc_ExtraAiDenominator(uint AiNF, uint Bi
-                                , uint normWi
-                                , uint normWo
-                                , uint SPNF
-                                , uint swapFee)
-      internal pure
-        returns ( uint ExtraAiDenominator )
-    {
-        uint BONE_minus_swapFee = bsub(BONE, swapFee);
-        ExtraAiDenominator = 
-        bmul(
-            SPNF
-            , badd(
-                bmul(
-                    BONE_minus_swapFee
-                    , badd(
-                        BONE
-                        , bdiv(normWi,normWo)
-                        ) 
-                    )
-                , bdiv(
-                    bmul(
-                        swapFee
-                        , Bi
-                        )
-                    , badd(
-                        AiNF
-                        , Bi
-                        )
-                    )
-                )
-            )
-        ;
-        return ExtraAiDenominator;
     }
 
     // Pissued = Ptotal * ((1+(tAi/B))^W - 1)

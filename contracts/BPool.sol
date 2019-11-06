@@ -28,8 +28,6 @@ contract BPool is BBronze, BToken, BMath
         uint balance;
     }
 
-    event LOG_DEBUG(uint256 value);
-
     event LOG_SWAP( address indexed caller
                   , address indexed tokenIn
                   , address indexed tokenOut
