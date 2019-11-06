@@ -48,7 +48,7 @@ contract BFactory is BBronze
         return _blabs;
     }
     function setBLabs(address b) external {
-        require(msg.sender == _blabs);
+        require(msg.sender == _blabs, "ERR_NOT_BLABS");
         _blabs = b;
     }
     function collect(BPool pool)
