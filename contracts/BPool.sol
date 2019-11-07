@@ -31,16 +31,16 @@ contract BPool is BBronze, BToken, BMath
     event LOG_SWAP( address indexed caller
                   , address indexed tokenIn
                   , address indexed tokenOut
-                  , uint256         amountIn
-                  , uint256         amountOut );
+                  , uint256         tokenAmountIn
+                  , uint256         tokenAmountOut );
 
     event LOG_JOIN( address indexed caller
                   , address indexed tokenIn
-                  , uint256         amountIn);
+                  , uint256         tokenAmountIn);
 
     event LOG_EXIT( address indexed caller
                   , address indexed tokenOut
-                  , uint256         amountOut);
+                  , uint256         tokenAmountOut);
 
     event LOG_CALL( bytes4  indexed sig
                   , address indexed caller
@@ -452,11 +452,11 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function swap_ExactAmountIn(address tokenIn, uint amountIn, address tokenOut, uint minAmountOut, uint maxPrice)
+    function swap_ExactAmountIn(address tokenIn, uint tokenAmountIn, address tokenOut, uint minAmountOut, uint maxPrice)
         external
         _logs_
         _lock_
-        returns (uint amountOut, uint spotPriceTarget)
+        returns (uint tokenAmountOut, uint spotPriceTarget)
     {
         require( isBound(tokenIn), ERR_NOT_BOUND );
         require( isBound(tokenOut), ERR_NOT_BOUND );
@@ -465,35 +465,35 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(tokenIn)];
         Record storage O = _records[address(tokenOut)];
 
-        require( amountIn <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
+        require( tokenAmountIn <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require( spotPriceBefore <= maxPrice, ERR_ARG_LIMIT_IN);
 
-        amountOut = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, amountIn, _swapFee);
-        require( amountOut >= minAmountOut, ERR_LIMIT_OUT );
+        tokenAmountOut = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee);
+        require( tokenAmountOut >= minAmountOut, ERR_LIMIT_OUT );
 
-        I.balance = badd(I.balance, amountIn);
-        O.balance = bsub(O.balance, amountOut);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
         uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);     
         require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
-        require(spotPriceBefore <= bdiv(amountIn,amountOut), ERR_MATH_APPROX);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(tokenIn, msg.sender, amountIn);
-        _pushUnderlying(tokenOut, msg.sender, amountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (amountOut, spotPriceAfter);
+        return (tokenAmountOut, spotPriceAfter);
     }
 
-    function swap_ExactAmountOut(address tokenIn, uint maxAmountIn, address tokenOut, uint amountOut, uint maxPrice)
+    function swap_ExactAmountOut(address tokenIn, uint maxAmountIn, address tokenOut, uint tokenAmountOut, uint maxPrice)
         external
         _logs_
         _lock_ 
-        returns (uint amountIn, uint spotPriceTarget)
+        returns (uint tokenAmountIn, uint spotPriceTarget)
     {
         require( isBound(tokenIn), ERR_NOT_BOUND);
         require( isBound(tokenOut), ERR_NOT_BOUND);
@@ -502,35 +502,35 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(tokenIn)];
         Record storage O = _records[address(tokenOut)];
 
-        require(amountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
+        require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(spotPriceBefore <= maxPrice, ERR_ARG_LIMIT_PRICE );
 
-        amountIn = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, amountOut, _swapFee);
-        require( amountIn <= maxAmountIn, ERR_LIMIT_IN);
+        tokenAmountIn = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, tokenAmountOut, _swapFee);
+        require( tokenAmountIn <= maxAmountIn, ERR_LIMIT_IN);
 
-        I.balance = badd(I.balance, amountIn);
-        O.balance = bsub(O.balance, amountOut);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
         uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);
         require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
-        require(spotPriceBefore <= bdiv(amountIn,amountOut), ERR_MATH_APPROX);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(tokenIn, msg.sender, amountIn);
-        _pushUnderlying(tokenOut, msg.sender, amountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (amountIn, spotPriceAfter);
+        return (tokenAmountIn, spotPriceAfter);
     }
 
     function swap_ExactMarginalPrice(address tokenIn, uint limitAmountIn, address tokenOut, uint limitAmountOut, uint marginalPrice)
         external
         _logs_
         _lock_
-        returns (uint amountIn, uint amountOut)
+        returns (uint tokenAmountIn, uint tokenAmountOut)
     {
         require( isBound(tokenIn), ERR_NOT_BOUND);
         require( isBound(tokenOut), ERR_NOT_BOUND);
@@ -539,30 +539,30 @@ contract BPool is BBronze, BToken, BMath
         Record storage I = _records[address(tokenIn)];
         Record storage O = _records[address(tokenOut)];
 
-        require(amountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
+        require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(marginalPrice > spotPriceBefore, ERR_ARG_LIMIT_PRICE);
 
-        amountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, marginalPrice, _swapFee );
-        amountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, amountIn, _swapFee );
+        tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, marginalPrice, _swapFee );
+        tokenAmountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee );
 
-        require( amountIn <= limitAmountIn, ERR_LIMIT_IN);
-        require( amountOut >= limitAmountOut, ERR_LIMIT_OUT);
+        require( tokenAmountIn <= limitAmountIn, ERR_LIMIT_IN);
+        require( tokenAmountOut >= limitAmountOut, ERR_LIMIT_OUT);
 
-        I.balance = badd(I.balance, amountIn);
-        O.balance = bsub(O.balance, amountOut);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
         uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);
-        require(spotPriceBefore <= bdiv(amountIn, amountOut), ERR_MATH_APPROX);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(tokenIn, msg.sender, amountIn);
-        _pushUnderlying(tokenOut, msg.sender, amountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, amountIn, amountOut);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (amountIn, amountOut);
+        return (tokenAmountIn, tokenAmountOut);
     }
 
     function joinswap_ExternAmountIn(address tokenIn, uint256 tokenAmountIn)
