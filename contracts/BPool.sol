@@ -582,8 +582,8 @@ contract BPool is BBronze, BToken, BMath
         T.balance = badd(T.balance, tokenAmountIn);
 
         _mintPoolShare(poolAmountOut);
-        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushPoolShare(msg.sender, poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
@@ -606,8 +606,8 @@ contract BPool is BBronze, BToken, BMath
         T.balance = badd(T.balance, tokenAmountIn);
 
         _mintPoolShare(poolAmountOut);
-        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushPoolShare(msg.sender, poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
