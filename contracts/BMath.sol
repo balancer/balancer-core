@@ -117,25 +117,70 @@ contract BMath is BBronze, BConst, BNum
     // wO = weightOut                                  ( 1 - sF )                                //
     // sF = swapFee                                                                              //
     **********************************************************************************************/
-    function _calc_InGivenPrice(
-        uint tokenBalanceIn,
-        uint tokenWeightIn,
-        uint tokenBalanceOut,
-        uint tokenWeightOut,
-        uint spotPriceAfter,
-        uint swapFee
-    )
-        internal pure
-        returns ( uint tokenAmountIn )
+    function _calc_InGivenPriceSansFee( uint Bi, uint Wi
+                               , uint Bo , uint Wo
+                               , uint SP1)
+      internal pure
+        returns ( uint Ai )
     {
-        uint spotPriceBefore = _calc_SpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, 0);
-        uint base            = bdiv(spotPriceAfter, spotPriceBefore);
-        uint exp             = bdiv(tokenWeightOut, badd(tokenWeightOut, tokenWeightIn));
-        tokenAmountIn             = bsub(bpow(base, exp), BONE);
-        tokenAmountIn             = bmul(tokenAmountIn, tokenBalanceIn);
-        uint foo     = bsub(BONE, swapFee);
-        tokenAmountIn           = bdiv(tokenAmountIn, foo);
-        return tokenAmountIn;
+        uint SP0    = _calc_SpotPrice(Bi, Wi, Bo, Wo, 0); // Calculate w/o fee
+        uint base    = bdiv(SP1, SP0);
+        uint exp     = bdiv(Wo, badd(Wo, Wi));
+        uint foo     = bsub(bpow(base, exp), BONE);
+        Ai           = bmul(foo, Bi);
+        return Ai;
+    }
+
+    function _calc_InGivenPrice( uint Bi, uint Wi
+                               , uint Bo , uint Wo
+                               , uint totalWeight, uint SP1, uint swapFee)
+      internal pure
+        returns ( uint Ai )
+    {
+        // Calculate what Ai and Ao to get price to SP1 if there were no fees:
+        //uint SP1sansFee = bmul(SP1,bsub(BONE,_swapFee));
+        uint AiNF = _calc_InGivenPriceSansFee(Bi, Wi, Bo, Wo
+                                        , bmul(SP1, bsub(BONE, swapFee)));
+        uint AoNF = _calc_OutGivenIn(Bi, Wi, Bo, Wo, AiNF, swapFee);
+        
+        // Calculate what new spot price would be with Ai and Ao as calculated above
+        uint SPNF = _calc_SpotPrice(badd(Bi,AiNF), Wi, bsub(Bo,AoNF), Wo, swapFee);
+
+        uint extraAi;
+        uint normWi = bdiv(Wi, totalWeight);
+        uint normWo = bdiv(Wo, totalWeight);
+
+        // SPNF is always less or equal (in case of no fees) to SP1. When it's equal
+        // then rounding errors in SPNF may make it slightly (a few wei) greater than SP1
+        // In this case SPNF is considered to be SP1 and no extraAi is needed.
+
+        SPNF > SP1 ? extraAi = 0 : extraAi = _calc_ExtraAi(AiNF, Bi, normWi, normWo, SPNF, SP1, swapFee);
+                
+        // Update Ai by adding the extraAi and also Ao
+        Ai = badd(AiNF, extraAi);
+            
+        return Ai;
+    }
+
+    function _calc_ExtraAi(uint Ai, uint Bi
+                          , uint Wi
+                          , uint Wo
+                          , uint SP1
+                          , uint MarP
+                          , uint swapFee)
+      internal pure
+        returns ( uint extraAi )
+    {
+        uint adjustedIn = bsub(BONE, swapFee);
+             adjustedIn = bmul(adjustedIn, Ai);
+        uint numer = badd(adjustedIn, Bi);
+             numer = bmul(numer, bsub(MarP, SP1));
+        uint ratio = bdiv(Wi, Wo);
+        uint bar = bmul(bsub(BONE, swapFee), badd(BONE, ratio));
+        uint zaz = bdiv(bmul(swapFee, Bi), badd(Ai, Bi));
+        uint denom = bmul(SP1, badd(bar, zaz));
+        extraAi = bdiv(numer, denom);
+        return extraAi;
     }
 
     /**********************************************************************************************

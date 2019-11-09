@@ -113,7 +113,7 @@ contract BPool is BBronze, BToken, BMath
         public view
         returns (bool)
     {
-        return _publicJoin;
+        return _publicExit;
     }
 
     function isFinalized()
@@ -468,7 +468,7 @@ contract BPool is BBronze, BToken, BMath
         require( tokenAmountIn <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( spotPriceBefore <= maxPrice, ERR_ARG_LIMIT_IN);
+        require( spotPriceBefore <= maxPrice, ERR_BAD_LIMIT_PRICE);
 
         tokenAmountOut = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee);
         require( tokenAmountOut >= minAmountOut, ERR_LIMIT_OUT );
@@ -505,7 +505,7 @@ contract BPool is BBronze, BToken, BMath
         require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(spotPriceBefore <= maxPrice, ERR_ARG_LIMIT_PRICE );
+        require(spotPriceBefore <= maxPrice, ERR_BAD_LIMIT_PRICE );
 
         tokenAmountIn = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, tokenAmountOut, _swapFee);
         require( tokenAmountIn <= maxAmountIn, ERR_LIMIT_IN);
@@ -526,6 +526,7 @@ contract BPool is BBronze, BToken, BMath
         return (tokenAmountIn, spotPriceAfter);
     }
 
+
     function swap_ExactMarginalPrice(address tokenIn, uint limitAmountIn, address tokenOut, uint limitAmountOut, uint marginalPrice)
         external
         _logs_
@@ -542,7 +543,7 @@ contract BPool is BBronze, BToken, BMath
         require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(marginalPrice > spotPriceBefore, ERR_ARG_LIMIT_PRICE);
+        require(marginalPrice > spotPriceBefore, ERR_BAD_LIMIT_PRICE);
 
         tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, marginalPrice, _swapFee );
         tokenAmountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee );

@@ -49,14 +49,26 @@ contract BStub is BBronze, BMath
         return _calc_InGivenOut(Bi, Wi, Bo, Wo, Ao, fee);
     }
 
-    function calc_InGivenPrice( uint Bi, uint Wi
+    function calc_InGivenPriceSansFee( uint Bi, uint Wi
                               , uint Bo , uint Wo
                               , uint SER1
-                              , uint fee)
+                              )
       public pure
         returns ( uint Ai )
     {
-        return _calc_InGivenPrice(Bi, Wi, Bo, Wo, SER1, fee);
+        return _calc_InGivenPriceSansFee(Bi, Wi, Bo, Wo, SER1);
+    }
+
+    function calc_ExtraAi(uint Ai, uint Bi
+                               , uint Wi
+                               , uint Wo
+                               , uint SP1
+                               , uint MarP
+                               , uint swapFee)
+      public pure
+        returns ( uint ExtraAi )
+    {
+        return _calc_ExtraAi(Ai, Bi, Wi, Wo, SP1, MarP, swapFee);
     }
 
     function calc_PoolOutGivenSingleIn( uint balance, uint weight

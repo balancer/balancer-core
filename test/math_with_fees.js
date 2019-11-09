@@ -2,10 +2,10 @@ const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
-const MaxError = 10**-9;
-const swapFee = 0.001;
+const MaxError = 10**-8;
+const swapFee = 10**-3; //0.001;
 const exitFee = 0.0001;
-const verbose = true;
+const verbose = false;
 
 function calcRelativeDiff(_expected, _actual) {
   return Math.abs((_expected - _actual)/_expected);
@@ -208,23 +208,28 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
-  it('swap_ExactMarginalPrice'); /*, async () => {
-    /* //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+  it('swap_ExactMarginalPrice', async () => {
+    //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
+    let MarPrice = 0.5;
     let test = [`swap_ExactMarginalPrice`, 
-                    [DIRT, MAX, ROCK, '0', toWei(String(0.48))], // This price happens when Bdirt = 4.8+fee and Brock = 10 
-                    [toWei(String((48/10-4))),toWei(String(12-10))], 
+                    [DIRT, MAX, ROCK, '0', toWei(String(MarPrice))], 
+                    0, 
                     0, //deltaAccountBalances, 
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
 
     let output = await pool.swap_ExactMarginalPrice.call(test[1][0], test[1][1], test[1][2], test[1][3], test[1][4]);
+    let Ai = parseInt(output[0]);
+    let Ao = parseInt(output[1]);
 
     // Checking outputs
-    let expected = parseInt(test[2][0]);
-    let actual = output[0];
+    let expected = MarPrice;
+    let actual = (parseInt(dirtBalance)+Ai)*rockNorm/((parseInt(rockBalance)-Ao)*dirtNorm*(1-swapFee));
     let relDif = calcRelativeDiff(expected,actual);
     if(verbose){
-        console.log(`output[0]`);
+        console.log(`Ai: ${Ai})`);
+        console.log(`Ao: ${Ao})`);
+        console.log(`MarPrice`);
         console.log(`expected: ${expected})`);
         console.log(`actual  : ${actual})`);
         console.log(`relDif  : ${relDif})`);
@@ -232,17 +237,8 @@ contract('math tests from canonical setup', async (accounts) => {
   
     assert.equal(relDif<MaxError, true);
 
-    expected = parseInt(test[2][1]);
-    actual = output[1];
-    relDif = calcRelativeDiff(expected,actual);
-    if(verbose){
-        console.log(`output[1]`);
-        console.log(`expected: ${expected})`);
-        console.log(`actual  : ${actual})`);
-        console.log(`relDif  : ${relDif})`);
-    } 
-    assert.equal(relDif<MaxError, true); 
-  });*/
+  });
+
 
   it('joinPool', async () => {
     currentPoolBalance = 100;
