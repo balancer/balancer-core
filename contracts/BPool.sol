@@ -526,7 +526,7 @@ contract BPool is BBronze, BToken, BMath
         return (Ai, SP1);
     }
 
-    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint MarP)
+    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint SP1)
         external
         _logs_
         _lock_
@@ -542,9 +542,9 @@ contract BPool is BBronze, BToken, BMath
         require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
         uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(MarP > SP0, ERR_BAD_LIMIT_PRICE);
+        require(SP1 > SP0, ERR_BAD_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, MarP, _swapFee );
+        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, _totalWeight, SP1, _swapFee );
         Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
 
         require( Ai <= Li, ERR_LIMIT_IN);
@@ -553,8 +553,8 @@ contract BPool is BBronze, BToken, BMath
         I.balance = badd(I.balance, Ai);
         O.balance = bsub(O.balance, Ao);
 
-        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 >= SP0, ERR_MATH_APPROX);
+        uint actualSP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(actualSP1 >= SP0, ERR_MATH_APPROX);
         require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
 
         _pullUnderlying(Ti, msg.sender, Ai);

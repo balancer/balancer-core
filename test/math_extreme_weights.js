@@ -210,11 +210,12 @@ contract('math tests from canonical setup', async (accounts) => {
     assert.equal(relDif<MaxError, true); 
   });
 
-  it('swap_ExactMarginalPrice'); /*, async () => {
+  it('swap_ExactMarginalPrice', async () => {
+    // Use the same numbers (Ai, Ao, Price) as with ExactAmountIn
     //let test = [functionName, inputParameters, outputParameters, deltaAccountBalances, deltaPoolBalances, deltaPoolTokens];
     let test = [`swap_ExactMarginalPrice`, 
-                    [DIRT, MAX, ROCK, '0', toWei(`74.1107209737620806`)], //
-                    [toWei(`500`),toWei(`8.24065622001300310`)], 
+                    [DIRT, MAX, ROCK, '0', toWei(`74.1844011380065814`)], //
+                    [toWei(`500`),toWei(`8.23390841016124456`)], 
                     0, //deltaAccountBalances, 
                     0, //deltaPoolBalances, 
                     0]; //deltaPoolSupply];
@@ -245,7 +246,8 @@ contract('math tests from canonical setup', async (accounts) => {
         console.log(`relDif  : ${relDif})`);
     }  
     assert.equal(relDif<MaxError, true); 
-  }); */
+
+  });
 
   it('joinPool', async () => {
 
