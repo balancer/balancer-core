@@ -19,24 +19,24 @@ contract('TMath', async (accounts) => {
     });
 
     it('badd throws on overflow', async () => {
-      await assertThrow(tmath.NumBadd(1, MAX), 'ERR_ADD_OVERFLOW');
+      await assertThrow(tmath.calc_badd(1, MAX), 'ERR_ADD_OVERFLOW');
     });
 
     it('bsub throws on underflow', async () => {
-      await assertThrow(tmath.NumBsub(1, 2), 'ERR_SUB_UNDERFLOW');
+      await assertThrow(tmath.calc_bsub(1, 2), 'ERR_SUB_UNDERFLOW');
     });
 
     it('bmul throws on overflow', async () => {
-      await assertThrow(tmath.NumBmul(2, MAX), 'ERR_MUL_OVERFLOW');
+      await assertThrow(tmath.calc_bmul(2, MAX), 'ERR_MUL_OVERFLOW');
     });
 
     it('bdiv throws on div by 0', async () => {
-      await assertThrow(tmath.NumBdiv(1, 0), 'ERR_DIV_ZERO');
+      await assertThrow(tmath.calc_bdiv(1, 0), 'ERR_DIV_ZERO');
     });
 
     it('bpow throws on base outside range', async () => {
-      await assertThrow(tmath.NumBpow(0, 2), 'ERR_BPOW_BASE_TOO_LOW');
-      await assertThrow(tmath.NumBpow(MAX, 2), 'ERR_BPOW_BASE_TOO_HIGH');
+      await assertThrow(tmath.calc_bpow(0, 2), 'ERR_BPOW_BASE_TOO_LOW');
+      await assertThrow(tmath.calc_bpow(MAX, 2), 'ERR_BPOW_BASE_TOO_HIGH');
     });
 
   });

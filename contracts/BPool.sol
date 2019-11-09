@@ -545,7 +545,7 @@ contract BPool is BBronze, BToken, BMath
         uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
         require(marginalPrice > spotPriceBefore, ERR_BAD_LIMIT_PRICE);
 
-        tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, marginalPrice, _swapFee );
+        tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, _totalWeight, marginalPrice, _swapFee );
         tokenAmountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee );
 
         require( tokenAmountIn <= limitAmountIn, ERR_LIMIT_IN);
@@ -573,16 +573,16 @@ contract BPool is BBronze, BToken, BMath
         returns (uint poolAmountOut)
     {
         require( isBound(tokenIn), ERR_NOT_BOUND );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[tokenIn];
 
         poolAmountOut = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tokenAmountIn, _swapFee);
         T.balance = badd(T.balance, tokenAmountIn);
 
-        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _mintPoolShare(poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushPoolShare(msg.sender, poolAmountOut);
         
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
@@ -597,16 +597,16 @@ contract BPool is BBronze, BToken, BMath
         returns (uint tokenAmountIn)
     {
         require( isBound(tokenIn), ERR_NOT_BOUND );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
+        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[tokenIn];
 
         tokenAmountIn = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, poolAmountOut, _swapFee);
         T.balance = badd(T.balance, tokenAmountIn);
 
-        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _mintPoolShare(poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushPoolShare(msg.sender, poolAmountOut);
         
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
@@ -622,7 +622,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC);
+        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
         Record storage T = _records[tokenOut];
 
@@ -649,7 +649,7 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC);
+        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
         Record storage T = _records[tokenOut];
 
