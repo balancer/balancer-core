@@ -41,7 +41,6 @@ contract BConst is BBronze
     uint256 constant MAX_IN_RATIO      = BONE / 2;
     uint256 constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
 
-
     string constant ERR_ADD_OVERFLOW       = "ERR_ADD_OVERFLOW";
     string constant ERR_SUB_UNDERFLOW      = "ERR_SUB_UNDERFLOW";
     string constant ERR_MUL_OVERFLOW       = "ERR_MUL_OVERFLOW";
@@ -69,9 +68,6 @@ contract BConst is BBronze
     string constant ERR_NOT_FACTORY        = "ERR_NOT_FACTORY";
 
     string constant ERR_SWAP_NOT_PUBLIC    = "ERR_SWAP_NOT_PUBLIC"; // trying to swap
-    string constant ERR_JOIN_NOT_PUBLIC    = "ERR_JOIN_NOT_PUBLIC"; // trying to join
-    string constant ERR_EXIT_NOT_PUBLIC    = "ERR_EXIT_NOT_PUBLIC"; // trying to exit (never thrown in bronze)
-    string constant ERR_EXIT_ALWAYS_PUBLIC = "ERR_EXIT_ALWAYS_PUBLIC"; // trying to setPublicExit(false) in bronze
 
     string constant ERR_REENTRY            = "ERR_REENTRY";
     string constant ERR_ERC20_FALSE        = "ERR_ERC20_FALSE";
