@@ -31,16 +31,16 @@ contract BPool is BBronze, BToken, BMath
     event LOG_SWAP( address indexed caller
                   , address indexed tokenIn
                   , address indexed tokenOut
-                  , uint256         amountIn
-                  , uint256         amountOut );
+                  , uint256         tokenAmountIn
+                  , uint256         tokenAmountOut );
 
     event LOG_JOIN( address indexed caller
                   , address indexed tokenIn
-                  , uint256         amountIn);
+                  , uint256         tokenAmountIn);
 
     event LOG_EXIT( address indexed caller
                   , address indexed tokenOut
-                  , uint256         amountOut);
+                  , uint256         tokenAmountOut);
 
     event LOG_CALL( bytes4  indexed sig
                   , address indexed caller
@@ -375,31 +375,31 @@ contract BPool is BBronze, BToken, BMath
         _records[token].balance = ERC20(token).balanceOf(address(this));
     }
 
-    function getSpotPrice(address Ti, address To)
+    function getSpotPrice(address tokenIn, address tokenOut)
         external view
         _viewlock_
-        returns (uint P)
+        returns (uint spotPrice)
     {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
+        require(isBound(tokenIn), ERR_NOT_BOUND);
+        require(isBound(tokenOut), ERR_NOT_BOUND);
+        Record storage I = _records[tokenIn];
+        Record storage O = _records[tokenOut];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
     }
 
-    function getSpotPriceSansFee(address Ti, address To)
+    function getSpotPriceSansFee(address tokenIn, address tokenOut)
         external view
         _viewlock_
-        returns (uint P)
+        returns (uint spotPrice)
     {
-        require(isBound(Ti), ERR_NOT_BOUND);
-        require(isBound(To), ERR_NOT_BOUND);
-        Record storage I = _records[Ti];
-        Record storage O = _records[To];
+        require(isBound(tokenIn), ERR_NOT_BOUND);
+        require(isBound(tokenOut), ERR_NOT_BOUND);
+        Record storage I = _records[tokenIn];
+        Record storage O = _records[tokenOut];
         return _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, 0);
     }
 
-    function joinPool(uint poolAo)
+    function joinPool(uint poolAmountOut)
         external
         _logs_
         _lock_
@@ -408,21 +408,21 @@ contract BPool is BBronze, BToken, BMath
         require(isPublicJoin(), ERR_JOIN_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
-        uint ratio = bdiv(poolAo, poolTotal);
+        uint ratio = bdiv(poolAmountOut, poolTotal);
         for( uint i = 0; i < _tokens.length; i++ ) {
             address t = _tokens[i];
             uint bal = _records[t].balance;
-            uint tAi = bmul(ratio, bal);
-            _records[t].balance = badd(_records[t].balance, tAi);
-            _pullUnderlying(t, msg.sender, tAi);
+            uint tokenAmountIn = bmul(ratio, bal);
+            _records[t].balance = badd(_records[t].balance, tokenAmountIn);
+            _pullUnderlying(t, msg.sender, tokenAmountIn);
 
-            emit LOG_JOIN(msg.sender, t, tAi);
+            emit LOG_JOIN(msg.sender, t, tokenAmountIn);
         }
-        _mintPoolShare(poolAo);
-        _pushPoolShare(msg.sender, poolAo);
+        _mintPoolShare(poolAmountOut);
+        _pushPoolShare(msg.sender, poolAmountOut);
     }
 
-    function exitPool(uint pAi)
+    function exitPool(uint poolAmountIn)
         external
         _logs_
         _lock_
@@ -431,12 +431,12 @@ contract BPool is BBronze, BToken, BMath
         require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
-        uint pAiExitFee = bmul(pAi, EXIT_FEE);
-        uint pAiAfterExitFee = bsub(pAi, pAiExitFee);
+        uint exitFee = bmul(poolAmountIn, EXIT_FEE);
+        uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
         uint ratio = bdiv(pAiAfterExitFee, poolTotal);
        
-        _pullPoolShare(msg.sender, pAi);
-        _pushPoolShare(_factory, pAiExitFee);
+        _pullPoolShare(msg.sender, poolAmountIn);
+        _pushPoolShare(_factory, exitFee);
         _burnPoolShare(pAiAfterExitFee);
 
         for( uint i = 0; i < _tokens.length; i++ ) {
@@ -452,217 +452,220 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function swap_ExactAmountIn(address Ti, uint Ai, address To, uint MinAo, uint MaxP)
+    function swap_ExactAmountIn(address tokenIn, uint tokenAmountIn, address tokenOut, uint minAmountOut, uint maxPrice)
         external
         _logs_
         _lock_
-        returns (uint Ao, uint MP)
+        returns (uint tokenAmountOut, uint spotPriceTarget)
     {
-        require( isBound(Ti), ERR_NOT_BOUND );
-        require( isBound(To), ERR_NOT_BOUND );
+        require( isBound(tokenIn), ERR_NOT_BOUND );
+        require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
-        Record storage I = _records[address(Ti)];
-        Record storage O = _records[address(To)];
+        Record storage I = _records[address(tokenIn)];
+        Record storage O = _records[address(tokenOut)];
 
-        require( Ai <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
+        require( tokenAmountIn <= bmul(I.balance, MAX_IN_RATIO), ERR_MAX_IN_RATIO );
 
-        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require( SP0 <= MaxP, ERR_BAD_LIMIT_PRICE );
+        uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require( spotPriceBefore <= maxPrice, ERR_BAD_LIMIT_PRICE);
 
-        Ao = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee);
-        require( Ao >= MinAo, ERR_LIMIT_OUT );
+        tokenAmountOut = _calc_OutGivenIn(I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee);
+        require( tokenAmountOut >= minAmountOut, ERR_LIMIT_OUT );
 
-        I.balance = badd(I.balance, Ai);
-        O.balance = bsub(O.balance, Ao);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
-        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 >= SP0, ERR_MATH_APPROX);     
-        require(SP1 <= MaxP, ERR_LIMIT_PRICE);
-        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
+        uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);     
+        require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(Ti, msg.sender, Ai);
-        _pushUnderlying(To, msg.sender, Ao);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (Ao, SP1);
+        return (tokenAmountOut, spotPriceAfter);
     }
 
-    function swap_ExactAmountOut(address Ti, uint MaxAi, address To, uint Ao, uint MaxP)
+    function swap_ExactAmountOut(address tokenIn, uint maxAmountIn, address tokenOut, uint tokenAmountOut, uint maxPrice)
         external
         _logs_
         _lock_ 
-        returns (uint Ai, uint MP)
+        returns (uint tokenAmountIn, uint spotPriceTarget)
     {
-        require( isBound(Ti), ERR_NOT_BOUND);
-        require( isBound(To), ERR_NOT_BOUND);
+        require( isBound(tokenIn), ERR_NOT_BOUND);
+        require( isBound(tokenOut), ERR_NOT_BOUND);
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
-        Record storage I = _records[address(Ti)];
-        Record storage O = _records[address(To)];
+        Record storage I = _records[address(tokenIn)];
+        Record storage O = _records[address(tokenOut)];
 
-        require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
+        require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO );
 
-        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP0 <= MaxP, ERR_BAD_LIMIT_PRICE );
+        uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(spotPriceBefore <= maxPrice, ERR_BAD_LIMIT_PRICE );
 
-        Ai = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, Ao, _swapFee);
-        require( Ai <= MaxAi, ERR_LIMIT_IN);
+        tokenAmountIn = _calc_InGivenOut(I.balance, I.denorm, O.balance, O.denorm, tokenAmountOut, _swapFee);
+        require( tokenAmountIn <= maxAmountIn, ERR_LIMIT_IN);
 
-        I.balance = badd(I.balance, Ai);
-        O.balance = bsub(O.balance, Ao);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
-        uint SP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 >= SP0, ERR_MATH_APPROX);
-        require(SP1 <= MaxP, ERR_LIMIT_PRICE);
-        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
+        uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);
+        require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(Ti, msg.sender, Ai);
-        _pushUnderlying(To, msg.sender, Ao);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (Ai, SP1);
+        return (tokenAmountIn, spotPriceAfter);
     }
 
-    function swap_ExactMarginalPrice(address Ti, uint Li, address To, uint Lo, uint SP1)
+
+    function swap_ExactMarginalPrice(address tokenIn, uint limitAmountIn, address tokenOut, uint limitAmountOut, uint marginalPrice)
         external
         _logs_
         _lock_
-        returns (uint Ai, uint Ao)
+        returns (uint tokenAmountIn, uint tokenAmountOut)
     {
-        require( isBound(Ti), ERR_NOT_BOUND);
-        require( isBound(To), ERR_NOT_BOUND);
+        require( isBound(tokenIn), ERR_NOT_BOUND);
+        require( isBound(tokenOut), ERR_NOT_BOUND);
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
 
-        Record storage I = _records[address(Ti)];
-        Record storage O = _records[address(To)];
+        Record storage I = _records[address(tokenIn)];
+        Record storage O = _records[address(tokenOut)];
 
-        require(Ao <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
+        require(tokenAmountOut <= bmul(O.balance, MAX_OUT_RATIO), ERR_MAX_OUT_RATIO);
 
-        uint SP0 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(SP1 > SP0, ERR_BAD_LIMIT_PRICE);
+        uint spotPriceBefore = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(marginalPrice > spotPriceBefore, ERR_BAD_LIMIT_PRICE);
 
-        Ai = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, _totalWeight, SP1, _swapFee );
-        Ao = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, Ai, _swapFee );
+        tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, _totalWeight, marginalPrice, _swapFee );
+        tokenAmountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee );
 
-        require( Ai <= Li, ERR_LIMIT_IN);
-        require( Ao >= Lo, ERR_LIMIT_OUT);
+        require( tokenAmountIn <= limitAmountIn, ERR_LIMIT_IN);
+        require( tokenAmountOut >= limitAmountOut, ERR_LIMIT_OUT);
 
-        I.balance = badd(I.balance, Ai);
-        O.balance = bsub(O.balance, Ao);
+        I.balance = badd(I.balance, tokenAmountIn);
+        O.balance = bsub(O.balance, tokenAmountOut);
 
-        uint actualSP1 = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
-        require(actualSP1 >= SP0, ERR_MATH_APPROX);
-        require(SP0 <= bdiv(Ai,Ao), ERR_MATH_APPROX);
+        uint spotPriceAfter = _calc_SpotPrice(I.balance, I.denorm, O.balance, O.denorm, _swapFee);
+        require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);
+        require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
-        _pullUnderlying(Ti, msg.sender, Ai);
-        _pushUnderlying(To, msg.sender, Ao);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        emit LOG_SWAP(msg.sender, Ti, To, Ai, Ao);
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
-        return (Ai, Ao);
+        return (tokenAmountIn, tokenAmountOut);
     }
 
-    function joinswap_ExternAmountIn(address Ti, uint256 tAi)
+    function joinswap_ExternAmountIn(address tokenIn, uint256 tokenAmountIn)
         external
         _logs_
         _lock_
-        returns (uint pAo)
+        returns (uint poolAmountOut)
     {
-        require( isBound(Ti), ERR_NOT_BOUND );
+        require( isBound(tokenIn), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
         require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
-        Record storage T = _records[Ti];
+        Record storage T = _records[tokenIn];
 
-        pAo = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tAi, _swapFee);
-        T.balance = badd(T.balance, tAi);
+        poolAmountOut = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tokenAmountIn, _swapFee);
+        T.balance = badd(T.balance, tokenAmountIn);
 
-        _mintPoolShare(pAo);
-        _pushPoolShare(msg.sender, pAo);
-        _pullUnderlying(Ti, msg.sender, tAi);
+        _mintPoolShare(poolAmountOut);
+        _pushPoolShare(msg.sender, poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         
-        emit LOG_JOIN(msg.sender, Ti, tAi);
+        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
-        return pAo;
+        return poolAmountOut;
     }
 
-    function joinswap_PoolAmountOut(uint pAo, address Ti)
+    function joinswap_PoolAmountOut(uint poolAmountOut, address tokenIn)
         external
         _logs_
         _lock_
-        returns (uint tAi)
+        returns (uint tokenAmountIn)
     {
-        require( isBound(Ti), ERR_NOT_BOUND );
+        require( isBound(tokenIn), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
         require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
-        Record storage T = _records[Ti];
+        Record storage T = _records[tokenIn];
 
-        tAi = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, pAo, _swapFee);
-        T.balance = badd(T.balance, tAi);
+        tokenAmountIn = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, poolAmountOut, _swapFee);
+        T.balance = badd(T.balance, tokenAmountIn);
 
-        _mintPoolShare(pAo);
-        _pushPoolShare(msg.sender, pAo);
-        _pullUnderlying(Ti, msg.sender, tAi);
+        _mintPoolShare(poolAmountOut);
+        _pushPoolShare(msg.sender, poolAmountOut);
+        _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         
-        emit LOG_JOIN(msg.sender, Ti, tAi);
+        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
-        return tAi;
+        return tokenAmountIn;
     }
 
-    function exitswap_PoolAmountIn(uint pAi, address To)
+    function exitswap_PoolAmountIn(uint poolAmountIn, address tokenOut)
         external
         _logs_
         _lock_
-        returns (uint tAo)
+        returns (uint tokenAmountOut)
     {
-        require( isBound(To), ERR_NOT_BOUND );
+        require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC);
+        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
-        Record storage T = _records[To];
+        Record storage T = _records[tokenOut];
 
-        tAo = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, pAi, _swapFee);
-        T.balance = bsub(T.balance, tAo);
+        tokenAmountOut = _calc_SingleOutGivenPoolIn(T.balance, T.denorm, _totalSupply, _totalWeight, poolAmountIn, _swapFee);
+        T.balance = bsub(T.balance, tokenAmountOut);
 
-        _pullPoolShare(msg.sender, pAi);
-        uint pAiExitFee = bmul(pAi,EXIT_FEE);
-        _burnPoolShare(bsub(pAi,pAiExitFee));
-        _pushPoolShare(_factory, pAiExitFee);
-        _pushUnderlying(To, msg.sender, tAo);
+        uint exitFee = bmul(poolAmountIn, EXIT_FEE);
 
-        emit LOG_EXIT(msg.sender, To, tAo);
+        _pullPoolShare(msg.sender, poolAmountIn);
+        _burnPoolShare(bsub(poolAmountIn, exitFee));
+        _pushPoolShare(_factory, exitFee);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
 
-        return tAo;
+        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
+
+        return tokenAmountOut;
     }
 
-    function exitswap_ExternAmountOut(address To, uint tAo)
+    function exitswap_ExternAmountOut(address tokenOut, uint tokenAmountOut)
         external
         _logs_
         _lock_
-        returns (uint pAi)
+        returns (uint poolAmountIn)
     {
-        require( isBound(To), ERR_NOT_BOUND );
+        require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC);
+        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
-        Record storage T = _records[To];
+        Record storage T = _records[tokenOut];
 
-        pAi = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tAo, _swapFee);
-        T.balance = bsub(T.balance, tAo);
+        poolAmountIn = _calc_PoolInGivenSingleOut(T.balance, T.denorm, _totalSupply, _totalWeight, tokenAmountOut, _swapFee);
+        T.balance = bsub(T.balance, tokenAmountOut);
 
-        _pullPoolShare(msg.sender, pAi);
-        uint pAiExitFee = bmul(pAi,EXIT_FEE);
-        _burnPoolShare(bsub(pAi,pAiExitFee));
-        _pushPoolShare(_factory, pAiExitFee);
-        _pushUnderlying(To, msg.sender, tAo);        
+        uint exitFee = bmul(poolAmountIn, EXIT_FEE);
 
-        emit LOG_EXIT(msg.sender, To, tAo);
+        _pullPoolShare(msg.sender, poolAmountIn);
+        _burnPoolShare(bsub(poolAmountIn, exitFee));
+        _pushPoolShare(_factory, exitFee);
+        _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);        
 
-        return pAi;
+        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
+
+        return poolAmountIn;
     }
 
 
@@ -670,17 +673,17 @@ contract BPool is BBronze, BToken, BMath
     // 'Underlying' token-manipulation functions make external calls but are NOT locked
     // You must `_lock_` or otherwise ensure reentry-safety
 
-    function _pullUnderlying(address erc20, address from, uint amt)
+    function _pullUnderlying(address erc20, address from, uint amount)
       internal
     {
-        bool xfer = ERC20(erc20).transferFrom(from, address(this), amt);
+        bool xfer = ERC20(erc20).transferFrom(from, address(this), amount);
         require(xfer, ERR_ERC20_FALSE);
     }
 
-    function _pushUnderlying(address erc20, address to, uint amt)
+    function _pushUnderlying(address erc20, address to, uint amount)
       internal
     {
-        bool xfer = ERC20(erc20).transfer(to, amt);
+        bool xfer = ERC20(erc20).transfer(to, amount);
         require(xfer, ERR_ERC20_FALSE);
     }
 

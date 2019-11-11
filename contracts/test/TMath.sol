@@ -19,43 +19,168 @@ import "../BNum.sol";
 // Contract to wrap internal functions for testing
 
 contract TMath is BMath {
-    function NumBtoi(uint a) external pure returns (uint) {
+    function calc_SpotPrice(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint swapFee
+    )
+        external pure
+        returns ( uint spotPrice ) 
+    {
+        return _calc_SpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFee);
+    }
+
+    function calc_OutGivenIn(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint tokenAmountIn,
+                uint swapFee
+    )
+        external pure
+        returns ( uint tokenAmountOut )
+    {
+        return _calc_OutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountIn, swapFee);
+    }
+
+    function calc_InGivenOut(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint tokenAmountOut,
+                uint swapFee
+            )
+        external pure
+        returns ( uint tokenAmountIn )
+    {
+        return _calc_InGivenOut(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee);
+    }
+
+    function calc_InGivenPriceNoFee(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint spotPriceAfter
+            )
+        external pure
+        returns ( uint tokenAmountIn )
+    {
+        return _calc_InGivenPriceNoFee(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, spotPriceAfter);
+    }
+
+    function calc_ExtraAmountIn(
+                uint tokenAmountIn,
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint tokenWeightOut,
+                uint spotPriceAfter,
+                uint marginalPrice,
+                uint swapFee
+            )
+        external pure
+        returns ( uint extraAmountIn )
+    {
+        return _calc_ExtraAmountIn(tokenAmountIn, tokenBalanceIn, tokenWeightIn, tokenWeightOut, spotPriceAfter, marginalPrice, swapFee);
+    }
+
+    function calc_PoolOutGivenSingleIn(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint poolSupply,
+                uint totalWeight,
+                uint tokenAmountIn,
+                uint swapFee
+            )
+        external pure
+        returns (uint poolAmountOut)
+    {
+        return  _calc_PoolOutGivenSingleIn( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight , tokenAmountIn, swapFee);
+    }
+
+    function calc_SingleInGivenPoolOut(
+                uint tokenBalanceIn,
+                uint tokenWeightIn,
+                uint poolSupply,
+                uint totalWeight,
+                uint poolAmountOut,
+                uint swapFee
+            )
+        external pure
+        returns (uint tokenAmountIn)
+    {
+        return _calc_SingleInGivenPoolOut( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, poolAmountOut, swapFee);
+    }
+
+    function calc_SingleOutGivenPoolIn(
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint poolSupply,
+                uint totalWeight,
+                uint poolAmountIn,
+                uint swapFee
+            )
+        external pure
+        returns (uint tokenAmountOut)
+    {
+        return _calc_SingleOutGivenPoolIn( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, poolAmountIn, swapFee);
+    }
+
+    function calc_PoolInGivenSingleOut(
+                uint tokenBalanceOut,
+                uint tokenWeightOut,
+                uint poolSupply,
+                uint totalWeight,
+                uint tokenAmountOut,
+                uint swapFee
+            )
+        external pure
+        returns (uint poolAmountIn)
+    {
+        return _calc_PoolInGivenSingleOut( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, tokenAmountOut, swapFee);
+    }
+
+    function calc_btoi(uint a) external pure returns (uint) {
         return btoi(a);
     }
 
-    function NumBfloor(uint a) external pure returns (uint) {
+    function calc_bfloor(uint a) external pure returns (uint) {
         return bfloor(a);
     }
 
-    function NumBadd(uint a, uint b) external pure returns (uint) {
+    function calc_badd(uint a, uint b) external pure returns (uint) {
         return badd(a, b);
     }
 
-    function NumBsub(uint a, uint b) external pure returns (uint) {
+    function calc_bsub(uint a, uint b) external pure returns (uint) {
         return bsub(a, b);
     }
 
-    function NumBsubSign(uint a, uint b) external pure returns (uint, bool) {
+    function calc_bsubSign(uint a, uint b) external pure returns (uint, bool) {
         return bsubSign(a, b);
     }
 
-    function NumBmul(uint a, uint b) external pure returns (uint) {
+    function calc_bmul(uint a, uint b) external pure returns (uint) {
         return bmul(a, b);
     }
 
-    function NumBdiv(uint a, uint b) external pure returns (uint) {
+    function calc_bdiv(uint a, uint b) external pure returns (uint) {
         return bdiv(a, b);
     }
 
-    function NumBpowi(uint a, uint n) external pure returns (uint) {
+    function calc_bpowi(uint a, uint n) external pure returns (uint) {
         return bpowi(a, n);
     }
 
-    function NumBpow(uint base, uint exp) external pure returns (uint) {
+    function calc_bpow(uint base, uint exp) external pure returns (uint) {
         return bpow(base, exp);
     }
 
-    function NumBpowApprox(uint base, uint exp, uint precision) external pure returns (uint) {
+    function calc_bpowApprox(uint base, uint exp, uint precision) external pure returns (uint) {
         return bpowApprox(base, exp, precision);
     }
 }
