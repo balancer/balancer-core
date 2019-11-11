@@ -89,8 +89,6 @@ contract('math tests from canonical setup', async (accounts) => {
 
     await pool.setPublicSwap(true);
     console.log('pool.setPublicSwap(true);');
-    await pool.setPublicJoin(true);
-    console.log('pool.setPublicJoin(true);');
   });
 
   beforeEach(async () => {

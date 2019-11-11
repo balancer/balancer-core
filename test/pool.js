@@ -248,11 +248,6 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.unbind(DAI), 'ERR_IS_FINALIZED');
     });
 
-    it('Fails trying to set publicExit', async () => {
-      await assertThrow(pool.setPublicExit(false), 'ERR_EXIT_ALWAYS_PUBLIC');
-      await assertThrow(pool.setPublicExit(true), 'ERR_IS_FINALIZED');
-    });
-
     it('getSpotPriceSansFee and getSpotPrice', async () => {
       let wethPrice = await pool.getSpotPriceSansFee(DAI, WETH);
       assert.equal(200, fromWei(wethPrice))
