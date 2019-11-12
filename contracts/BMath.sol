@@ -13,12 +13,11 @@
 
 pragma solidity ^0.5.11;
 
-import "./BColor.sol";
-import "./BConst.sol";
 import "./BNum.sol";
 
-contract BMath is BBronze, BConst, BNum
+contract BMath is BNum
 {
+
     /**********************************************************************************************
     // _calc_SpotPrice                                                                           //
     // sP = spotPrice                                                                            //

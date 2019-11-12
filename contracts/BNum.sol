@@ -13,10 +13,29 @@
 
 pragma solidity ^0.5.11;
 
-import "./BColor.sol";
-import "./BConst.sol";
+contract BNum {
 
-contract BNum is BBronze, BConst {
+    uint256 constant BONE              = 10**18;
+
+    uint256 constant MAX_BOUND_TOKENS  = 8;
+    uint256 constant BPOW_PRECISION    = BONE / 10**10;
+
+    uint256 constant MAX_FEE           = BONE / 10;
+    uint256 constant EXIT_FEE           = BONE / 10000;
+
+    uint256 constant MIN_WEIGHT        = BONE;
+    uint256 constant MAX_WEIGHT        = BONE * 50;
+    uint256 constant MAX_TOTAL_WEIGHT  = BONE * 50;
+    uint256 constant MIN_BALANCE       = BONE / 10**6;
+    uint256 constant MAX_BALANCE       = BONE * 10**12;
+
+    uint256 constant MIN_POOL_SUPPLY   = BONE;
+
+    uint constant MIN_BPOW_BASE        = 1 wei;
+    uint constant MAX_BPOW_BASE        = (2 * BONE) - 1 wei;
+
+    uint256 constant MAX_IN_RATIO      = BONE / 2;
+    uint256 constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
 
     function btoi(uint a) internal pure returns (uint) {
         return a / BONE;
@@ -28,13 +47,13 @@ contract BNum is BBronze, BConst {
 
     function badd(uint a, uint b) internal pure returns (uint) {
         uint c = a + b;
-        require(c >= a, ERR_ADD_OVERFLOW);
+        require(c >= a, "ERR_ADD_OVERFLOW");
         return c;
     }
 
     function bsub(uint a, uint b) internal pure returns (uint) {
         (uint c, bool flag) = bsubSign(a, b);
-        require(!flag, ERR_SUB_UNDERFLOW);
+        require(!flag, "ERR_SUB_UNDERFLOW");
         return c;
     }
 
@@ -48,19 +67,19 @@ contract BNum is BBronze, BConst {
 
     function bmul(uint a, uint b) internal pure returns (uint) {
         uint c0 = a * b;
-        require(a == 0 || c0 / a == b, ERR_MUL_OVERFLOW);
+        require(a == 0 || c0 / a == b, "ERR_MUL_OVERFLOW");
         uint c1 = c0 + (BONE / 2);
-        require(c1 >= c0, ERR_MUL_OVERFLOW);
+        require(c1 >= c0, "ERR_MUL_OVERFLOW");
         uint c2 = c1 / BONE;
         return c2;
     }
 
     function bdiv(uint a, uint b) internal pure returns (uint) {
-        require(b != 0, ERR_DIV_ZERO);
+        require(b != 0, "ERR_DIV_ZERO");
         uint c0 = a * BONE;
-        require(a == 0 || c0 / a == BONE, ERR_DIV_INTERNAL); // bmul overflow
+        require(a == 0 || c0 / a == BONE, "ERR_DIV_INTERNAL"); // bmul overflow
         uint c1 = c0 + (b / 2);
-        require(c1 >= c0, ERR_DIV_INTERNAL); //  badd require
+        require(c1 >= c0, "ERR_DIV_INTERNAL"); //  badd require
         uint c2 = c1 / b;
         return c2;
     }
@@ -86,8 +105,8 @@ contract BNum is BBronze, BConst {
       pure internal
         returns (uint)
     {
-        require(base >= MIN_BPOW_BASE, ERR_BPOW_BASE_TOO_LOW);
-        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE_TOO_HIGH);
+        require(base >= MIN_BPOW_BASE, "ERR_BPOW_BASE_TOO_LOW");
+        require(base <= MAX_BPOW_BASE, "ERR_BPOW_BASE_TOO_HIGH");
 
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);

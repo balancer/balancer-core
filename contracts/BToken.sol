@@ -76,7 +76,7 @@ contract ERC20 {
     ) external returns (bool);
 }
 
-contract BToken is BBronze, BTokenBase, ERC20
+contract BToken is BTokenBase, ERC20
 {
     function allowance(address src, address guy) external view returns (uint) {
         return _allowance[src][guy];

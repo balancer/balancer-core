@@ -15,15 +15,19 @@ pragma solidity ^0.5.11;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
 
-import './BColor.sol';
 import './BPool.sol';
 
-contract BFactory is BBronze
-{
+contract BFactory {
     event LOG_NEW_POOL( address indexed caller
                       , address indexed pool );
 
     mapping(address=>bool) _isBPool;
+
+    function getColor()
+      external view
+      returns (bytes32) {
+          return bytes32("BRONZE");
+    }
 
     function isBPool(address b)
       external view returns (bool) {
