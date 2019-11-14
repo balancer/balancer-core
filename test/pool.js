@@ -100,7 +100,7 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails binding weights and balances outside MIX MAX', async () => {
-      await assertThrow(pool.bind(WETH, toWei('51'), toWei('1')), 'ERR_BTOKEN_UNDERFLOW'); // TODO change error to insufficient balance
+      await assertThrow(pool.bind(WETH, toWei('51'), toWei('1')), 'ERR_INSUFFICIENT_BAL');
       await assertThrow(pool.bind(MKR, toWei('0.0000001'), toWei('1')), 'ERR_MIN_BALANCE');
       await assertThrow(pool.bind(MKR, toWei('10000000000000000'), toWei('1')), 'ERR_MAX_BALANCE');
       await assertThrow(pool.bind(DAI, toWei('1000'), toWei('0.99')), 'ERR_MIN_WEIGHT');
@@ -246,11 +246,6 @@ contract('BPool', async (accounts) => {
 
     it('Fails admin unbinding token after finalized and others joined', async () => {
       await assertThrow(pool.unbind(DAI), 'ERR_IS_FINALIZED');
-    });
-
-    it('Fails trying to set publicExit', async () => {
-      await assertThrow(pool.setPublicExit(false), 'ERR_EXIT_ALWAYS_PUBLIC');
-      await assertThrow(pool.setPublicExit(true), 'ERR_IS_FINALIZED');
     });
 
     it('getSpotPriceSansFee and getSpotPrice', async () => {

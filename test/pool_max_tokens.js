@@ -110,10 +110,6 @@ contract('BPool', async (accounts) => {
       await assertThrow(pool.bind(ZZZ, toWei('50'), toWei('2')), 'ERR_MAX_TOKENS');
     });
 
-    it('Fails setPublicExit from non controller', async() => {
-      await assertThrow(pool.setPublicExit(true, { from: user1 }), 'ERR_NOT_CONTROLLER');
-    });
-
     it('Rebind token at a smaller balance', async () => {
       await pool.rebind(HHH, toWei('50'), toWei('2.1'));
       let balance = await pool.getBalance(HHH);

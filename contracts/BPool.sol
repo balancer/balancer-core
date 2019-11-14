@@ -71,9 +71,6 @@ contract BPool is BBronze, BToken, BMath
     address                   _factory;    // has FACTORY role
     address                   _controller; // has CONTROL role
     bool                      _publicSwap; // true if PUBLIC can call SWAP functions
-    bool                      _publicJoin; // true if PUBLIC can call JOIN functions
-    bool                      _publicExit; // true if PUBLIC can call Exit functions
-                                           //   always true for bronze pools!
 
     // `setSwapFee` and `finalize` require CONTROL
     // `finalize` sets `PUBLIC can SWAP`, `PUBLIC can JOIN`, and sets `_controller` to NULL
@@ -89,10 +86,7 @@ contract BPool is BBronze, BToken, BMath
         _factory = msg.sender;
 
         _publicSwap = false;
-        _publicJoin = false;
         _finalized = false;
-
-        _publicExit = true;
     }
 
     function isPublicSwap()
@@ -100,20 +94,6 @@ contract BPool is BBronze, BToken, BMath
         returns (bool)
     {
         return _publicSwap;
-    }
-
-    function isPublicJoin()
-        public view
-        returns (bool)
-    {
-        return _publicJoin;
-    }
-
-    function isPublicExit()
-        public view
-        returns (bool)
-    {
-        return _publicExit;
     }
 
     function isFinalized()
@@ -236,27 +216,6 @@ contract BPool is BBronze, BToken, BMath
         _publicSwap = public_;
     }
 
-    function setPublicJoin(bool public_)
-        external
-        _logs_
-        _lock_
-    {
-        require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _publicJoin = public_;
-    }
-
-    function setPublicExit(bool public_)
-        external
-        _logs_
-        _lock_
-    {
-        require( public_, ERR_EXIT_ALWAYS_PUBLIC );
-        require( ! _finalized, ERR_IS_FINALIZED);
-        require(msg.sender == _controller, ERR_NOT_CONTROLLER);
-        _publicExit = public_;
-    }
-
     function finalize(uint initSupply)
         external
         _logs_
@@ -268,8 +227,6 @@ contract BPool is BBronze, BToken, BMath
 
         _finalized = true;
         _publicSwap = true;
-        _publicJoin = true;
-        _publicExit = true;
 
         _mintPoolShare(initSupply);
         _pushPoolShare(msg.sender, initSupply);
@@ -405,7 +362,6 @@ contract BPool is BBronze, BToken, BMath
         _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
-        require(isPublicJoin(), ERR_JOIN_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAmountOut, poolTotal);
@@ -428,7 +384,6 @@ contract BPool is BBronze, BToken, BMath
         _lock_
     {
         require(_finalized, ERR_NOT_FINALIZED);
-        require(isPublicExit(), ERR_EXIT_NOT_PUBLIC);
 
         uint poolTotal = totalSupply();
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
@@ -574,7 +529,6 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenIn), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[tokenIn];
 
@@ -598,7 +552,6 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenIn), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicJoin(), ERR_JOIN_NOT_PUBLIC );
 
         Record storage T = _records[tokenIn];
 
@@ -622,7 +575,6 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
         Record storage T = _records[tokenOut];
 
@@ -649,7 +601,6 @@ contract BPool is BBronze, BToken, BMath
     {
         require( isBound(tokenOut), ERR_NOT_BOUND );
         require( isPublicSwap(), ERR_SWAP_NOT_PUBLIC );
-        require( isPublicExit(), ERR_EXIT_NOT_PUBLIC );
 
         Record storage T = _records[tokenOut];
 

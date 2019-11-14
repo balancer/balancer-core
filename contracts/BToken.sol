@@ -26,10 +26,11 @@ contract BTokenBase is BNum
 
     event Mint(uint amt);
     event Burn(uint amt);
+    event Transfer(address indexed src, address indexed dst, uint amt);
     event Move(address indexed src, address indexed dst, uint amt);
 
     function sub(uint a, uint b) internal pure returns (uint) {
-        require(a >= b, "ERR_BTOKEN_UNDERFLOW"); // TODO report 'insufficient balance' if that's the case
+        require(a >= b, "ERR_BTOKEN_UNDERFLOW");
         return a - b;
     }
 
@@ -37,15 +38,19 @@ contract BTokenBase is BNum
         _balance[address(this)] = badd(_balance[address(this)], amt);
         _totalSupply   = badd(_totalSupply, amt);
         emit Mint(amt);
+        emit Transfer(address(0), address(this), amt);
     }
 
     function _burn(uint amt) internal {
+        require(_balance[address(this)] >= amt, "ERR_INSUFFICIENT_BAL");
         _balance[address(this)] = sub(_balance[address(this)], amt);
         _totalSupply   = sub(_totalSupply, amt);
         emit Burn(amt);
+        emit Transfer(address(this), address(0), amt);
     }
 
     function _move(address src, address dst, uint amt) internal {
+        require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
         _balance[src] = sub(_balance[src], amt);
         _balance[dst] = badd(_balance[dst], amt);
         emit Move(src, dst, amt);
