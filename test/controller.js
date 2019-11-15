@@ -1,8 +1,8 @@
-const { assertThrow } = require('../lib/tests/assertThrow');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
+const truffleAssert = require('truffle-assertions');
 
 contract('BPool', async (accounts) => {
   const admin = accounts[0];
@@ -36,15 +36,15 @@ contract('BPool', async (accounts) => {
       await pool.setPublicSwap(true);
       let publicSwap = pool.isPublicSwap();
       assert(publicSwap);
-      await assertThrow(pool.setPublicSwap(true, { from: nonAdmin }), 'ERR_NOT_CONTROLLER');
+      await truffleAssert.reverts(pool.setPublicSwap(true, { from: nonAdmin }), 'ERR_NOT_CONTROLLER');
     });
 
     it('Cant setPublicSwap, setSwapFee when finalized', async () => {
       await pool.finalize(toWei('10'));
       let finalized = pool.isFinalized();
       assert(finalized);
-      await assertThrow(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
-      await assertThrow(pool.setSwapFee(toWei('0.01')), 'ERR_IS_FINALIZED');
+      await truffleAssert.reverts(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
+      await truffleAssert.reverts(pool.setSwapFee(toWei('0.01')), 'ERR_IS_FINALIZED');
     });
 
   });

@@ -1,8 +1,8 @@
-const { assertThrow } = require('../lib/tests/assertThrow');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
+const truffleAssert = require('truffle-assertions');
 
 contract('BFactory', async (accounts) => {
   const admin = accounts[0];
@@ -70,7 +70,7 @@ contract('BFactory', async (accounts) => {
     });
 
     it('fails nonAdmin calls collect', async () => {
-      await assertThrow(factory.collect(nonAdmin, { from: nonAdmin }), "ERR_NOT_BLABS");
+      await truffleAssert.reverts(factory.collect(nonAdmin, { from: nonAdmin }), "ERR_NOT_BLABS");
     });
 
     it('admin collects fees', async () => {
@@ -91,7 +91,7 @@ contract('BFactory', async (accounts) => {
     });
 
     it('nonadmin cant set blabs address', async () => {
-      await assertThrow(factory.setBLabs(nonAdmin, { from: nonAdmin }), "ERR_NOT_BLABS");
+      await truffleAssert.reverts(factory.setBLabs(nonAdmin, { from: nonAdmin }), "ERR_NOT_BLABS");
     });
 
     it('admin changes blabs address', async () => {

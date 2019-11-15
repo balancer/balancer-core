@@ -1,4 +1,3 @@
-const { assertThrow } = require('../lib/tests/assertThrow')
 const truffleAssert = require('truffle-assertions');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
@@ -9,11 +8,10 @@ contract('BPool', async (accounts) => {
   const admin = accounts[0];
   const user1 = accounts[1];
   const user2 = accounts[2];
-  const toHex = web3.utils.toHex;
-  const toBN = web3.utils.toBN;
   const toWei = web3.utils.toWei;
+  const toHex = web3.utils.toHex;
   const fromWei = web3.utils.fromWei;
-  const errorDelta = 0.000001
+  const errorDelta = 10**-8;
   const MAX = web3.utils.toTwosComplement(-1);
 
   let tokens;           // token factory / registry
@@ -28,7 +26,7 @@ contract('BPool', async (accounts) => {
     factory = await BFactory.deployed();
     FACTORY = factory.address;
 
-    POOL = await factory.newBPool.call(); // this works fine in clean room
+    POOL = await factory.newBPool.call();
     await factory.newBPool();
     pool = await BPool.at(POOL);
 
@@ -107,7 +105,7 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails binding more than 8 tokens', async () => {
-      await assertThrow(pool.bind(ZZZ, toWei('50'), toWei('2')), 'ERR_MAX_TOKENS');
+      await truffleAssert.reverts(pool.bind(ZZZ, toWei('50'), toWei('2')), 'ERR_MAX_TOKENS');
     });
 
     it('Rebind token at a smaller balance', async () => {
@@ -126,7 +124,7 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails gulp on unbound token', async () => {
-      await assertThrow(pool.gulp(ZZZ), 'ERR_NOT_BOUND')
+      await truffleAssert.reverts(pool.gulp(ZZZ), 'ERR_NOT_BOUND')
     });
 
     it('Pool can gulp tokens', async () => {
@@ -139,22 +137,22 @@ contract('BPool', async (accounts) => {
 
     it('Fails swap_ExactAmountIn with limits', async () => {
       await pool.finalize(toWei('100'));
-      await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('0.9')), 'ERR_BAD_LIMIT_PRICE');
-      await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('2'), toWei('3.5')), 'ERR_LIMIT_OUT');
-      await assertThrow(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
+      await truffleAssert.reverts(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('0.9')), 'ERR_BAD_LIMIT_PRICE');
+      await truffleAssert.reverts(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('2'), toWei('3.5')), 'ERR_LIMIT_OUT');
+      await truffleAssert.reverts(pool.swap_ExactAmountIn(AAA, toWei('1'), BBB, toWei('0'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
     });
 
     it('Fails swap_ExactAmountOut with limits', async () => {
-      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('50'), BBB, toWei('40'), toWei('5')), 'ERR_MAX_OUT_RATIO');
-      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
-      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('1'), BBB, toWei('1'), toWei('5')), 'ERR_LIMIT_IN');
-      await assertThrow(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
+      await truffleAssert.reverts(pool.swap_ExactAmountOut(AAA, toWei('50'), BBB, toWei('40'), toWei('5')), 'ERR_MAX_OUT_RATIO');
+      await truffleAssert.reverts(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
+      await truffleAssert.reverts(pool.swap_ExactAmountOut(AAA, toWei('1'), BBB, toWei('1'), toWei('5')), 'ERR_LIMIT_IN');
+      await truffleAssert.reverts(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
     });
 
     it('Fails swap_ExactMarginalPrice with limits', async () => {
-      await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('50'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
-      await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('0.1'), BBB, toWei('1'), toWei('4')), 'ERR_LIMIT_IN');
-      await assertThrow(pool.swap_ExactMarginalPrice(AAA, toWei('20'), BBB, toWei('20'), toWei('4')), 'ERR_LIMIT_OUT');
+      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('50'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
+      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('0.1'), BBB, toWei('1'), toWei('4')), 'ERR_LIMIT_IN');
+      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('20'), BBB, toWei('20'), toWei('4')), 'ERR_LIMIT_OUT');
 
     });
 
