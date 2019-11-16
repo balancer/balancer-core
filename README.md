@@ -9,6 +9,9 @@
   <a href="https://coveralls.io/github/balancer-labs/balancer-core">
     <img src="https://coveralls.io/repos/github/balancer-labs/balancer-core/badge.svg?t=7avwwt" />
   </a>
+  <a href="https://www.gnu.org/licenses/gpl-3.0">
+    <img src="https://img.shields.io/badge/License-GPLv3-green.svg" />
+  </a>
 </p>
 
 <h1 align=center><code>balancer</code></h1>
@@ -42,26 +45,32 @@ yarn testrpc # run ganache
 yarn test    # run the tests
 ```
 
-Some test cases give helpful example logs:
+Tests can be run verbosely to view approximation diffs:
 
 ```
-  Contract: math tests from canonical setup
-pool := factory.newBPool()
-dirt := tokens.build('DIRT')
-rock := tokens.build('ROCK')
-dirt.mint(MAX);
-dirt.approve(POOL, MAX);
-rock.mint(MAX);
-rock.approve(POOL, MAX);
-pool.bind(DIRT, 10000000000000000000, 1100000000000000000)
-pool.bind(ROCK, 50000000000000000000, 2400000000000000000)
-pool.setPublicSwap(true);
-pool.setPublicJoin(true);
-pool.rebind(DIRT, 10000000000000000000, 1100000000000000000)
-pool.rebind(ROCK, 50000000000000000000, 2400000000000000000)
-pool.swap_ExactAmountIn(DIRT, 2500000000000000000, ROCK, 0, MAX);
- -> ( 4860897990289925450 , 604192951531479606 )
-    ✓ swap_ExactAmountIn (336ms)
+VERBOSE=TRUE yarn test
+```
+
+```
+  Contract: BPool
+    With fees
+pAi
+expected: 10.891089108910892)
+actual  : 10.891089106783580001)
+relDif  : 1.9532588879656032e-10)
+Pool Balance
+expected: 98010000000000030000)
+actual  : 98010000001320543977)
+relDif  : 1.3473294888276702e-11)
+Dirt Balance
+expected: 3921200210105053000)
+actual  : 3921200210099248361)
+relDif  : 1.480428360949332e-12)
+Rock Balance
+expected: 11763600630315160000)
+actual  : 11763600630334527239)
+relDif  : 1.6464292361378058e-12)
+      ✓ exitswap_ExternAmountOut (537ms)
 ```
 
 Complete API docs are available at [https://balancer.finance/api](https://balancer.finance/api)
