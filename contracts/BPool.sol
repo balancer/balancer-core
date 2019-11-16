@@ -482,7 +482,7 @@ contract BPool is BBronze, BToken, BMath
     }
 
 
-    function swap_ExactMarginalPrice(address tokenIn, uint limitAmountIn, address tokenOut, uint limitAmountOut, uint marginalPrice)
+    function swap_ExactMarginalPrice(address tokenIn, uint maxAmountIn, address tokenOut, uint minAmountOut, uint marginalPrice)
         external
         _logs_
         _lock_
@@ -503,8 +503,8 @@ contract BPool is BBronze, BToken, BMath
         tokenAmountIn = _calc_InGivenPrice( I.balance, I.denorm, O.balance, O.denorm, _totalWeight, marginalPrice, _swapFee );
         tokenAmountOut = _calc_OutGivenIn( I.balance, I.denorm, O.balance, O.denorm, tokenAmountIn, _swapFee );
 
-        require( tokenAmountIn <= limitAmountIn, ERR_LIMIT_IN);
-        require( tokenAmountOut >= limitAmountOut, ERR_LIMIT_OUT);
+        require( tokenAmountIn <= maxAmountIn, ERR_LIMIT_IN);
+        require( tokenAmountOut >= minAmountOut, ERR_LIMIT_OUT);
 
         I.balance = badd(I.balance, tokenAmountIn);
         O.balance = bsub(O.balance, tokenAmountOut);
