@@ -22,7 +22,7 @@
     "chai": "^4.2.0",
     "coveralls": "^3.0.7",
     "ganache-core": "^2.6.1",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.2",
     "solidity-coverage": "^0.6.7",
     "standard": "^14.0.2",
     "truffle": "^5.0.41",
