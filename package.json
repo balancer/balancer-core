@@ -25,7 +25,7 @@
     "mocha": "^6.2.0",
     "solidity-coverage": "^0.6.7",
     "standard": "^14.0.2",
-    "truffle": "^5.0.41",
+    "truffle": "^5.1.0",
     "web3": "^1.2.0"
   },
   "dependencies": {
