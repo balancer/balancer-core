@@ -17,12 +17,11 @@ import "./BNum.sol";
 
 // Highly opinionated token implementation
 
-contract BTokenBase is BNum
-{
+contract BTokenBase is BNum {
     mapping(address=>
-      mapping(address=>uint))   internal _allowance;
-    mapping(address=>uint)      internal _balance;
-    uint                        internal _totalSupply;
+        mapping(address=>uint))   internal _allowance;
+    mapping(address=>uint)        internal _balance;
+    uint                          internal _totalSupply;
 
     event Mint(uint amt);
     event Burn(uint amt);
@@ -36,7 +35,7 @@ contract BTokenBase is BNum
 
     function _mint(uint amt) internal {
         _balance[address(this)] = badd(_balance[address(this)], amt);
-        _totalSupply   = badd(_totalSupply, amt);
+        _totalSupply = badd(_totalSupply, amt);
         emit Mint(amt);
         emit Transfer(address(0), address(this), amt);
     }
@@ -44,7 +43,7 @@ contract BTokenBase is BNum
     function _burn(uint amt) internal {
         require(_balance[address(this)] >= amt, "ERR_INSUFFICIENT_BAL");
         _balance[address(this)] = sub(_balance[address(this)], amt);
-        _totalSupply   = sub(_totalSupply, amt);
+        _totalSupply = sub(_totalSupply, amt);
         emit Burn(amt);
         emit Transfer(address(this), address(0), amt);
     }
@@ -81,8 +80,7 @@ contract ERC20 {
     ) external returns (bool);
 }
 
-contract BToken is BBronze, BTokenBase, ERC20
-{
+contract BToken is BBronze, BTokenBase, ERC20 {
     function allowance(address src, address guy) external view returns (uint) {
         return _allowance[src][guy];
     }
@@ -109,7 +107,7 @@ contract BToken is BBronze, BTokenBase, ERC20
         require(msg.sender == src || wad <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
         _move(src, dst, wad);
         emit Transfer(src, dst, wad);
-        if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
+        if (msg.sender != src && _allowance[src][msg.sender] != uint256(-1)) {
             _allowance[src][msg.sender] = sub(_allowance[src][msg.sender], wad);
         }
         return true;

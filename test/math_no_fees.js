@@ -75,10 +75,10 @@ contract('math tests from canonical setup', async (accounts) => {
     
   });
 
-  it('swap_ExactMarginalPrice', async () => {
+  it('swapExactMarginalPrice', async () => {
     let MarPrice = 1;
 
-    let output = await pool.swap_ExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei(String(MarPrice)));
+    let output = await pool.swapExactMarginalPrice.call(DIRT, MAX, ROCK, '0', toWei(String(MarPrice)));
     let Ai = parseInt(output[0]);
     let Ao = parseInt(output[1]);
 

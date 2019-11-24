@@ -114,7 +114,7 @@ contract('BPool', async (accounts) => {
 
   describe('With fees', () => {
 
-    it('swap_ExactAmountIn', async () => {
+    it('swapExactAmountIn', async () => {
       
       let tokenIn = DIRT
       let tokenAmountIn = toWei('2')
@@ -122,7 +122,7 @@ contract('BPool', async (accounts) => {
       let minAmountOut = toWei('0')
       let maxPrice = MAX
 
-      let output = await pool.swap_ExactAmountIn.call(tokenIn, tokenAmountIn, tokenOut, minAmountOut, maxPrice);
+      let output = await pool.swapExactAmountIn.call(tokenIn, tokenAmountIn, tokenOut, minAmountOut, maxPrice);
 
       // Checking outputs
       let expected = 12-48/(4+2*(1-swapFee));
@@ -153,14 +153,14 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('swap_ExactAmountOut', async () => {
+    it('swapExactAmountOut', async () => {
       let tokenIn = ROCK;
       let maxAmountIn = MAX;
       let tokenOut = DIRT;
       let tokenAmountOut = toWei('1');
       let maxPrice = MAX;
 
-      let output = await pool.swap_ExactAmountOut.call(tokenIn, maxAmountIn, tokenOut, tokenAmountOut, maxPrice);
+      let output = await pool.swapExactAmountOut.call(tokenIn, maxAmountIn, tokenOut, tokenAmountOut, maxPrice);
 
       // Checking outputs
       let expected = (48/(4-1)-12)/(1-swapFee);
@@ -190,7 +190,7 @@ contract('BPool', async (accounts) => {
       assert.isAtMost(relDif, errorDelta); 
     });
 
-    it('swap_ExactMarginalPrice', async () => {
+    it('swapExactMarginalPrice', async () => {
       
       let tokenIn = DIRT;
       let limitAmountIn = MAX;
@@ -198,7 +198,7 @@ contract('BPool', async (accounts) => {
       let limitAmountOut = toWei('0');
       let marginalPrice = toWei('0.5');
 
-      let output = await pool.swap_ExactMarginalPrice.call(tokenIn, limitAmountIn, tokenOut, limitAmountOut, marginalPrice);
+      let output = await pool.swapExactMarginalPrice.call(tokenIn, limitAmountIn, tokenOut, limitAmountOut, marginalPrice);
       let Ai = parseInt(output[0]);
       let Ao = parseInt(output[1]);
 
@@ -263,15 +263,15 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('joinswap_ExternAmountIn', async () => {
+    it('joinswapExternAmountIn', async () => {
 
       // Call function 
       let poolRatio = 1.1;
       let tAi = 1/(1-swapFee*(1-dirtNorm))*currentDirtBalance*(poolRatio**(1/dirtNorm)-1); // increase tbalance by 1.1^2 after swap fee
       
-      let pAo = await pool.joinswap_ExternAmountIn.call(DIRT, toWei(String(tAi))); 
+      let pAo = await pool.joinswapExternAmountIn.call(DIRT, toWei(String(tAi))); 
       // Execute txn called above
-      await pool.joinswap_ExternAmountIn(DIRT, toWei(String(tAi))); 
+      await pool.joinswapExternAmountIn(DIRT, toWei(String(tAi))); 
 
       // Update balance states
       previousDirtBalance = currentDirtBalance;
@@ -297,14 +297,14 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('joinswap_PoolAmountOut', async () => {
+    it('joinswapPoolAmountOut', async () => {
 
       // Call function 
       let poolRatio = 1.1;
       let pAo = currentPoolBalance*(poolRatio-1);
       
-      let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)), ROCK); // 10% of current supply
-      await pool.joinswap_PoolAmountOut(toWei(String(pAo)), ROCK); 
+      let tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), ROCK); // 10% of current supply
+      await pool.joinswapPoolAmountOut(toWei(String(pAo)), ROCK); 
 
       // Update balance states
       previousPoolBalance = currentPoolBalance;
@@ -335,8 +335,8 @@ contract('BPool', async (accounts) => {
       let poolRatioAfterExitFee = 0.9;
       let pAi = currentPoolBalance * (1-poolRatioAfterExitFee)*(1/(1-exitFee));;    
 
-      let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
-      await pool.exitswap_PoolAmountIn(toWei(String(pAi)),DIRT);
+      let tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)),DIRT);
+      await pool.exitswapPoolAmountIn(toWei(String(pAi)),DIRT);
 
       // Update balance states
       previousPoolBalance = currentPoolBalance;
@@ -363,15 +363,15 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('exitswap_ExternAmountOut', async () => {
+    it('exitswapExternAmountOut', async () => {
 
       // Call function 
       let poolRatioAfterExitFee = 0.9;
       let tokenRatioBeforeSwapFee = poolRatioAfterExitFee**(1/rockNorm);
       let tAo = currentRockBalance * (1-tokenRatioBeforeSwapFee)*(1-swapFee*(1-rockNorm));
 
-      let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(String(tAo)));
-      await pool.exitswap_ExternAmountOut(ROCK, toWei(String(tAo)));
+      let pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(String(tAo)));
+      await pool.exitswapExternAmountOut(ROCK, toWei(String(tAo)));
 
       // Update balance states
       previousRockBalance = currentRockBalance;
@@ -398,11 +398,11 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('pAo = joinswap_ExternAmountIn(joinswap_PoolAmountOut(pAo))', async () => {
+    it('pAo = joinswapExternAmountIn(joinswapPoolAmountOut(pAo))', async () => {
 
       let pAo = 10;
-      let tAi = await pool.joinswap_PoolAmountOut.call(toWei(String(pAo)),DIRT);
-      let calculatedPAo = await pool.joinswap_ExternAmountIn.call(DIRT, String(tAi)); // NO toWei since tAo is already in wei
+      let tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)),DIRT);
+      let calculatedPAo = await pool.joinswapExternAmountIn.call(DIRT, String(tAi)); // NO toWei since tAo is already in wei
       
       let expected = pAo;
       let actual = fromWei(calculatedPAo);
@@ -420,11 +420,11 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('tAi = joinswap_PoolAmountOut(joinswap_ExternAmountIn(tAi))', async () => {
+    it('tAi = joinswapPoolAmountOut(joinswapExternAmountIn(tAi))', async () => {
 
       let tAi = 1;
-      let pAo = await pool.joinswap_ExternAmountIn.call(ROCK, toWei(String(tAi)));
-      let calculatedtAi = await pool.joinswap_PoolAmountOut.call(String(pAo), ROCK); // NO toWei since pAi is already in wei
+      let pAo = await pool.joinswapExternAmountIn.call(ROCK, toWei(String(tAi)));
+      let calculatedtAi = await pool.joinswapPoolAmountOut.call(String(pAo), ROCK); // NO toWei since pAi is already in wei
       
       let expected = tAi;
       let actual = fromWei(calculatedtAi);
@@ -442,11 +442,11 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('pAi = exitswap_ExternAmountOut(exitswap_PoolAmountIn(pAi))', async () => {
+    it('pAi = exitswapExternAmountOut(exitswapPoolAmountIn(pAi))', async () => {
       
       let pAi = 10;
-      let tAo = await pool.exitswap_PoolAmountIn.call(toWei(String(pAi)),DIRT);
-      let calculatedPAi = await pool.exitswap_ExternAmountOut.call(DIRT, String(tAo)); // NO toWei since tAo is already in wei
+      let tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)),DIRT);
+      let calculatedPAi = await pool.exitswapExternAmountOut.call(DIRT, String(tAo)); // NO toWei since tAo is already in wei
       
       let expected = pAi;
       let actual = fromWei(calculatedPAi);
@@ -464,11 +464,11 @@ contract('BPool', async (accounts) => {
     });
 
 
-    it('tAo = exitswap_PoolAmountIn(exitswap_ExternAmountOut(tAo))', async () => {
+    it('tAo = exitswapPoolAmountIn(exitswapExternAmountOut(tAo))', async () => {
 
       let tAo = '1';
-      let pAi = await pool.exitswap_ExternAmountOut.call(ROCK, toWei(tAo));
-      let calculatedtAo = await pool.exitswap_PoolAmountIn.call(String(pAi), ROCK); // NO toWei since pAi is already in wei
+      let pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(tAo));
+      let calculatedtAo = await pool.exitswapPoolAmountIn.call(String(pAi), ROCK); // NO toWei since pAi is already in wei
       
       let expected = tAo;
       let actual = fromWei(calculatedtAo);

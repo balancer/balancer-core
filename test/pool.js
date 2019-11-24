@@ -151,16 +151,16 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails calling any swap before finalizing', async () => {
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactAmountOut(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.joinswap_ExternAmountIn(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.joinswap_PoolAmountOut(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.exitswap_PoolAmountIn(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.exitswap_ExternAmountOut(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactAmountIn(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactAmountOut(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactMarginalPrice(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.swapExactMarginalPrice(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.joinswapExternAmountIn(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.joinswapPoolAmountOut(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.exitswapPoolAmountIn(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
+      await truffleAssert.reverts(pool.exitswapExternAmountOut(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
     });
 
     it('Fails setting high swap fees', async () => {
@@ -256,16 +256,16 @@ contract('BPool', async (accounts) => {
       assert.equal(fromWei(wethPriceFee), wethPriceFeeCheck);
     });
 
-    it('Fail swap_ExactAmountIn unbound or over min max ratios', async () => {
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(WETH, toWei('2.5'), XXX, toWei('100'), toWei('200'), { from: user2 }), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(WETH, toWei('26.5'), DAI, toWei('5000'), toWei('200'), { from: user2 }), 'ERR_MAX_IN_RATIO');
+    it('Fail swapExactAmountIn unbound or over min max ratios', async () => {
+      await truffleAssert.reverts(pool.swapExactAmountIn(WETH, toWei('2.5'), XXX, toWei('100'), toWei('200'), { from: user2 }), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactAmountIn(WETH, toWei('26.5'), DAI, toWei('5000'), toWei('200'), { from: user2 }), 'ERR_MAX_IN_RATIO');
     });
 
-    it('swap_ExactAmountIn', async () => {
+    it('swapExactAmountIn', async () => {
       // 2.5 WETH -> DAI
       // Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
       let amountOut = 10500 * (1 - (52.5/(52.5 + (2.5 * (1 - 0.003))))**(5/5));
-      let txr = await pool.swap_ExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200'), { from: user2 });
+      let txr = await pool.swapExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200'), { from: user2 });
       let log = txr.logs[4];
       assert.equal(log.event, 'LOG_SWAP');
       // 475.905805337091423
@@ -283,11 +283,11 @@ contract('BPool', async (accounts) => {
       assert.equal(0.333333333333333333, fromWei(daiNormWeight));
     });
 
-    it('swap_ExactAmountOut', async () => {
+    it('swapExactAmountOut', async () => {
       // ETH -> 1 MKR
       // Bi * ((Bo/(Bo - Ao))^(Wo/Wi) - 1) / (1 - fee)
       let amountIn = 55 * ((21/(21 - 1))**(5/5) - 1) / (1 - 0.003)
-      let txr = await pool.swap_ExactAmountOut(WETH, toWei('3'), MKR, toWei('1.0'), toWei('500'), { from: user2 })
+      let txr = await pool.swapExactAmountOut(WETH, toWei('3'), MKR, toWei('1.0'), toWei('500'), { from: user2 })
       let log = txr.logs[4]
       assert.equal(log.event, 'LOG_SWAP');
       // 2.758274824473420261
@@ -295,16 +295,16 @@ contract('BPool', async (accounts) => {
     });
 
     it('Fails calling any swap on unbound token', async () => {
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactAmountIn(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactAmountOut(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactAmountOut(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.joinswap_ExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.joinswap_PoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.exitswap_PoolAmountIn(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.exitswap_ExternAmountOut(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactAmountIn(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactAmountIn(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactAmountOut(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactAmountOut(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactMarginalPrice(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.swapExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.joinswapExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.joinswapPoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.exitswapPoolAmountIn(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
+      await truffleAssert.reverts(pool.exitswapExternAmountOut(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
     });
 
     it('Fails calling weights, balances, spot prices on unbound token', async () => {
