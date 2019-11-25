@@ -40,8 +40,6 @@ contract BTokenBase is BNum {
     }
 
     function _move(address src, address dst, uint amt) internal {
-        require(src != address(0), "ERR_ADDRESS_ZERO");
-        require(dst != address(0), "ERR_ADDRESS_ZERO");
         require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
         _balance[src] = bsub(_balance[src], amt);
         _balance[dst] = badd(_balance[dst], amt);
