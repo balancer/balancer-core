@@ -11,49 +11,39 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.11;
+pragma solidity 0.5.12;
 
 import "./BNum.sol";
 
 // Highly opinionated token implementation
 
-contract BTokenBase is BNum
-{
+contract BTokenBase is BNum {
     mapping(address=>
       mapping(address=>uint))   internal _allowance;
     mapping(address=>uint)      internal _balance;
     uint                        internal _totalSupply;
 
-    event Mint(uint amt);
-    event Burn(uint amt);
+    event Approval(address indexed src, address indexed dst, uint amt);
     event Transfer(address indexed src, address indexed dst, uint amt);
-    event Move(address indexed src, address indexed dst, uint amt);
-
-    function sub(uint a, uint b) internal pure returns (uint) {
-        require(a >= b, "ERR_BTOKEN_UNDERFLOW");
-        return a - b;
-    }
 
     function _mint(uint amt) internal {
         _balance[address(this)] = badd(_balance[address(this)], amt);
-        _totalSupply   = badd(_totalSupply, amt);
-        emit Mint(amt);
+        _totalSupply = badd(_totalSupply, amt);
         emit Transfer(address(0), address(this), amt);
     }
 
     function _burn(uint amt) internal {
         require(_balance[address(this)] >= amt, "ERR_INSUFFICIENT_BAL");
-        _balance[address(this)] = sub(_balance[address(this)], amt);
-        _totalSupply   = sub(_totalSupply, amt);
-        emit Burn(amt);
+        _balance[address(this)] = bsub(_balance[address(this)], amt);
+        _totalSupply = bsub(_totalSupply, amt);
         emit Transfer(address(this), address(0), amt);
     }
 
     function _move(address src, address dst, uint amt) internal {
         require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
-        _balance[src] = sub(_balance[src], amt);
+        _balance[src] = bsub(_balance[src], amt);
         _balance[dst] = badd(_balance[dst], amt);
-        emit Move(src, dst, amt);
+        emit Transfer(src, dst, amt);
     }
 
     function _push(address to, uint amt) internal {
@@ -66,51 +56,68 @@ contract BTokenBase is BNum
 
 }
 
-contract ERC20 {
-    event Approval(address indexed src, address indexed guy, uint wad);
-    event Transfer(address indexed src, address indexed dst, uint wad);
+interface IERC20 {
+    event Approval(address indexed src, address indexed dst, uint amt);
+    event Transfer(address indexed src, address indexed dst, uint amt);
 
-    function totalSupply() public view returns (uint);
-    function balanceOf(address guy) external view returns (uint);
-    function allowance(address src, address guy) external view returns (uint);
+    function totalSupply() external view returns (uint);
+    function balanceOf(address whom) external view returns (uint);
+    function allowance(address src, address dst) external view returns (uint);
 
-    function approve(address guy, uint wad) external returns (bool);
-    function transfer(address dst, uint wad) external returns (bool);
+    function approve(address dst, uint amt) external returns (bool);
+    function transfer(address dst, uint amt) external returns (bool);
     function transferFrom(
-        address src, address dst, uint wad
+        address src, address dst, uint amt
     ) external returns (bool);
 }
 
-contract BToken is BBronze, BTokenBase, ERC20
-{
-    function allowance(address src, address guy) external view returns (uint) {
-        return _allowance[src][guy];
+contract BToken is BBronze, BTokenBase, IERC20 {
+    function allowance(address src, address dst) external view returns (uint) {
+        return _allowance[src][dst];
     }
+
     function balanceOf(address whom) external view returns (uint) {
         return _balance[whom];
     }
+
     function totalSupply() public view returns (uint) {
         return _totalSupply;
     }
 
-    function approve(address guy, uint wad) external returns (bool) {
-        _allowance[msg.sender][guy] = wad;
-        emit Approval(msg.sender, guy, wad);
+    function approve(address dst, uint amt) external returns (bool) {
+        _allowance[msg.sender][dst] = amt;
+        emit Approval(msg.sender, dst, amt);
         return true;
     }
 
-    function transfer(address dst, uint wad) external returns (bool) {
-        _move(msg.sender, dst, wad);
-        emit Transfer(msg.sender, dst, wad);
+    function increaseApproval(address dst, uint amt) external returns (bool) {
+        _allowance[msg.sender][dst] = badd(_allowance[msg.sender][dst], amt);
+        emit Approval(msg.sender, dst, _allowance[msg.sender][dst]);
         return true;
     }
 
-    function transferFrom(address src, address dst, uint wad) external returns (bool) {
-        require(msg.sender == src || wad <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
-        _move(src, dst, wad);
-        emit Transfer(src, dst, wad);
+    function decreaseApproval(address dst, uint amt) external returns (bool) {
+        uint oldValue = _allowance[msg.sender][dst];
+        if (amt > oldValue) {
+          _allowance[msg.sender][dst] = 0;
+        } else {
+          _allowance[msg.sender][dst] = bsub(oldValue, amt);
+        }
+        emit Approval(msg.sender, dst, _allowance[msg.sender][dst]);
+        return true;
+    }
+
+    function transfer(address dst, uint amt) external returns (bool) {
+        _move(msg.sender, dst, amt);
+        return true;
+    }
+
+    function transferFrom(address src, address dst, uint amt) external returns (bool) {
+        require(msg.sender == src || amt <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
+        _move(src, dst, amt);
         if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
-            _allowance[src][msg.sender] = sub(_allowance[src][msg.sender], wad);
+            _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], amt);
+            emit Approval(msg.sender, dst, _allowance[src][msg.sender]);
         }
         return true;
     }

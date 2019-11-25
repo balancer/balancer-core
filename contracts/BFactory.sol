@@ -11,12 +11,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.11;
+pragma solidity 0.5.12;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
 
-import './BColor.sol';
-import './BPool.sol';
+import "./BColor.sol";
+import "./BPool.sol";
 
 contract BFactory is BBronze
 {
@@ -35,8 +35,8 @@ contract BFactory is BBronze
     {
         BPool bpool = new BPool();
         _isBPool[address(bpool)] = true;
-        bpool.setController(msg.sender);
         emit LOG_NEW_POOL(msg.sender, address(bpool));
+        bpool.setController(msg.sender);
         return bpool;
     }
 
@@ -55,7 +55,7 @@ contract BFactory is BBronze
       external 
     {
         require(msg.sender == _blabs, "ERR_NOT_BLABS");
-        uint collected = ERC20(pool).balanceOf(address(this));
+        uint collected = IERC20(pool).balanceOf(address(this));
         bool xfer = pool.transfer(_blabs, collected);
         require(xfer, "ERR_ERC20_FAILED");
     }
