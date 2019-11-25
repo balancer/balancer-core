@@ -191,7 +191,7 @@ contract('BPool', async (accounts) => {
       let adminBal = await pool.balanceOf(admin);
       assert.equal(100, fromWei(adminBal));
 
-      truffleAssert.eventEmitted(tx, 'Move', (event) => {
+      truffleAssert.eventEmitted(tx, 'Transfer', (event) => {
         return event.dst === admin;
       });
     });
@@ -266,7 +266,7 @@ contract('BPool', async (accounts) => {
       // Bo * (1 - (Bi/(Bi + Ai * (1 - fee)))^(Wi/Wo))
       let amountOut = 10500 * (1 - (52.5/(52.5 + (2.5 * (1 - 0.003))))**(5/5));
       let txr = await pool.swap_ExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200'), { from: user2 });
-      let log = txr.logs[4];
+      let log = txr.logs[0];
       assert.equal(log.event, 'LOG_SWAP');
       // 475.905805337091423
       assert.approximately(Number(amountOut), Number(fromWei(log.args[4])), errorDelta);
@@ -288,7 +288,7 @@ contract('BPool', async (accounts) => {
       // Bi * ((Bo/(Bo - Ao))^(Wo/Wi) - 1) / (1 - fee)
       let amountIn = 55 * ((21/(21 - 1))**(5/5) - 1) / (1 - 0.003)
       let txr = await pool.swap_ExactAmountOut(WETH, toWei('3'), MKR, toWei('1.0'), toWei('500'), { from: user2 })
-      let log = txr.logs[4]
+      let log = txr.logs[0]
       assert.equal(log.event, 'LOG_SWAP');
       // 2.758274824473420261
       assert.approximately(Number(amountIn), Number(fromWei(log.args[3])), errorDelta);
