@@ -11,7 +11,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.11;
+pragma solidity 0.5.12;
 
 import "./BNum.sol";
 
@@ -289,11 +289,11 @@ contract BMath is BNum
     // _calc_SingleOutGivenPoolIn                                                                //
     // tAo = tokenAmountOut            /      /                                             \\   //
     // bO = tokenBalanceOut           /      // pS - (pAi * (1 - eF)) \     /    1    \      \\  //
-    // pAi = poolAmountIn            | bO - || ----------------------- | ^ | --------- | * b0 || // 
+    // pAi = poolAmountIn            | bO - || ----------------------- | ^ | --------- | * b0 || //
     // ps = poolSupply                \      \\          pS           /     \(wO / tW)/      //  //
-    // wI = tokenWeightIn      tAo =   \      \                                             //   //                                              
+    // wI = tokenWeightIn      tAo =   \      \                                             //   //
     // tW = totalWeight                    /     /      wO \       \                             //
-    // sF = swapFee                    *  | 1 - |  1 - ---- | * sF  |                            //          
+    // sF = swapFee                    *  | 1 - |  1 - ---- | * sF  |                            //
     // eF = exitFee                        \     \      tW /       /                             //
     **********************************************************************************************/
     function _calc_SingleOutGivenPoolIn(
@@ -329,12 +329,12 @@ contract BMath is BNum
 
     /**********************************************************************************************
     // _calc_PoolInGivenSingleOut                                                                //
-    // pAi = poolAmountIn               // /               tAo             \\     / wO \     \   //                \\   //
+    // pAi = poolAmountIn               // /               tAo             \\     / wO \     \   //
     // bO = tokenBalanceOut            // | bO - -------------------------- |\   | ---- |     \  //
     // tAo = tokenAmountOut      pS - ||   \     1 - ((1 - (tO / tW)) * sF)/  | ^ \ tW /  * pS | //
     // ps = poolSupply                 \\ -----------------------------------/                /  //
     // wO = tokenWeightOut  pAi =       \\               bO                 /                /   //
-    // tW = totalWeight           -------------------------------------------------------------  //    
+    // tW = totalWeight           -------------------------------------------------------------  //
     // sF = swapFee                                        ( 1 - eF )                            //
     // eF = exitFee                                                                              //
     **********************************************************************************************/
