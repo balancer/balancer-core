@@ -536,11 +536,11 @@ contract BPool is BBronze, BToken, BMath
         poolAmountOut = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tokenAmountIn, _swapFee);
         T.balance = badd(T.balance, tokenAmountIn);
 
+        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
+
         _mintPoolShare(poolAmountOut);
         _pushPoolShare(msg.sender, poolAmountOut);
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
-        
-        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
         return poolAmountOut;
     }
