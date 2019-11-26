@@ -11,17 +11,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.5.11;
+pragma solidity 0.5.12;
 
 import "./BColor.sol";
 import "./BToken.sol";
 import "./BMath.sol";
 
+
 contract BPool is BBronze, BToken, BMath {
     // Invariant: MIN_WEIGHT < denorm < MAX_WEIGHT
     // Invariant: MIN_BALANCE < balance < MAX_BALANCE
     struct Record {
-        uint index;   // private and off-by-one to maintain invariant
+        bool bound;
+        uint index;   // private
         uint denorm;  // denormalized weight
         uint balance;
     }
@@ -111,7 +113,7 @@ contract BPool is BBronze, BToken, BMath {
         public view
         returns (bool)
     {
-        return _records[t].index != 0;
+        return _records[t].bound;
     }
 
     function getNumTokens()
@@ -248,12 +250,13 @@ contract BPool is BBronze, BToken, BMath {
 
         require(_tokens.length < MAX_BOUND_TOKENS, ERR_MAX_TOKENS);
 
-        uint length = _tokens.push(token);
         _records[token] = Record({
-            index: length, // 1-indexed (0 is 'unbound' state)
+            bound: true,
+            index: _tokens.length, // 1-indexed (0 is 'unbound' state)
             denorm: 0,    // balance and denorm will be validated
             balance: 0   // and set by `rebind`
         });
+        _tokens.push(token);
         rebind(token, balance, denorm);
     }
 
@@ -275,8 +278,8 @@ contract BPool is BBronze, BToken, BMath {
         uint oldWeight = _records[token].denorm;
         if (denorm > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
-            require(_totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT);
-        } else {
+            require( _totalWeight <= MAX_TOTAL_WEIGHT, ERR_MAX_TOTAL_WEIGHT );
+        } else if (denorm < oldWeight) {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
         }        
         _records[token].denorm = denorm;
@@ -314,13 +317,14 @@ contract BPool is BBronze, BToken, BMath {
         uint index = _records[token].index - 1;
         uint last = _tokens.length - 1;
         _tokens[index] = _tokens[last];
-        _records[_tokens[index]].index = index + 1;
+        _tokens.pop();
+        _records[_tokens[index]].index = index;
         _records[token] = Record({
+            bound: false,
             index: 0,
             denorm: 0,
             balance: 0
         });
-        _tokens.pop();
 
         _pushUnderlying(token, msg.sender, bsub(tokenBalance, tokenExitFee));
         _pushUnderlying(token, _factory, tokenExitFee);
@@ -333,7 +337,7 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
     {
         require(isBound(token), ERR_NOT_BOUND);
-        _records[token].balance = ERC20(token).balanceOf(address(this));
+        _records[token].balance = IERC20(token).balanceOf(address(this));
     }
 
     function getSpotPrice(address tokenIn, address tokenOut)
@@ -376,9 +380,8 @@ contract BPool is BBronze, BToken, BMath {
             uint bal = _records[t].balance;
             uint tokenAmountIn = bmul(ratio, bal);
             _records[t].balance = badd(_records[t].balance, tokenAmountIn);
-            _pullUnderlying(t, msg.sender, tokenAmountIn);
-
             emit LOG_JOIN(msg.sender, t, tokenAmountIn);
+            _pullUnderlying(t, msg.sender, tokenAmountIn);
         }
         _mintPoolShare(poolAmountOut);
         _pushPoolShare(msg.sender, poolAmountOut);
@@ -406,9 +409,8 @@ contract BPool is BBronze, BToken, BMath {
             uint bal = _records[t].balance;
             uint tAo = bmul(ratio, bal);
             _records[t].balance = bsub(_records[t].balance, tAo);
-            _pushUnderlying(t, msg.sender, tAo);
-
             emit LOG_EXIT(msg.sender, t, tAo);
+            _pushUnderlying(t, msg.sender, tAo);
         }
 
     }
@@ -443,10 +445,10 @@ contract BPool is BBronze, BToken, BMath {
         require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
         require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
+
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
-
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
         return (tokenAmountOut, spotPriceAfter);
     }
@@ -480,10 +482,10 @@ contract BPool is BBronze, BToken, BMath {
         require(spotPriceAfter <= maxPrice, ERR_LIMIT_PRICE);
         require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
+
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
-
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
         return (tokenAmountIn, spotPriceAfter);
     }
@@ -520,10 +522,10 @@ contract BPool is BBronze, BToken, BMath {
         require(spotPriceAfter >= spotPriceBefore, ERR_MATH_APPROX);
         require(spotPriceBefore <= bdiv(tokenAmountIn, tokenAmountOut), ERR_MATH_APPROX);
 
+        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
+
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
         _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
-
-        emit LOG_SWAP(msg.sender, tokenIn, tokenOut, tokenAmountIn, tokenAmountOut);
 
         return (tokenAmountIn, tokenAmountOut);
     }
@@ -542,11 +544,11 @@ contract BPool is BBronze, BToken, BMath {
         poolAmountOut = _calc_PoolOutGivenSingleIn(T.balance, T.denorm, _totalSupply, _totalWeight, tokenAmountIn, _swapFee);
         T.balance = badd(T.balance, tokenAmountIn);
 
+        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
+
         _mintPoolShare(poolAmountOut);
         _pushPoolShare(msg.sender, poolAmountOut);
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
-        
-        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
         return poolAmountOut;
     }
@@ -565,11 +567,11 @@ contract BPool is BBronze, BToken, BMath {
         tokenAmountIn = _calc_SingleInGivenPoolOut(T.balance, T.denorm, _totalSupply, _totalWeight, poolAmountOut, _swapFee);
         T.balance = badd(T.balance, tokenAmountIn);
 
+        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
+
         _mintPoolShare(poolAmountOut);
         _pushPoolShare(msg.sender, poolAmountOut);
         _pullUnderlying(tokenIn, msg.sender, tokenAmountIn);
-        
-        emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
 
         return tokenAmountIn;
     }
@@ -590,12 +592,12 @@ contract BPool is BBronze, BToken, BMath {
 
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
 
+        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
+
         _pullPoolShare(msg.sender, poolAmountIn);
         _burnPoolShare(bsub(poolAmountIn, exitFee));
         _pushPoolShare(_factory, exitFee);
         _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);
-
-        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
 
         return tokenAmountOut;
     }
@@ -616,12 +618,12 @@ contract BPool is BBronze, BToken, BMath {
 
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
 
+        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
+
         _pullPoolShare(msg.sender, poolAmountIn);
         _burnPoolShare(bsub(poolAmountIn, exitFee));
         _pushPoolShare(_factory, exitFee);
         _pushUnderlying(tokenOut, msg.sender, tokenAmountOut);        
-
-        emit LOG_EXIT(msg.sender, tokenOut, tokenAmountOut);
 
         return poolAmountIn;
     }
@@ -634,14 +636,14 @@ contract BPool is BBronze, BToken, BMath {
     function _pullUnderlying(address erc20, address from, uint amount)
         internal
     {
-        bool xfer = ERC20(erc20).transferFrom(from, address(this), amount);
+        bool xfer = IERC20(erc20).transferFrom(from, address(this), amount);
         require(xfer, ERR_ERC20_FALSE);
     }
 
     function _pushUnderlying(address erc20, address to, uint amount)
         internal
     {
-        bool xfer = ERC20(erc20).transfer(to, amount);
+        bool xfer = IERC20(erc20).transfer(to, amount);
         require(xfer, ERR_ERC20_FALSE);
     }
 
