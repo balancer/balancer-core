@@ -348,7 +348,7 @@ contract BPool is BBronze, BToken, BMath {
         require(isBound(tokenOut), ERR_NOT_BOUND);
         Record storage inRecord = _records[tokenIn];
         Record storage outRecord = _records[tokenOut];
-        return _calc_SpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, _swapFee);
+        return calcSpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, _swapFee);
     }
 
     function getSpotPriceSansFee(address tokenIn, address tokenOut)
@@ -683,7 +683,7 @@ contract BPool is BBronze, BToken, BMath {
 
         Record storage outRecord = _records[tokenOut];
 
-        tokenAmountOut = _calc_SingleOutGivenPoolIn(
+        tokenAmountOut = calcSingleOutGivenPoolIn(
                             outRecord.balance,
                             outRecord.denorm,
                             _totalSupply,

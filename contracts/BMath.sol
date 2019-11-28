@@ -125,7 +125,7 @@ contract BMath is BBronze, BConst, BNum {
         internal pure
         returns (uint tokenAmountIn)
     {
-        uint spotPriceBefore = _calc_SpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, 0);
+        uint spotPriceBefore = calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, 0);
         uint base = bdiv(spotPriceAfter, spotPriceBefore);
         uint exp = bdiv(tokenWeightOut, badd(tokenWeightOut, tokenWeightIn));
         uint foo = bsub(bpow(base, exp), BONE);
@@ -186,13 +186,13 @@ contract BMath is BBronze, BConst, BNum {
     {
         // Calculate what Ai and Ao to get price to SP1 if there were no fees:
         uint spotPriceAfterNoFee = bmul(spotPriceAfter, bsub(BONE, swapFee));
-        uint amountInNoFee = _calc_InGivenPriceNoFee(tokenBalanceIn, tokenWeightIn, tokenBalanceOut,
+        uint amountInNoFee = calcInGivenPriceNoFee(tokenBalanceIn, tokenWeightIn, tokenBalanceOut,
                                 tokenWeightOut, spotPriceAfterNoFee);
-        uint amountOutNoFee = _calc_OutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut,
+        uint amountOutNoFee = calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut,
                                 tokenWeightOut, amountInNoFee, swapFee);
         
         // Calculate what new spot price would be with Ai and Ao as calculated above
-        uint spotPriceNoFee = _calc_SpotPrice(
+        uint spotPriceNoFee = calcSpotPrice(
                                 badd(tokenBalanceIn, amountInNoFee),
                                 tokenWeightIn,
                                 bsub(tokenBalanceOut, amountOutNoFee),
@@ -206,7 +206,7 @@ contract BMath is BBronze, BConst, BNum {
         // then rounding errors in SPNF may make it slightly (a few wei) greater than SP1
         // In this case SPNF is considered to be SP1 and no extraAi is needed.
 
-        spotPriceNoFee > spotPriceAfter ? extraAmountIn = 0 : extraAmountIn = _calc_ExtraAmountIn(
+        spotPriceNoFee > spotPriceAfter ? extraAmountIn = 0 : extraAmountIn = calcExtraAmountIn(
                                                                                 amountInNoFee,
                                                                                 tokenBalanceIn,
                                                                                 bdiv(tokenWeightIn, totalWeight),
