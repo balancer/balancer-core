@@ -8,7 +8,9 @@
     "compile": "truffle compile",
     "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
     "test": "truffle test",
+    "test:verbose": "VERBOSE=true truffle test",
     "coverage": "yarn solidity-coverage",
+    "lint": "eslint .",
     "lint:contracts": "solhint contracts/*.sol"
   },
   "repository": {
@@ -22,16 +24,18 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "coveralls": "^3.0.8",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb": "^18.0.1",
     "ganache-core": "^2.6.1",
     "mocha": "^6.2.0",
     "solidity-coverage": "^0.6.7",
     "standard": "^14.0.2",
     "truffle": "^5.0.41",
+    "truffle-assertions": "^0.9.1",
     "web3": "^1.2.0"
   },
   "dependencies": {
     "ganache-cli": "^6.7.0",
-    "global": "^4.4.0",
-    "truffle-assertions": "^0.9.1"
+    "global": "^4.4.0"
   }
 }
