@@ -8,7 +8,8 @@
     "compile": "truffle compile",
     "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
     "test": "truffle test",
-    "coverage": "yarn solidity-coverage"
+    "coverage": "yarn solidity-coverage",
+    "lint:contracts": "solhint contracts/*.sol"
   },
   "repository": {
     "type": "git",

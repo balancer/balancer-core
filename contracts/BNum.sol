@@ -145,16 +145,16 @@ contract BNum is BBronze, BConst {
         for (uint i = 1; term >= precision; i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
-            term                = bmul(term, bmul(c, x));
-            term                = bdiv(term, bigK);
+            term = bmul(term, bmul(c, x));
+            term = bdiv(term, bigK);
             if (term == 0) break;
 
             if (xneg) negative = !negative;
             if (cneg) negative = !negative;
             if (negative) {
-                sum      = bsub(sum, term);
+                sum = bsub(sum, term);
             } else {
-                sum      = badd(sum, term);
+                sum = badd(sum, term);
             }
         }
 

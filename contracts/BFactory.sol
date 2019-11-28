@@ -24,7 +24,7 @@ contract BFactory is BBronze {
         address indexed pool
     );
 
-    mapping(address=>bool) _isBPool;
+    mapping(address=>bool) private _isBPool;
 
     function isBPool(address b)
         external view returns (bool)
@@ -42,7 +42,7 @@ contract BFactory is BBronze {
         return bpool;
     }
 
-    address _blabs;
+    address private _blabs;
     constructor() public {
         _blabs = msg.sender;
     }
