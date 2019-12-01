@@ -149,13 +149,6 @@ contract('BPool', async (accounts) => {
       await truffleAssert.reverts(pool.swap_ExactAmountOut(AAA, toWei('5'), BBB, toWei('1'), toWei('3.00001')), 'ERR_LIMIT_PRICE');
     });
 
-    it('Fails swap_ExactMarginalPrice with limits', async () => {
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('50'), BBB, toWei('1'), toWei('1')), 'ERR_BAD_LIMIT_PRICE');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('0.1'), BBB, toWei('1'), toWei('4')), 'ERR_LIMIT_IN');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(AAA, toWei('20'), BBB, toWei('20'), toWei('4')), 'ERR_LIMIT_OUT');
-
-    });
-
   });
 
 

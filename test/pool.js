@@ -155,8 +155,6 @@ contract('BPool', async (accounts) => {
       await truffleAssert.reverts(pool.swap_ExactAmountIn(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
       await truffleAssert.reverts(pool.swap_ExactAmountOut(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
       await truffleAssert.reverts(pool.swap_ExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')), 'ERR_SWAP_NOT_PUBLIC');
       await truffleAssert.reverts(pool.joinswap_ExternAmountIn(WETH, toWei('2.5')), 'ERR_SWAP_NOT_PUBLIC');
       await truffleAssert.reverts(pool.joinswap_PoolAmountOut(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
       await truffleAssert.reverts(pool.exitswap_PoolAmountIn(toWei('2.5'), WETH), 'ERR_SWAP_NOT_PUBLIC');
@@ -299,8 +297,6 @@ contract('BPool', async (accounts) => {
       await truffleAssert.reverts(pool.swap_ExactAmountIn(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await truffleAssert.reverts(pool.swap_ExactAmountOut(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await truffleAssert.reverts(pool.swap_ExactAmountOut(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
-      await truffleAssert.reverts(pool.swap_ExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')), 'ERR_NOT_BOUND');
       await truffleAssert.reverts(pool.joinswap_ExternAmountIn(XXX, toWei('2.5')), 'ERR_NOT_BOUND');
       await truffleAssert.reverts(pool.joinswap_PoolAmountOut(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
       await truffleAssert.reverts(pool.exitswap_PoolAmountIn(toWei('2.5'), XXX), 'ERR_NOT_BOUND');
