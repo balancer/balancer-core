@@ -60,34 +60,6 @@ contract TMath is BMath {
         return _calc_InGivenOut(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee);
     }
 
-    function calc_InGivenPriceNoFee(
-                uint tokenBalanceIn,
-                uint tokenWeightIn,
-                uint tokenBalanceOut,
-                uint tokenWeightOut,
-                uint spotPriceAfter
-            )
-        external pure
-        returns ( uint tokenAmountIn )
-    {
-        return _calc_InGivenPriceNoFee(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, spotPriceAfter);
-    }
-
-    function calc_ExtraAmountIn(
-                uint tokenAmountIn,
-                uint tokenBalanceIn,
-                uint tokenWeightIn,
-                uint tokenWeightOut,
-                uint spotPriceAfter,
-                uint marginalPrice,
-                uint swapFee
-            )
-        external pure
-        returns ( uint extraAmountIn )
-    {
-        return _calc_ExtraAmountIn(tokenAmountIn, tokenBalanceIn, tokenWeightIn, tokenWeightOut, spotPriceAfter, marginalPrice, swapFee);
-    }
-
     function calc_PoolOutGivenSingleIn(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
