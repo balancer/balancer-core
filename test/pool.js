@@ -48,12 +48,12 @@ contract('BPool', async (accounts) => {
         xxx = await TToken.at(XXX);
 
         /*
-      Tests assume token prices
-      WETH - $200
-      MKR  - $500
-      DAI  - $1
-      XXX  - $0
-    */
+            Tests assume token prices
+            WETH - $200
+            MKR  - $500
+            DAI  - $1
+            XXX  - $0
+        */
 
         // Admin balances
         await weth.mint(toWei('50'));
@@ -174,6 +174,7 @@ contract('BPool', async (accounts) => {
         });
     });
 
+
     describe('Finalizing pool', () => {
         it('Fails when other users interact before finalizing', async () => {
             await truffleAssert.reverts(
@@ -209,14 +210,6 @@ contract('BPool', async (accounts) => {
             );
             await truffleAssert.reverts(
                 pool.swapExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')),
-                'ERR_SWAP_NOT_PUBLIC',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')),
-                'ERR_SWAP_NOT_PUBLIC',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')),
                 'ERR_SWAP_NOT_PUBLIC',
             );
             await truffleAssert.reverts(
@@ -421,14 +414,6 @@ contract('BPool', async (accounts) => {
             );
             await truffleAssert.reverts(
                 pool.swapExactAmountOut(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')),
-                'ERR_NOT_BOUND',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')),
-                'ERR_NOT_BOUND',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(DAI, toWei('2.5'), XXX, toWei('475'), toWei('200')),
                 'ERR_NOT_BOUND',
             );
             await truffleAssert.reverts(

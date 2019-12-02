@@ -134,7 +134,7 @@ contract('BPool', async (accounts) => {
             assert.equal(fromWei(balance), 50);
         });
 
-        it('Fails swap_ExactAmountIn with limits', async () => {
+        it('Fails swapExactAmountIn with limits', async () => {
             await pool.finalize(toWei('100'));
             await truffleAssert.reverts(
                 pool.swapExactAmountIn(
@@ -168,7 +168,7 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails swap_ExactAmountOut with limits', async () => {
+        it('Fails swapExactAmountOut with limits', async () => {
             await truffleAssert.reverts(
                 pool.swapExactAmountOut(
                     AAA,
@@ -208,39 +208,6 @@ contract('BPool', async (accounts) => {
                     toWei('3.00001'),
                 ),
                 'ERR_LIMIT_PRICE',
-            );
-        });
-
-        it('Fails swap_ExactMarginalPrice with limits', async () => {
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(
-                    AAA,
-                    toWei('50'),
-                    BBB,
-                    toWei('1'),
-                    toWei('1'),
-                ),
-                'ERR_BAD_LIMIT_PRICE',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(
-                    AAA,
-                    toWei('0.1'),
-                    BBB,
-                    toWei('1'),
-                    toWei('4'),
-                ),
-                'ERR_LIMIT_IN',
-            );
-            await truffleAssert.reverts(
-                pool.swapExactMarginalPrice(
-                    AAA,
-                    toWei('20'),
-                    BBB,
-                    toWei('20'),
-                    toWei('4'),
-                ),
-                'ERR_LIMIT_OUT',
             );
         });
     });

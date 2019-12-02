@@ -197,54 +197,12 @@ contract('BPool', async () => {
             assert.isAtMost(relDif, errorDelta);
         });
 
-        it('swapExactMarginalPrice', async () => {
-            // Use the same numbers (Ai, Ao, Price) as with ExactAmountIn
-
-            const tokenIn = DIRT;
-            const limitAmountIn = MAX;
-            const tokenOut = ROCK;
-            const limitAmountOut = toWei('0');
-            const marginalPrice = toWei('74.1844011380065814');
-
-            const output = await pool.swapExactMarginalPrice.call(
-                tokenIn, limitAmountIn, tokenOut, limitAmountOut, marginalPrice,
-            );
-
-            // Checking outputs
-            let expected = toWei('500');
-            let actual = output.tokenAmountIn;
-            let relDif = calcRelativeDiff(expected, actual);
-
-            if (verbose) {
-                console.log('output[0]');
-                console.log(`expected: ${expected})`);
-                console.log(`actual  : ${actual})`);
-                console.log(`relDif  : ${relDif})`);
-            }
-
-            assert.isAtMost(relDif, errorDelta);
-
-            expected = toWei('8.23390841016124456');
-            actual = output.tokenAmountOut;
-            relDif = calcRelativeDiff(expected, actual);
-
-            if (verbose) {
-                console.log('output[1]');
-                console.log(`expected: ${expected})`);
-                console.log(`actual  : ${actual})`);
-                console.log(`relDif  : ${relDif})`);
-            }
-
-            assert.isAtMost(relDif, errorDelta);
-        });
-
         it('joinPool', async () => {
             currentPoolBalance = 100;
             await pool.finalize(toWei(String(currentPoolBalance)));
 
             // // Call function
             const pAo = 1;
-            console.log(`pAo: ${pAo})`);
             await pool.joinPool(toWei(String(pAo)));
 
             // // Update balance states
