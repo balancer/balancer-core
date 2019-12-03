@@ -97,7 +97,7 @@ workflows:
       - checkout_and_install
       - lint:
           requires:
-            -checkout_and_install
+            - checkout_and_install
       - build:
           requires:
             - checkout_and_install
