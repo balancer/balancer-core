@@ -48,7 +48,7 @@ yarn test    # run the tests
 Tests can be run verbosely to view approximation diffs:
 
 ```
-VERBOSE=TRUE yarn test
+yarn test:verbose
 ```
 
 ```

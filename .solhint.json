@@ -1,0 +1,9 @@
+{
+  "extends": "solhint:recommended",
+  "rules": {
+    "mark-callable-contracts": "off",
+    "event-name-camelcase": "off",
+    "max-line-length": ["warn", 120],
+    "indent": ["error", 4]
+  }
+}

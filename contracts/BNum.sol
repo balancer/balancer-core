@@ -13,51 +13,46 @@
 
 pragma solidity 0.5.12;
 
-contract BNum {
+import "./BConst.sol";
 
-    uint256 constant BONE              = 10**18;
+contract BNum is BConst {
 
-    uint256 constant MAX_BOUND_TOKENS  = 8;
-    uint256 constant BPOW_PRECISION    = BONE / 10**10;
-
-    uint256 constant MAX_FEE           = BONE / 10;
-    uint256 constant EXIT_FEE           = BONE / 10000;
-
-    uint256 constant MIN_WEIGHT        = BONE;
-    uint256 constant MAX_WEIGHT        = BONE * 50;
-    uint256 constant MAX_TOTAL_WEIGHT  = BONE * 50;
-    uint256 constant MIN_BALANCE       = BONE / 10**6;
-    uint256 constant MAX_BALANCE       = BONE * 10**12;
-
-    uint256 constant MIN_POOL_SUPPLY   = BONE;
-
-    uint constant MIN_BPOW_BASE        = 1 wei;
-    uint constant MAX_BPOW_BASE        = (2 * BONE) - 1 wei;
-
-    uint256 constant MAX_IN_RATIO      = BONE / 2;
-    uint256 constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
-
-    function btoi(uint a) internal pure returns (uint) {
+    function btoi(uint a)
+        internal pure 
+        returns (uint)
+    {
         return a / BONE;
     }
 
-    function bfloor(uint a) internal pure returns (uint) {
+    function bfloor(uint a)
+        internal pure
+        returns (uint)
+    {
         return btoi(a) * BONE;
     }
 
-    function badd(uint a, uint b) internal pure returns (uint) {
+    function badd(uint a, uint b)
+        internal pure
+        returns (uint)
+    {
         uint c = a + b;
         require(c >= a, "ERR_ADD_OVERFLOW");
         return c;
     }
 
-    function bsub(uint a, uint b) internal pure returns (uint) {
+    function bsub(uint a, uint b)
+        internal pure
+        returns (uint)
+    {
         (uint c, bool flag) = bsubSign(a, b);
         require(!flag, "ERR_SUB_UNDERFLOW");
         return c;
     }
 
-    function bsubSign(uint a, uint b) internal pure returns (uint, bool) {
+    function bsubSign(uint a, uint b)
+        internal pure
+        returns (uint, bool)
+    {
         if (a >= b) {
             return (a - b, false);
         } else {
@@ -65,7 +60,10 @@ contract BNum {
         }
     }
 
-    function bmul(uint a, uint b) internal pure returns (uint) {
+    function bmul(uint a, uint b)
+        internal pure
+        returns (uint)
+    {
         uint c0 = a * b;
         require(a == 0 || c0 / a == b, "ERR_MUL_OVERFLOW");
         uint c1 = c0 + (BONE / 2);
@@ -74,7 +72,10 @@ contract BNum {
         return c2;
     }
 
-    function bdiv(uint a, uint b) internal pure returns (uint) {
+    function bdiv(uint a, uint b)
+        internal pure
+        returns (uint)
+    {
         require(b != 0, "ERR_DIV_ZERO");
         uint c0 = a * BONE;
         require(a == 0 || c0 / a == BONE, "ERR_DIV_INTERNAL"); // bmul overflow
@@ -85,7 +86,10 @@ contract BNum {
     }
 
     // DSMath.wpow
-    function bpowi(uint a, uint n) internal pure returns (uint) {
+    function bpowi(uint a, uint n)
+        internal pure
+        returns (uint)
+    {
         uint z = n % 2 != 0 ? a : BONE;
 
         for (n /= 2; n != 0; n /= 2) {
@@ -102,7 +106,7 @@ contract BNum {
     // Use `bpowi` for `b^e` and `bpowK` for k iterations
     // of approximation of b^0.w
     function bpow(uint base, uint exp)
-      pure internal
+        internal pure
         returns (uint)
     {
         require(base >= MIN_BPOW_BASE, "ERR_BPOW_BASE_TOO_LOW");
@@ -122,7 +126,7 @@ contract BNum {
     }
 
     function bpowApprox(uint base, uint exp, uint precision)
-      pure internal
+        internal pure
         returns (uint)
     {
         // term 0:
@@ -137,20 +141,19 @@ contract BNum {
         //         = (product(a - i - 1, i=1-->k) * x^k) / (k!)
         // each iteration, multiply previous term by (a-(k-1)) * x / k
         // continue until term is less than precision
-        for( uint i = 1; term >= precision; i++) {
+        for (uint i = 1; term >= precision; i++) {
             uint bigK = i * BONE;
             (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
-
-            term                = bmul(term, bmul(c, x));
-            term                = bdiv(term, bigK);
+            term = bmul(term, bmul(c, x));
+            term = bdiv(term, bigK);
             if (term == 0) break;
 
             if (xneg) negative = !negative;
             if (cneg) negative = !negative;
             if (negative) {
-                sum      = bsub(sum, term);
+                sum = bsub(sum, term);
             } else {
-                sum      = badd(sum, term);
+                sum = badd(sum, term);
             }
         }
 

@@ -20,6 +20,19 @@ jobs:
           key: balancer-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/balancer
+  lint:
+    docker:
+      - image: circleci/node:11
+    working_directory: ~/balancer
+    steps:
+      - restore_cache:
+          key: balancer-{{ .Environment.CIRCLE_SHA1 }}
+      - run:
+          name: Lint contracts
+          command: yarn lint:contracts
+      - run:
+          name: Lint tests
+          command: yarn lint
   build:
     docker:
       - image: circleci/node:11
@@ -82,6 +95,9 @@ workflows:
   build_and_test:
     jobs:
       - checkout_and_install
+      - lint:
+          requires:
+            - checkout_and_install
       - build:
           requires:
             - checkout_and_install
