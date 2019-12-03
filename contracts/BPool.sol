@@ -57,14 +57,14 @@ contract BPool is BBronze, BToken, BMath {
     }
 
     modifier _lock_() {
-        require( !_mutex, "ERR_REENTRY");
+        require(!_mutex, "ERR_REENTRY");
         _mutex = true;
         _;
         _mutex = false;
     }
 
     modifier _viewlock_() {
-        require( !_mutex, "ERR_REENTRY");
+        require(!_mutex, "ERR_REENTRY");
         _;
     }
 
@@ -142,7 +142,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require( isBound(token), "ERR_NOT_BOUND");
+        require(isBound(token), "ERR_NOT_BOUND");
         return _records[token].denorm;
     }
 
@@ -160,7 +160,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require( isBound(token), "ERR_NOT_BOUND");
+        require(isBound(token), "ERR_NOT_BOUND");
         uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
@@ -171,7 +171,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require( isBound(token), "ERR_NOT_BOUND");
+        require(isBound(token), "ERR_NOT_BOUND");
         return _records[token].balance;
     }
 
@@ -196,7 +196,7 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
     { 
-        require( ! _finalized, "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         // TODO min fees
         require(swapFee <= MAX_FEE, "ERR_MAX_FEE");
@@ -217,7 +217,7 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
     {
-        require( ! _finalized, "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         _publicSwap = public_;
     }
@@ -228,7 +228,7 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        require( !_finalized, "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
         require(initSupply >= MIN_POOL_SUPPLY, "ERR_MIN_POOL_SUPPLY");
 
         _finalized = true;
@@ -245,8 +245,8 @@ contract BPool is BBronze, BToken, BMath {
         // _lock_  Bind does not lock because it jumps to `rebind`, which does
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        require( ! isBound(token), "ERR_IS_BOUND");
-        require( ! isFinalized(), "ERR_IS_FINALIZED");
+        require(!isBound(token), "ERR_IS_BOUND");
+        require(!isFinalized(), "ERR_IS_FINALIZED");
 
         require(_tokens.length < MAX_BOUND_TOKENS, "ERR_MAX_TOKENS");
 
@@ -268,7 +268,7 @@ contract BPool is BBronze, BToken, BMath {
 
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         require(isBound(token), "ERR_NOT_BOUND");
-        require( ! _finalized, "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
 
         require(denorm >= MIN_WEIGHT, "ERR_MIN_WEIGHT");
         require(denorm <= MAX_WEIGHT, "ERR_MAX_WEIGHT");
@@ -279,7 +279,7 @@ contract BPool is BBronze, BToken, BMath {
         uint oldWeight = _records[token].denorm;
         if (denorm > oldWeight) {
             _totalWeight = badd(_totalWeight, bsub(denorm, oldWeight));
-            require( _totalWeight <= MAX_TOTAL_WEIGHT, "ERR_MAX_TOTAL_WEIGHT" );
+            require(_totalWeight <= MAX_TOTAL_WEIGHT, "ERR_MAX_TOTAL_WEIGHT");
         } else if (denorm < oldWeight) {
             _totalWeight = bsub(_totalWeight, bsub(oldWeight, denorm));
         }        
@@ -307,7 +307,7 @@ contract BPool is BBronze, BToken, BMath {
 
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         require(isBound(token), "ERR_NOT_BOUND");
-        require( ! _finalized, "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
 
         uint tokenBalance = _records[token].balance;
         uint tokenExitFee = bmul(tokenBalance, EXIT_FEE);
@@ -551,8 +551,8 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint poolAmountOut)
     {
 
-        require( isBound(tokenIn), "ERR_NOT_BOUND" );
-        require( isPublicSwap(), "ERR_SWAP_NOT_PUBLIC" );
+        require(isBound(tokenIn), "ERR_NOT_BOUND");
+        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -581,8 +581,8 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint tokenAmountIn)
     {
-        require( isBound(tokenIn), "ERR_NOT_BOUND" );
-        require( isPublicSwap(), "ERR_SWAP_NOT_PUBLIC" );
+        require(isBound(tokenIn), "ERR_NOT_BOUND");
+        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -611,8 +611,8 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint tokenAmountOut)
     {
-        require( isBound(tokenOut), "ERR_NOT_BOUND" );
-        require( isPublicSwap(), "ERR_SWAP_NOT_PUBLIC" );
+        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
@@ -645,8 +645,8 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint poolAmountIn)
     {
 
-        require( isBound(tokenOut), "ERR_NOT_BOUND" );
-        require( isPublicSwap(), "ERR_SWAP_NOT_PUBLIC" );
+        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
