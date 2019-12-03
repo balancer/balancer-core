@@ -1,0 +1,19 @@
+{
+    "extends": [
+        "airbnb"
+    ],
+    "rules": {
+        "indent": ["error", 4],
+        "max-len": ["error", { "code": 120 }],
+        "no-console": "off"
+    },
+    "globals" : {
+        "artifacts": false,
+        "contract": false,
+        "assert": false,
+        "it": false,
+        "before": false,
+        "describe": false,
+        "web3": false
+    }
+}

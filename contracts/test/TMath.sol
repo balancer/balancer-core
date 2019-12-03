@@ -19,7 +19,7 @@ import "../BNum.sol";
 // Contract to wrap internal functions for testing
 
 contract TMath is BMath {
-    function calc_SpotPrice(
+    function tCalcSpotPrice(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
                 uint tokenBalanceOut,
@@ -29,10 +29,10 @@ contract TMath is BMath {
         external pure
         returns ( uint spotPrice ) 
     {
-        return _calc_SpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFee);
+        return calcSpotPrice(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, swapFee);
     }
 
-    function calc_OutGivenIn(
+    function tCalcOutGivenIn(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
                 uint tokenBalanceOut,
@@ -43,10 +43,10 @@ contract TMath is BMath {
         external pure
         returns ( uint tokenAmountOut )
     {
-        return _calc_OutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountIn, swapFee);
+        return calcOutGivenIn(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountIn, swapFee);
     }
 
-    function calc_InGivenOut(
+    function tCalcInGivenOut(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
                 uint tokenBalanceOut,
@@ -57,10 +57,11 @@ contract TMath is BMath {
         external pure
         returns ( uint tokenAmountIn )
     {
-        return _calc_InGivenOut(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee);
+        return calcInGivenOut(tokenBalanceIn, tokenWeightIn, tokenBalanceOut, tokenWeightOut, tokenAmountOut, swapFee);
     }
 
-    function calc_PoolOutGivenSingleIn(
+
+    function tCalcPoolOutGivenSingleIn(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
                 uint poolSupply,
@@ -71,10 +72,10 @@ contract TMath is BMath {
         external pure
         returns (uint poolAmountOut)
     {
-        return  _calc_PoolOutGivenSingleIn( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight , tokenAmountIn, swapFee);
+        return  calcPoolOutGivenSingleIn( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight , tokenAmountIn, swapFee);
     }
 
-    function calc_SingleInGivenPoolOut(
+    function tCalcSingleInGivenPoolOut(
                 uint tokenBalanceIn,
                 uint tokenWeightIn,
                 uint poolSupply,
@@ -85,10 +86,10 @@ contract TMath is BMath {
         external pure
         returns (uint tokenAmountIn)
     {
-        return _calc_SingleInGivenPoolOut( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, poolAmountOut, swapFee);
+        return calcSingleInGivenPoolOut( tokenBalanceIn, tokenWeightIn, poolSupply, totalWeight, poolAmountOut, swapFee);
     }
 
-    function calc_SingleOutGivenPoolIn(
+    function tCalcSingleOutGivenPoolIn(
                 uint tokenBalanceOut,
                 uint tokenWeightOut,
                 uint poolSupply,
@@ -99,10 +100,10 @@ contract TMath is BMath {
         external pure
         returns (uint tokenAmountOut)
     {
-        return _calc_SingleOutGivenPoolIn( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, poolAmountIn, swapFee);
+        return calcSingleOutGivenPoolIn( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, poolAmountIn, swapFee);
     }
 
-    function calc_PoolInGivenSingleOut(
+    function tCalcPoolInGivenSingleOut(
                 uint tokenBalanceOut,
                 uint tokenWeightOut,
                 uint poolSupply,
@@ -113,7 +114,7 @@ contract TMath is BMath {
         external pure
         returns (uint poolAmountIn)
     {
-        return _calc_PoolInGivenSingleOut( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, tokenAmountOut, swapFee);
+        return calcPoolInGivenSingleOut( tokenBalanceOut, tokenWeightOut, poolSupply, totalWeight, tokenAmountOut, swapFee);
     }
 
     function calc_btoi(uint a) external pure returns (uint) {

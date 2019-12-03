@@ -18,20 +18,22 @@ pragma solidity 0.5.12;
 import "./BColor.sol";
 import "./BPool.sol";
 
-contract BFactory is BBronze
-{
-    event LOG_NEW_POOL( address indexed caller
-                      , address indexed pool );
+contract BFactory is BBronze {
+    event LOG_NEW_POOL(
+        address indexed caller,
+        address indexed pool
+    );
 
-    mapping(address=>bool) _isBPool;
+    mapping(address=>bool) private _isBPool;
 
     function isBPool(address b)
-      external view returns (bool) {
+        external view returns (bool)
+    {
         return _isBPool[b];
     }
 
     function newBPool()
-      external returns (BPool)
+        external returns (BPool)
     {
         BPool bpool = new BPool();
         _isBPool[address(bpool)] = true;
@@ -40,7 +42,7 @@ contract BFactory is BBronze
         return bpool;
     }
 
-    address _blabs;
+    address private _blabs;
     constructor() public {
         _blabs = msg.sender;
     }
@@ -52,7 +54,7 @@ contract BFactory is BBronze
         _blabs = b;
     }
     function collect(BPool pool)
-      external 
+        external 
     {
         require(msg.sender == _blabs, "ERR_NOT_BLABS");
         uint collected = IERC20(pool).balanceOf(address(this));

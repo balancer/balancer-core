@@ -19,9 +19,9 @@ import "./BNum.sol";
 
 contract BTokenBase is BNum {
     mapping(address=>
-      mapping(address=>uint))   internal _allowance;
-    mapping(address=>uint)      internal _balance;
-    uint                        internal _totalSupply;
+        mapping(address=>uint))   internal _allowance;
+    mapping(address=>uint)        internal _balance;
+    uint                          internal _totalSupply;
 
     event Approval(address indexed src, address indexed dst, uint amt);
     event Transfer(address indexed src, address indexed dst, uint amt);
@@ -71,6 +71,7 @@ interface IERC20 {
     ) external returns (bool);
 }
 
+
 contract BToken is BBronze, BTokenBase, IERC20 {
     function allowance(address src, address dst) external view returns (uint) {
         return _allowance[src][dst];
@@ -99,9 +100,9 @@ contract BToken is BBronze, BTokenBase, IERC20 {
     function decreaseApproval(address dst, uint amt) external returns (bool) {
         uint oldValue = _allowance[msg.sender][dst];
         if (amt > oldValue) {
-          _allowance[msg.sender][dst] = 0;
+            _allowance[msg.sender][dst] = 0;
         } else {
-          _allowance[msg.sender][dst] = bsub(oldValue, amt);
+            _allowance[msg.sender][dst] = bsub(oldValue, amt);
         }
         emit Approval(msg.sender, dst, _allowance[msg.sender][dst]);
         return true;
@@ -115,7 +116,7 @@ contract BToken is BBronze, BTokenBase, IERC20 {
     function transferFrom(address src, address dst, uint amt) external returns (bool) {
         require(msg.sender == src || amt <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
         _move(src, dst, amt);
-        if( msg.sender != src && _allowance[src][msg.sender] != uint256(-1) ) {
+        if (msg.sender != src && _allowance[src][msg.sender] != uint256(-1)) {
             _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], amt);
             emit Approval(msg.sender, dst, _allowance[src][msg.sender]);
         }
