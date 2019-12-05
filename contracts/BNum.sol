@@ -13,10 +13,9 @@
 
 pragma solidity 0.5.12;
 
-import "./BColor.sol";
 import "./BConst.sol";
 
-contract BNum is BBronze, BConst {
+contract BNum is BConst {
 
     function btoi(uint a)
         internal pure 
@@ -37,7 +36,7 @@ contract BNum is BBronze, BConst {
         returns (uint)
     {
         uint c = a + b;
-        require(c >= a, ERR_ADD_OVERFLOW);
+        require(c >= a, "ERR_ADD_OVERFLOW");
         return c;
     }
 
@@ -46,7 +45,7 @@ contract BNum is BBronze, BConst {
         returns (uint)
     {
         (uint c, bool flag) = bsubSign(a, b);
-        require(!flag, ERR_SUB_UNDERFLOW);
+        require(!flag, "ERR_SUB_UNDERFLOW");
         return c;
     }
 
@@ -66,9 +65,9 @@ contract BNum is BBronze, BConst {
         returns (uint)
     {
         uint c0 = a * b;
-        require(a == 0 || c0 / a == b, ERR_MUL_OVERFLOW);
+        require(a == 0 || c0 / a == b, "ERR_MUL_OVERFLOW");
         uint c1 = c0 + (BONE / 2);
-        require(c1 >= c0, ERR_MUL_OVERFLOW);
+        require(c1 >= c0, "ERR_MUL_OVERFLOW");
         uint c2 = c1 / BONE;
         return c2;
     }
@@ -77,11 +76,11 @@ contract BNum is BBronze, BConst {
         internal pure
         returns (uint)
     {
-        require(b != 0, ERR_DIV_ZERO);
+        require(b != 0, "ERR_DIV_ZERO");
         uint c0 = a * BONE;
-        require(a == 0 || c0 / a == BONE, ERR_DIV_INTERNAL); // bmul overflow
+        require(a == 0 || c0 / a == BONE, "ERR_DIV_INTERNAL"); // bmul overflow
         uint c1 = c0 + (b / 2);
-        require(c1 >= c0, ERR_DIV_INTERNAL); //  badd require
+        require(c1 >= c0, "ERR_DIV_INTERNAL"); //  badd require
         uint c2 = c1 / b;
         return c2;
     }
@@ -110,8 +109,8 @@ contract BNum is BBronze, BConst {
         internal pure
         returns (uint)
     {
-        require(base >= MIN_BPOW_BASE, ERR_BPOW_BASE_TOO_LOW);
-        require(base <= MAX_BPOW_BASE, ERR_BPOW_BASE_TOO_HIGH);
+        require(base >= MIN_BPOW_BASE, "ERR_BPOW_BASE_TOO_LOW");
+        require(base <= MAX_BPOW_BASE, "ERR_BPOW_BASE_TOO_HIGH");
 
         uint whole  = bfloor(exp);   
         uint remain = bsub(exp, whole);

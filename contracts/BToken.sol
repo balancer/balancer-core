@@ -71,8 +71,8 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-
 contract BToken is BBronze, BTokenBase, IERC20 {
+
     function allowance(address src, address dst) external view returns (uint) {
         return _allowance[src][dst];
     }
