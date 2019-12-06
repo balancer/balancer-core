@@ -87,7 +87,7 @@ contract BPool is BBronze, BToken, BMath {
     constructor() public {
         _controller = msg.sender;
         _factory = msg.sender;
-
+        _swapFee = MIN_FEE;
         _publicSwap = false;
         _finalized = false;
     }
@@ -198,7 +198,7 @@ contract BPool is BBronze, BToken, BMath {
     { 
         require(!_finalized, "ERR_IS_FINALIZED");
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        // TODO min fees
+        require(swapFee >= MIN_FEE, "ERR_MIN_FEE");
         require(swapFee <= MAX_FEE, "ERR_MAX_FEE");
         _swapFee = swapFee;
     }

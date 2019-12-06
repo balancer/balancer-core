@@ -16,26 +16,27 @@ pragma solidity 0.5.12;
 import "./BColor.sol";
 
 contract BConst is BBronze {
-    uint256 public constant BONE              = 10**18;
+    uint public constant BONE              = 10**18;
 
-    uint256 public constant MAX_BOUND_TOKENS  = 8;
-    uint256 public constant BPOW_PRECISION    = BONE / 10**10;
+    uint public constant MAX_BOUND_TOKENS  = 8;
+    uint public constant BPOW_PRECISION    = BONE / 10**10;
 
-    uint256 public constant MAX_FEE           = BONE / 10;
-    uint256 public constant EXIT_FEE          = BONE / 10000;
+    uint public constant MIN_FEE           = BONE / 10**6;
+    uint public constant MAX_FEE           = BONE / 10;
+    uint public constant EXIT_FEE          = BONE / 10000;
 
-    uint256 public constant MIN_WEIGHT        = BONE;
-    uint256 public constant MAX_WEIGHT        = BONE * 50;
-    uint256 public constant MAX_TOTAL_WEIGHT  = BONE * 50;
-    uint256 public constant MIN_BALANCE       = BONE / 10**6;
-    uint256 public constant MAX_BALANCE       = BONE * 10**12;
+    uint public constant MIN_WEIGHT        = BONE;
+    uint public constant MAX_WEIGHT        = BONE * 50;
+    uint public constant MAX_TOTAL_WEIGHT  = BONE * 50;
+    uint public constant MIN_BALANCE       = BONE / 10**6;
+    uint public constant MAX_BALANCE       = BONE * 10**12;
 
-    uint256 public constant MIN_POOL_SUPPLY   = BONE;
+    uint public constant MIN_POOL_SUPPLY   = BONE;
 
-    uint public constant MIN_BPOW_BASE        = 1 wei;
-    uint public constant MAX_BPOW_BASE        = (2 * BONE) - 1 wei;
+    uint public constant MIN_BPOW_BASE     = 1 wei;
+    uint public constant MAX_BPOW_BASE     = (2 * BONE) - 1 wei;
 
-    uint256 public constant MAX_IN_RATIO      = BONE / 2;
-    uint256 public constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
+    uint public constant MAX_IN_RATIO      = BONE / 2;
+    uint public constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
 
 }
