@@ -524,7 +524,7 @@ contract BPool is BBronze, BToken, BMath {
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
-        uint spotPriceAfter = calcSpotPrice(
+        spotPriceAfter = calcSpotPrice(
                                 inRecord.balance,
                                 inRecord.denorm,
                                 outRecord.balance,
