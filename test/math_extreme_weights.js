@@ -144,7 +144,7 @@ contract('BPool', async () => {
             assert.isAtMost(relDif, errorDelta);
 
             expected = toWei('74.1844011380065814');
-            actual = output.spotPriceTarget;
+            actual = output.spotPriceAfter;
             relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
@@ -184,7 +184,7 @@ contract('BPool', async () => {
             assert.isAtMost(relDif, errorDelta);
 
             expected = toWei('31306034272.9265099');
-            actual = output.spotPriceTarget;
+            actual = output.spotPriceAfter;
             relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {

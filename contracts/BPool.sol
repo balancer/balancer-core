@@ -428,7 +428,7 @@ contract BPool is BBronze, BToken, BMath {
         external
         _logs_
         _lock_
-        returns (uint tokenAmountOut, uint spotPriceTarget)
+        returns (uint tokenAmountOut, uint spotPriceAfter)
     {
 
         require(isBound(tokenIn), "ERR_NOT_BOUND");
@@ -462,7 +462,7 @@ contract BPool is BBronze, BToken, BMath {
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
-        uint spotPriceAfter = calcSpotPrice(
+        spotPriceAfter = calcSpotPrice(
                                 inRecord.balance,
                                 inRecord.denorm,
                                 outRecord.balance,
@@ -491,7 +491,7 @@ contract BPool is BBronze, BToken, BMath {
         external
         _logs_
         _lock_ 
-        returns (uint tokenAmountIn, uint spotPriceTarget)
+        returns (uint tokenAmountIn, uint spotPriceAfter)
     {
         require(isBound(tokenIn), "ERR_NOT_BOUND");
         require(isBound(tokenOut), "ERR_NOT_BOUND");
@@ -524,7 +524,7 @@ contract BPool is BBronze, BToken, BMath {
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
-        uint spotPriceAfter = calcSpotPrice(
+        spotPriceAfter = calcSpotPrice(
                                 inRecord.balance,
                                 inRecord.denorm,
                                 outRecord.balance,
