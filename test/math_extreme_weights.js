@@ -14,7 +14,8 @@ function calcRelativeDiff(_expected, _actual) {
     return Math.abs((_expected - _actual) / _expected);
 }
 
-contract('BPool', async () => {
+contract('BPool', async (accounts) => {
+    const admin = accounts[0];
     const { toHex } = web3.utils;
     const { toWei } = web3.utils;
     const MAX = web3.utils.toTwosComplement(-1);
@@ -90,18 +91,17 @@ contract('BPool', async () => {
         pool = await BPool.at(POOL);
 
 
-        await tokens.build(toHex('DIRT'));
-        await tokens.build(toHex('ROCK'));
+        await tokens.build(toHex('DIRT'), toHex('DIRT'), 18);
+        await tokens.build(toHex('ROCK'), toHex('ROCK'), 18);
 
         DIRT = await tokens.get(toHex('DIRT'));
         ROCK = await tokens.get(toHex('ROCK'));
 
-
         dirt = await TToken.at(DIRT);
         rock = await TToken.at(ROCK);
 
-        await dirt.mint(MAX);
-        await rock.mint(MAX);
+        await dirt.mint(admin, MAX);
+        await rock.mint(admin, MAX);
 
         await dirt.approve(POOL, MAX);
         await rock.approve(POOL, MAX);

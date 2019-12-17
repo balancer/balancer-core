@@ -20,8 +20,8 @@ contract TTokenFactory {
     function get(bytes32 name) external view returns (TToken) {
         return tokens[name];
     }
-    function build(bytes32 name) external returns (TToken) {
-        tokens[name] = new TToken();
+    function build(bytes32 name, bytes32 symbol, uint8 decimals) external returns (TToken) {
+        tokens[name] = new TToken(name, symbol, decimals);
         return tokens[name];
     }
 }
