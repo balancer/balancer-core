@@ -16,7 +16,7 @@ pragma solidity 0.5.12;
 // Test Token
 // Public mint and burn functions!
 
-contract TTokenBase {
+contract TToken {
 
     bytes32 private _name;
     bytes32 private _symbol;
@@ -128,6 +128,3 @@ contract TTokenBase {
     }
 }
 
-contract TToken is TTokenBase {
-    
-}

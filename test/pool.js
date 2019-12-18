@@ -107,7 +107,7 @@ contract('BPool', async (accounts) => {
                 'ERR_INSUFFICIENT_BAL',
             );
             await truffleAssert.reverts(
-                pool.bind(MKR, toWei('0.0000001'), toWei('1')),
+                pool.bind(MKR, toWei('0.0000000000001'), toWei('1')),
                 'ERR_MIN_BALANCE',
             );
             await truffleAssert.reverts(
