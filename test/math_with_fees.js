@@ -16,7 +16,7 @@ contract('BPool', async (accounts) => {
     const { toWei } = web3.utils;
     const { fromWei } = web3.utils;
     const admin = accounts[0];
-    
+
     const MAX = web3.utils.toTwosComplement(-1);
 
     let tokens; // token factory / registry

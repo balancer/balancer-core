@@ -77,7 +77,6 @@ contract('BFactory', async (accounts) => {
         });
 
         it('admin collects fees', async () => {
-
             await pool.bind(WETH, toWei('5'), toWei('5'));
             await pool.bind(DAI, toWei('200'), toWei('5'));
 

@@ -35,7 +35,7 @@ interface IERC20 {
 contract BToken is BNum, IERC20 {
 
     string  public constant name     = "Balancer Pool Token";
-    string  public constant symbobl  = "BPT";
+    string  public constant symbol   = "BPT";
     uint8   public constant decimals = 18;
 
     uint internal _totalSupply;
