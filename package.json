@@ -39,6 +39,7 @@
         "web3": "^1.2.0"
     },
     "dependencies": {
+        "decimal.js": "^10.2.0",
         "ganache-cli": "^6.7.0",
         "global": "^4.4.0"
     }

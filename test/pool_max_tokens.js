@@ -33,15 +33,15 @@ contract('BPool', async (accounts) => {
         await factory.newBPool();
         pool = await BPool.at(POOL);
 
-        await tokens.build(toHex('AAA'));
-        await tokens.build(toHex('BBB'));
-        await tokens.build(toHex('CCC'));
-        await tokens.build(toHex('DDD'));
-        await tokens.build(toHex('EEE'));
-        await tokens.build(toHex('FFF'));
-        await tokens.build(toHex('GGG'));
-        await tokens.build(toHex('HHH'));
-        await tokens.build(toHex('ZZZ'));
+        await tokens.build(toHex('AAA'), toHex('AAA'), 18);
+        await tokens.build(toHex('BBB'), toHex('BBB'), 18);
+        await tokens.build(toHex('CCC'), toHex('CCC'), 18);
+        await tokens.build(toHex('DDD'), toHex('DDD'), 18);
+        await tokens.build(toHex('EEE'), toHex('EEE'), 18);
+        await tokens.build(toHex('FFF'), toHex('FFF'), 18);
+        await tokens.build(toHex('GGG'), toHex('GGG'), 18);
+        await tokens.build(toHex('HHH'), toHex('HHH'), 18);
+        await tokens.build(toHex('ZZZ'), toHex('JJJ'), 18);
 
 
         AAA = await tokens.get.call(toHex('AAA'));
@@ -65,15 +65,15 @@ contract('BPool', async (accounts) => {
         zzz = await TToken.at(ZZZ);
 
         // Admin balances
-        await aaa.mint(toWei('100'));
-        await bbb.mint(toWei('100'));
-        await ccc.mint(toWei('100'));
-        await ddd.mint(toWei('100'));
-        await eee.mint(toWei('100'));
-        await fff.mint(toWei('100'));
-        await ggg.mint(toWei('100'));
-        await hhh.mint(toWei('100'));
-        await zzz.mint(toWei('100'));
+        await aaa.mint(admin, toWei('100'));
+        await bbb.mint(admin, toWei('100'));
+        await ccc.mint(admin, toWei('100'));
+        await ddd.mint(admin, toWei('100'));
+        await eee.mint(admin, toWei('100'));
+        await fff.mint(admin, toWei('100'));
+        await ggg.mint(admin, toWei('100'));
+        await hhh.mint(admin, toWei('100'));
+        await zzz.mint(admin, toWei('100'));
     });
 
     describe('Binding Tokens', () => {

@@ -13,17 +13,118 @@
 
 pragma solidity 0.5.12;
 
-import "../BToken.sol";
+// Test Token
+// Public mint and burn functions!
 
-// TToken is a test token with public `mint` and `burn`.
+contract TToken {
 
-contract TToken is BToken {
-    function mint(uint amt) external {
-        _mint(amt);
-        _push(msg.sender, amt);
+    bytes32 private _name;
+    bytes32 private _symbol;
+    uint8   private _decimals;
+
+    uint internal _totalSupply;
+
+    mapping(address => uint)                   private _balance;
+    mapping(address => mapping(address=>uint)) private _allowance;
+
+    event Approval(address indexed src, address indexed dst, uint amt);
+    event Transfer(address indexed src, address indexed dst, uint amt);
+
+    // Math
+    function add(uint a, uint b) internal pure returns (uint c) {
+        require((c = a + b) >= a);
     }
-    function burn(uint amt) external {
-        _pull(msg.sender, amt);
-        _burn(amt);
+    function sub(uint a, uint b) internal pure returns (uint c) {
+        require((c = a - b) <= a);
+    }
+
+    constructor(
+        bytes32 tokenName,
+        bytes32 tokenSymbol,
+        uint8 tokenDecimals
+    ) public {
+        _name = tokenName;
+        _symbol = tokenSymbol;
+        _decimals = tokenDecimals;
+    }
+
+    function name() public view returns (bytes32) {
+      return _name;
+    }
+
+    function symbol() public view returns (bytes32) {
+      return _symbol;
+    }
+
+    function decimals() public view returns(uint8) {
+      return _decimals;
+    }
+
+    function _move(address src, address dst, uint amt) internal {
+        require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
+        _balance[src] = sub(_balance[src], amt);
+        _balance[dst] = add(_balance[dst], amt);
+        emit Transfer(src, dst, amt);
+    }
+
+    function _push(address to, uint amt) internal {
+        _move(address(this), to, amt);
+    }
+
+    function _pull(address from, uint amt) internal {
+        _move(from, address(this), amt);
+    }
+
+    function _mint(address dst, uint amt) internal {
+        _balance[dst] = add(_balance[dst], amt);
+        _totalSupply = add(_totalSupply, amt);
+        emit Transfer(address(0), dst, amt);
+    }
+
+    function allowance(address src, address dst) external view returns (uint) {
+        return _allowance[src][dst];
+    }
+
+    function balanceOf(address whom) external view returns (uint) {
+        return _balance[whom];
+    }
+
+    function totalSupply() public view returns (uint) {
+        return _totalSupply;
+    }
+
+    function approve(address dst, uint amt) external returns (bool) {
+        _allowance[msg.sender][dst] = amt;
+        emit Approval(msg.sender, dst, amt);
+        return true;
+    }
+
+    function mint(address dst, uint amt) public returns (bool) {
+        _mint(dst, amt);
+        return true;
+    }
+
+    function burn(uint amt) public returns (bool) {
+        require(_balance[address(this)] >= amt, "ERR_INSUFFICIENT_BAL");
+        _balance[address(this)] = sub(_balance[address(this)], amt);
+        _totalSupply = sub(_totalSupply, amt);
+        emit Transfer(address(this), address(0), amt);
+        return true;
+    }
+
+    function transfer(address dst, uint amt) external returns (bool) {
+        _move(msg.sender, dst, amt);
+        return true;
+    }
+
+    function transferFrom(address src, address dst, uint amt) external returns (bool) {
+        require(msg.sender == src || amt <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
+        _move(src, dst, amt);
+        if (msg.sender != src && _allowance[src][msg.sender] != uint256(-1)) {
+            _allowance[src][msg.sender] = sub(_allowance[src][msg.sender], amt);
+            emit Approval(msg.sender, dst, _allowance[src][msg.sender]);
+        }
+        return true;
     }
 }
+

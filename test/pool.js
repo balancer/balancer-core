@@ -32,10 +32,10 @@ contract('BPool', async (accounts) => {
         await factory.newBPool();
         pool = await BPool.at(POOL);
 
-        await tokens.build(toHex('WETH'));
-        await tokens.build(toHex('MKR'));
-        await tokens.build(toHex('DAI'));
-        await tokens.build(toHex('XXX'));
+        await tokens.build(toHex('WETH'), toHex('WETH'), 18);
+        await tokens.build(toHex('MKR'), toHex('MKR'), 18);
+        await tokens.build(toHex('DAI'), toHex('DAI'), 18);
+        await tokens.build(toHex('XXX'), toHex('XXX'), 18);
 
         WETH = await tokens.get.call(toHex('WETH'));
         MKR = await tokens.get.call(toHex('MKR'));
@@ -56,22 +56,22 @@ contract('BPool', async (accounts) => {
         */
 
         // Admin balances
-        await weth.mint(toWei('50'));
-        await mkr.mint(toWei('20'));
-        await dai.mint(toWei('10000'));
-        await xxx.mint(toWei('0'));
+        await weth.mint(admin, toWei('50'));
+        await mkr.mint(admin, toWei('20'));
+        await dai.mint(admin, toWei('10000'));
+        await xxx.mint(admin, toWei('0'));
 
         // User1 balances
-        await weth.mint(toWei('25'), { from: user1 });
-        await mkr.mint(toWei('4'), { from: user1 });
-        await dai.mint(toWei('40000'), { from: user1 });
-        await xxx.mint(toWei('10'), { from: user1 });
+        await weth.mint(user1, toWei('25'));
+        await mkr.mint(user1, toWei('4'));
+        await dai.mint(user1, toWei('40000'));
+        await xxx.mint(user1, toWei('10'));
 
         // User2 balances
-        await weth.mint(toWei('12.2222'), { from: user2 });
-        await mkr.mint(toWei('1.015333'), { from: user2 });
-        await dai.mint(toWei('0'), { from: user2 });
-        await xxx.mint(toWei('51'), { from: user2 });
+        await weth.mint(user2, toWei('12.2222'));
+        await mkr.mint(user2, toWei('1.015333'));
+        await dai.mint(user2, toWei('0'));
+        await xxx.mint(user2, toWei('51'));
     });
 
     describe('Pool Initialization', () => {
@@ -107,7 +107,7 @@ contract('BPool', async (accounts) => {
                 'ERR_INSUFFICIENT_BAL',
             );
             await truffleAssert.reverts(
-                pool.bind(MKR, toWei('0.0000001'), toWei('1')),
+                pool.bind(MKR, toWei('0.0000000000001'), toWei('1')),
                 'ERR_MIN_BALANCE',
             );
             await truffleAssert.reverts(
