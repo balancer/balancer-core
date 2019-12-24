@@ -19,7 +19,7 @@ import "./BMath.sol";
 contract BPool is BBronze, BToken, BMath {
 
     struct Record {
-        bool bound;
+        bool bound;   // is token bound to pool
         uint index;   // private
         uint denorm;  // denormalized weight
         uint balance;
@@ -68,10 +68,9 @@ contract BPool is BBronze, BToken, BMath {
         _;
     }
 
-    bool private _mutex; // TODO: consider  messageNonce
+    bool private _mutex;
 
-    // Emulates a rudimentary role-based access control system
-    address private _factory;    // has FACTORY role
+    address private _factory;    // BFactory address to push token exitFee to
     address private _controller; // has CONTROL role
     bool private _publicSwap; // true if PUBLIC can call SWAP functions
 

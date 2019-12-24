@@ -230,6 +230,13 @@ contract('BPool', async (accounts) => {
             );
         });
 
+        it('Fails setting low swap fees', async() => {
+            await truffleAssert.reverts(
+                pool.setSwapFee(toWei('0.0000001')),
+                'ERR_MIN_FEE',
+            );
+        });
+
         it('Fails setting high swap fees', async () => {
             await truffleAssert.reverts(
                 pool.setSwapFee(toWei('0.11')),
