@@ -32,16 +32,11 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-contract BToken is BNum, IERC20 {
+contract BTokenBase is BNum {
 
-    string  public constant name     = "Balancer Pool Token";
-    string  public constant symbol   = "BPT";
-    uint8   public constant decimals = 18;
-
+    mapping(address => uint)                   internal _balance;
+    mapping(address => mapping(address=>uint)) internal _allowance;
     uint internal _totalSupply;
-
-    mapping(address => uint)                   private _balance;
-    mapping(address => mapping(address=>uint)) private _allowance;
 
     event Approval(address indexed src, address indexed dst, uint amt);
     event Transfer(address indexed src, address indexed dst, uint amt);
@@ -72,6 +67,25 @@ contract BToken is BNum, IERC20 {
 
     function _pull(address from, uint amt) internal {
         _move(from, address(this), amt);
+    }
+}
+
+contract BToken is BTokenBase, IERC20 {
+
+    string  private _name     = "Balancer Pool Token";
+    string  private _symbol   = "BPT";
+    uint8   private _decimals = 18;
+
+    function name() public view returns (string memory) {
+        return _name;
+    }
+
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
+
+    function decimals() public view returns(uint8) {
+        return _decimals;
     }
 
     function allowance(address src, address dst) external view returns (uint) {
@@ -124,5 +138,4 @@ contract BToken is BNum, IERC20 {
         return true;
     }
 }
-
 

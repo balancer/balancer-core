@@ -19,7 +19,7 @@ import "./BMath.sol";
 contract BPool is BBronze, BToken, BMath {
 
     struct Record {
-        bool bound;
+        bool bound;   // is token bound to pool
         uint index;   // private
         uint denorm;  // denormalized weight
         uint balance;
@@ -68,10 +68,9 @@ contract BPool is BBronze, BToken, BMath {
         _;
     }
 
-    bool private _mutex; // TODO: consider  messageNonce
+    bool private _mutex;
 
-    // Emulates a rudimentary role-based access control system
-    address private _factory;    // has FACTORY role
+    address private _factory;    // BFactory address to push token exitFee to
     address private _controller; // has CONTROL role
     bool private _publicSwap; // true if PUBLIC can call SWAP functions
 
@@ -246,7 +245,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         require(!isBound(token), "ERR_IS_BOUND");
-        require(!isFinalized(), "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
 
         require(_tokens.length < MAX_BOUND_TOKENS, "ERR_MAX_TOKENS");
 
@@ -316,11 +315,11 @@ contract BPool is BBronze, BToken, BMath {
 
         // Swap the token-to-unbind with the last token,
         // then delete the last token
-        uint index = _records[token].index - 1;
+        uint index = _records[token].index;
         uint last = _tokens.length - 1;
         _tokens[index] = _tokens[last];
-        _tokens.pop();
         _records[_tokens[index]].index = index;
+        _tokens.pop();
         _records[token] = Record({
             bound: false,
             index: 0,
@@ -375,7 +374,7 @@ contract BPool is BBronze, BToken, BMath {
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAmountOut, poolTotal);
-        require(ratio != 0);
+        require(ratio != 0, "ERR_MATH_APPROX");
 
         for (uint i = 0; i < _tokens.length; i++) {
             address t = _tokens[i];
@@ -400,7 +399,7 @@ contract BPool is BBronze, BToken, BMath {
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
         uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
         uint ratio = bdiv(pAiAfterExitFee, poolTotal);
-        require(ratio != 0);
+        require(ratio != 0, "ERR_MATH_APPROX");
 
         _pullPoolShare(msg.sender, poolAmountIn);
         _pushPoolShare(_factory, exitFee);
@@ -495,7 +494,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(isBound(tokenIn), "ERR_NOT_BOUND");
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[address(tokenIn)];
         Record storage outRecord = _records[address(tokenOut)];
@@ -552,7 +551,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -582,7 +581,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint tokenAmountIn)
     {
         require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -612,7 +611,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint tokenAmountOut)
     {
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
@@ -646,7 +645,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 

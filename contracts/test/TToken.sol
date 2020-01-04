@@ -39,25 +39,25 @@ contract TToken {
     }
 
     constructor(
-        bytes32 tokenName,
-        bytes32 tokenSymbol,
-        uint8 tokenDecimals
+        bytes32 name,
+        bytes32 symbol,
+        uint8 decimals
     ) public {
-        _name = tokenName;
-        _symbol = tokenSymbol;
-        _decimals = tokenDecimals;
+        _name = name;
+        _symbol = symbol;
+        _decimals = decimals;
     }
 
     function name() public view returns (bytes32) {
-      return _name;
+        return _name;
     }
 
     function symbol() public view returns (bytes32) {
-      return _symbol;
+        return _symbol;
     }
 
     function decimals() public view returns(uint8) {
-      return _decimals;
+        return _decimals;
     }
 
     function _move(address src, address dst, uint amt) internal {
