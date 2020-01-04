@@ -24,7 +24,6 @@
     "devDependencies": {
         "chai": "^4.2.0",
         "coveralls": "^3.0.8",
-        "decimal.js": "^10.2.0",
         "eslint": "^6.7.1",
         "eslint-config-airbnb": "^18.0.1",
         "eslint-plugin-import": "^2.18.2",
@@ -40,6 +39,7 @@
         "web3": "^1.2.0"
     },
     "dependencies": {
+        "decimal.js": "^10.2.0",
         "ganache-cli": "^6.7.0",
         "global": "^4.4.0"
     }

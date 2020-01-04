@@ -244,7 +244,7 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails setting low swap fees', async() => {
+        it('Fails setting low swap fees', async () => {
             await truffleAssert.reverts(
                 pool.setSwapFee(toWei('0.0000001')),
                 'ERR_MIN_FEE',
@@ -315,7 +315,7 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails unbinding after finalized', async() => {
+        it('Fails unbinding after finalized', async () => {
             await truffleAssert.reverts(
                 pool.unbind(WETH),
                 'ERR_IS_FINALIZED',
@@ -508,7 +508,7 @@ contract('BPool', async (accounts) => {
 
         it('Token allowances', async () => {
             await pool.approve(user1, toWei('50'));
-            let allowance = await pool.allowance(admin, user1); 
+            let allowance = await pool.allowance(admin, user1);
             assert.equal(fromWei(allowance), 50);
 
             await pool.increaseApproval(user1, toWei('50'));
@@ -524,15 +524,15 @@ contract('BPool', async (accounts) => {
             assert.equal(fromWei(allowance), 0);
         });
 
-        it('Token transfers', async() => {
+        it('Token transfers', async () => {
             await truffleAssert.reverts(
                 pool.transferFrom(user2, admin, toWei('10')),
-                'ERR_BTOKEN_BAD_CALLER'
+                'ERR_BTOKEN_BAD_CALLER',
             );
 
             await pool.transferFrom(admin, user2, toWei('1'));
             await pool.approve(user2, toWei('10'));
             await pool.transferFrom(admin, user2, toWei('1'), { from: user2 });
         });
-    })
+    });
 });
