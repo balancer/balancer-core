@@ -374,7 +374,7 @@ contract BPool is BBronze, BToken, BMath {
 
         uint poolTotal = totalSupply();
         uint ratio = bdiv(poolAmountOut, poolTotal);
-        require(ratio != 0);
+        require(ratio != 0, "ERR_MATH_APPROX");
 
         for (uint i = 0; i < _tokens.length; i++) {
             address t = _tokens[i];
@@ -399,7 +399,7 @@ contract BPool is BBronze, BToken, BMath {
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
         uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
         uint ratio = bdiv(pAiAfterExitFee, poolTotal);
-        require(ratio != 0);
+        require(ratio != 0, "ERR_MATH_APPROX");
 
         _pullPoolShare(msg.sender, poolAmountIn);
         _pushPoolShare(_factory, exitFee);

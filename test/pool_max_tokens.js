@@ -135,7 +135,7 @@ contract('BPool', async (accounts) => {
         });
 
         it('Fails swapExactAmountIn with limits', async () => {
-            await pool.finalize(toWei('100'));
+            await pool.setPublicSwap(true);
             await truffleAssert.reverts(
                 pool.swapExactAmountIn(
                     AAA,
@@ -210,5 +210,18 @@ contract('BPool', async (accounts) => {
                 'ERR_LIMIT_PRICE',
             );
         });
+
+        it('Fails ratio = 0 from rounding', async () => {
+            let amount = 100 * (10**18)
+            await pool.finalize(toWei(amount.toString()));
+            await truffleAssert.reverts(
+                pool.joinPool('49'),
+                'ERR_MATH_APPROX'
+            );
+            await truffleAssert.reverts(
+                pool.exitPool('49'),
+                'ERR_MATH_APPROX'
+            );
+        })
     });
 });

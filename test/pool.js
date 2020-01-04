@@ -128,6 +128,8 @@ contract('BPool', async (accounts) => {
             assert.equal(3, numTokens);
             const totalDernomWeight = await pool.getTotalDenormalizedWeight();
             assert.equal(15, fromWei(totalDernomWeight));
+            const wethDenormWeight = await pool.getDenormalizedWeight(WETH);
+            assert.equal(5, fromWei(wethDenormWeight));
             const wethNormWeight = await pool.getNormalizedWeight(WETH);
             assert.equal(0.333333333333333333, fromWei(wethNormWeight));
             const mkrBalance = await pool.getBalance(MKR);
