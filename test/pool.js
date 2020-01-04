@@ -503,6 +503,10 @@ contract('BPool', async (accounts) => {
                 pool.transferFrom(user2, admin, toWei('10')),
                 'ERR_BTOKEN_BAD_CALLER'
             );
+
+            await pool.transferFrom(admin, user2, toWei('1'));
+            await pool.approve(user2, toWei('10'));
+            await pool.transferFrom(admin, user2, toWei('1'), { from: user2 });
         });
     })
 });
