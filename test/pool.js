@@ -74,11 +74,6 @@ contract('BPool', async (accounts) => {
         await xxx.mint(user2, toWei('51'));
     });
 
-    describe('Pool Initialization', () => {
-
-
-    });
-
     describe('Binding Tokens', () => {
         it('Pool starts with no bound tokens', async () => {
             const numTokens = await pool.getNumTokens();
@@ -472,4 +467,42 @@ contract('BPool', async (accounts) => {
             );
         });
     });
+
+    describe('BToken interactions', () => {
+        it('Token descriptors', async () => {
+            const name = await pool.name();
+            assert.equal(name, 'Balancer Pool Token');
+
+            const symbol = await pool.symbol();
+            assert.equal(symbol, 'BPT');
+
+            const decimals = await pool.decimals();
+            assert.equal(decimals, 18);
+        });
+
+        it('Token allowances', async () => {
+            await pool.approve(user1, toWei('50'));
+            let allowance = await pool.allowance(admin, user1); 
+            assert.equal(fromWei(allowance), 50);
+
+            await pool.increaseApproval(user1, toWei('50'));
+            allowance = await pool.allowance(admin, user1);
+            assert.equal(fromWei(allowance), 100);
+
+            await pool.decreaseApproval(user1, toWei('50'));
+            allowance = await pool.allowance(admin, user1);
+            assert.equal(fromWei(allowance), 50);
+
+            await pool.decreaseApproval(user1, toWei('100'));
+            allowance = await pool.allowance(admin, user1);
+            assert.equal(fromWei(allowance), 0);
+        });
+
+        it('Token transfers', async() => {
+            await truffleAssert.reverts(
+                pool.transferFrom(user2, admin, toWei('10')),
+                'ERR_BTOKEN_BAD_CALLER'
+            );
+        });
+    })
 });

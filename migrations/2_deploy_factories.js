@@ -7,7 +7,6 @@ module.exports = async function (deployer, network, accounts) {
     if (network === 'development' || network === 'coverage') {
         deployer.deploy(TTokenFactory);
         deployer.deploy(TMath);
-        deployer.deploy(BToken);
     }
     deployer.deploy(BFactory);
 };
