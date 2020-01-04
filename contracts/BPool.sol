@@ -245,7 +245,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         require(!isBound(token), "ERR_IS_BOUND");
-        require(!isFinalized(), "ERR_IS_FINALIZED");
+        require(!_finalized, "ERR_IS_FINALIZED");
 
         require(_tokens.length < MAX_BOUND_TOKENS, "ERR_MAX_TOKENS");
 
@@ -315,11 +315,11 @@ contract BPool is BBronze, BToken, BMath {
 
         // Swap the token-to-unbind with the last token,
         // then delete the last token
-        uint index = _records[token].index - 1;
+        uint index = _records[token].index;
         uint last = _tokens.length - 1;
         _tokens[index] = _tokens[last];
-        _tokens.pop();
         _records[_tokens[index]].index = index;
+        _tokens.pop();
         _records[token] = Record({
             bound: false,
             index: 0,
@@ -494,7 +494,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(isBound(tokenIn), "ERR_NOT_BOUND");
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[address(tokenIn)];
         Record storage outRecord = _records[address(tokenOut)];
@@ -551,7 +551,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -581,7 +581,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint tokenAmountIn)
     {
         require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -611,7 +611,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint tokenAmountOut)
     {
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
@@ -645,7 +645,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 

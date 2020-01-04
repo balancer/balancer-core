@@ -59,7 +59,7 @@ contract('BPool', async (accounts) => {
         await weth.mint(admin, toWei('50'));
         await mkr.mint(admin, toWei('20'));
         await dai.mint(admin, toWei('10000'));
-        await xxx.mint(admin, toWei('0'));
+        await xxx.mint(admin, toWei('10'));
 
         // User1 balances
         await weth.mint(user1, toWei('25'));
@@ -136,6 +136,19 @@ contract('BPool', async (accounts) => {
             assert.equal(20, fromWei(mkrBalance));
         });
 
+        it('Admin unbinds token', async () => {
+            await pool.bind(XXX, toWei('10'), toWei('5'));
+            let adminBalance = await xxx.balanceOf(admin);
+            assert.equal(0, fromWei(adminBalance));
+            await pool.unbind(XXX);
+            adminBalance = await xxx.balanceOf(admin);
+            assert.equal(9.999, fromWei(adminBalance));
+            const numTokens = await pool.getNumTokens();
+            assert.equal(3, numTokens);
+            const totalDernomWeight = await pool.getTotalDenormalizedWeight();
+            assert.equal(15, fromWei(totalDernomWeight));
+        });
+
         it('Fails binding above MAX TOTAL WEIGHT', async () => {
             await truffleAssert.reverts(
                 pool.bind(XXX, toWei('1'), toWei('40')),
@@ -184,6 +197,10 @@ contract('BPool', async (accounts) => {
             );
             await truffleAssert.reverts(
                 pool.joinPool(toWei('1'), { from: user1 }),
+                'ERR_NOT_FINALIZED',
+            );
+            await truffleAssert.reverts(
+                pool.exitPool(toWei('1'), { from: user1 }),
                 'ERR_NOT_FINALIZED',
             );
             await truffleAssert.reverts(
@@ -294,6 +311,13 @@ contract('BPool', async (accounts) => {
             );
             await truffleAssert.reverts(
                 pool.rebind(DAI, toWei('10'), toWei('5')),
+                'ERR_IS_FINALIZED',
+            );
+        });
+
+        it('Fails unbinding after finalized', async() => {
+            await truffleAssert.reverts(
+                pool.unbind(WETH),
                 'ERR_IS_FINALIZED',
             );
         });

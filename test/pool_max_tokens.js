@@ -222,6 +222,7 @@ contract('BPool', async (accounts) => {
                 pool.exitPool('49'),
                 'ERR_MATH_APPROX'
             );
-        })
+        });
+
     });
 });
