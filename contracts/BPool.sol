@@ -365,7 +365,7 @@ contract BPool is BBronze, BToken, BMath {
         return calcSpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, 0);
     }
 
-    function joinPool(uint poolAmountOut)
+    function joinPool(uint poolAmountOut, uint[] calldata maxAmountsIn)
         external
         _logs_
         _lock_
@@ -380,6 +380,7 @@ contract BPool is BBronze, BToken, BMath {
             address t = _tokens[i];
             uint bal = _records[t].balance;
             uint tokenAmountIn = bmul(ratio, bal);
+            require(tokenAmountIn <= maxAmountsIn[i], "ERR_LIMIT_IN");
             _records[t].balance = badd(_records[t].balance, tokenAmountIn);
             emit LOG_JOIN(msg.sender, t, tokenAmountIn);
             _pullUnderlying(t, msg.sender, tokenAmountIn);
@@ -388,7 +389,7 @@ contract BPool is BBronze, BToken, BMath {
         _pushPoolShare(msg.sender, poolAmountOut);
     }
 
-    function exitPool(uint poolAmountIn)
+    function exitPool(uint poolAmountIn, uint[] calldata minAmountsOut)
         external
         _logs_
         _lock_
@@ -408,10 +409,11 @@ contract BPool is BBronze, BToken, BMath {
         for (uint i = 0; i < _tokens.length; i++) {
             address t = _tokens[i];
             uint bal = _records[t].balance;
-            uint tAo = bmul(ratio, bal);
-            _records[t].balance = bsub(_records[t].balance, tAo);
-            emit LOG_EXIT(msg.sender, t, tAo);
-            _pushUnderlying(t, msg.sender, tAo);
+            uint tokenAmountOut = bmul(ratio, bal);
+            require(tokenAmountOut >= minAmountsOut[i], "ERR_LIMIT_OUT");
+            _records[t].balance = bsub(_records[t].balance, tokenAmountOut);
+            emit LOG_EXIT(msg.sender, t, tokenAmountOut);
+            _pushUnderlying(t, msg.sender, tokenAmountOut);
         }
 
     }
@@ -432,7 +434,7 @@ contract BPool is BBronze, BToken, BMath {
 
         require(isBound(tokenIn), "ERR_NOT_BOUND");
         require(isBound(tokenOut), "ERR_NOT_BOUND");
-        require(isPublicSwap(), "ERR_SWAP_NOT_PUBLIC");
+        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[address(tokenIn)];
         Record storage outRecord = _records[address(tokenOut)];
@@ -543,7 +545,7 @@ contract BPool is BBronze, BToken, BMath {
     }
 
 
-    function joinswapExternAmountIn(address tokenIn, uint256 tokenAmountIn)
+    function joinswapExternAmountIn(address tokenIn, uint tokenAmountIn, uint minPoolAmountOut)
         external
         _logs_
         _lock_
@@ -563,6 +565,9 @@ contract BPool is BBronze, BToken, BMath {
                             tokenAmountIn,
                             _swapFee
                         );
+
+        require(poolAmountOut >= minPoolAmountOut, "ERR_LIMIT_OUT");
+
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
 
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
@@ -574,7 +579,7 @@ contract BPool is BBronze, BToken, BMath {
         return poolAmountOut;
     }
 
-    function joinswapPoolAmountOut(uint poolAmountOut, address tokenIn)
+    function joinswapPoolAmountOut(uint poolAmountOut, address tokenIn, uint maxAmountIn)
         external
         _logs_
         _lock_
@@ -593,6 +598,9 @@ contract BPool is BBronze, BToken, BMath {
                             poolAmountOut,
                             _swapFee
                         );
+
+        require(tokenAmountIn <= maxAmountIn, "ERR_LIMIT_IN");
+
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
 
         emit LOG_JOIN(msg.sender, tokenIn, tokenAmountIn);
@@ -604,7 +612,7 @@ contract BPool is BBronze, BToken, BMath {
         return tokenAmountIn;
     }
 
-    function exitswapPoolAmountIn(uint poolAmountIn, address tokenOut)
+    function exitswapPoolAmountIn(uint poolAmountIn, address tokenOut, uint minAmountOut)
         external
         _logs_
         _lock_
@@ -623,6 +631,9 @@ contract BPool is BBronze, BToken, BMath {
                             poolAmountIn,
                             _swapFee
                         );
+
+        require(tokenAmountOut >= minAmountOut, "ERR_LIMIT_OUT");
+
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
@@ -637,7 +648,7 @@ contract BPool is BBronze, BToken, BMath {
         return tokenAmountOut;
     }
 
-    function exitswapExternAmountOut(address tokenOut, uint tokenAmountOut)
+    function exitswapExternAmountOut(address tokenOut, uint tokenAmountOut, uint maxPoolAmountIn)
         external
         _logs_
         _lock_
@@ -657,6 +668,9 @@ contract BPool is BBronze, BToken, BMath {
                             tokenAmountOut,
                             _swapFee
                         );
+
+        require(poolAmountIn <= maxPoolAmountIn, "ERR_LIMIT_IN");
+
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
