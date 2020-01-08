@@ -194,7 +194,7 @@ contract('BPool', async (accounts) => {
 
             // Call function
             const pAo = 1;
-            await pool.joinPool(toWei(String(pAo)));
+            await pool.joinPool(toWei(String(pAo)), [MAX, MAX]);
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -215,7 +215,7 @@ contract('BPool', async (accounts) => {
             const pAi = 1 / (1 - exitFee);
             const pAiAfterExitFee = pAi * (1 - exitFee);
 
-            await pool.exitPool(toWei(String(pAi)));
+            await pool.exitPool(toWei(String(pAi)), [toWei('0'), toWei('0')]);
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -237,9 +237,9 @@ contract('BPool', async (accounts) => {
             // increase tbalance by 1.1^2 after swap fee
             const tAi = (1 / (1 - swapFee * (1 - dirtNorm))) * (currentDirtBalance * (poolRatio ** (1 / dirtNorm) - 1));
 
-            const pAo = await pool.joinswapExternAmountIn.call(DIRT, toWei(String(tAi)));
+            const pAo = await pool.joinswapExternAmountIn.call(DIRT, toWei(String(tAi)), toWei('0'));
             // Execute txn called above
-            await pool.joinswapExternAmountIn(DIRT, toWei(String(tAi)));
+            await pool.joinswapExternAmountIn(DIRT, toWei(String(tAi)), toWei('0'));
 
             // Update balance states
             previousDirtBalance = currentDirtBalance;
@@ -270,8 +270,8 @@ contract('BPool', async (accounts) => {
             const poolRatio = 1.1;
             const pAo = currentPoolBalance * (poolRatio - 1);
 
-            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), ROCK); // 10% of current supply
-            await pool.joinswapPoolAmountOut(toWei(String(pAo)), ROCK);
+            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), ROCK, MAX); // 10% of current supply
+            await pool.joinswapPoolAmountOut(toWei(String(pAo)), ROCK, MAX);
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -305,8 +305,8 @@ contract('BPool', async (accounts) => {
             const poolRatioAfterExitFee = 0.9;
             const pAi = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
 
-            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), DIRT);
-            await pool.exitswapPoolAmountIn(toWei(String(pAi)), DIRT);
+            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), DIRT, toWei('0'));
+            await pool.exitswapPoolAmountIn(toWei(String(pAi)), DIRT, toWei('0'));
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -340,8 +340,8 @@ contract('BPool', async (accounts) => {
             const tokenRatioBeforeSwapFee = poolRatioAfterExitFee ** (1 / rockNorm);
             const tAo = currentRockBalance * (1 - tokenRatioBeforeSwapFee) * (1 - swapFee * (1 - rockNorm));
 
-            const pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(String(tAo)));
-            await pool.exitswapExternAmountOut(ROCK, toWei(String(tAo)));
+            const pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(String(tAo)), MAX);
+            await pool.exitswapExternAmountOut(ROCK, toWei(String(tAo)), MAX);
 
             // Update balance states
             previousRockBalance = currentRockBalance;
@@ -371,8 +371,8 @@ contract('BPool', async (accounts) => {
 
         it('pAo = joinswapExternAmountIn(joinswapPoolAmountOut(pAo))', async () => {
             const pAo = 10;
-            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), DIRT);
-            const calculatedPAo = await pool.joinswapExternAmountIn.call(DIRT, String(tAi));
+            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), DIRT, MAX);
+            const calculatedPAo = await pool.joinswapExternAmountIn.call(DIRT, String(tAi), toWei('0'));
 
             const expected = pAo;
             const actual = fromWei(calculatedPAo);
@@ -392,8 +392,8 @@ contract('BPool', async (accounts) => {
 
         it('tAi = joinswapPoolAmountOut(joinswapExternAmountIn(tAi))', async () => {
             const tAi = 1;
-            const pAo = await pool.joinswapExternAmountIn.call(ROCK, toWei(String(tAi)));
-            const calculatedtAi = await pool.joinswapPoolAmountOut.call(String(pAo), ROCK);
+            const pAo = await pool.joinswapExternAmountIn.call(ROCK, toWei(String(tAi)), toWei('0'));
+            const calculatedtAi = await pool.joinswapPoolAmountOut.call(String(pAo), ROCK, MAX);
 
             const expected = tAi;
             const actual = fromWei(calculatedtAi);
@@ -413,8 +413,8 @@ contract('BPool', async (accounts) => {
 
         it('pAi = exitswapExternAmountOut(exitswapPoolAmountIn(pAi))', async () => {
             const pAi = 10;
-            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), DIRT);
-            const calculatedPAi = await pool.exitswapExternAmountOut.call(DIRT, String(tAo));
+            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), DIRT, toWei('0'));
+            const calculatedPAi = await pool.exitswapExternAmountOut.call(DIRT, String(tAo), MAX);
 
             const expected = pAi;
             const actual = fromWei(calculatedPAi);
@@ -434,8 +434,8 @@ contract('BPool', async (accounts) => {
 
         it('tAo = exitswapPoolAmountIn(exitswapExternAmountOut(tAo))', async () => {
             const tAo = '1';
-            const pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(tAo));
-            const calculatedtAo = await pool.exitswapPoolAmountIn.call(String(pAi), ROCK);
+            const pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(tAo), MAX);
+            const calculatedtAo = await pool.exitswapPoolAmountIn.call(String(pAi), ROCK, toWei('0'));
 
             const expected = tAo;
             const actual = fromWei(calculatedtAo);
