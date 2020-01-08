@@ -83,7 +83,7 @@ contract('BFactory', async (accounts) => {
             await pool.finalize(toWei('100'));
 
             await pool.joinPool(toWei('10'), [MAX, MAX], { from: nonAdmin });
-            await pool.exitPool(toWei('10'), [toWei('0'), toWei('0')],{ from: nonAdmin });
+            await pool.exitPool(toWei('10'), [toWei('0'), toWei('0')], { from: nonAdmin });
 
             await factory.collect(POOL);
 

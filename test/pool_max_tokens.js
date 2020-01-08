@@ -219,7 +219,10 @@ contract('BPool', async (accounts) => {
                 'ERR_MATH_APPROX',
             );
             await truffleAssert.reverts(
-                pool.exitPool('49', [toWei('0'), toWei('0'), toWei('0'), toWei('0'), toWei('0'), toWei('0'), toWei('0'), toWei('0')]),
+                pool.exitPool('49', [
+                    toWei('0'), toWei('0'), toWei('0'), toWei('0'),
+                    toWei('0'), toWei('0'), toWei('0'), toWei('0'),
+                ]),
                 'ERR_MATH_APPROX',
             );
         });

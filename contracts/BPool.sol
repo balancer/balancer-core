@@ -92,21 +92,21 @@ contract BPool is BBronze, BToken, BMath {
     }
 
     function isPublicSwap()
-        public view
+        external view
         returns (bool)
     {
         return _publicSwap;
     }
 
     function isFinalized()
-        public view
+        external view
         returns (bool)
     {
         return _finalized;
     }
 
     function isBound(address t)
-        public view
+        external view
         returns (bool)
     {
         return _records[t].bound;
@@ -141,7 +141,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         return _records[token].denorm;
     }
 
@@ -159,7 +159,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         uint denorm = _records[token].denorm;
         return bdiv(denorm, _totalWeight);
     }
@@ -170,7 +170,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint)
     {
 
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         return _records[token].balance;
     }
 
@@ -244,7 +244,7 @@ contract BPool is BBronze, BToken, BMath {
         // _lock_  Bind does not lock because it jumps to `rebind`, which does
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        require(!isBound(token), "ERR_IS_BOUND");
+        require(!_records[token].bound, "ERR_IS_BOUND");
         require(!_finalized, "ERR_IS_FINALIZED");
 
         require(_tokens.length < MAX_BOUND_TOKENS, "ERR_MAX_TOKENS");
@@ -266,7 +266,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         require(!_finalized, "ERR_IS_FINALIZED");
 
         require(denorm >= MIN_WEIGHT, "ERR_MIN_WEIGHT");
@@ -305,7 +305,7 @@ contract BPool is BBronze, BToken, BMath {
     {
 
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         require(!_finalized, "ERR_IS_FINALIZED");
 
         uint tokenBalance = _records[token].balance;
@@ -337,7 +337,7 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
     {
-        require(isBound(token), "ERR_NOT_BOUND");
+        require(_records[token].bound, "ERR_NOT_BOUND");
         _records[token].balance = IERC20(token).balanceOf(address(this));
     }
 
@@ -346,8 +346,8 @@ contract BPool is BBronze, BToken, BMath {
         _viewlock_
         returns (uint spotPrice)
     {
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         Record storage inRecord = _records[tokenIn];
         Record storage outRecord = _records[tokenOut];
         return calcSpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, _swapFee);
@@ -358,8 +358,8 @@ contract BPool is BBronze, BToken, BMath {
         _viewlock_
         returns (uint spotPrice)
     {
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         Record storage inRecord = _records[tokenIn];
         Record storage outRecord = _records[tokenOut];
         return calcSpotPrice(inRecord.balance, inRecord.denorm, outRecord.balance, outRecord.denorm, 0);
@@ -432,8 +432,8 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint tokenAmountOut, uint spotPriceAfter)
     {
 
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[address(tokenIn)];
@@ -494,8 +494,8 @@ contract BPool is BBronze, BToken, BMath {
         _lock_ 
         returns (uint tokenAmountIn, uint spotPriceAfter)
     {
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[address(tokenIn)];
@@ -552,7 +552,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint poolAmountOut)
     {
 
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
@@ -585,7 +585,7 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint tokenAmountIn)
     {
-        require(isBound(tokenIn), "ERR_NOT_BOUND");
+        require(_records[tokenIn].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
@@ -618,7 +618,8 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint tokenAmountOut)
     {
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
@@ -655,7 +656,7 @@ contract BPool is BBronze, BToken, BMath {
         returns (uint poolAmountIn)
     {
 
-        require(isBound(tokenOut), "ERR_NOT_BOUND");
+        require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
