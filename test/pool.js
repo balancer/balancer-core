@@ -450,6 +450,38 @@ contract('BPool', async (accounts) => {
             assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
+        it('Fails joins exits with limits', async () => {
+            await truffleAssert.reverts(
+                pool.joinPool(toWei('10'), [toWei('1'), toWei('1'), toWei('1')]),
+                'ERR_LIMIT_IN',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitPool(toWei('10'), [toWei('10'), toWei('10'), toWei('10')]),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.joinswapExternAmountIn(DAI, toWei('100'), toWei('10')),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.joinswapPoolAmountOut(toWei('10'), DAI, toWei('100')),
+                'ERR_LIMIT_IN',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitswapPoolAmountIn(toWei('1'), DAI, toWei('1000')),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitswapExternAmountOut(DAI, toWei('1000'), toWei('1')),
+                'ERR_LIMIT_IN',
+            );
+        });
+
         it('Fails calling any swap on unbound token', async () => {
             await truffleAssert.reverts(
                 pool.swapExactAmountIn(XXX, toWei('2.5'), DAI, toWei('475'), toWei('200')),
