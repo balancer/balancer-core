@@ -1,9 +1,11 @@
 const truffleAssert = require('truffle-assertions');
+const { calcOutGivenIn, calcInGivenOut, calcRelativeDiff } = require('../lib/calc_comparisons');
 
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const TTokenFactory = artifacts.require('TTokenFactory');
+const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
@@ -384,7 +386,7 @@ contract('BPool', async (accounts) => {
 
         it('swapExactAmountIn', async () => {
             // 2.5 WETH -> DAI
-            const amountOut = 10500 * (1 - (52.5 / (52.5 + (2.5 * (1 - 0.003)))) ** (5 / 5));
+            const expected = calcOutGivenIn(52.5, 5, 10500, 5, 2.5, 0.003);
             const txr = await pool.swapExactAmountIn(
                 WETH,
                 toWei('2.5'),
@@ -396,7 +398,17 @@ contract('BPool', async (accounts) => {
             const log = txr.logs[0];
             assert.equal(log.event, 'LOG_SWAP');
             // 475.905805337091423
-            assert.approximately(Number(amountOut), Number(fromWei(log.args[4])), errorDelta);
+
+            const actual = fromWei(log.args[4]);
+            const relDif = calcRelativeDiff(expected, actual);
+            if (verbose) {
+                console.log('swapExactAmountIn');
+                console.log(`expected: ${expected})`);
+                console.log(`actual  : ${actual})`);
+                console.log(`relDif  : ${relDif})`);
+            }
+
+            assert.isAtMost(relDif.toNumber(), errorDelta);
 
             const userDaiBalance = await dai.balanceOf(user2);
             assert.equal(fromWei(userDaiBalance), Number(fromWei(log.args[4])));
@@ -412,7 +424,8 @@ contract('BPool', async (accounts) => {
 
         it('swapExactAmountOut', async () => {
             // ETH -> 1 MKR
-            const amountIn = (55 * (((21 / (21 - 1)) ** (5 / 5)) - 1)) / (1 - 0.003);
+            // const amountIn = (55 * (((21 / (21 - 1)) ** (5 / 5)) - 1)) / (1 - 0.003);
+            const expected = calcInGivenOut(55, 5, 21, 5, 1, 0.003);
             const txr = await pool.swapExactAmountOut(
                 WETH,
                 toWei('3'),
@@ -424,7 +437,49 @@ contract('BPool', async (accounts) => {
             const log = txr.logs[0];
             assert.equal(log.event, 'LOG_SWAP');
             // 2.758274824473420261
-            assert.approximately(Number(amountIn), Number(fromWei(log.args[3])), errorDelta);
+
+            const actual = fromWei(log.args[3]);
+            const relDif = calcRelativeDiff(expected, actual);
+            if (verbose) {
+                console.log('swapExactAmountOut');
+                console.log(`expected: ${expected})`);
+                console.log(`actual  : ${actual})`);
+                console.log(`relDif  : ${relDif})`);
+            }
+
+            assert.isAtMost(relDif.toNumber(), errorDelta);
+        });
+
+        it('Fails joins exits with limits', async () => {
+            await truffleAssert.reverts(
+                pool.joinPool(toWei('10'), [toWei('1'), toWei('1'), toWei('1')]),
+                'ERR_LIMIT_IN',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitPool(toWei('10'), [toWei('10'), toWei('10'), toWei('10')]),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.joinswapExternAmountIn(DAI, toWei('100'), toWei('10')),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.joinswapPoolAmountOut(toWei('10'), DAI, toWei('100')),
+                'ERR_LIMIT_IN',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitswapPoolAmountIn(toWei('1'), DAI, toWei('1000')),
+                'ERR_LIMIT_OUT',
+            );
+
+            await truffleAssert.reverts(
+                pool.exitswapExternAmountOut(DAI, toWei('1000'), toWei('1')),
+                'ERR_LIMIT_IN',
+            );
         });
 
         it('Fails calling any swap on unbound token', async () => {

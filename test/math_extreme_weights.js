@@ -1,5 +1,5 @@
-// All test points have been calculated with Wolfram Mathematica.
-// See here: https://www.wolframcloud.com/obj/fernando.martinel/Published/test_extreme_weights.nb
+const Decimal = require('decimal.js');
+const { calcRelativeDiff } = require('../lib/calc_comparisons');
 
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
@@ -10,43 +10,44 @@ const swapFee = 0.001; // 0.001;
 const exitFee = 0.0001; // 0.01;
 const verbose = process.env.VERBOSE;
 
-function calcRelativeDiff(_expected, _actual) {
-    return Math.abs((_expected - _actual) / _expected);
-}
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
     const { toHex } = web3.utils;
     const { toWei } = web3.utils;
+    const { fromWei } = web3.utils;
     const MAX = web3.utils.toTwosComplement(-1);
 
     let tokens; // token factory / registry
-    let DIRT; let ROCK;
-    let dirt; let rock;
+    let WETH; let DAI;
+    let weth; let dai;
     let factory; // BPool factory
     let pool; // first pool w/ defaults
     let POOL; //   pool address
 
-    const dirtBalance = toWei('1000');
-    let currentDirtBalance = parseInt(dirtBalance, 10) / 10 ** 18;
-    let previousDirtBalance = currentDirtBalance;
-    const dirtDenorm = toWei('1');
+    const wethBalance = '1000';
+    const wethDenorm = '1';
 
-    const rockBalance = toWei('1000');
-    let currentRockBalance = parseInt(rockBalance, 10) / 10 ** 18;
-    let previousRockBalance = currentRockBalance;
-    const rockDenorm = toWei('49');
+    let currentWethBalance = Decimal(wethBalance);
+    let previousWethBalance = currentWethBalance;
 
-    let currentPoolBalance = 0;
-    let previousPoolBalance = 0;
+    const daiBalance = '1000';
+    const daiDenorm = '49';
 
-    const sumWeights = parseInt(dirtDenorm, 10) + parseInt(rockDenorm, 10);
-    const dirtNorm = parseInt(dirtDenorm, 10) / sumWeights;
-    const rockNorm = parseInt(rockDenorm, 10) / sumWeights;
+    let currentDaiBalance = Decimal(daiBalance);
+    let previousDaiBalance = currentDaiBalance;
+
+    let currentPoolBalance = Decimal(0);
+    let previousPoolBalance = Decimal(0);
+
+    const sumWeights = Decimal(wethDenorm).add(Decimal(daiDenorm));
+    const wethNorm = Decimal(wethDenorm).div(Decimal(sumWeights));
+    const daiNorm = Decimal(daiDenorm).div(Decimal(sumWeights));
 
     async function logAndAssertCurrentBalances() {
-        let expected = currentPoolBalance * 10 ** 18;
+        let expected = currentPoolBalance;
         let actual = await pool.totalSupply();
+        actual = Decimal(fromWei(actual));
         let relDif = calcRelativeDiff(expected, actual);
         if (verbose) {
             console.log('Pool Balance');
@@ -55,31 +56,33 @@ contract('BPool', async (accounts) => {
             console.log(`relDif  : ${relDif})`);
         }
 
-        assert.isAtMost(relDif, errorDelta);
+        assert.isAtMost(relDif.toNumber(), errorDelta);
 
-        expected = currentDirtBalance * 10 ** 18;
-        actual = await pool.getBalance(DIRT);
+        expected = currentWethBalance;
+        actual = await pool.getBalance(WETH);
+        actual = Decimal(fromWei(actual));
         relDif = calcRelativeDiff(expected, actual);
         if (verbose) {
-            console.log('Dirt Balance');
+            console.log('WETH Balance');
             console.log(`expected: ${expected})`);
             console.log(`actual  : ${actual})`);
             console.log(`relDif  : ${relDif})`);
         }
 
-        assert.isAtMost(relDif, errorDelta);
+        assert.isAtMost(relDif.toNumber(), errorDelta);
 
-        expected = currentRockBalance * 10 ** 18;
-        actual = await pool.getBalance(ROCK);
+        expected = currentDaiBalance;
+        actual = await pool.getBalance(DAI);
+        actual = Decimal(fromWei(actual));
         relDif = calcRelativeDiff(expected, actual);
         if (verbose) {
-            console.log('Rock Balance');
+            console.log('Dai Balance');
             console.log(`expected: ${expected})`);
             console.log(`actual  : ${actual})`);
             console.log(`relDif  : ${relDif})`);
         }
 
-        assert.isAtMost(relDif, errorDelta);
+        assert.isAtMost(relDif.toNumber(), errorDelta);
     }
 
     before(async () => {
@@ -91,24 +94,24 @@ contract('BPool', async (accounts) => {
         pool = await BPool.at(POOL);
 
 
-        await tokens.build(toHex('DIRT'), toHex('DIRT'), 18);
-        await tokens.build(toHex('ROCK'), toHex('ROCK'), 18);
+        await tokens.build(toHex('WETH'), toHex('WETH'), 18);
+        await tokens.build(toHex('DAI'), toHex('DAI'), 18);
 
-        DIRT = await tokens.get(toHex('DIRT'));
-        ROCK = await tokens.get(toHex('ROCK'));
+        WETH = await tokens.get(toHex('WETH'));
+        DAI = await tokens.get(toHex('DAI'));
 
-        dirt = await TToken.at(DIRT);
-        rock = await TToken.at(ROCK);
+        weth = await TToken.at(WETH);
+        dai = await TToken.at(DAI);
 
-        await dirt.mint(admin, MAX);
-        await rock.mint(admin, MAX);
+        await weth.mint(admin, MAX);
+        await dai.mint(admin, MAX);
 
-        await dirt.approve(POOL, MAX);
-        await rock.approve(POOL, MAX);
+        await weth.approve(POOL, MAX);
+        await dai.approve(POOL, MAX);
 
 
-        await pool.bind(DIRT, dirtBalance, dirtDenorm);
-        await pool.bind(ROCK, rockBalance, rockDenorm);
+        await pool.bind(WETH, toWei(wethBalance), toWei(wethDenorm));
+        await pool.bind(DAI, toWei(daiBalance), toWei(daiDenorm));
 
         await pool.setPublicSwap(true);
 
@@ -116,12 +119,10 @@ contract('BPool', async (accounts) => {
     });
 
     describe('Extreme weights', () => {
-    // TODO: swap parameters of all asserts -> correct order is (actual, expected)
-
         it('swapExactAmountIn', async () => {
-            const tokenIn = DIRT;
+            const tokenIn = WETH;
             const tokenInAmount = toWei('500');
-            const tokenOut = ROCK;
+            const tokenOut = DAI;
             const minAmountOut = toWei('0');
             const maxPrice = MAX;
 
@@ -130,8 +131,8 @@ contract('BPool', async (accounts) => {
             );
 
             // Checking outputs
-            let expected = toWei('8.23390841016124456');
-            let actual = output.tokenAmountOut;
+            let expected = Decimal('8.23390841016124456');
+            let actual = Decimal(fromWei(output.tokenAmountOut));
             let relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
@@ -141,10 +142,10 @@ contract('BPool', async (accounts) => {
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
 
-            expected = toWei('74.1844011380065814');
-            actual = output.spotPriceAfter;
+            expected = Decimal('74.1844011380065814');
+            actual = Decimal(fromWei(output.spotPriceAfter));
             relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
@@ -154,14 +155,14 @@ contract('BPool', async (accounts) => {
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
 
         it('swapExactAmountOut', async () => {
-            const tokenIn = DIRT;
+            const tokenIn = WETH;
             const maxAmountIn = MAX;
-            const tokenOut = ROCK;
+            const tokenOut = DAI;
             const tokenAmountOut = toWei('333.333333333333333333');
             const maxPrice = MAX;
 
@@ -170,8 +171,8 @@ contract('BPool', async (accounts) => {
             );
 
             // Checking outputs
-            let expected = toWei('425506505648.348073');
-            let actual = output.tokenAmountIn;
+            let expected = Decimal('425506505648.348073');
+            let actual = Decimal(fromWei(output.tokenAmountIn));
             let relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
@@ -181,10 +182,10 @@ contract('BPool', async (accounts) => {
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
 
-            expected = toWei('31306034272.9265099');
-            actual = output.spotPriceAfter;
+            expected = Decimal('31306034272.9265099');
+            actual = Decimal(fromWei(output.spotPriceAfter));
             relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
@@ -194,25 +195,28 @@ contract('BPool', async (accounts) => {
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
         it('joinPool', async () => {
-            currentPoolBalance = 100;
-            await pool.finalize(toWei(String(currentPoolBalance)));
+            currentPoolBalance = '100';
+            await pool.finalize(toWei(currentPoolBalance));
 
             // // Call function
-            const pAo = 1;
-            await pool.joinPool(toWei(String(pAo)), [MAX, MAX]);
+            const poolAmountOut = '1';
+            await pool.joinPool(toWei(poolAmountOut), [MAX, MAX]);
 
             // // Update balance states
-            previousPoolBalance = currentPoolBalance;
-            currentPoolBalance += pAo;
+            previousPoolBalance = Decimal(currentPoolBalance);
+            currentPoolBalance = Decimal(currentPoolBalance).add(Decimal(poolAmountOut));
+
             // Balances of all tokens increase proportionally to the pool balance
-            previousDirtBalance = currentDirtBalance;
-            currentDirtBalance += (pAo / previousPoolBalance) * previousDirtBalance;
-            previousRockBalance = currentRockBalance;
-            currentRockBalance += (pAo / previousPoolBalance) * previousRockBalance;
+            previousWethBalance = currentWethBalance;
+            let balanceChange = (Decimal(poolAmountOut).div(previousPoolBalance)).mul(previousWethBalance);
+            currentWethBalance = currentWethBalance.add(balanceChange);
+            previousDaiBalance = currentDaiBalance;
+            balanceChange = (Decimal(poolAmountOut).div(previousPoolBalance)).mul(previousDaiBalance);
+            currentDaiBalance = currentDaiBalance.add(balanceChange);
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
@@ -221,19 +225,21 @@ contract('BPool', async (accounts) => {
         it('exitPool', async () => {
             // Call function
             // so that the balances of all tokens will go back exactly to what they were before joinPool()
-            const pAi = 1 / (1 - exitFee);
-            const pAiAfterExitFee = pAi * (1 - exitFee);
+            const poolAmountIn = 1 / (1 - exitFee);
+            const poolAmountInAfterExitFee = Decimal(poolAmountIn).mul(Decimal(1).sub(exitFee));
 
-            await pool.exitPool(toWei(String(pAi)), [toWei('0'), toWei('0')]);
+            await pool.exitPool(toWei(String(poolAmountIn)), [toWei('0'), toWei('0')]);
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
-            currentPoolBalance -= pAiAfterExitFee;
+            currentPoolBalance = currentPoolBalance.sub(poolAmountInAfterExitFee);
             // Balances of all tokens increase proportionally to the pool balance
-            previousDirtBalance = currentDirtBalance;
-            currentDirtBalance -= (pAiAfterExitFee / previousPoolBalance) * previousDirtBalance;
-            previousRockBalance = currentRockBalance;
-            currentRockBalance -= (pAiAfterExitFee / previousPoolBalance) * previousRockBalance;
+            previousWethBalance = currentWethBalance;
+            let balanceChange = (poolAmountInAfterExitFee.div(previousPoolBalance)).mul(previousWethBalance);
+            currentWethBalance = currentWethBalance.sub(balanceChange);
+            previousDaiBalance = currentDaiBalance;
+            balanceChange = (poolAmountInAfterExitFee.div(previousPoolBalance)).mul(previousDaiBalance);
+            currentDaiBalance = currentDaiBalance.sub(balanceChange);
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
@@ -244,13 +250,13 @@ contract('BPool', async (accounts) => {
             // Call function
             const tokenRatio = 1.1;
             // increase tbalance by 1.1 after swap fee
-            const tAi = (1 / (1 - swapFee * (1 - dirtNorm))) * (currentDirtBalance * (tokenRatio - 1));
-            await pool.joinswapExternAmountIn(DIRT, toWei(String(tAi)), toWei('0'));
+            const tokenAmountIn = (1 / (1 - swapFee * (1 - wethNorm))) * (currentWethBalance * (tokenRatio - 1));
+            await pool.joinswapExternAmountIn(WETH, toWei(String(tokenAmountIn)), toWei('0'));
             // Update balance states
-            previousDirtBalance = currentDirtBalance;
-            currentDirtBalance += tAi;
+            previousWethBalance = currentWethBalance;
+            currentWethBalance = currentWethBalance.add(Decimal(tokenAmountIn));
             previousPoolBalance = currentPoolBalance;
-            currentPoolBalance *= tokenRatio ** dirtNorm; // increase by 1.1**dirtNorm
+            currentPoolBalance = currentPoolBalance.mul(Decimal(tokenRatio).pow(wethNorm)); // increase by 1.1**wethNorm
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
@@ -260,15 +266,15 @@ contract('BPool', async (accounts) => {
         it('joinswapPoolAmountOut', async () => {
             // Call function
             const poolRatio = 1.1;
-            const pAo = currentPoolBalance * (poolRatio - 1);
-            await pool.joinswapPoolAmountOut(toWei(String(pAo)), ROCK, MAX);
+            const poolAmountOut = currentPoolBalance * (poolRatio - 1);
+            await pool.joinswapPoolAmountOut(toWei(String(poolAmountOut)), DAI, MAX);
             // Update balance states
             previousPoolBalance = currentPoolBalance;
-            currentPoolBalance *= poolRatio; // increase by 1.1
-            previousRockBalance = currentRockBalance;
-            const numer = previousRockBalance * (poolRatio ** (1 / rockNorm) - 1) * 1;
-            const denom = (1 - swapFee * (1 - rockNorm));
-            currentRockBalance += (numer / denom); // (21% + swap fees) addition to current Rock supply
+            currentPoolBalance = currentPoolBalance.mul(Decimal(poolRatio)); // increase by 1.1
+            previousDaiBalance = currentDaiBalance;
+            const numer = previousDaiBalance.mul(Decimal(poolRatio).pow(Decimal(1).div(daiNorm)).sub(Decimal(1)));
+            const denom = Decimal(1).sub((Decimal(swapFee)).mul((Decimal(1).sub(daiNorm))));
+            currentDaiBalance = currentDaiBalance.plus(numer.div(denom));
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
@@ -278,14 +284,15 @@ contract('BPool', async (accounts) => {
         it('exitswapPoolAmountIn', async () => {
             // Call function
             const poolRatioAfterExitFee = 0.9;
-            const pAi = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
-            await pool.exitswapPoolAmountIn(toWei(String(pAi)), DIRT, toWei('0'));
+            const poolAmountIn = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
+            await pool.exitswapPoolAmountIn(toWei(String(poolAmountIn)), WETH, toWei('0'));
             // Update balance states
             previousPoolBalance = currentPoolBalance;
-            currentPoolBalance -= pAi * (1 - exitFee);
-            previousDirtBalance = currentDirtBalance;
-            const mult = (1 - poolRatioAfterExitFee ** (1 / dirtNorm)) * (1 - swapFee * (1 - dirtNorm));
-            currentDirtBalance -= previousDirtBalance * mult;
+            currentPoolBalance = currentPoolBalance.sub(Decimal(poolAmountIn).mul(Decimal(1).sub(Decimal(exitFee))));
+            previousWethBalance = currentWethBalance;
+            let mult = (Decimal(1).sub(Decimal(poolRatioAfterExitFee).pow(Decimal(1).div(wethNorm))));
+            mult = mult.mul(Decimal(1).sub(Decimal(swapFee).mul(Decimal(1).sub(wethNorm))));
+            currentWethBalance = currentWethBalance.sub(previousWethBalance.mul(mult));
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
@@ -295,99 +302,101 @@ contract('BPool', async (accounts) => {
         it('exitswapExternAmountOut', async () => {
             // Call function
             const poolRatioAfterExitFee = 0.9;
-            const tokenRatioBeforeSwapFee = poolRatioAfterExitFee ** (1 / rockNorm);
-            const tAo = currentRockBalance * (1 - tokenRatioBeforeSwapFee) * (1 - swapFee * (1 - rockNorm));
-            await pool.exitswapExternAmountOut(ROCK, toWei(String(tAo)), MAX);
+            const tokenRatioBeforeSwapFee = poolRatioAfterExitFee ** (1 / daiNorm);
+            const tokenAmountOut = currentDaiBalance * (1 - tokenRatioBeforeSwapFee) * (1 - swapFee * (1 - daiNorm));
+            await pool.exitswapExternAmountOut(DAI, toWei(String(tokenAmountOut)), MAX);
             // Update balance states
-            previousRockBalance = currentRockBalance;
-            currentRockBalance -= tAo;
+            previousDaiBalance = currentDaiBalance;
+            currentDaiBalance = currentDaiBalance.sub(Decimal(tokenAmountOut));
             previousPoolBalance = currentPoolBalance;
-            currentPoolBalance -= previousPoolBalance * (1 - poolRatioAfterExitFee);
+            const balanceChange = previousPoolBalance.mul(Decimal(1).sub(Decimal(poolRatioAfterExitFee)));
+            currentPoolBalance = currentPoolBalance.sub(balanceChange);
 
             // Print current balances after operation
             await logAndAssertCurrentBalances();
         });
 
-        it('pAo = joinswapExternAmountIn(joinswapPoolAmountOut(pAo))', async () => {
-            const pAo = 0.1;
-            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), DIRT, MAX);
-            const calculatedPAo = await pool.joinswapExternAmountIn.call(DIRT, String(tAi), toWei('0'));
+        it('poolAmountOut = joinswapExternAmountIn(joinswapPoolAmountOut(poolAmountOut))', async () => {
+            const poolAmountOut = 0.1;
+            const tokenAmountIn = await pool.joinswapPoolAmountOut.call(toWei(String(poolAmountOut)), WETH, MAX);
+            const pAo = await pool.joinswapExternAmountIn.call(WETH, String(tokenAmountIn), toWei('0'));
 
-            const expected = pAo * 10 ** 18;
-            const actual = calculatedPAo;
+            const expected = Decimal(poolAmountOut);
+            const actual = Decimal(fromWei(pAo));
             const relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
-                console.log(`tAi: ${tAi})`);
-                console.log('pAo');
+                console.log(`tokenAmountIn: ${tokenAmountIn})`);
+                console.log('poolAmountOut');
                 console.log(`expected: ${expected})`);
                 console.log(`actual  : ${actual})`);
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
 
-        it('tAi = joinswapPoolAmountOut(joinswapExternAmountIn(tAi))', async () => {
-            const tAi = '1';
-            const pAo = await pool.joinswapExternAmountIn.call(ROCK, toWei(tAi), toWei('0'));
-            const calculatedtAi = await pool.joinswapPoolAmountOut.call(String(pAo), ROCK, MAX);
+        it('tokenAmountIn = joinswapPoolAmountOut(joinswapExternAmountIn(tokenAmountIn))', async () => {
+            const tokenAmountIn = '1';
+            const poolAmountOut = await pool.joinswapExternAmountIn.call(DAI, toWei(tokenAmountIn), toWei('0'));
+            const calculatedtokenAmountIn = await pool.joinswapPoolAmountOut.call(String(poolAmountOut), DAI, MAX);
 
-            const expected = toWei(tAi);
-            const actual = calculatedtAi;
+            const expected = Decimal(tokenAmountIn);
+            const actual = Decimal(fromWei(calculatedtokenAmountIn));
             const relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
-                console.log(`pAo: ${pAo})`);
-                console.log('tAi');
+                console.log(`poolAmountOut: ${poolAmountOut})`);
+                console.log('tokenAmountIn');
                 console.log(`expected: ${expected})`);
                 console.log(`actual  : ${actual})`);
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
 
-        it('pAi = exitswapExternAmountOut(exitswapPoolAmountIn(pAi))', async () => {
-            const pAi = 0.1;
-            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), DIRT, toWei('0'));
-            const calculatedPAi = await pool.exitswapExternAmountOut.call(DIRT, String(tAo), MAX);
-            const expected = pAi * 10 ** 18;
-            const actual = calculatedPAi;
+        it('poolAmountIn = exitswapExternAmountOut(exitswapPoolAmountIn(poolAmountIn))', async () => {
+            const poolAmountIn = 0.1;
+            const tokenAmountOut = await pool.exitswapPoolAmountIn.call(toWei(String(poolAmountIn)), WETH, toWei('0'));
+            const calculatedpoolAmountIn = await pool.exitswapExternAmountOut.call(WETH, String(tokenAmountOut), MAX);
+
+            const expected = Decimal(poolAmountIn);
+            const actual = Decimal(fromWei(calculatedpoolAmountIn));
             const relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
-                console.log(`tAo: ${tAo})`);
-                console.log('pAi');
+                console.log(`tokenAmountOut: ${tokenAmountOut})`);
+                console.log('poolAmountIn');
                 console.log(`expected: ${expected})`);
                 console.log(`actual  : ${actual})`);
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
 
 
-        it('tAo = exitswapPoolAmountIn(exitswapExternAmountOut(tAo))', async () => {
-            const tAo = 1;
-            const pAi = await pool.exitswapExternAmountOut.call(ROCK, toWei(String(tAo)), MAX);
-            const calculatedtAo = await pool.exitswapPoolAmountIn.call(String(pAi), ROCK, toWei('0'));
+        it('tokenAmountOut = exitswapPoolAmountIn(exitswapExternAmountOut(tokenAmountOut))', async () => {
+            const tokenAmountOut = 1;
+            const poolAmountIn = await pool.exitswapExternAmountOut.call(DAI, toWei(String(tokenAmountOut)), MAX);
+            const tAo = await pool.exitswapPoolAmountIn.call(String(poolAmountIn), DAI, toWei('0'));
 
-            const expected = tAo * 10 ** 18;
-            const actual = calculatedtAo;
+            const expected = Decimal(tokenAmountOut);
+            const actual = Decimal(fromWei(tAo));
             const relDif = calcRelativeDiff(expected, actual);
 
             if (verbose) {
-                console.log(`pAi: ${pAi})`);
-                console.log('tAo');
+                console.log(`poolAmountIn: ${poolAmountIn})`);
+                console.log('tokenAmountOut');
                 console.log(`expected: ${expected})`);
                 console.log(`actual  : ${actual})`);
                 console.log(`relDif  : ${relDif})`);
             }
 
-            assert.isAtMost(relDif, errorDelta);
+            assert.isAtMost(relDif.toNumber(), errorDelta);
         });
     });
 });
