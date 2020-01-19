@@ -138,4 +138,3 @@ contract BToken is BTokenBase, IERC20 {
         return true;
     }
 }
-

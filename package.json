@@ -6,7 +6,7 @@
     "description": "Balancer Core Contracts and ABI",
     "scripts": {
         "compile": "truffle compile",
-        "testrpc": "ganache-cli --gasLimit 10000000 --allowUnlimitedContractSize",
+        "testrpc": "ganache-cli --deterministic --gasLimit 10000000",
         "test": "truffle test",
         "test:verbose": "VERBOSE=true truffle test",
         "coverage": "yarn solidity-coverage",

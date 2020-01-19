@@ -77,6 +77,11 @@ contract('BPool', async (accounts) => {
     });
 
     describe('Binding Tokens', () => {
+        it('Controller is msg.sender', async () => {
+            const controller = await pool.getController();
+            assert.equal(controller, admin);
+        });
+
         it('Pool starts with no bound tokens', async () => {
             const numTokens = await pool.getNumTokens();
             assert.equal(0, numTokens);
@@ -228,21 +233,24 @@ contract('BPool', async (accounts) => {
                 pool.swapExactAmountOut(DAI, toWei('2.5'), WETH, toWei('475'), toWei('200')),
                 'ERR_SWAP_NOT_PUBLIC',
             );
+        });
+
+        it('Fails calling any join exit swap before finalizing', async () => {
             await truffleAssert.reverts(
                 pool.joinswapExternAmountIn(WETH, toWei('2.5'), toWei('0')),
-                'ERR_SWAP_NOT_PUBLIC',
+                'ERR_NOT_FINALIZED',
             );
             await truffleAssert.reverts(
-                pool.joinswapPoolAmountOut(toWei('2.5'), WETH, MAX),
-                'ERR_SWAP_NOT_PUBLIC',
+                pool.joinswapPoolAmountOut(WETH, toWei('2.5'), MAX),
+                'ERR_NOT_FINALIZED',
             );
             await truffleAssert.reverts(
-                pool.exitswapPoolAmountIn(toWei('2.5'), WETH, toWei('0')),
-                'ERR_SWAP_NOT_PUBLIC',
+                pool.exitswapPoolAmountIn(WETH, toWei('2.5'), toWei('0')),
+                'ERR_NOT_FINALIZED',
             );
             await truffleAssert.reverts(
                 pool.exitswapExternAmountOut(WETH, toWei('2.5'), MAX),
-                'ERR_SWAP_NOT_PUBLIC',
+                'ERR_NOT_FINALIZED',
             );
         });
 
@@ -467,12 +475,12 @@ contract('BPool', async (accounts) => {
             );
 
             await truffleAssert.reverts(
-                pool.joinswapPoolAmountOut(toWei('10'), DAI, toWei('100')),
+                pool.joinswapPoolAmountOut(DAI, toWei('10'), toWei('100')),
                 'ERR_LIMIT_IN',
             );
 
             await truffleAssert.reverts(
-                pool.exitswapPoolAmountIn(toWei('1'), DAI, toWei('1000')),
+                pool.exitswapPoolAmountIn(DAI, toWei('1'), toWei('1000')),
                 'ERR_LIMIT_OUT',
             );
 
@@ -504,11 +512,11 @@ contract('BPool', async (accounts) => {
                 'ERR_NOT_BOUND',
             );
             await truffleAssert.reverts(
-                pool.joinswapPoolAmountOut(toWei('2.5'), XXX, MAX),
+                pool.joinswapPoolAmountOut(XXX, toWei('2.5'), MAX),
                 'ERR_NOT_BOUND',
             );
             await truffleAssert.reverts(
-                pool.exitswapPoolAmountIn(toWei('2.5'), XXX, toWei('0')),
+                pool.exitswapPoolAmountIn(XXX, toWei('2.5'), toWei('0')),
                 'ERR_NOT_BOUND',
             );
             await truffleAssert.reverts(

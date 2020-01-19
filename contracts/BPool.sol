@@ -228,6 +228,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(msg.sender == _controller, "ERR_NOT_CONTROLLER");
         require(!_finalized, "ERR_IS_FINALIZED");
+        require(_tokens.length >= 2, "ERR_MIN_TOKENS");
         require(initSupply >= MIN_POOL_SUPPLY, "ERR_MIN_POOL_SUPPLY");
 
         _finalized = true;
@@ -251,7 +252,7 @@ contract BPool is BBronze, BToken, BMath {
 
         _records[token] = Record({
             bound: true,
-            index: _tokens.length, // 1-indexed (0 is 'unbound' state)
+            index: _tokens.length,
             denorm: 0,    // balance and denorm will be validated
             balance: 0   // and set by `rebind`
         });
@@ -551,7 +552,7 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint poolAmountOut)
     {
-
+        require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
@@ -579,12 +580,13 @@ contract BPool is BBronze, BToken, BMath {
         return poolAmountOut;
     }
 
-    function joinswapPoolAmountOut(uint poolAmountOut, address tokenIn, uint maxAmountIn)
+    function joinswapPoolAmountOut(address tokenIn, uint poolAmountOut, uint maxAmountIn)
         external
         _logs_
         _lock_
         returns (uint tokenAmountIn)
     {
+        require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
@@ -612,13 +614,13 @@ contract BPool is BBronze, BToken, BMath {
         return tokenAmountIn;
     }
 
-    function exitswapPoolAmountIn(uint poolAmountIn, address tokenOut, uint minAmountOut)
+    function exitswapPoolAmountIn(address tokenOut, uint poolAmountIn, uint minAmountOut)
         external
         _logs_
         _lock_
         returns (uint tokenAmountOut)
     {
-
+        require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
@@ -655,7 +657,7 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint poolAmountIn)
     {
-
+        require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 

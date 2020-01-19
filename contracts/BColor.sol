@@ -26,5 +26,3 @@ contract BBronze is BColor {
             return bytes32("BRONZE");
         }
 }
-
-
