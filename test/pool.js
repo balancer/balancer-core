@@ -126,6 +126,13 @@ contract('BPool', async (accounts) => {
             );
         });
 
+        it('Fails finalizing pool without 2 tokens', async () => {
+            await truffleAssert.reverts(
+                pool.finalize(toWei('100')),
+                'ERR_MIN_TOKENS',
+            );
+        });
+
         it('Admin binds tokens', async () => {
             // Equal weights WETH, MKR, DAI
             await pool.bind(WETH, toWei('50'), toWei('5'));
@@ -193,6 +200,7 @@ contract('BPool', async (accounts) => {
 
 
     describe('Finalizing pool', () => {
+
         it('Fails when other users interact before finalizing', async () => {
             await truffleAssert.reverts(
                 pool.bind(WETH, toWei('5'), toWei('5'), { from: user1 }),
@@ -254,6 +262,13 @@ contract('BPool', async (accounts) => {
             );
         });
 
+        it('Only controller can setPublicSwap', async () => {
+            await pool.setPublicSwap(true);
+            const publicSwap = pool.isPublicSwap();
+            assert(publicSwap);
+            await truffleAssert.reverts(pool.setPublicSwap(true, { from: user1 }), 'ERR_NOT_CONTROLLER');
+        });
+
         it('Fails setting low swap fees', async () => {
             await truffleAssert.reverts(
                 pool.setSwapFee(toWei('0.0000001')),
@@ -303,8 +318,9 @@ contract('BPool', async (accounts) => {
             const tx = await pool.finalize(toWei('100'));
             const adminBal = await pool.balanceOf(admin);
             assert.equal(100, fromWei(adminBal));
-
             truffleAssert.eventEmitted(tx, 'Transfer', (event) => event.dst === admin);
+            const finalized = pool.isFinalized();
+            assert(finalized);
         });
 
         it('Fails finalizing pool after finalized', async () => {
@@ -312,6 +328,11 @@ contract('BPool', async (accounts) => {
                 pool.finalize(toWei('100')),
                 'ERR_IS_FINALIZED',
             );
+        });
+
+        it('Cant setPublicSwap, setSwapFee when finalized', async () => {
+            await truffleAssert.reverts(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
+            await truffleAssert.reverts(pool.setSwapFee(toWei('0.01')), 'ERR_IS_FINALIZED');
         });
 
         it('Fails binding new token after finalized', async () => {

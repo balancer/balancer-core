@@ -554,7 +554,6 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
-        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -588,7 +587,6 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
-        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -622,7 +620,6 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
-        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
@@ -659,7 +656,6 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
-        require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
         Record storage outRecord = _records[tokenOut];
 
