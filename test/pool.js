@@ -4,20 +4,17 @@ const { calcOutGivenIn, calcInGivenOut, calcRelativeDiff } = require('../lib/cal
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
-const TTokenFactory = artifacts.require('TTokenFactory');
 const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
     const user1 = accounts[1];
     const user2 = accounts[2];
-    const { toHex } = web3.utils;
     const { toWei } = web3.utils;
     const { fromWei } = web3.utils;
     const errorDelta = 10 ** -8;
     const MAX = web3.utils.toTwosComplement(-1);
 
-    let tokens; // token factory / registry
     let WETH; let MKR; let DAI; let
         XXX; // addresses
     let weth; let mkr; let dai; let

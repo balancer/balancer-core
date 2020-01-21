@@ -4,7 +4,6 @@ const { calcRelativeDiff } = require('../lib/calc_comparisons');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
-const TTokenFactory = artifacts.require('TTokenFactory');
 const errorDelta = 10 ** -8;
 const swapFee = 0.001; // 0.001;
 const exitFee = 0.0001; // 0.01;
@@ -13,12 +12,10 @@ const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
-    const { toHex } = web3.utils;
     const { toWei } = web3.utils;
     const { fromWei } = web3.utils;
     const MAX = web3.utils.toTwosComplement(-1);
 
-    let tokens; // token factory / registry
     let WETH; let DAI;
     let weth; let dai;
     let factory; // BPool factory

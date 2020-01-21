@@ -3,18 +3,15 @@ const truffleAssert = require('truffle-assertions');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
-const TTokenFactory = artifacts.require('TTokenFactory');
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
 
     const { toWei } = web3.utils;
-    const { toHex } = web3.utils;
     const { fromWei } = web3.utils;
 
     const MAX = web3.utils.toTwosComplement(-1);
 
-    let tokens; // token factory / registry
     let AAA; let BBB; let CCC; let DDD; let EEE; let FFF; let GGG; let HHH; let
         ZZZ; // addresses
     let aaa; let bbb; let ccc; let ddd; let eee; let fff; let ggg; let hhh; let
