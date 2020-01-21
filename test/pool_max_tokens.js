@@ -25,7 +25,6 @@ contract('BPool', async (accounts) => {
     let POOL; //   pool address
 
     before(async () => {
-        tokens = await TTokenFactory.deployed();
         factory = await BFactory.deployed();
         FACTORY = factory.address;
 
@@ -33,36 +32,25 @@ contract('BPool', async (accounts) => {
         await factory.newBPool();
         pool = await BPool.at(POOL);
 
-        await tokens.build(toHex('AAA'), toHex('AAA'), 18);
-        await tokens.build(toHex('BBB'), toHex('BBB'), 18);
-        await tokens.build(toHex('CCC'), toHex('CCC'), 18);
-        await tokens.build(toHex('DDD'), toHex('DDD'), 18);
-        await tokens.build(toHex('EEE'), toHex('EEE'), 18);
-        await tokens.build(toHex('FFF'), toHex('FFF'), 18);
-        await tokens.build(toHex('GGG'), toHex('GGG'), 18);
-        await tokens.build(toHex('HHH'), toHex('HHH'), 18);
-        await tokens.build(toHex('ZZZ'), toHex('JJJ'), 18);
+        aaa = await TToken.new('AAA', 'AAA', 18);
+        bbb = await TToken.new('BBB', 'BBB', 18);
+        ccc = await TToken.new('CCC', 'CCC', 18);
+        ddd = await TToken.new('DDD', 'EEE', 18);
+        eee = await TToken.new('EEE', 'EEE', 18);
+        fff = await TToken.new('FFF', 'FFF', 18);
+        ggg = await TToken.new('GGG', 'GGG', 18);
+        hhh = await TToken.new('HHH', 'HHH', 18);
+        zzz = await TToken.new('ZZZ', 'ZZZ', 18);
 
-
-        AAA = await tokens.get.call(toHex('AAA'));
-        BBB = await tokens.get.call(toHex('BBB'));
-        CCC = await tokens.get.call(toHex('CCC'));
-        DDD = await tokens.get.call(toHex('DDD'));
-        EEE = await tokens.get.call(toHex('EEE'));
-        FFF = await tokens.get.call(toHex('FFF'));
-        GGG = await tokens.get.call(toHex('GGG'));
-        HHH = await tokens.get.call(toHex('HHH'));
-        ZZZ = await tokens.get.call(toHex('ZZZ'));
-
-        aaa = await TToken.at(AAA);
-        bbb = await TToken.at(BBB);
-        ccc = await TToken.at(CCC);
-        ddd = await TToken.at(DDD);
-        eee = await TToken.at(EEE);
-        fff = await TToken.at(FFF);
-        ggg = await TToken.at(GGG);
-        hhh = await TToken.at(HHH);
-        zzz = await TToken.at(ZZZ);
+        AAA = aaa.address;
+        BBB = bbb.address;
+        CCC = ccc.address;
+        DDD = ddd.address;
+        EEE = eee.address;
+        FFF = fff.address;
+        GGG = ggg.address;
+        HHH = hhh.address;
+        ZZZ = zzz.address;
 
         // Admin balances
         await aaa.mint(admin, toWei('100'));

@@ -91,21 +91,17 @@ contract('BPool', async (accounts) => {
     }
 
     before(async () => {
-        tokens = await TTokenFactory.deployed();
         factory = await BFactory.deployed();
 
         POOL = await factory.newBPool.call(); // this works fine in clean room
         await factory.newBPool();
         pool = await BPool.at(POOL);
 
-        await tokens.build(toHex('WETH'), toHex('WETH'), 18);
-        await tokens.build(toHex('DAI'), toHex('DAI'), 18);
+        weth = await TToken.new('Wrapped Ether', 'WETH', 18);
+        dai = await TToken.new('Dai Stablecoin', 'DAI', 18);
 
-        WETH = await tokens.get(toHex('WETH'));
-        DAI = await tokens.get(toHex('DAI'));
-
-        weth = await TToken.at(WETH);
-        dai = await TToken.at(DAI);
+        WETH = weth.address;
+        DAI = dai.address;
 
         await weth.mint(admin, MAX);
         await dai.mint(admin, MAX);

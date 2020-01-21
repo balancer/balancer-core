@@ -26,25 +26,20 @@ contract('BFactory', async (accounts) => {
         let dai;
 
         before(async () => {
-            tokens = await TTokenFactory.deployed();
             factory = await BFactory.deployed();
+            weth = await TToken.new('Wrapped Ether', 'WETH', 18);
+            dai = await TToken.new('Dai Stablecoin', 'DAI', 18);
 
-            await tokens.build(toHex('WETH'), toHex('WETH'), 18);
-            await tokens.build(toHex('DAI'), toHex('WETH'), 18);
-
-            WETH = await tokens.get.call(toHex('WETH'));
-            DAI = await tokens.get.call(toHex('DAI'));
-
-            weth = await TToken.at(WETH);
-            dai = await TToken.at(DAI);
+            WETH = weth.address;
+            DAI = dai.address;
 
             // admin balances
             await weth.mint(admin, toWei('5'));
             await dai.mint(admin, toWei('200'));
 
             // nonAdmin balances
-            await weth.mint(nonAdmin, toWei('1'));
-            await dai.mint(nonAdmin, toWei('50'));
+            await weth.mint(nonAdmin, toWei('1'), { from: admin });
+            await dai.mint(nonAdmin, toWei('50'), { from: admin });
 
             POOL = await factory.newBPool.call(); // this works fine in clean room
             await factory.newBPool();

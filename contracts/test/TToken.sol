@@ -14,18 +14,24 @@
 pragma solidity 0.5.12;
 
 // Test Token
-// Public mint and burn functions!
 
 contract TToken {
 
-    bytes32 private _name;
-    bytes32 private _symbol;
+    string private _name;
+    string private _symbol;
     uint8   private _decimals;
+
+    address private _owner;
 
     uint internal _totalSupply;
 
     mapping(address => uint)                   private _balance;
     mapping(address => mapping(address=>uint)) private _allowance;
+
+    modifier _onlyOwner_() {
+        require(msg.sender == _owner, "ERR_NOT_OWNER");
+        _;
+    }
 
     event Approval(address indexed src, address indexed dst, uint amt);
     event Transfer(address indexed src, address indexed dst, uint amt);
@@ -39,20 +45,21 @@ contract TToken {
     }
 
     constructor(
-        bytes32 name,
-        bytes32 symbol,
+        string memory name,
+        string memory symbol,
         uint8 decimals
     ) public {
         _name = name;
         _symbol = symbol;
         _decimals = decimals;
+        _owner = msg.sender;
     }
 
-    function name() public view returns (bytes32) {
+    function name() public view returns (string memory) {
         return _name;
     }
 
-    function symbol() public view returns (bytes32) {
+    function symbol() public view returns (string memory) {
         return _symbol;
     }
 
@@ -99,7 +106,7 @@ contract TToken {
         return true;
     }
 
-    function mint(address dst, uint amt) public returns (bool) {
+    function mint(address dst, uint256 amt) public _onlyOwner_ returns (bool) {
         _mint(dst, amt);
         return true;
     }
@@ -127,4 +134,3 @@ contract TToken {
         return true;
     }
 }
-
