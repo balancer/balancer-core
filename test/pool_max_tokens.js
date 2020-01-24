@@ -195,6 +195,5 @@ contract('BPool', async (accounts) => {
                 'ERR_LIMIT_PRICE',
             );
         });
-
     });
 });

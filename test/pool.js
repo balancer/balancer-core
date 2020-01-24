@@ -187,7 +187,6 @@ contract('BPool', async (accounts) => {
 
 
     describe('Finalizing pool', () => {
-
         it('Fails when other users interact before finalizing', async () => {
             await truffleAssert.reverts(
                 pool.bind(WETH, toWei('5'), toWei('5'), { from: user1 }),
