@@ -98,10 +98,10 @@ contract('BPool', async (accounts) => {
             assert.equal(fromWei(balance), 50);
 
             const adminBalance = await hhh.balanceOf(admin);
-            assert.equal(fromWei(adminBalance), 49.998);
+            assert.equal(fromWei(adminBalance), 50);
 
             const factoryBalance = await hhh.balanceOf(FACTORY);
-            assert.equal(fromWei(factoryBalance), 0.002);
+            assert.equal(fromWei(factoryBalance), 0);
 
             const totalDernomWeight = await pool.getTotalDenormalizedWeight();
             assert.equal(33.59, fromWei(totalDernomWeight));

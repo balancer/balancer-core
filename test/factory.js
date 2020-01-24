@@ -77,11 +77,11 @@ contract('BFactory', async (accounts) => {
             await pool.joinPool(toWei('10'), [MAX, MAX], { from: nonAdmin });
             await pool.exitPool(toWei('10'), [toWei('0'), toWei('0')], { from: nonAdmin });
 
+            // Exit fee = 0 so this wont do anything
             await factory.collect(POOL);
 
             const adminBalance = await pool.balanceOf(admin);
-
-            assert.equal(fromWei(adminBalance), '100.001');
+            assert.equal(fromWei(adminBalance), '100');
         });
 
         it('nonadmin cant set blabs address', async () => {

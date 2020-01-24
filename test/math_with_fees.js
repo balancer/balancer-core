@@ -11,7 +11,7 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const errorDelta = 10 ** -8;
 const swapFee = 10 ** -3; // 0.001;
-const exitFee = 0.0001;
+const exitFee = 0;
 const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
