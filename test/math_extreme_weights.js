@@ -4,7 +4,6 @@ const { calcRelativeDiff } = require('../lib/calc_comparisons');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
-const TTokenFactory = artifacts.require('TTokenFactory');
 const errorDelta = 10 ** -8;
 const swapFee = 0.001; // 0.001;
 const exitFee = 0.0001; // 0.01;
@@ -13,12 +12,10 @@ const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
     const admin = accounts[0];
-    const { toHex } = web3.utils;
     const { toWei } = web3.utils;
     const { fromWei } = web3.utils;
     const MAX = web3.utils.toTwosComplement(-1);
 
-    let tokens; // token factory / registry
     let WETH; let DAI;
     let weth; let dai;
     let factory; // BPool factory
@@ -86,22 +83,17 @@ contract('BPool', async (accounts) => {
     }
 
     before(async () => {
-        tokens = await TTokenFactory.deployed();
         factory = await BFactory.deployed();
 
         POOL = await factory.newBPool.call(); // this works fine in clean room
         await factory.newBPool();
         pool = await BPool.at(POOL);
 
+        weth = await TToken.new('Wrapped Ether', 'WETH', 18);
+        dai = await TToken.new('Dai Stablecoin', 'DAI', 18);
 
-        await tokens.build(toHex('WETH'), toHex('WETH'), 18);
-        await tokens.build(toHex('DAI'), toHex('DAI'), 18);
-
-        WETH = await tokens.get(toHex('WETH'));
-        DAI = await tokens.get(toHex('DAI'));
-
-        weth = await TToken.at(WETH);
-        dai = await TToken.at(DAI);
+        WETH = weth.address;
+        DAI = dai.address;
 
         await weth.mint(admin, MAX);
         await dai.mint(admin, MAX);
