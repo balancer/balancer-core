@@ -272,7 +272,6 @@ contract BPool is BBronze, BToken, BMath {
         require(denorm >= MIN_WEIGHT, "ERR_MIN_WEIGHT");
         require(denorm <= MAX_WEIGHT, "ERR_MAX_WEIGHT");
         require(balance >= MIN_BALANCE, "ERR_MIN_BALANCE");
-        require(balance <= MAX_BALANCE, "ERR_MAX_BALANCE");
 
         // Adjust the denorm and totalWeight
         uint oldWeight = _records[token].denorm;
