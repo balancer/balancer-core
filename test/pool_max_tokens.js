@@ -157,7 +157,7 @@ contract('BPool', async (accounts) => {
             await truffleAssert.reverts(
                 pool.swapExactAmountOut(
                     AAA,
-                    toWei('50'),
+                    toWei('51'),
                     BBB,
                     toWei('40'),
                     toWei('5'),
@@ -196,20 +196,5 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails ratio = 0 from rounding', async () => {
-            const amount = 100 * (10 ** 18);
-            await pool.finalize(toWei(amount.toString()));
-            await truffleAssert.reverts(
-                pool.joinPool('49', [MAX, MAX, MAX, MAX, MAX, MAX, MAX, MAX]),
-                'ERR_MATH_APPROX',
-            );
-            await truffleAssert.reverts(
-                pool.exitPool('49', [
-                    toWei('0'), toWei('0'), toWei('0'), toWei('0'),
-                    toWei('0'), toWei('0'), toWei('0'), toWei('0'),
-                ]),
-                'ERR_MATH_APPROX',
-            );
-        });
     });
 });

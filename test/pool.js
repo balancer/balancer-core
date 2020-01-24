@@ -119,7 +119,7 @@ contract('BPool', async (accounts) => {
 
         it('Fails finalizing pool without 2 tokens', async () => {
             await truffleAssert.reverts(
-                pool.finalize(toWei('100')),
+                pool.finalize(),
                 'ERR_MIN_TOKENS',
             );
         });
@@ -293,20 +293,13 @@ contract('BPool', async (accounts) => {
 
         it('Fails nonadmin finalizes pool', async () => {
             await truffleAssert.reverts(
-                pool.finalize(toWei('100'), { from: user1 }),
+                pool.finalize({ from: user1 }),
                 'ERR_NOT_CONTROLLER',
             );
         });
 
-        it('Fails setting supply below min supply', async () => {
-            await truffleAssert.reverts(
-                pool.finalize(toWei('0.99')),
-                'ERR_MIN_POOL_SUPPLY',
-            );
-        });
-
         it('Admin finalizes pool', async () => {
-            const tx = await pool.finalize(toWei('100'));
+            const tx = await pool.finalize();
             const adminBal = await pool.balanceOf(admin);
             assert.equal(100, fromWei(adminBal));
             truffleAssert.eventEmitted(tx, 'Transfer', (event) => event.dst === admin);
@@ -316,7 +309,7 @@ contract('BPool', async (accounts) => {
 
         it('Fails finalizing pool after finalized', async () => {
             await truffleAssert.reverts(
-                pool.finalize(toWei('100')),
+                pool.finalize(),
                 'ERR_IS_FINALIZED',
             );
         });

@@ -235,7 +235,7 @@ contract('BPool', async (accounts) => {
 
         it('joinPool', async () => {
             currentPoolBalance = '100';
-            await pool.finalize(toWei(currentPoolBalance));
+            await pool.finalize();
 
             // Call function
             const pAo = '1';
