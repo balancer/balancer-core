@@ -80,7 +80,7 @@ To test a property, run `echidna-test echidna/CONTRACT_file.sol CONTRACT_name --
 | It is not possible to rebind an unbinded token. | [`rebind_unbinded`](echidna/TBPoolBind.sol#L97-L107)  | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
 | Only the controller can bind. | [`when_bind`](echidna/TBPoolBind.sol#L150-L154) and [`only_controller_can_bind`](echidna/TBPoolBind.sol#L145-L148) | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
 | If a user that is not the controller, tries to bind, rebind or unbind, the operation will revert. | [`when_bind`](echidna/TBPoolBind.sol#L150-L154), [`when_rebind`](echidna/TBPoolBind.sol#L150-L154) and [`when_unbind`](echidna/TBPoolBind.sol#L163-L168)  | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
-| Transfer tokens to the null address (`0x0`) causes a revert | [`transfer_to_zero`](echidna/TBTokenERC20.sol#L75-L79) and [`transferFrom_to_zero`](echidna/TBTokenERC20.sol#L85-L89) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**FAILED**|
+| Transfer tokens to the null address (`0x0`) causes a revert | [`transfer_to_zero`](echidna/TBTokenERC20.sol#L75-L79) and [`transferFrom_to_zero`](echidna/TBTokenERC20.sol#L85-L89) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**FAILED** ([#197](https://github.com/balancer-labs/balancer-core/issues/197))|
 | The null address (`0x0`) owns no tokens | [`zero_always_empty`](echidna/TBTokenERC20.sol#L34-L36) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**FAILED**|
 | Transfer a valid amout of tokens to non-null address reduces the current balance | [`transferFrom_to_other`](echidna/TBTokenERC20.sol#L108-L113) and [`transfer_to_other`](echidna/TBTokenERC20.sol#L131-L142)  | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
 | Transfer an invalid amout of tokens to non-null address reverts or returns false | [`transfer_to_user`](echidna/TBTokenERC20.sol#L149-L155) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
@@ -93,9 +93,10 @@ To test a property, run `echidna-test echidna/CONTRACT_file.sol CONTRACT_name --
 
 The following properties have equivalent Echidna property, but Manticore allows to either prove the absence of bugs, or look for an upper bound.
 
+To execute the script, run `python3 ./manticore/script_name.py`.
 
 | Description    | Script           | Contract      | Status   |  
 | :---                                                            |     :---:              |         :---:   |  :---:   |
-| An attacker cannot generate free pool tokens with `joinPool`.  | [`joinPool`](manticore/contracts/TBPoolJoinPool.sol#L7-L31)  | [`TBPoolJoinPool`](manticore/contracts/TBPoolBalance.sol)|**FAILED** ([#204](https://github.com/balancer-labs/balancer-core/issues/204)) |
-| Calling `joinPool-exitPool` does not lead to free pool tokens (no fee).  | [`joinAndExitNoFeePool`](manticore/contracts/TBPoolJoinExitPoolNoFee.sol#L34-L59)  | [`TBPoolJoinExitNoFee`](manticore/contracts/TBPoolJoinExitPoolNoFee.sol)|**FAILED** ([#205](https://github.com/balancer-labs/balancer-core/issues/205)) |
-| Calling `joinPool-exitPool` does not lead to free pool tokens (with fee).  | [`joinAndExitPool`](manticore/contracts/TBPoolJoinExitPool.sol#L37-L62)  | [`TBPoolJoinExit`](manticore/contracts/TBPoolJoinExitPool.sol)|**FAILED** ([#205](https://github.com/balancer-labs/balancer-core/issues/205))|
+| An attacker cannot generate free pool tokens with `joinPool`.  |   [`TBPoolJoinPool.py`](manticore/TBPoolJoinPool.py)| [`TBPoolJoinPool`](manticore/contracts/TBPoolJoinPool.sol) | **FAILED** ([#204](https://github.com/balancer-labs/balancer-core/issues/204)) |
+| Calling `joinPool-exitPool` does not lead to free pool tokens (no fee). | [`TBPoolJoinExitNoFee.py`](manticore/TBPoolJoinExitNoFee.py) | [`TBPoolJoinExitPoolNoFee`](manticore/contracts/TBPoolJoinExitPoolNoFee.sol)  |**FAILED** ([#205](https://github.com/balancer-labs/balancer-core/issues/205)) |
+| Calling `joinPool-exitPool` does not lead to free pool tokens (with fee).| [`TBPoolJoinExit.py`](manticore/TBPoolJoinExit.py)   | [`TBPoolJoinExit`](manticore/contracts/TBPoolJoinExitPool.sol) |**FAILED** ([#205](https://github.com/balancer-labs/balancer-core/issues/205))|
