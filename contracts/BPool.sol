@@ -550,8 +550,9 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
         returns (uint poolAmountOut)
-    {
-
+    {        
+        require(tokenAmountIn <= bmul(_records[tokenIn].balance, MAX_IN_RATIO), "ERR_MAX_IN_RATIO");
+        
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
@@ -600,6 +601,8 @@ contract BPool is BBronze, BToken, BMath {
                         );
 
         require(tokenAmountIn <= maxAmountIn, "ERR_LIMIT_IN");
+        
+        require(tokenAmountIn <= bmul(_records[tokenIn].balance, MAX_IN_RATIO), "ERR_MAX_IN_RATIO");
 
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
 
@@ -618,7 +621,6 @@ contract BPool is BBronze, BToken, BMath {
         _lock_
         returns (uint tokenAmountOut)
     {
-
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
 
@@ -634,6 +636,8 @@ contract BPool is BBronze, BToken, BMath {
                         );
 
         require(tokenAmountOut >= minAmountOut, "ERR_LIMIT_OUT");
+        
+        require(tokenAmountOut <= bmul(_records[tokenOut].balance, MAX_OUT_RATIO), "ERR_MAX_OUT_RATIO");
 
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
@@ -654,7 +658,8 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
         returns (uint poolAmountIn)
-    {
+    {   
+        require(tokenAmountOut <= bmul(_records[tokenOut].balance, MAX_OUT_RATIO), "ERR_MAX_OUT_RATIO");
 
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(_publicSwap, "ERR_SWAP_NOT_PUBLIC");
