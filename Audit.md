@@ -32,6 +32,8 @@ The flattened contracts are in `crytic-export/flattening`. The Echidna propertie
 Echidna properties can be broadly divided in two categories: general properties of the contracts that states what user can and cannot do and
 specific properties based on unit tests.
 
+To test a property, run `echidna-test echidna/CONTRACT_file.sol CONTRACT_name --config echidna/CONTRACT_name.yaml`.
+
 ## General Properties
 
 | Description    | Name           | Contract      | Status   |  
@@ -46,7 +48,7 @@ specific properties based on unit tests.
 
 (1) These properties target a specific piece of code.
 
-(2) These properties don't need slither-flat, and are integrated into `contracts/test/echidna/`. To run them `echidna . --contract CONTRACT_name --config ./echidna_general_config.yaml`.
+(2) These properties don't need slither-flat, and are integrated into `contracts/test/echidna/`. To test them run `echidna-test . CONTRACT_name --config ./echidna_general_config.yaml`.
 
 ## Unit-test-based Properties
 
@@ -78,7 +80,14 @@ specific properties based on unit tests.
 | It is not possible to rebind an unbinded token. | [`rebind_unbinded`](echidna/TBPoolBind.sol#L97-L107)  | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
 | Only the controller can bind. | [`when_bind`](echidna/TBPoolBind.sol#L150-L154) and [`only_controller_can_bind`](echidna/TBPoolBind.sol#L145-L148) | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
 | If a user that is not the controller, tries to bind, rebind or unbind, the operation will revert. | [`when_bind`](echidna/TBPoolBind.sol#L150-L154), [`when_rebind`](echidna/TBPoolBind.sol#L150-L154) and [`when_unbind`](echidna/TBPoolBind.sol#L163-L168)  | [`TBPoolBind`](echidna/TBPoolBind.sol) |**PASSED**|
-| The contract complies with basic ERC20 properties | `TODO`  | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**TODO**|
+| Transfer tokens to the null address (`0x0`) causes a revert | [`transfer_to_zero`](echidna/TBTokenERC20.sol#L75-L79) and [`transferFrom_to_zero`](echidna/TBTokenERC20.sol#L85-L89) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**FAILED**|
+| The null address (`0x0`) owns no tokens | [`zero_always_empty`](echidna/TBTokenERC20.sol#L34-L36) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**FAILED**|
+| Transfer a valid amout of tokens to non-null address reduces the current balance | [`transferFrom_to_other`](echidna/TBTokenERC20.sol#L108-L113) and [`transfer_to_other`](echidna/TBTokenERC20.sol#L131-L142)  | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
+| Transfer an invalid amout of tokens to non-null address reverts or returns false | [`transfer_to_user`](echidna/TBTokenERC20.sol#L149-L155) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
+| Self transfer a valid amout of tokens keeps the current balance constant | [`self_transferFrom`](echidna/TBTokenERC20.sol#L96-L101) and [`self_transfer`](echidna/TBTokenERC20.sol#L120-L124) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
+| Approving overwrites the previous allowance value | [`approve_overwrites`](echidna/TBTokenERC20.sol#L42-L49) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
+| The `totalSupply` is a constant | [`totalSupply_constant`](echidna/TBTokenERC20.sol#L166-L168) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
+| The balances are consistent with the `totalSupply` | [`totalSupply_balances_consistency`](echidna/TBTokenERC20.sol#L63-L65) and [`balance_less_than_totalSupply`](echidna/TBTokenERC20.sol#L55-L57) | [`TBTokenERC20`](echidna/TBTokenERC20.sol) |**PASSED**|
 
 # Code verification with Manticore
 

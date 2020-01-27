@@ -5,7 +5,7 @@ contract CryticInterface{
     address internal crytic_user = address(0x42424242);
     address internal crytic_attacker = address(0x43434343);
 
-    uint internal initialTotalSupply = 10*28;
+    uint internal initialTotalSupply = uint(-1);
     uint internal initialBalance_owner;
     uint internal initialBalance_user;
     uint internal initialBalance_attacker;
@@ -31,7 +31,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Code quality
     Return: Success
     */
-    function echidna_zero_always_empty_ERC20Properties() public returns(bool){
+    function echidna_zero_always_empty() public returns(bool){
         return this.balanceOf(address(0x0)) == 0;
     }
 
@@ -52,7 +52,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Undetermined severity
     Return: Success
     */
-    function echidna_less_than_total_ERC20Properties() public returns(bool){
+    function echidna_balance_less_than_totalSupply() public returns(bool){
         return this.balanceOf(msg.sender) <= _totalSupply;
     }
 
@@ -60,7 +60,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Low severity
     Return: Success
     */
-    function echidna_totalSupply_consistant_ERC20Properties() public returns(bool){
+    function echidna_totalSupply_balances_consistency() public returns(bool){
         return this.balanceOf(crytic_owner) + this.balanceOf(crytic_user) + this.balanceOf(crytic_attacker) <= totalSupply();
     }
 
@@ -72,7 +72,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Code Quality
     Return: Fail or Throw
     */
-    function echidna_revert_transfer_to_zero_ERC20PropertiesTransferable() public returns (bool) {
+    function echidna_revert_transfer_to_zero() public returns (bool) {
         if (this.balanceOf(msg.sender) == 0)
           revert();
         return transfer(address(0x0), this.balanceOf(msg.sender));
@@ -82,7 +82,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Code Quality
     Return: Fail or Throw
     */
-    function echidna_revert_transferFrom_to_zero_ERC20PropertiesTransferable() public returns (bool) {
+    function echidna_revert_transferFrom_to_zero() public returns (bool) {
         uint balance = this.balanceOf(msg.sender);
         bool approve_return = approve(msg.sender, balance);
         return transferFrom(msg.sender, address(0x0), this.balanceOf(msg.sender));
@@ -93,7 +93,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Fire: Transfer(msg.sender, msg.sender, balanceOf(msg.sender))
     Return: Success
     */
-    function echidna_self_transferFrom_ERC20PropertiesTransferable() public returns(bool){
+    function echidna_self_transferFrom() public returns(bool){
         uint balance = this.balanceOf(msg.sender);
         bool approve_return = approve(msg.sender, balance);
         bool transfer_return = transferFrom(msg.sender, msg.sender, balance);
@@ -105,7 +105,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: ERC20 Standard
     Return: Success
     */
-    function echidna_self_transferFrom_to_other_ERC20PropertiesTransferable() public returns(bool){
+    function echidna_self_transferFrom_to_other() public returns(bool){
         uint balance = this.balanceOf(msg.sender);
         bool approve_return = approve(msg.sender, balance);
         bool transfer_return = transferFrom(msg.sender, crytic_owner, balance);
@@ -117,7 +117,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Fire: Transfer(msg.sender, msg.sender, balanceOf(msg.sender))
     Return: Success
     */
-    function echidna_self_transfer_ERC20PropertiesTransferable() public returns(bool){
+    function echidna_self_transfer() public returns(bool){
         uint balance = this.balanceOf(msg.sender);
         bool transfer_return = transfer(msg.sender, balance);
         return (this.balanceOf(msg.sender) == balance) && transfer_return;
@@ -128,7 +128,7 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Fire: Transfer(msg.sender, other, 1)
     Return: Success
     */
-    function echidna_transfer_to_other_ERC20PropertiesTransferable() public returns(bool){
+    function echidna_transfer_to_other() public returns(bool){
         uint balance = this.balanceOf(msg.sender);
         address other = crytic_user;
         if (other == msg.sender) {
@@ -146,10 +146,10 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Fire: Transfer(msg.sender, user, balance+1)
     Return: Fail or Throw
     */
-    function echidna_revert_transfer_to_user_ERC20PropertiesTransferable() public returns(bool){
+    function echidna_revert_transfer_to_user() public returns(bool){
         uint balance = this.balanceOf(msg.sender);
         if (balance == (2 ** 256 - 1))
-            return true;
+            revert();
         bool transfer_other = transfer(crytic_user, balance+1);
         return true;
     }
@@ -163,21 +163,8 @@ contract TBTokenERC20 is CryticInterface, BToken {
     Type: Undetermined severity
     Return: Success
     */
-    function echidna_supply_constant_ERC20PropertiesNotMintable() public returns(bool){
-        return initialTotalSupply >= totalSupply();
+    function echidna_totalSupply_constant() public returns(bool){
+        return initialTotalSupply == totalSupply();
     }
-
-    /*
-    Properties: Not Burnable
-    */
-
-    /*
-    Type: Undetermined severity
-    Return: Success
-    */
-    function echidna_supply_constant_ERC20PropertiesNotBurnable() public returns(bool){
-        return initialTotalSupply <= totalSupply();
-    }
-
 
 }
