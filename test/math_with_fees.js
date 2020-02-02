@@ -11,7 +11,7 @@ const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
 const errorDelta = 10 ** -8;
 const swapFee = 10 ** -3; // 0.001;
-const exitFee = 0.0001;
+const exitFee = 0;
 const verbose = process.env.VERBOSE;
 
 contract('BPool', async (accounts) => {
@@ -235,7 +235,7 @@ contract('BPool', async (accounts) => {
 
         it('joinPool', async () => {
             currentPoolBalance = '100';
-            await pool.finalize(toWei(currentPoolBalance));
+            await pool.finalize();
 
             // Call function
             const pAo = '1';
@@ -319,8 +319,8 @@ contract('BPool', async (accounts) => {
             const poolRatio = 1.1;
             const pAo = currentPoolBalance * (poolRatio - 1);
 
-            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), DAI, MAX); // 10% of current supply
-            await pool.joinswapPoolAmountOut(toWei(String(pAo)), DAI, MAX);
+            const tAi = await pool.joinswapPoolAmountOut.call(DAI, toWei(String(pAo)), MAX); // 10% of current supply
+            await pool.joinswapPoolAmountOut(DAI, toWei(String(pAo)), MAX);
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -354,8 +354,8 @@ contract('BPool', async (accounts) => {
             const poolRatioAfterExitFee = 0.9;
             const pAi = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
 
-            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), WETH, toWei('0'));
-            await pool.exitswapPoolAmountIn(toWei(String(pAi)), WETH, toWei('0'));
+            const tAo = await pool.exitswapPoolAmountIn.call(WETH, toWei(String(pAi)), toWei('0'));
+            await pool.exitswapPoolAmountIn(WETH, toWei(String(pAi)), toWei('0'));
 
             // Update balance states
             previousPoolBalance = currentPoolBalance;
@@ -421,7 +421,7 @@ contract('BPool', async (accounts) => {
 
         it('pAo = joinswapExternAmountIn(joinswapPoolAmountOut(pAo))', async () => {
             const pAo = 10;
-            const tAi = await pool.joinswapPoolAmountOut.call(toWei(String(pAo)), WETH, MAX);
+            const tAi = await pool.joinswapPoolAmountOut.call(WETH, toWei(String(pAo)), MAX);
             const calculatedPAo = await pool.joinswapExternAmountIn.call(WETH, String(tAi), toWei('0'));
 
             const expected = Decimal(pAo);
@@ -443,7 +443,7 @@ contract('BPool', async (accounts) => {
         it('tAi = joinswapPoolAmountOut(joinswapExternAmountIn(tAi))', async () => {
             const tAi = 1;
             const pAo = await pool.joinswapExternAmountIn.call(DAI, toWei(String(tAi)), toWei('0'));
-            const calculatedtAi = await pool.joinswapPoolAmountOut.call(String(pAo), DAI, MAX);
+            const calculatedtAi = await pool.joinswapPoolAmountOut.call(DAI, String(pAo), MAX);
 
             const expected = Decimal(tAi);
             const actual = fromWei(calculatedtAi);
@@ -463,7 +463,7 @@ contract('BPool', async (accounts) => {
 
         it('pAi = exitswapExternAmountOut(exitswapPoolAmountIn(pAi))', async () => {
             const pAi = 10;
-            const tAo = await pool.exitswapPoolAmountIn.call(toWei(String(pAi)), WETH, toWei('0'));
+            const tAo = await pool.exitswapPoolAmountIn.call(WETH, toWei(String(pAi)), toWei('0'));
             const calculatedPAi = await pool.exitswapExternAmountOut.call(WETH, String(tAo), MAX);
 
             const expected = Decimal(pAi);
@@ -485,7 +485,7 @@ contract('BPool', async (accounts) => {
         it('tAo = exitswapPoolAmountIn(exitswapExternAmountOut(tAo))', async () => {
             const tAo = '1';
             const pAi = await pool.exitswapExternAmountOut.call(DAI, toWei(tAo), MAX);
-            const calculatedtAo = await pool.exitswapPoolAmountIn.call(String(pAi), DAI, toWei('0'));
+            const calculatedtAo = await pool.exitswapPoolAmountIn.call(DAI, String(pAi), toWei('0'));
 
             const expected = Decimal(tAo);
             const actual = fromWei(calculatedtAo);
