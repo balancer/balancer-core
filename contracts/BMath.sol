@@ -15,7 +15,6 @@ pragma solidity 0.5.12;
 
 import "./BNum.sol";
 
-
 contract BMath is BBronze, BConst, BNum {
     /**********************************************************************************************
     // calcSpotPrice                                                                             //

@@ -23,6 +23,11 @@ contract BFactory is BBronze {
         address indexed pool
     );
 
+    event LOG_BLABS(
+        address indexed caller,
+        address indexed blabs
+    );
+
     mapping(address=>bool) private _isBPool;
 
     function isBPool(address b)
@@ -32,7 +37,8 @@ contract BFactory is BBronze {
     }
 
     function newBPool()
-        external returns (BPool)
+        external
+        returns (BPool)
     {
         BPool bpool = new BPool();
         _isBPool[address(bpool)] = true;
@@ -42,16 +48,26 @@ contract BFactory is BBronze {
     }
 
     address private _blabs;
+
     constructor() public {
         _blabs = msg.sender;
     }
-    function getBLabs() external view returns (address) {
+
+    function getBLabs()
+        external view
+        returns (address)
+    {
         return _blabs;
     }
-    function setBLabs(address b) external {
+
+    function setBLabs(address b)
+        external
+    {
         require(msg.sender == _blabs, "ERR_NOT_BLABS");
+        emit LOG_BLABS(msg.sender, b);
         _blabs = b;
     }
+
     function collect(BPool pool)
         external 
     {
