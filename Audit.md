@@ -18,6 +18,16 @@ pip3 install manticore
 See [Echidna Installation](https://github.com/crytic/building-secure-contracts/tree/master/program-analysis/echidna#installation).
 
 
+```
+docker run -it -v "$PWD":/home/training trailofbits/eth-security-toolbox
+```
+
+```
+solc-select 0.5.12
+cd /home/training
+```
+
+
 # Testing properties with Echidna
 
 `slither-flat` will export the contract and translate external function to public, to faciliate writting properties:
