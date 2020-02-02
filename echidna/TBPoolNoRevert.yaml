@@ -1,0 +1,9 @@
+seqLen: 50
+testLimit: 100000
+prefix: "echidna_"
+deployer: "0x41414141"
+sender: ["0x41414141", "0x42424242", "0x43434343"]
+psender: "0x41414141"
+dashboard: true
+corpusDir: "corpus"
+mutation: true
