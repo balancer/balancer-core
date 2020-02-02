@@ -35,4 +35,7 @@ contract BConst is BBronze {
     uint public constant MIN_BPOW_BASE     = 1 wei;
     uint public constant MAX_BPOW_BASE     = (2 * BONE) - 1 wei;
     uint public constant BPOW_PRECISION    = BONE / 10**10;
+
+    uint public constant MAX_IN_RATIO      = BONE / 2;
+    uint public constant MAX_OUT_RATIO     = (BONE / 3) + 1 wei;
 }
