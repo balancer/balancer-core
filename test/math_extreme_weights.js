@@ -1,6 +1,7 @@
 const Decimal = require('decimal.js');
 const { calcRelativeDiff } = require('../lib/calc_comparisons');
 
+const truffleAssert = require('truffle-assertions');
 const BPool = artifacts.require('BPool');
 const BFactory = artifacts.require('BFactory');
 const TToken = artifacts.require('TToken');
@@ -272,7 +273,7 @@ contract('BPool', async (accounts) => {
             await logAndAssertCurrentBalances();
         });
 
-
+/*
         it('exitswapPoolAmountIn', async () => {
             // Call function
             const poolRatioAfterExitFee = 0.9;
@@ -289,7 +290,20 @@ contract('BPool', async (accounts) => {
             // Print current balances after operation
             await logAndAssertCurrentBalances();
         });
-
+*/
+        // The commented code above would pass if there was no limit MAX_OUT_RATIO for the exitswap function
+        // with the extreme weights this fails because you are trying to withdraw 10% of the pool tokens with
+        // tokenOut having only a 2% weight (1/50). This means that almost all the balance would be withdrawn,
+        // which is above the 33% maximum_out limit.
+        it('exitswapPoolAmountIn should revert', async () => {
+            // Call function
+            const poolRatioAfterExitFee = 0.9;
+            const poolAmountIn = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
+            await truffleAssert.reverts(
+                pool.exitswapPoolAmountIn(WETH, toWei(String(poolAmountIn)), toWei('0')),
+                'ERR_MAX_OUT_RATIO',
+            );
+        });
 
         it('exitswapExternAmountOut', async () => {
             // Call function
