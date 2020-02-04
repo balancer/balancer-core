@@ -660,7 +660,7 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
         returns (uint poolAmountIn)
-    {   
+    {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
         require(tokenAmountOut <= bmul(_records[tokenOut].balance, MAX_OUT_RATIO), "ERR_MAX_OUT_RATIO");
