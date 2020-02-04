@@ -551,9 +551,11 @@ contract BPool is BBronze, BToken, BMath {
         _logs_
         _lock_
         returns (uint poolAmountOut)
-    {
+
+    {        
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenIn].bound, "ERR_NOT_BOUND");
+        require(tokenAmountIn <= bmul(_records[tokenIn].balance, MAX_IN_RATIO), "ERR_MAX_IN_RATIO");
 
         Record storage inRecord = _records[tokenIn];
 
@@ -601,6 +603,8 @@ contract BPool is BBronze, BToken, BMath {
 
         require(tokenAmountIn != 0, "ERR_MATH_APPROX");
         require(tokenAmountIn <= maxAmountIn, "ERR_LIMIT_IN");
+        
+        require(tokenAmountIn <= bmul(_records[tokenIn].balance, MAX_IN_RATIO), "ERR_MAX_IN_RATIO");
 
         inRecord.balance = badd(inRecord.balance, tokenAmountIn);
 
@@ -634,6 +638,8 @@ contract BPool is BBronze, BToken, BMath {
                         );
 
         require(tokenAmountOut >= minAmountOut, "ERR_LIMIT_OUT");
+        
+        require(tokenAmountOut <= bmul(_records[tokenOut].balance, MAX_OUT_RATIO), "ERR_MAX_OUT_RATIO");
 
         outRecord.balance = bsub(outRecord.balance, tokenAmountOut);
 
@@ -657,6 +663,7 @@ contract BPool is BBronze, BToken, BMath {
     {
         require(_finalized, "ERR_NOT_FINALIZED");
         require(_records[tokenOut].bound, "ERR_NOT_BOUND");
+        require(tokenAmountOut <= bmul(_records[tokenOut].balance, MAX_OUT_RATIO), "ERR_MAX_OUT_RATIO");
 
         Record storage outRecord = _records[tokenOut];
 

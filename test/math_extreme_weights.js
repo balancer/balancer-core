@@ -1,4 +1,5 @@
 const Decimal = require('decimal.js');
+const truffleAssert = require('truffle-assertions');
 const { calcRelativeDiff } = require('../lib/calc_comparisons');
 
 const BPool = artifacts.require('BPool');
@@ -272,24 +273,46 @@ contract('BPool', async (accounts) => {
             await logAndAssertCurrentBalances();
         });
 
+        it('joinswapExternAmountIn should revert', async () => {
+            // Call function
+            const tokenRatio = 1.1;
+            const tokenAmountIn = (1 / (1 - swapFee * (1 - wethNorm))) * (currentWethBalance * (tokenRatio));
+            await truffleAssert.reverts(
+                pool.joinswapExternAmountIn(WETH, toWei(String(tokenAmountIn)), toWei('0')),
+                'ERR_MAX_IN_RATIO',
+            );
+        });
 
-        it('exitswapPoolAmountIn', async () => {
+        it('joinswapPoolAmountOut should revert', async () => {
+            // Call function
+            const poolRatio = 0.9;
+            const poolAmountOut = currentPoolBalance * (poolRatio);
+            await truffleAssert.reverts(
+                pool.joinswapPoolAmountOut(DAI, toWei(String(poolAmountOut)), MAX),
+                'ERR_MAX_IN_RATIO',
+            );
+        });
+
+        it('exitswapExternAmountOut should revert', async () => {
+            // Call function
+            const poolRatioAfterExitFee = 1.1;
+            const tokenRatioBeforeSwapFee = poolRatioAfterExitFee ** (1 / daiNorm);
+            const tokenAmountOut = currentDaiBalance * (1 - tokenRatioBeforeSwapFee) * (1 - swapFee * (1 - daiNorm));
+            await truffleAssert.reverts(
+                pool.exitswapExternAmountOut(DAI, toWei(String(tokenAmountOut)), MAX),
+                'ERR_MAX_OUT_RATIO',
+            );
+        });
+
+        it('exitswapPoolAmountIn should revert', async () => {
             // Call function
             const poolRatioAfterExitFee = 0.9;
             const poolAmountIn = currentPoolBalance * (1 - poolRatioAfterExitFee) * (1 / (1 - exitFee));
-            await pool.exitswapPoolAmountIn(WETH, toWei(String(poolAmountIn)), toWei('0'));
-            // Update balance states
-            previousPoolBalance = currentPoolBalance;
-            currentPoolBalance = currentPoolBalance.sub(Decimal(poolAmountIn).mul(Decimal(1).sub(Decimal(exitFee))));
-            previousWethBalance = currentWethBalance;
-            let mult = (Decimal(1).sub(Decimal(poolRatioAfterExitFee).pow(Decimal(1).div(wethNorm))));
-            mult = mult.mul(Decimal(1).sub(Decimal(swapFee).mul(Decimal(1).sub(wethNorm))));
-            currentWethBalance = currentWethBalance.sub(previousWethBalance.mul(mult));
-
-            // Print current balances after operation
-            await logAndAssertCurrentBalances();
+            await truffleAssert.reverts(
+                pool.exitswapPoolAmountIn(WETH, toWei(String(poolAmountIn)), toWei('0')),
+                'ERR_MAX_OUT_RATIO',
+            );
         });
-
 
         it('exitswapExternAmountOut', async () => {
             // Call function
