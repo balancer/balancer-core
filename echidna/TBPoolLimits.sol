@@ -4,6 +4,8 @@ import "./CryticInterface.sol";
 
 contract TBPoolLimits is CryticInterface, BPool {
 
+    uint MAX_BALANCE = BONE * 10**12;
+
     constructor() public {
         MyToken t;
         t = new MyToken(uint(-1), address(this));
@@ -49,17 +51,6 @@ contract TBPoolLimits is CryticInterface, BPool {
 
         // if there are tokens, the normalized weight should be 1
         return (nw == 1);
-    }
-    
-    function echidna_max_token_balance() public returns (bool) {
-         address[] memory current_tokens = this.getCurrentTokens();
-         for (uint i = 0; i < current_tokens.length; i++) {
-             // verify that the balance of each token is less than `MAX_BALACE`
-             if (this.getBalance(address(current_tokens[i])) > MAX_BALANCE)
-                 return false;
-         }
-         // if there are no tokens, return true
-         return true;
     }
 
     function echidna_min_token_balance() public returns (bool) {

@@ -42,10 +42,9 @@ print(f'TBPoolJoinPool deployed {hex(TestBpool.address)}')
 
 # Call joinAndExitNoFeePool with symbolic values
 poolAmountOut = m.make_symbolic_value()
-poolAmountIn = m.make_symbolic_value()
 poolTotal = m.make_symbolic_value()
 _records_t_balance = m.make_symbolic_value()
-TestBpool.joinPool(poolAmountOut, poolAmountIn, poolTotal, _records_t_balance)
+TestBpool.joinPool(poolAmountOut, poolTotal, _records_t_balance)
 
 print(f'joinPool Called')
 

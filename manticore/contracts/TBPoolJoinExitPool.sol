@@ -5,7 +5,7 @@ contract TBPoolJoinExit is BNum {
 
     // joinPool models the BPool.joinPool behavior for one token
     function joinPool(uint poolAmountOut, uint poolTotal, uint _records_t_balance)
-        internal returns(uint)
+        internal pure returns(uint)
     {
         uint ratio = bdiv(poolAmountOut, poolTotal);
         require(ratio != 0);
@@ -18,7 +18,7 @@ contract TBPoolJoinExit is BNum {
 
     // exitPool models the BPool.exitPool behavior for one token
     function exitPool(uint poolAmountIn, uint poolTotal, uint _records_t_balance)
-        internal returns(uint)
+        internal pure returns(uint)
     {
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
         uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
@@ -34,7 +34,7 @@ contract TBPoolJoinExit is BNum {
 
     // This function model an attacker calling joinPool - exitPool and taking advantage of potential rounding
     // issues to generate free pool token
-    function joinAndExitPool(uint poolAmountOut, uint poolAmountIn, uint poolTotal, uint _records_t_balance) public {
+    function joinAndExitPool(uint poolAmountOut, uint poolAmountIn, uint poolTotal, uint _records_t_balance) public pure {
         uint tokenAmountIn = joinPool(poolAmountOut, poolTotal, _records_t_balance);
 
         // We constraint poolTotal and _records_t_balance

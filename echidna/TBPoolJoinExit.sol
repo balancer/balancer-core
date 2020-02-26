@@ -4,6 +4,8 @@ import "./CryticInterface.sol";
 
 contract TBPoolJoinExit is CryticInterface, BPool {
 
+    uint MAX_BALANCE = BONE * 10**12;
+
     constructor() public {
         MyToken t;
         t = new MyToken(uint(-1), address(this));

@@ -1,5 +1,7 @@
 import "../../BNum.sol";
 
+pragma solidity 0.5.12;
+
 //  This test is similar to TBPoolJoin but with an exit fee
 contract TBPoolJoinExit is BNum {
 
@@ -7,7 +9,7 @@ contract TBPoolJoinExit is BNum {
 
     // joinPool models the BPool.joinPool behavior for one token
     function joinPool(uint poolAmountOut, uint poolTotal, uint _records_t_balance)
-        internal returns(uint)
+        internal pure returns(uint)
     {
         uint ratio = bdiv(poolAmountOut, poolTotal);
         require(ratio != 0, "ERR_MATH_APPROX");
@@ -20,7 +22,7 @@ contract TBPoolJoinExit is BNum {
 
     // exitPool models the BPool.exitPool behavior for one token
     function exitPool(uint poolAmountIn, uint poolTotal, uint _records_t_balance)
-        internal returns(uint)
+        internal pure returns(uint)
     {
         uint exitFee = bmul(poolAmountIn, EXIT_FEE);
         uint pAiAfterExitFee = bsub(poolAmountIn, exitFee);
