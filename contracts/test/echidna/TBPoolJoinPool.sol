@@ -1,5 +1,7 @@
 import "../../BNum.sol";
 
+pragma solidity 0.5.12;
+
 contract TBPoolJoinPool is BNum {
 
     bool public echidna_no_bug_found = true;
