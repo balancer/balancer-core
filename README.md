@@ -24,7 +24,7 @@ your portfolio by following arbitrage opportunities.
 
 Balancer is based on an N-dimensional invariant surface which is a generalization of the constant product formula described by Vitalik Buterin and proven viable by the popular Uniswap dapp.
 
-<h2 align=center><br/><code>🍂 bronze release 🍂</code></h2>
+## 🍂 Bronze Release 🍂
 
 The *🍂Bronze Release🍂*  is the first of 3 planned releases of the Balancer Protocol. Bronze emphasizes code clarity for audit and verification, and does not go to great lengths to optimize for gas.
 
@@ -32,8 +32,12 @@ The *❄️Silver Release❄️* will bring many gas optimizations and architect
 
 The *☀️Golden Release☀️* will introduce a curious new liquidity mechanism to the market.
 
+## Documentation
 
-### Using the ABI definitions
+The full documentation can be found at [https://docs.balancer.finance](https://docs.balancer.finance)
+
+
+## Development
 
 Most users will want to consume the ABI definitions for BFactory and BPool.
 
@@ -73,8 +77,7 @@ relDif  : 1.6464292361378058e-12)
       ✓ exitswap_ExternAmountOut (537ms)
 ```
 
-Complete API docs are available at [https://balancer.finance/api](https://balancer.finance/api)
-(or see the [markdown source](https://github.com/balancer-labs/balancer-finance/blob/master/api.md) if it's not available).
-Look in the [`test/`](https://github.com/balancer-labs/balancer-core/tree/master/test) directory for working examples in a mock environment.
+Complete API docs are available at [https://docs.balancer.finance/smart-contracts/api](https://docs.balancer.finance/smart-contracts/api)
+
 
 <p align=center>⊙</p>

@@ -1,5 +1,3 @@
-pragma solidity 0.5.12;
-    
 // This file is a flatenen verison of BNum
 // where require(cond, string) where replaced by require(cond)
 // To allow SkipRequire to work properly

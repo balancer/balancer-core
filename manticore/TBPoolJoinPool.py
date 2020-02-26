@@ -17,7 +17,22 @@ ETHER = 10 ** 18
 
 user = m.create_account(balance=1 * ETHER)
 
+# This plugin is used to speed up the exploration and skip the require(false) paths
+# It won't be needed once https://github.com/trailofbits/manticore/issues/1593 is added
+class SkipRequire(Plugin):
+    def will_evm_execute_instruction_callback(self, state, instruction, arguments):
+        world = state.platform
+        if state.platform.current_transaction.sort != 'CREATE':
+            if instruction.semantics == "JUMPI":
+                potential_revert = world.current_vm.read_code(world.current_vm.pc + 4)
+                if potential_revert[0].size == 8 and potential_revert[0].value == 0xfd:
+                    state.constrain(arguments[1] == True)
+
+
 print(f'controller: {hex(user.address)}')
+
+skipRequire = SkipRequire()
+m.register_plugin(skipRequire)
 
 TestBpool = m.solidity_create_contract('./manticore/contracts/TBPoolJoinPool.sol',
                                        contract_name='TBPoolJoinPool',
@@ -27,7 +42,6 @@ print(f'TBPoolJoinPool deployed {hex(TestBpool.address)}')
 
 # Call joinAndExitNoFeePool with symbolic values
 poolAmountOut = m.make_symbolic_value()
-poolAmountIn = m.make_symbolic_value()
 poolTotal = m.make_symbolic_value()
 _records_t_balance = m.make_symbolic_value()
 TestBpool.joinPool(poolAmountOut, poolTotal, _records_t_balance)
