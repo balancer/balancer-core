@@ -10,7 +10,16 @@ const NEAR_LOCAL_EVM = 'evm.test.near';
 const NEAR_LOCAL_EVM_ACCOUNT_ID = utils.nearAccountToEvmAddress(NEAR_LOCAL_ACCOUNT_ID);
 const LOTS_OF_GAS = "0xffffffffffffffffff";
 
-module.exports = {
+// TODO: do this only when in development.
+{
+    const provider = new NearProvider(
+        NEAR_LOCAL_URL, keyStore, NEAR_LOCAL_ACCOUNT_ID,
+        NEAR_LOCAL_NETWORK_ID, NEAR_LOCAL_EVM,
+    );
+    utils.createTestAccounts(provider, 5);
+}
+
+module.exports = {    
     networks: {
         development: {
             network_id: "*",
@@ -22,7 +31,6 @@ module.exports = {
                     NEAR_LOCAL_URL, keyStore, NEAR_LOCAL_ACCOUNT_ID,
                     NEAR_LOCAL_NETWORK_ID, NEAR_LOCAL_EVM,
                 );
-                utils.createTestAccounts(provider, 5);
                 return provider;
             },
         },
