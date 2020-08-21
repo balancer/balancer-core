@@ -13,8 +13,8 @@ function NearLocalProvider() {
 function NearTestNetProvider() {
     return new NearProvider({
         nodeUrl: 'https://rpc.testnet.near.org',
-        networkId: 'testnet',
-        masterAccount: 'illia',
+        networkId: 'default',
+        masterAccountId: 'illia',
         evmAccountId: 'evm.illia',
     });
 }
