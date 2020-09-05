@@ -6,7 +6,7 @@ function NearLocalProvider() {
         nodeUrl: 'http://127.0.0.1:3030',
         networkId: 'local',
         masterAccountId: 'test.near',
-        evmAccountId: 'evm.test.near',
+        evmAccountId: 'evm',
     });
 }
 
