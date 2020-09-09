@@ -24,8 +24,6 @@ contract('BPool', async (accounts) => {
     let POOL; //   pool address
 
     before(async () => {
-        // TODO: fix the waiting for test account creation.
-        assert(accounts.length > 3);
         factory = await BFactory.deployed();
 
         POOL = await factory.newBPool.call();

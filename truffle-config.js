@@ -1,12 +1,14 @@
-const web3 = require('web3');
-const { NearProvider, nearlib, utils } = require('near-web3-provider');
+const path = require('path');
+
+const { NearProvider } = require('near-web3-provider');
 
 function NearLocalProvider() {
     return new NearProvider({
         nodeUrl: 'http://127.0.0.1:3030',
         networkId: 'local',
         masterAccountId: 'test.near',
-        evmAccountId: 'evm',
+        numTestAccounts: 5,
+        keyPath: path.join(process.env.HOME, '.near/local/validator_key.json'),
     });
 }
 
@@ -19,11 +21,7 @@ function NearTestNetProvider() {
     });
 }
 
-// TODO: do this only when in development.
-// {
-//     const provider = NearLocalProvider();
-//     utils.createTestAccounts(provider, 5);
-// }
+const provider = NearLocalProvider();
 
 module.exports = {
     networks: {
