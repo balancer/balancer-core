@@ -14,14 +14,13 @@ function NearLocalProvider() {
 
 function NearTestNetProvider() {
     return new NearProvider({
-        nodeUrl: 'https://rpc.testnet.near.org',
+        nodeUrl: 'http://34.82.212.1:3030',
         networkId: 'default',
-        masterAccountId: 'illia',
-        evmAccountId: 'evm.illia',
+        masterAccountId: '1.test.near',
+        evmAccountId: 'evm',
+        keyPath: path.join(__dirname, '1.test.near.json'),
     });
 }
-
-const provider = NearLocalProvider();
 
 module.exports = {
     networks: {
