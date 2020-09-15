@@ -31,7 +31,7 @@
         "eslint-plugin-react": "^7.17.0",
         "ganache-core": "^2.6.1",
         "mocha": "^6.2.0",
-        "near-web3-provider": "../../nearprotocol/near-web3-provider/",
+        "near-web3-provider": "https://github.com/near/near-web3-provider#d9f5426a77582741f238a47174f0879ccab4b844",
         "solhint": "^2.3.0",
         "solidity-coverage": "^0.6.7",
         "standard": "^14.0.2",
