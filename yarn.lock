@@ -3447,6 +3447,18 @@ eth-sig-util@^1.4.2:
     ethereumjs-abi "git+https://github.com/ethereumjs/ethereumjs-abi.git"
     ethereumjs-util "^5.1.1"
 
+eth-sig-util@^2.5.3:
+  version "2.5.3"
+  resolved "https://r.cnpmjs.org/eth-sig-util/download/eth-sig-util-2.5.3.tgz#6938308b38226e0b3085435474900b03036abcbe"
+  integrity sha1-aTgwizgibgswhUNUdJALAwNqvL4=
+  dependencies:
+    buffer "^5.2.1"
+    elliptic "^6.4.0"
+    ethereumjs-abi "0.6.5"
+    ethereumjs-util "^5.1.1"
+    tweetnacl "^1.0.0"
+    tweetnacl-util "^0.15.0"
+
 eth-tx-summary@^3.1.2:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/eth-tx-summary/-/eth-tx-summary-3.2.4.tgz#e10eb95eb57cdfe549bf29f97f1e4f1db679035c"
@@ -6566,10 +6578,9 @@ natural-compare@^1.4.0:
   resolved "https://registry.yarnpkg.com/natural-compare/-/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
 
-near-api-js@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/near-api-js/-/near-api-js-0.27.0.tgz#d65d4d1059f0d8feb84a56795cb41f5b8c79d68e"
-  integrity sha512-84tNujERdEEj2uboTHd5CbaAQqOWrQfEFGs+2cdVFYWwcFvMgEMQDwXH0tRan0LRRMTlJXGDsKV8LYf37J9K7A==
+"near-api-js@git+https://github.com/near/near-api-js.git#81f6403eef19dfc35d7dc0e02542c96f6ae61c28":
+  version "0.29.1"
+  resolved "git+https://github.com/near/near-api-js.git#81f6403eef19dfc35d7dc0e02542c96f6ae61c28"
   dependencies:
     "@types/bn.js" "^4.11.5"
     bn.js "^5.0.0"
@@ -6583,13 +6594,15 @@ near-api-js@^0.27.0:
     text-encoding-utf-8 "^1.0.2"
     tweetnacl "^1.0.1"
 
-near-web3-provider@../../nearprotocol/near-web3-provider/:
+"near-web3-provider@https://github.com/near/near-web3-provider#3d16010cb362981849530fb2949280b4a7918353":
   version "0.3.0"
+  resolved "https://github.com/near/near-web3-provider#3d16010cb362981849530fb2949280b4a7918353"
   dependencies:
     bn.js "^5.1.2"
     bs58 "^4.0.1"
     bsert "0.0.10"
-    near-api-js "^0.27.0"
+    eth-sig-util "^2.5.3"
+    near-api-js "git+https://github.com/near/near-api-js.git#81f6403eef19dfc35d7dc0e02542c96f6ae61c28"
     tweetnacl "^1.0.3"
     web3-provider-engine "^15.0.7"
     web3-utils "^1.2.8"
@@ -10219,7 +10232,6 @@ websocket@1.0.29, "websocket@github:web3-js/WebSocket-Node#polyfill/globalThis":
   dependencies:
     debug "^2.2.0"
     es5-ext "^0.10.50"
-    gulp "^4.0.2"
     nan "^2.14.0"
     typedarray-to-buffer "^3.1.5"
     yaeti "^0.0.6"
