@@ -13,7 +13,7 @@
 
 pragma solidity 0.5.12;
 
-import "./BNum.sol";
+import "./ONum.sol";
 
 // Highly opinionated token implementation
 
@@ -32,7 +32,7 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-contract BTokenBase is BNum {
+contract USDiTokenBase is ONum {
 
     mapping(address => uint)                   internal _balance;
     mapping(address => mapping(address=>uint)) internal _allowance;
@@ -42,22 +42,22 @@ contract BTokenBase is BNum {
     event Transfer(address indexed src, address indexed dst, uint amt);
 
     function _mint(uint amt) internal {
-        _balance[address(this)] = badd(_balance[address(this)], amt);
-        _totalSupply = badd(_totalSupply, amt);
+        _balance[address(this)] = oadd(_balance[address(this)], amt);
+        _totalSupply = oadd(_totalSupply, amt);
         emit Transfer(address(0), address(this), amt);
     }
 
     function _burn(uint amt) internal {
         require(_balance[address(this)] >= amt, "ERR_INSUFFICIENT_BAL");
-        _balance[address(this)] = bsub(_balance[address(this)], amt);
-        _totalSupply = bsub(_totalSupply, amt);
+        _balance[address(this)] = osub(_balance[address(this)], amt);
+        _totalSupply = osub(_totalSupply, amt);
         emit Transfer(address(this), address(0), amt);
     }
 
     function _move(address src, address dst, uint amt) internal {
         require(_balance[src] >= amt, "ERR_INSUFFICIENT_BAL");
-        _balance[src] = bsub(_balance[src], amt);
-        _balance[dst] = badd(_balance[dst], amt);
+        _balance[src] = osub(_balance[src], amt);
+        _balance[dst] = oadd(_balance[dst], amt);
         emit Transfer(src, dst, amt);
     }
 
@@ -70,7 +70,7 @@ contract BTokenBase is BNum {
     }
 }
 
-contract BToken is BTokenBase, IERC20 {
+contract USDiToken is USDiTokenBase, IERC20 {
 
     string  private _name     = "USDi Perpetual Yield Dollar";
     string  private _symbol   = "USDi";
@@ -107,7 +107,7 @@ contract BToken is BTokenBase, IERC20 {
     }
 
     function increaseApproval(address dst, uint amt) external returns (bool) {
-        _allowance[msg.sender][dst] = badd(_allowance[msg.sender][dst], amt);
+        _allowance[msg.sender][dst] = oadd(_allowance[msg.sender][dst], amt);
         emit Approval(msg.sender, dst, _allowance[msg.sender][dst]);
         return true;
     }
@@ -117,7 +117,7 @@ contract BToken is BTokenBase, IERC20 {
         if (amt > oldValue) {
             _allowance[msg.sender][dst] = 0;
         } else {
-            _allowance[msg.sender][dst] = bsub(oldValue, amt);
+            _allowance[msg.sender][dst] = osub(oldValue, amt);
         }
         emit Approval(msg.sender, dst, _allowance[msg.sender][dst]);
         return true;
@@ -132,7 +132,7 @@ contract BToken is BTokenBase, IERC20 {
         require(msg.sender == src || amt <= _allowance[src][msg.sender], "ERR_BTOKEN_BAD_CALLER");
         _move(src, dst, amt);
         if (msg.sender != src && _allowance[src][msg.sender] != uint256(-1)) {
-            _allowance[src][msg.sender] = bsub(_allowance[src][msg.sender], amt);
+            _allowance[src][msg.sender] = osub(_allowance[src][msg.sender], amt);
             emit Approval(msg.sender, dst, _allowance[src][msg.sender]);
         }
         return true;

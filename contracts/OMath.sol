@@ -13,9 +13,9 @@
 
 pragma solidity 0.5.12;
 
-import "./BNum.sol";
+import "./ONum.sol";
 
-contract BMath is BBronze, BConst, BNum {
+contract OMath is BBronze, OConst, ONum {
     /**********************************************************************************************
     // calcSpotPrice                                                                             //
     // sP = spotPrice                                                                            //
@@ -35,11 +35,11 @@ contract BMath is BBronze, BConst, BNum {
         public pure
         returns (uint spotPrice)
     {
-        uint numer = bdiv(tokenBalanceIn, tokenWeightIn);
-        uint denom = bdiv(tokenBalanceOut, tokenWeightOut);
-        uint ratio = bdiv(numer, denom);
-        uint scale = bdiv(BONE, bsub(BONE, swapFee));
-        return  (spotPrice = bmul(ratio, scale));
+        uint numer = odiv(tokenBalanceIn, tokenWeightIn);
+        uint denom = odiv(tokenBalanceOut, tokenWeightOut);
+        uint ratio = odiv(numer, denom);
+        uint scale = odiv(BONE, osub(BONE, swapFee));
+        return  (spotPrice = omul(ratio, scale));
     }
 
     /**********************************************************************************************
@@ -63,13 +63,13 @@ contract BMath is BBronze, BConst, BNum {
         public pure
         returns (uint tokenAmountOut)
     {
-        uint weightRatio = bdiv(tokenWeightIn, tokenWeightOut);
-        uint adjustedIn = bsub(BONE, swapFee);
-        adjustedIn = bmul(tokenAmountIn, adjustedIn);
-        uint y = bdiv(tokenBalanceIn, badd(tokenBalanceIn, adjustedIn));
-        uint foo = bpow(y, weightRatio);
-        uint bar = bsub(BONE, foo);
-        tokenAmountOut = bmul(tokenBalanceOut, bar);
+        uint weightRatio = odiv(tokenWeightIn, tokenWeightOut);
+        uint adjustedIn = osub(BONE, swapFee);
+        adjustedIn = omul(tokenAmountIn, adjustedIn);
+        uint y = odiv(tokenBalanceIn, oadd(tokenBalanceIn, adjustedIn));
+        uint foo = opow(y, weightRatio);
+        uint bar = osub(BONE, foo);
+        tokenAmountOut = omul(tokenBalanceOut, bar);
         return tokenAmountOut;
     }
 
@@ -94,13 +94,13 @@ contract BMath is BBronze, BConst, BNum {
         public pure
         returns (uint tokenAmountIn)
     {
-        uint weightRatio = bdiv(tokenWeightOut, tokenWeightIn);
-        uint diff = bsub(tokenBalanceOut, tokenAmountOut);
-        uint y = bdiv(tokenBalanceOut, diff);
-        uint foo = bpow(y, weightRatio);
-        foo = bsub(foo, BONE);
-        tokenAmountIn = bsub(BONE, swapFee);
-        tokenAmountIn = bdiv(bmul(tokenBalanceIn, foo), tokenAmountIn);
+        uint weightRatio = odiv(tokenWeightOut, tokenWeightIn);
+        uint diff = osub(tokenBalanceOut, tokenAmountOut);
+        uint y = odiv(tokenBalanceOut, diff);
+        uint foo = opow(y, weightRatio);
+        foo = osub(foo, BONE);
+        tokenAmountIn = osub(BONE, swapFee);
+        tokenAmountIn = odiv(omul(tokenBalanceIn, foo), tokenAmountIn);
         return tokenAmountIn;
     }
 
@@ -129,17 +129,17 @@ contract BMath is BBronze, BConst, BNum {
         ///  which is implicitly traded to the other pool tokens.
         // That proportion is (1- weightTokenIn)
         // tokenAiAfterFee = tAi * (1 - (1-weightTi) * poolFee);
-        uint normalizedWeight = bdiv(tokenWeightIn, totalWeight);
-        uint zaz = bmul(bsub(BONE, normalizedWeight), swapFee); 
-        uint tokenAmountInAfterFee = bmul(tokenAmountIn, bsub(BONE, zaz));
+        uint normalizedWeight = odiv(tokenWeightIn, totalWeight);
+        uint zaz = omul(osub(BONE, normalizedWeight), swapFee); 
+        uint tokenAmountInAfterFee = omul(tokenAmountIn, osub(BONE, zaz));
 
-        uint newTokenBalanceIn = badd(tokenBalanceIn, tokenAmountInAfterFee);
-        uint tokenInRatio = bdiv(newTokenBalanceIn, tokenBalanceIn);
+        uint newTokenBalanceIn = oadd(tokenBalanceIn, tokenAmountInAfterFee);
+        uint tokenInRatio = odiv(newTokenBalanceIn, tokenBalanceIn);
 
         // uint newPoolSupply = (ratioTi ^ weightTi) * poolSupply;
-        uint poolRatio = bpow(tokenInRatio, normalizedWeight);
-        uint newPoolSupply = bmul(poolRatio, poolSupply);
-        poolAmountOut = bsub(newPoolSupply, poolSupply);
+        uint poolRatio = opow(tokenInRatio, normalizedWeight);
+        uint newPoolSupply = omul(poolRatio, poolSupply);
+        poolAmountOut = osub(newPoolSupply, poolSupply);
         return poolAmountOut;
     }
 
@@ -164,20 +164,20 @@ contract BMath is BBronze, BConst, BNum {
         public pure
         returns (uint tokenAmountIn)
     {
-        uint normalizedWeight = bdiv(tokenWeightIn, totalWeight);
-        uint newPoolSupply = badd(poolSupply, poolAmountOut);
-        uint poolRatio = bdiv(newPoolSupply, poolSupply);
+        uint normalizedWeight = odiv(tokenWeightIn, totalWeight);
+        uint newPoolSupply = oadd(poolSupply, poolAmountOut);
+        uint poolRatio = odiv(newPoolSupply, poolSupply);
       
         //uint newBalTi = poolRatio^(1/weightTi) * balTi;
-        uint boo = bdiv(BONE, normalizedWeight); 
-        uint tokenInRatio = bpow(poolRatio, boo);
-        uint newTokenBalanceIn = bmul(tokenInRatio, tokenBalanceIn);
-        uint tokenAmountInAfterFee = bsub(newTokenBalanceIn, tokenBalanceIn);
+        uint boo = odiv(BONE, normalizedWeight); 
+        uint tokenInRatio = opow(poolRatio, boo);
+        uint newTokenBalanceIn = omul(tokenInRatio, tokenBalanceIn);
+        uint tokenAmountInAfterFee = osub(newTokenBalanceIn, tokenBalanceIn);
         // Do reverse order of fees charged in joinswap_ExternAmountIn, this way 
         //     ``` pAo == joinswap_ExternAmountIn(Ti, joinswap_PoolAmountOut(pAo, Ti)) ```
         //uint tAi = tAiAfterFee / (1 - (1-weightTi) * swapFee) ;
-        uint zar = bmul(bsub(BONE, normalizedWeight), swapFee);
-        tokenAmountIn = bdiv(tokenAmountInAfterFee, bsub(BONE, zar));
+        uint zar = omul(osub(BONE, normalizedWeight), swapFee);
+        tokenAmountIn = odiv(tokenAmountInAfterFee, osub(BONE, zar));
         return tokenAmountIn;
     }
 
@@ -203,23 +203,23 @@ contract BMath is BBronze, BConst, BNum {
         public pure
         returns (uint tokenAmountOut)
     {
-        uint normalizedWeight = bdiv(tokenWeightOut, totalWeight);
+        uint normalizedWeight = odiv(tokenWeightOut, totalWeight);
         // charge exit fee on the pool token side
         // pAiAfterExitFee = pAi*(1-exitFee)
-        uint poolAmountInAfterExitFee = bmul(poolAmountIn, bsub(BONE, EXIT_FEE));
-        uint newPoolSupply = bsub(poolSupply, poolAmountInAfterExitFee);
-        uint poolRatio = bdiv(newPoolSupply, poolSupply);
+        uint poolAmountInAfterExitFee = omul(poolAmountIn, osub(BONE, EXIT_FEE));
+        uint newPoolSupply = osub(poolSupply, poolAmountInAfterExitFee);
+        uint poolRatio = odiv(newPoolSupply, poolSupply);
      
         // newBalTo = poolRatio^(1/weightTo) * balTo;
-        uint tokenOutRatio = bpow(poolRatio, bdiv(BONE, normalizedWeight));
-        uint newTokenBalanceOut = bmul(tokenOutRatio, tokenBalanceOut);
+        uint tokenOutRatio = opow(poolRatio, odiv(BONE, normalizedWeight));
+        uint newTokenBalanceOut = omul(tokenOutRatio, tokenBalanceOut);
 
-        uint tokenAmountOutBeforeSwapFee = bsub(tokenBalanceOut, newTokenBalanceOut);
+        uint tokenAmountOutBeforeSwapFee = osub(tokenBalanceOut, newTokenBalanceOut);
 
         // charge swap fee on the output token side 
         //uint tAo = tAoBeforeSwapFee * (1 - (1-weightTo) * swapFee)
-        uint zaz = bmul(bsub(BONE, normalizedWeight), swapFee); 
-        tokenAmountOut = bmul(tokenAmountOutBeforeSwapFee, bsub(BONE, zaz));
+        uint zaz = omul(osub(BONE, normalizedWeight), swapFee); 
+        tokenAmountOut = omul(tokenAmountOutBeforeSwapFee, osub(BONE, zaz));
         return tokenAmountOut;
     }
 
@@ -247,23 +247,23 @@ contract BMath is BBronze, BConst, BNum {
     {
 
         // charge swap fee on the output token side 
-        uint normalizedWeight = bdiv(tokenWeightOut, totalWeight);
+        uint normalizedWeight = odiv(tokenWeightOut, totalWeight);
         //uint tAoBeforeSwapFee = tAo / (1 - (1-weightTo) * swapFee) ;
-        uint zoo = bsub(BONE, normalizedWeight);
-        uint zar = bmul(zoo, swapFee); 
-        uint tokenAmountOutBeforeSwapFee = bdiv(tokenAmountOut, bsub(BONE, zar));
+        uint zoo = osub(BONE, normalizedWeight);
+        uint zar = omul(zoo, swapFee); 
+        uint tokenAmountOutBeforeSwapFee = odiv(tokenAmountOut, osub(BONE, zar));
 
-        uint newTokenBalanceOut = bsub(tokenBalanceOut, tokenAmountOutBeforeSwapFee);
-        uint tokenOutRatio = bdiv(newTokenBalanceOut, tokenBalanceOut);
+        uint newTokenBalanceOut = osub(tokenBalanceOut, tokenAmountOutBeforeSwapFee);
+        uint tokenOutRatio = odiv(newTokenBalanceOut, tokenBalanceOut);
 
         //uint newPoolSupply = (ratioTo ^ weightTo) * poolSupply;
-        uint poolRatio = bpow(tokenOutRatio, normalizedWeight);
-        uint newPoolSupply = bmul(poolRatio, poolSupply);
-        uint poolAmountInAfterExitFee = bsub(poolSupply, newPoolSupply);
+        uint poolRatio = opow(tokenOutRatio, normalizedWeight);
+        uint newPoolSupply = omul(poolRatio, poolSupply);
+        uint poolAmountInAfterExitFee = osub(poolSupply, newPoolSupply);
 
         // charge exit fee on the pool token side
         // pAi = pAiAfterExitFee/(1-exitFee)
-        poolAmountIn = bdiv(poolAmountInAfterExitFee, bsub(BONE, EXIT_FEE));
+        poolAmountIn = odiv(poolAmountInAfterExitFee, osub(BONE, EXIT_FEE));
         return poolAmountIn;
     }
 

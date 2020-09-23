@@ -15,65 +15,65 @@ pragma solidity 0.5.12;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
 
-import "./BPool.sol";
+import "./OPool.sol";
 
-contract BFactory is BBronze {
+contract OFactory is BBronze {
     event LOG_NEW_POOL(
         address indexed caller,
         address indexed pool
     );
 
-    event LOG_BLABS(
+    event LOG_OLABS(
         address indexed caller,
-        address indexed blabs
+        address indexed olabs
     );
 
-    mapping(address=>bool) private _isBPool;
+    mapping(address=>bool) private _isOPool;
 
-    function isBPool(address b)
+    function isOPool(address o)
         external view returns (bool)
     {
-        return _isBPool[b];
+        return _isOPool[o];
     }
 
-    function newBPool()
+    function newOPool()
         external
-        returns (BPool)
+        returns (OPool)
     {
-        BPool bpool = new BPool();
-        _isBPool[address(bpool)] = true;
-        emit LOG_NEW_POOL(msg.sender, address(bpool));
+        OPool opool = new OPool();
+        _isOPool[address(opool)] = true;
+        emit LOG_NEW_POOL(msg.sender, address(opool));
         bpool.setController(msg.sender);
-        return bpool;
+        return opool;
     }
 
-    address private _blabs;
+    address private _olabs;
 
     constructor() public {
-        _blabs = msg.sender;
+        _olabs = msg.sender;
     }
 
-    function getBLabs()
+    function getOLabs()
         external view
         returns (address)
     {
-        return _blabs;
+        return _olabs;
     }
 
-    function setBLabs(address b)
+    function setOLabs(address o)
         external
     {
-        require(msg.sender == _blabs, "ERR_NOT_BLABS");
-        emit LOG_BLABS(msg.sender, b);
-        _blabs = b;
+        require(msg.sender == _olabs, "ERR_NOT_OLABS");
+        emit LOG_OLABS(msg.sender, o);
+        _olabs = o;
     }
 
-    function collect(BPool pool)
+    function collect(OPool pool)
         external 
     {
-        require(msg.sender == _blabs, "ERR_NOT_BLABS");
+        require(msg.sender == _olabs, "ERR_NOT_OLABS");
         uint collected = IERC20(pool).balanceOf(address(this));
-        bool xfer = pool.transfer(_blabs, collected);
+        bool xfer = pool.transfer(_olabs, collected);
         require(xfer, "ERR_ERC20_FAILED");
     }
 }

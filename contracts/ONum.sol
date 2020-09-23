@@ -13,9 +13,9 @@
 
 pragma solidity 0.5.12;
 
-import "./BConst.sol";
+import "./OConst.sol";
 
-contract BNum is BConst {
+contract ONum is OConst {
 
     function btoi(uint a)
         internal pure 
@@ -24,14 +24,14 @@ contract BNum is BConst {
         return a / BONE;
     }
 
-    function bfloor(uint a)
+    function ofloor(uint a)
         internal pure
         returns (uint)
     {
         return btoi(a) * BONE;
     }
 
-    function badd(uint a, uint b)
+    function oadd(uint a, uint b)
         internal pure
         returns (uint)
     {
@@ -40,7 +40,7 @@ contract BNum is BConst {
         return c;
     }
 
-    function bsub(uint a, uint b)
+    function osub(uint a, uint b)
         internal pure
         returns (uint)
     {
@@ -49,7 +49,7 @@ contract BNum is BConst {
         return c;
     }
 
-    function bsubSign(uint a, uint b)
+    function osubSign(uint a, uint b)
         internal pure
         returns (uint, bool)
     {
@@ -60,7 +60,7 @@ contract BNum is BConst {
         }
     }
 
-    function bmul(uint a, uint b)
+    function omul(uint a, uint b)
         internal pure
         returns (uint)
     {
@@ -72,13 +72,13 @@ contract BNum is BConst {
         return c2;
     }
 
-    function bdiv(uint a, uint b)
+    function odiv(uint a, uint b)
         internal pure
         returns (uint)
     {
         require(b != 0, "ERR_DIV_ZERO");
         uint c0 = a * BONE;
-        require(a == 0 || c0 / a == BONE, "ERR_DIV_INTERNAL"); // bmul overflow
+        require(a == 0 || c0 / a == BONE, "ERR_DIV_INTERNAL"); // omul overflow
         uint c1 = c0 + (b / 2);
         require(c1 >= c0, "ERR_DIV_INTERNAL"); //  badd require
         uint c2 = c1 / b;
@@ -86,17 +86,17 @@ contract BNum is BConst {
     }
 
     // DSMath.wpow
-    function bpowi(uint a, uint n)
+    function opowi(uint a, uint n)
         internal pure
         returns (uint)
     {
         uint z = n % 2 != 0 ? a : BONE;
 
         for (n /= 2; n != 0; n /= 2) {
-            a = bmul(a, a);
+            a = omul(a, a);
 
             if (n % 2 != 0) {
-                z = bmul(z, a);
+                z = omul(z, a);
             }
         }
         return z;
@@ -105,24 +105,24 @@ contract BNum is BConst {
     // Compute b^(e.w) by splitting it into (b^e)*(b^0.w).
     // Use `bpowi` for `b^e` and `bpowK` for k iterations
     // of approximation of b^0.w
-    function bpow(uint base, uint exp)
+    function opow(uint base, uint exp)
         internal pure
         returns (uint)
     {
         require(base >= MIN_BPOW_BASE, "ERR_BPOW_BASE_TOO_LOW");
         require(base <= MAX_BPOW_BASE, "ERR_BPOW_BASE_TOO_HIGH");
 
-        uint whole  = bfloor(exp);   
-        uint remain = bsub(exp, whole);
+        uint whole  = ofloor(exp);   
+        uint remain = osub(exp, whole);
 
-        uint wholePow = bpowi(base, btoi(whole));
+        uint wholePow = opowi(base, btoi(whole));
 
         if (remain == 0) {
             return wholePow;
         }
 
         uint partialResult = bpowApprox(base, remain, BPOW_PRECISION);
-        return bmul(wholePow, partialResult);
+        return omul(wholePow, partialResult);
     }
 
     function bpowApprox(uint base, uint exp, uint precision)
@@ -131,7 +131,7 @@ contract BNum is BConst {
     {
         // term 0:
         uint a     = exp;
-        (uint x, bool xneg)  = bsubSign(base, BONE);
+        (uint x, bool xneg)  = osubSign(base, BONE);
         uint term = BONE;
         uint sum   = term;
         bool negative = false;
@@ -143,17 +143,17 @@ contract BNum is BConst {
         // continue until term is less than precision
         for (uint i = 1; term >= precision; i++) {
             uint bigK = i * BONE;
-            (uint c, bool cneg) = bsubSign(a, bsub(bigK, BONE));
-            term = bmul(term, bmul(c, x));
-            term = bdiv(term, bigK);
+            (uint c, bool cneg) = osubSign(a, osub(bigK, BONE));
+            term = omul(term, omul(c, x));
+            term = odiv(term, bigK);
             if (term == 0) break;
 
             if (xneg) negative = !negative;
             if (cneg) negative = !negative;
             if (negative) {
-                sum = bsub(sum, term);
+                sum = osub(sum, term);
             } else {
-                sum = badd(sum, term);
+                sum = oadd(sum, term);
             }
         }
 
