@@ -16,7 +16,7 @@ pragma solidity 0.5.12;
 import "./OToken.sol";
 import "./OMath.sol";
 
-contract OPool is BBronze, OToken, OMath {
+contract OPool is OBronze, OToken, OMath {
 
     struct Record {
         bool bound;   // is token bound to pool

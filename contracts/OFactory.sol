@@ -17,7 +17,7 @@ pragma solidity 0.5.12;
 
 import "./OPool.sol";
 
-contract OFactory is BBronze {
+contract OFactory is OBronze {
     event LOG_NEW_POOL(
         address indexed caller,
         address indexed pool

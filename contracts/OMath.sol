@@ -15,7 +15,7 @@ pragma solidity 0.5.12;
 
 import "./ONum.sol";
 
-contract OMath is BBronze, OConst, ONum {
+contract OMath is OBronze, OConst, ONum {
     /**********************************************************************************************
     // calcSpotPrice                                                                             //
     // sP = spotPrice                                                                            //
