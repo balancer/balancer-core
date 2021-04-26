@@ -103,7 +103,7 @@ contract TBPoolLimits is CryticInterface, BPool {
             revert();
 
         // if the pool is not finalized, make sure public swap is enabled
-        if (!this.isFinalized())
+        if (!this.isConstructed())
             setPublicSwap(true);
  
         address[] memory current_tokens = this.getCurrentTokens();
@@ -128,7 +128,7 @@ contract TBPoolLimits is CryticInterface, BPool {
            revert();
 
         // if the pool is not finalized, make sure public swap is enabled  
-        if (!this.isFinalized())
+        if (!this.isConstructed())
            setPublicSwap(true);
 
         address[] memory current_tokens = this.getCurrentTokens();

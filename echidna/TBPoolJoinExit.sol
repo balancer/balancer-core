@@ -50,7 +50,7 @@ contract TBPoolJoinExit is CryticInterface, BPool {
     function echidna_joinPool_exitPool_balance_consistency() public returns (bool) {
      
         // if the pool was not finalize, return true (it is unclear how to finalize it) 
-        if (!this.isFinalized())
+        if (!this.isConstructed())
             return true;
 
         // check this precondition for joinPool

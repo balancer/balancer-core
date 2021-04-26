@@ -15,10 +15,18 @@ contract('BPool', async (accounts) => {
     const errorDelta = 10 ** -8;
     const MAX = web3.utils.toTwosComplement(-1);
 
-    let WETH; let MKR; let DAI; let
-        XXX; // addresses
-    let weth; let mkr; let dai; let
-        xxx; // TTokens
+    let WETH;
+    let MKR;
+    let DAI;
+    let XXX; // addresses
+    let ATKN;
+
+    let weth;
+    let mkr;
+    let dai;
+    let xxx; // TTokens
+    let atkn;
+
     let factory; // BPool factory
     let pool; // first pool w/ defaults
     let POOL; //   pool address
@@ -34,11 +42,13 @@ contract('BPool', async (accounts) => {
         mkr = await TToken.new('Maker', 'MKR', 18);
         dai = await TToken.new('Dai Stablecoin', 'DAI', 18);
         xxx = await TToken.new('XXX', 'XXX', 18);
+        atkn = await TToken.new('Additional Token', 'ATKN', 18);
 
         WETH = weth.address;
         MKR = mkr.address;
         DAI = dai.address;
         XXX = xxx.address;
+        ATKN = atkn.address;
 
         /*
             Tests assume token prices
@@ -53,18 +63,21 @@ contract('BPool', async (accounts) => {
         await mkr.mint(admin, toWei('20'));
         await dai.mint(admin, toWei('10000'));
         await xxx.mint(admin, toWei('10'));
+        await atkn.mint(admin, toWei('40'));
 
         // User1 balances
         await weth.mint(user1, toWei('25'), { from: admin });
         await mkr.mint(user1, toWei('4'), { from: admin });
         await dai.mint(user1, toWei('40000'), { from: admin });
         await xxx.mint(user1, toWei('10'), { from: admin });
+        await atkn.mint(user1, toWei('20'), { from: admin });
 
         // User2 balances
         await weth.mint(user2, toWei('12.2222'), { from: admin });
         await mkr.mint(user2, toWei('1.015333'), { from: admin });
         await dai.mint(user2, toWei('0'), { from: admin });
         await xxx.mint(user2, toWei('51'), { from: admin });
+        await atkn.mint(user2, toWei('20'), { from: admin });
     });
 
     describe('Binding Tokens', () => {
@@ -92,6 +105,7 @@ contract('BPool', async (accounts) => {
             await mkr.approve(POOL, MAX);
             await dai.approve(POOL, MAX);
             await xxx.approve(POOL, MAX);
+            await atkn.approve(POOL, MAX);
         });
 
         it('Fails binding weights and balances outside MIX MAX', async () => {
@@ -113,9 +127,9 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails finalizing pool without 2 tokens', async () => {
+        it('Fails publish pool without 2 tokens', async () => {
             await truffleAssert.reverts(
-                pool.finalize(),
+                pool.publish(),
                 'ERR_MIN_TOKENS',
             );
         });
@@ -177,17 +191,17 @@ contract('BPool', async (accounts) => {
             assert.sameMembers(currentTokens, [WETH, MKR, DAI]);
         });
 
-        it('Fails getting final tokens before finalized', async () => {
+        it('Fails getting published tokens before publish', async () => {
             await truffleAssert.reverts(
-                pool.getFinalTokens(),
-                'ERR_NOT_FINALIZED',
+                pool.getPublishedTokens(),
+                'ERR_UNDER_CONSTRUCT',
             );
         });
     });
 
 
-    describe('Finalizing pool', () => {
-        it('Fails when other users interact before finalizing', async () => {
+    describe('Publishing pool', () => {
+        it('Fails when other users interact before publishing', async () => {
             await truffleAssert.reverts(
                 pool.bind(WETH, toWei('5'), toWei('5'), { from: user1 }),
                 'ERR_NOT_CONTROLLER',
@@ -198,11 +212,11 @@ contract('BPool', async (accounts) => {
             );
             await truffleAssert.reverts(
                 pool.joinPool(toWei('1'), [MAX, MAX], { from: user1 }),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.exitPool(toWei('1'), [toWei('0'), toWei('0')], { from: user1 }),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.unbind(DAI, { from: user1 }),
@@ -210,7 +224,7 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails calling any swap before finalizing', async () => {
+        it('Fails calling any swap before publishing', async () => {
             await truffleAssert.reverts(
                 pool.swapExactAmountIn(WETH, toWei('2.5'), DAI, toWei('475'), toWei('200')),
                 'ERR_SWAP_NOT_PUBLIC',
@@ -229,22 +243,22 @@ contract('BPool', async (accounts) => {
             );
         });
 
-        it('Fails calling any join exit swap before finalizing', async () => {
+        it('Fails calling any join exit swap before publishing', async () => {
             await truffleAssert.reverts(
                 pool.joinswapExternAmountIn(WETH, toWei('2.5'), toWei('0')),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.joinswapPoolAmountOut(WETH, toWei('2.5'), MAX),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.exitswapPoolAmountIn(WETH, toWei('2.5'), toWei('0')),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.exitswapExternAmountOut(WETH, toWei('2.5'), MAX),
-                'ERR_NOT_FINALIZED',
+                'ERR_UNDER_CONSTRUCT',
             );
         });
 
@@ -286,55 +300,55 @@ contract('BPool', async (accounts) => {
             assert.equal(0.003, fromWei(swapFee));
         });
 
-        it('Fails nonadmin finalizes pool', async () => {
+        it('Fails nonadmin publish pool', async () => {
             await truffleAssert.reverts(
-                pool.finalize({ from: user1 }),
+                pool.publish({ from: user1 }),
                 'ERR_NOT_CONTROLLER',
             );
         });
 
-        it('Admin finalizes pool', async () => {
-            const tx = await pool.finalize();
+        it('Admin publish pool', async () => {
+            const tx = await pool.publish();
             const adminBal = await pool.balanceOf(admin);
             assert.equal(100, fromWei(adminBal));
             truffleAssert.eventEmitted(tx, 'Transfer', (event) => event.dst === admin);
-            const finalized = pool.isFinalized();
-            assert(finalized);
+            const constructed = pool.isConstructed();
+            assert(constructed);
         });
 
-        it('Fails finalizing pool after finalized', async () => {
+        it('Fails publish pool after publishing', async () => {
             await truffleAssert.reverts(
-                pool.finalize(),
-                'ERR_IS_FINALIZED',
+                pool.publish(),
+                'ERR_NOT_UNDER_CONSTRUCT',
             );
         });
 
-        it('Cant setPublicSwap, setSwapFee when finalized', async () => {
-            await truffleAssert.reverts(pool.setPublicSwap(false), 'ERR_IS_FINALIZED');
-            await truffleAssert.reverts(pool.setSwapFee(toWei('0.01')), 'ERR_IS_FINALIZED');
+        it('Cant setPublicSwap, setSwapFee when published', async () => {
+            await truffleAssert.reverts(pool.setPublicSwap(false), 'ERR_NOT_UNDER_CONSTRUCT');
+            await truffleAssert.reverts(pool.setSwapFee(toWei('0.01')), 'ERR_NOT_UNDER_CONSTRUCT');
         });
 
-        it('Fails binding new token after finalized', async () => {
+        it('Fails binding new token after publishing', async () => {
             await truffleAssert.reverts(
                 pool.bind(XXX, toWei('10'), toWei('5')),
-                'ERR_IS_FINALIZED',
+                'ERR_NOT_UNDER_CONSTRUCT',
             );
             await truffleAssert.reverts(
                 pool.rebind(DAI, toWei('10'), toWei('5')),
-                'ERR_IS_FINALIZED',
+                'ERR_NOT_UNDER_CONSTRUCT',
             );
         });
 
-        it('Fails unbinding after finalized', async () => {
+        it('Fails unbinding after publishing', async () => {
             await truffleAssert.reverts(
                 pool.unbind(WETH),
-                'ERR_IS_FINALIZED',
+                'ERR_NOT_UNDER_CONSTRUCT',
             );
         });
 
-        it('Get final tokens', async () => {
-            const finalTokens = await pool.getFinalTokens();
-            assert.sameMembers(finalTokens, [WETH, MKR, DAI]);
+        it('Get published tokens', async () => {
+            const publishedTokens = await pool.getPublishedTokens();
+            assert.sameMembers(publishedTokens, [WETH, MKR, DAI]);
         });
     });
 
@@ -367,8 +381,8 @@ contract('BPool', async (accounts) => {
           XXX - 0
         */
 
-        it('Fails admin unbinding token after finalized and others joined', async () => {
-            await truffleAssert.reverts(pool.unbind(DAI), 'ERR_IS_FINALIZED');
+        it('Fails admin unbinding token after publish and others joined', async () => {
+            await truffleAssert.reverts(pool.unbind(DAI), 'ERR_NOT_UNDER_CONSTRUCT');
         });
 
         it('getSpotPriceSansFee and getSpotPrice', async () => {
@@ -555,6 +569,35 @@ contract('BPool', async (accounts) => {
                 'ERR_NOT_BOUND',
             );
         });
+    });
+
+    describe('Admin want bind new tokens after publish', () => {
+        it('is published and not under construct', async () => {
+            const publicSwap = await pool.isPublicSwap();
+            assert(publicSwap);
+
+            const constructed = await pool.isConstructed();
+            assert(constructed);
+        });
+
+        it('Admin binds new token', async () => {
+            await pool.setUnderConstruct(true);
+            const constructed = await pool.isConstructed();
+            assert(!constructed);
+
+            await pool.bind(ATKN, toWei('20'), toWei('5'));
+            const numTokens = await pool.getNumTokens();
+            assert.equal(4, numTokens);
+            const totalDernomWeight = await pool.getTotalDenormalizedWeight();
+            assert.equal(20, fromWei(totalDernomWeight));
+            const atknDenormWeight = await pool.getDenormalizedWeight(ATKN);
+            assert.equal(5, fromWei(atknDenormWeight));
+            const atknNormWeight = await pool.getNormalizedWeight(ATKN);
+            assert.equal(0.25, fromWei(atknNormWeight));
+            const atknBalance = await pool.getBalance(ATKN);
+            assert.equal(20, fromWei(atknBalance));
+        });
+
     });
 
     describe('BToken interactions', () => {

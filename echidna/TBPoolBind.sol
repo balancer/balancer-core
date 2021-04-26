@@ -43,7 +43,7 @@ contract TBPoolBindPrivileged is CryticInterface, BPool {
     }
 
     function echidna_revert_bind_twice() public returns (bool) {
-        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isFinalized()) {
+        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isConstructed()) {
             // binding the first token should be enough, if we have this property to always revert
             bind(this.getCurrentTokens()[0], valid_balance_to_bind, valid_denorm_to_bind);
             // This return will make this property to fail
@@ -54,7 +54,7 @@ contract TBPoolBindPrivileged is CryticInterface, BPool {
     }
 
     function echidna_revert_unbind_twice() public returns (bool) {
-        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isFinalized()) {
+        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isConstructed()) {
             address[] memory current_tokens = this.getCurrentTokens();
             // unbinding the first token twice should be enough, if we want this property to always revert
             unbind(current_tokens[0]);
@@ -66,7 +66,7 @@ contract TBPoolBindPrivileged is CryticInterface, BPool {
     }
 
     function echidna_all_tokens_are_unbindable() public returns (bool) {
-        if (this.getController() == crytic_owner && !this.isFinalized()) {
+        if (this.getController() == crytic_owner && !this.isConstructed()) {
             address[] memory current_tokens = this.getCurrentTokens();
             // unbind all the tokens, one by one
             for (uint i = 0; i < current_tokens.length; i++) {
@@ -81,7 +81,7 @@ contract TBPoolBindPrivileged is CryticInterface, BPool {
     }
 
     function echidna_all_tokens_are_rebindable_with_valid_parameters() public returns (bool) {
-        if (this.getController() == crytic_owner && !this.isFinalized()) {
+        if (this.getController() == crytic_owner && !this.isConstructed()) {
             address[] memory current_tokens = this.getCurrentTokens();
             for (uint i = 0; i < current_tokens.length; i++) {
                 // rebind all the tokens, one by one, using valid parameters
@@ -95,7 +95,7 @@ contract TBPoolBindPrivileged is CryticInterface, BPool {
     }
 
     function echidna_revert_rebind_unbinded() public returns (bool) {
-        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isFinalized()) {
+        if (this.getCurrentTokens().length > 0 && this.getController() == crytic_owner && !this.isConstructed()) {
             address[] memory current_tokens = this.getCurrentTokens();
             // unbinding and rebinding the first token should be enough, if we want this property to always revert
             unbind(current_tokens[0]);

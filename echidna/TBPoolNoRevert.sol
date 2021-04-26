@@ -61,7 +61,7 @@ contract TBPoolNoRevert is CryticInterface, BPool {
             return true;
 
         // if the pool was not finalized, enable the public swap
-        if (!this.isFinalized())
+        if (!this.isConstructed())
             setPublicSwap(true);
  
         address[] memory current_tokens = this.getCurrentTokens();
@@ -83,7 +83,7 @@ contract TBPoolNoRevert is CryticInterface, BPool {
             return true;
 
         // if the pool was not finalized, enable the public swap
-        if (!this.isFinalized())
+        if (!this.isConstructed())
             setPublicSwap(true);
  
         address[] memory current_tokens = this.getCurrentTokens();
