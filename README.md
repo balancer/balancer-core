@@ -34,7 +34,7 @@ The *☀️Golden Release☀️* will introduce a curious new liquidity mechanis
 
 ## Documentation
 
-The full documentation can be found at [https://docs.balancer.finance](https://docs.balancer.finance)
+The full documentation can be found at [https://docs.balancer.fi/](https://docs.balancer.fi/)
 
 
 ## Development
@@ -77,7 +77,7 @@ relDif  : 1.6464292361378058e-12)
       ✓ exitswap_ExternAmountOut (537ms)
 ```
 
-Complete API docs are available at [https://docs.balancer.finance/smart-contracts/api](https://docs.balancer.finance/smart-contracts/api)
+Complete API docs are available at [https://dev.balancer.fi/references/contracts/apis](https://dev.balancer.fi/references/contracts/apis)
 
 
 <p align=center>⊙</p>
