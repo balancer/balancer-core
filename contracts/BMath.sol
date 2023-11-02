@@ -227,7 +227,7 @@ contract BMath is BBronze, BConst, BNum {
     // calcPoolInGivenSingleOut                                                                  //
     // pAi = poolAmountIn               // /               tAo             \\     / wO \     \   //
     // bO = tokenBalanceOut            // | bO - -------------------------- |\   | ---- |     \  //
-    // tAo = tokenAmountOut      pS - ||   \     1 - ((1 - (tO / tW)) * sF)/  | ^ \ tW /  * pS | //
+    // tAo = tokenAmountOut      pS - ||   \     1 - ((1 - (wO / tW)) * sF)/  | ^ \ tW /  * pS | //
     // ps = poolSupply                 \\ -----------------------------------/                /  //
     // wO = tokenWeightOut  pAi =       \\               bO                 /                /   //
     // tW = totalWeight           -------------------------------------------------------------  //
