@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.23;
 
+import {IERC20} from '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+
 import {BPool} from 'contracts/BPool.sol';
 import {IBPool} from 'interfaces/IBPool.sol';
 import {MockBPool} from 'test/smock/MockBPool.sol';
 
 import {BConst} from 'contracts/BConst.sol';
 import {BMath} from 'contracts/BMath.sol';
-import {IERC20} from 'contracts/BToken.sol';
 import {Test} from 'forge-std/Test.sol';
 import {Pow} from 'test/utils/Pow.sol';
 import {Utils} from 'test/utils/Utils.sol';

@@ -2,7 +2,6 @@
 pragma solidity 0.8.23;
 
 import {BNum} from './BNum.sol';
-import {IERC20} from 'forge-std/interfaces/IERC20.sol';
 
 abstract contract BTokenBase is BNum, IERC20 {
   mapping(address => uint256) internal _balance;
@@ -28,6 +27,7 @@ abstract contract BTokenBase is BNum, IERC20 {
     _balance[dst] = badd(_balance[dst], amt);
     emit Transfer(src, dst, amt);
   }
+import {ERC20} from '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
   function _push(address to, uint256 amt) internal {
     _move(address(this), to, amt);

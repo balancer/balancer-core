@@ -2,7 +2,6 @@
 pragma solidity 0.8.23;
 
 // Builds new BPools, logging their addresses and providing `isBPool(address) -> (bool)`
-
 import {BBronze} from './BColor.sol';
 import {BPool} from './BPool.sol';
 import {IBFactory} from 'interfaces/IBFactory.sol';
