@@ -35,6 +35,7 @@
     "package.json": "sort-package-json"
   },
   "dependencies": {
+    "@openzeppelin/contracts": "5.0.2",
     "solmate": "github:transmissions11/solmate#c892309"
   },
   "devDependencies": {
