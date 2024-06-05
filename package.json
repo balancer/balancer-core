@@ -18,11 +18,9 @@
     "coverage": "forge coverage --match-contract Unit",
     "deploy:mainnet": "bash -c 'source .env && forge script Deploy -vvvvv --rpc-url $MAINNET_RPC --broadcast --chain mainnet --private-key $MAINNET_DEPLOYER_PK --verify --etherscan-api-key $ETHERSCAN_API_KEY'",
     "deploy:testnet": "bash -c 'source .env && forge script Deploy -vvvvv --rpc-url $SEPOLIA_RPC --broadcast --chain sepolia --private-key $SEPOLIA_DEPLOYER_PK --verify --etherscan-api-key $ETHERSCAN_API_KEY'",
-    "lint:check": "yarn lint:sol-tests && yarn lint:sol-logic && forge fmt --check",
-    "lint:fix": "sort-package-json && forge fmt && yarn lint:sol-tests --fix && yarn lint:sol-logic --fix",
+    "lint": "solhint 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol' && forge fmt --check",
+    "lint:fix": "solhint --fix 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol' && sort-package-json && forge fmt",
     "lint:natspec": "npx @defi-wonderland/natspec-smells --config natspec-smells.config.js",
-    "lint:sol-logic": "solhint -c .solhint.json 'src/**/*.sol' 'script/**/*.sol'",
-    "lint:sol-tests": "solhint -c .solhint.tests.json 'test/**/*.sol'",
     "prepare": "husky install",
     "smock": "smock-foundry --contracts src/contracts",
     "test": "forge test -vvv",
@@ -33,8 +31,7 @@
   },
   "lint-staged": {
     "*.{js,css,md,ts,sol}": "forge fmt",
-    "(src|script)/**/*.sol": "yarn lint:sol-logic",
-    "test/**/*.sol": "yarn lint:sol-tests",
+    "(src|script|test)/**/*.sol": "yarn lint",
     "package.json": "sort-package-json"
   },
   "dependencies": {
@@ -49,7 +46,7 @@
     "forge-std": "github:foundry-rs/forge-std#5475f85",
     "husky": ">=8",
     "lint-staged": ">=10",
-    "solhint": "github:solhint-community/solhint-community#v4.0.0-rc01",
+    "solhint-community": "4.0.0",
     "sort-package-json": "2.10.0"
   }
 }

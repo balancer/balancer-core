@@ -1,22 +1,21 @@
 {
   "extends": "solhint:recommended",
   "rules": {
+    "avoid-low-level-calls": "off",
     "compiler-version": ["off"],
     "constructor-syntax": "warn",
-    "quotes": ["error", "single"],
     "func-visibility": ["warn", { "ignoreConstructors": true }],
-    "not-rely-on-time": "off",
-    "no-inline-assembly": "off",
-    "no-empty-blocks": "off",
-    "private-vars-leading-underscore": ["warn", { "strict": false }],
-    "ordering": "warn",
-    "immutable-name-snakecase": "warn",
-    "avoid-low-level-calls": "off",
-    "no-console": "off",
     "max-line-length": ["warn", 120],
+    "no-console": "off",
+    "no-empty-blocks": "off",
+    "no-inline-assembly": "off",
+    "not-rely-on-time": "off",
+    "ordering": "warn",
+    "private-vars-leading-underscore": ["warn", { "strict": false }],
+    "quotes": ["error", "single"],
     "TODO": "REMOVE_TEMPORARY_LINTER_SETTINGS_BELOW",
+    "style-guide-casing": ["warn", { "ignoreEvents": true } ],
     "custom-errors": "off",
-    "one-contract-per-file": "off",
-    "definition-name-capwords": "off"
+    "one-contract-per-file": "off"
   }
 }
