@@ -2,7 +2,6 @@
   "rules": {
     "max-states-count": "off",
     "named-parameters-function": "off",
-    "no-global-import": "off",
     "no-unused-vars": "off",
     "one-contract-per-file": "off",
     "ordering": "off",

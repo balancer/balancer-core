@@ -2,13 +2,8 @@
   "extends": "solhint:recommended",
   "rules": {
     "avoid-low-level-calls": "off",
-    "compiler-version": ["off"],
     "constructor-syntax": "warn",
     "func-visibility": ["warn", { "ignoreConstructors": true }],
-    "no-console": "off",
-    "no-empty-blocks": "off",
-    "no-inline-assembly": "off",
-    "not-rely-on-time": "off",
     "ordering": "warn",
     "private-vars-leading-underscore": ["warn", { "strict": false }],
     "quotes": "off",
